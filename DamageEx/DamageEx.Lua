@@ -387,10 +387,15 @@ end
 -- 检查并刷新所有到期的合并条目（在 GameUpdate 中调用）
 function DEX_CheckMergeFlush()
     local now = GetTime()
+    -- 先收集所有到期的 key，再统一刷新，避免边迭代边修改
+    local toFlush = {}
     for key, entry in pairs(DEX_MergeBuffer) do
         if now - entry.startTime >= DEX_MERGE_WINDOW then
-            DEX_FlushOneMergeEntry(key)
+            table.insert(toFlush, key)
         end
+    end
+    for _, key in ipairs(toFlush) do
+        DEX_FlushOneMergeEntry(key)
     end
 end
 
@@ -1519,8 +1524,17 @@ function DEX_GameUpdate(elapsed)
     dex_petbottom = 99999;
     dex_top = -99999;
 
-    -- 刷新到期的合并伤害缓冲
+    -- 合并刷新前先扫描所有活跃动画的当前位置，
+    -- 使防重叠逻辑（dex_bottom/dex_top）能感知现有动画，避免与旧动画重叠
     if DEX_Get("DEX_MergeDamage") == 1 then
+        if DEX_Get("DEX_ShowWithMess") == 0 then
+            for key, value in pairs(dex_AniData) do
+                if value.Active then
+                    DEX_RefressBottom(value)
+                    DEX_RefressTop(value)
+                end
+            end
+        end
         DEX_CheckMergeFlush()
     end
 
