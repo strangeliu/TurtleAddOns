@@ -117,6 +117,7 @@ DEX_LANG_CHECKBOX = {
     ["DEX_ShowEnergize"] = { title = "显示能量回复", tooltip = "显示法力、怒气等能量回复效果" },
     ["DEX_HideFriendlyDamage"] = { title = "隐藏对友误伤", tooltip = "勾选后，不显示对友方单位（玩家或队友）造成的伤害" },
     ["DEX_MergeDamage"] = { title = "合并伤害显示", tooltip = "将同一技能在短时间内的多次伤害合并为一行，如AOE技能（显示：24火焰打击 (2命中，1抵抗)）" },
+    ["DEX_FilterElementalDamage"] = { title = "过滤元素伤害", tooltip = "勾选后，不显示元素伤害（火焰打击、闪电打击）" },
 };
 
 -- 滑块标题、最小文本、最大文本、提示
@@ -180,6 +181,12 @@ DEX_LANG_PREBOX_OUTGOING = "拖动我改变造成伤害出现位置";
 DEX_LANG_PREBOX_INCOMING = "拖动我改变受到伤害出现位置";
 DEX_LANG_CLOSE = "关闭";
 DEX_LANG_LOGLINE_FORMAT = "%.1f秒";
+
+-- 元素伤害技能名称列表（用于过滤元素伤害）
+DEX_ELEMENTAL_SPELL_NAMES = {
+    ["火焰打击"] = true,
+    ["闪电打击"] = true,
+}
 
 -- 合并伤害显示
 DEX_TXT_HIT_MERGE = "命中";

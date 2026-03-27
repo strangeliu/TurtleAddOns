@@ -234,6 +234,7 @@ DEX_DEFAULT_CFG = {
     ["DEX_TrajectoryEnergize"] = 7,
     ["DEX_HideFriendlyDamage"] = 0,
     ["DEX_MergeDamage"] = 0,
+    ["DEX_FilterElementalDamage"] = 0,
 }
 
 -- 姓名版集成相关变量
@@ -1953,6 +1954,9 @@ function DEX_AddText(damage, spellId, damagetype, crit, unitName, guid, powerTyp
     end
 
     if spellName == nil then spellName = "" end
+
+    -- 元素伤害过滤
+    if DEX_Get("DEX_FilterElementalDamage") == 1 and DEX_ELEMENTAL_SPELL_NAMES[spellName] then return end
 
     local color = {1,1,1};
     local colorSe = {1,1,1};
