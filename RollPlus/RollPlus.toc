@@ -1,0 +1,10 @@
+## Interface: 11200
+## Title: RollPlus
+## Title-zhCN: |CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] Roll点框架增强
+## Notes: Enhanced loot roll frames with player tracking and class colors
+## Notes-zhCN: |CFF00FF00RollPlus|R|NRoll点框架显示需求、贪婪、放弃的玩家数量和角色名称。|N设置命令：/RollPlus
+## Author: Kmust
+## Version: 1.0
+## SavedVariables: RollPlusDB
+
+RollPlus.lua

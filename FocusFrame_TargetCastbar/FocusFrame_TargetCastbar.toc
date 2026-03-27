@@ -1,0 +1,13 @@
+## Interface: 11200
+## Title: FocusFrame_TargetCastbar
+## Notes: Adds an extra castbar for your current target.
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 焦点施法监视
+## Notes-zhCN:监视目标和焦点目标的施法（需要依赖焦点头像）|N按住shift+左键可移动位置|N/run TargetCastbarShow=false 隐藏目标施法条|N/run FocusCastbarShow=false 隐藏焦点施法条|N将false改为true或者重载界面可重新显示.
+## RequiredDeps: FocusFrame
+## LoadOnDemand: 1
+## LoadWith: FocusFrame
+## Author: Wardz,https://github.com/wardz/FocusFrame_TargetCastbar/releases
+
+
+Frames.lua
+FocusFrame_TargetCastbar.lua

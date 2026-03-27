@@ -1,0 +1,21 @@
+## Interface: 11200
+## Title: FocusFrame
+## Notes: Focus frame support for vanilla.
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 焦点头像
+## Notes-zhCN:Ctrl+Alt+左键点击某单位快速设置焦点头像，Ctrl+Alt+左键点击空白处清除焦点头像
+## Author: Wardz( https://github.com/wardz/FocusFrame ) , 宽血条+快捷设置 modify by 狗血编剧男
+## Version: 1.3.2
+## SavedVariables: FocusFrameDB
+
+libs\FocusCore\SpellGlobals.lua
+libs\FocusCore\SpellCore.lua
+libs\FocusCore\FocusCore.lua
+libs\FocusCore\SlashCommands.lua
+
+FocusFrame.xml
+FocusFrame.lua
+
+Plugins\Loader.lua
+Plugins\EnemyFrames.lua
+Plugins\ClassPortraits.lua
+Plugins\ClickCast.lua

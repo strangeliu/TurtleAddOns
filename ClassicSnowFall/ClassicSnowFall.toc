@@ -1,0 +1,11 @@
+## Interface: 11200
+## Title: Classic Snowfall
+## Author: Vallan
+## Notes: Keydown Cast Support for Vanilla
+## Title-zhCN: |cFF00FF00快速施法
+## Notes-zhCN: 能够在按键按下的瞬间就放出技能，而不用像原始设定那样松开才施放。
+## OptionalDeps: !Libs
+## Version: 0.5
+## DefaultState: disabled
+## SavedVariablesPerCharacter: CS_SELF_ENABLED
+ClassicSnowfall.lua

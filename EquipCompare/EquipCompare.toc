@@ -1,0 +1,15 @@
+## Interface: 11200
+## LoadOnDemand: 0
+## Title: |cFF00FF00装备比较
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 装备比较
+## Notes: 当鼠标在物品或物品链接上悬停时，会显示该物品和玩家自己装备的同类物品的比较信息。|n/eqc 
+## Notes-zhCN: 当鼠标在物品或物品链接上悬停时，会显示该物品和玩家自己装备的同类物品的比较信息。|n/eqc 
+## Author: Legorol
+## Version: 2.9.8
+## SavedVariables: EquipCompare_Enabled, EquipCompare_ControlMode, EquipCompare_UseCV, EquipCompare_AltMode, EquipCompare_Shiftup
+## OptionalDeps: Khaos, Cosmos, Satellite, Sky, CharactersViewer, LootLink
+localization.lua
+localization.cn.lua
+localization.post.lua
+EquipCompare.lua
+EquipCompare.xml

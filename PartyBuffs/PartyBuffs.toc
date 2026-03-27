@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title:|CFF33AAFF[辅助]|RPartyBuffs
+## Title-zhCN:|CFF33AAFF[辅助]|R队友BUFF显示
+## Notes: Show buffs/debuffs on party member frames and pet, and show HP percent
+## Notes-zhCN: 显示队友和宠物的Buff以及Debuff，并在血条上显示血量百分比。|n/pb 
+## Author: Whitehead
+## Version: 1.1.0
+PartyBuffs.xml
+PartyBuffs.lua

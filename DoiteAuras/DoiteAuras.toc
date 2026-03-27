@@ -1,0 +1,21 @@
+## Interface: 11200
+## Title: |cff6FA8DC[DoiteAuras]|r
+## Notes: WeakAuras-light addon for vanilla by Doite.
+## Title-zhCN:|CFFEE7600[模组增强]|R |cff00ffffDoiteAuras|cffff1450[需Nampower、UnitXP_SP3]
+## Notes-zhCN: Doite 制作的轻量级 WeakAuras 风格插件，适用于经典旧世。
+## Author: Doite
+## Version: 1.6.2
+## SavedVariablesPerCharacter: DoiteAurasDB
+
+DoiteAuras.lua
+
+Modules\DoiteBuffData.lua
+Modules\DoitePlayerAuras.lua
+Modules\DoiteEdit.lua
+Modules\DoiteGlow.lua
+Modules\DoiteConditions.lua
+Modules\DoiteGroup.lua
+Modules\DoiteLogic.lua
+Modules\DoiteExport.lua
+Modules\DoiteTrack.lua
+Modules\DoiteSettings.lua

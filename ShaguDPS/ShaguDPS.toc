@@ -1,0 +1,20 @@
+## Interface: 11200
+## Title: |cffffcc00Shagu|cffffffffDPS
+## Notes: A simple and lightweight DPS and damage meter.
+## Title-zhCN:|CFFEE7600[DPS统计]|RShaguDPS统计
+## Notes-zhCN:Shagu制作的轻量化DPS统计工具。
+## Author: Shagu汉化
+## Version: 3.0.1
+## OptionalDeps: pfUI
+## SavedVariablesPerCharacter: ShaguDPS_Config
+
+# main
+core.lua
+
+# parser
+parser.lua
+parser-vanilla.lua
+
+# interface
+window.lua
+settings.lua

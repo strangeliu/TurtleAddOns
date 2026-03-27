@@ -1,0 +1,17 @@
+## Interface: 11200
+## Title: |cFF00FF00施法读条计时
+## Notes: 技能施法条计时。|n/pch config 
+## Author: Attero
+## Version: 1.0
+## Dependencies: 
+## SavedVariables: PunschrulleDB
+## SavedVariablesPerCharacter: PunschrulleProfile
+
+Punschrulle.lua
+media\media.lua
+core\Tables.lua
+core\Options.lua
+core\Entity.lua
+core\Bar.lua
+core\Castbar.lua
+core\Mirror.lua

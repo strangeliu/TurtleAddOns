@@ -1,0 +1,309 @@
+local _G = ShaguTweaks.GetGlobalEnv()
+local T = ShaguTweaks.T
+
+local module = ShaguTweaks:register({
+  title = T["Equip Compare"],
+  description = T["Shows currently equipped items on tooltips while the shift key is pressed."],
+  expansions = { ["vanilla"] = true, ["tbc"] = nil },
+  category = T["Tooltip & Items"],
+  enabled = true,
+})
+
+module.enable = function()
+  -- hook tooltip methods to extract item ID
+  local function HookTooltip(tooltip)
+    local original_SetLootRollItem    = tooltip.SetLootRollItem
+    local original_SetLootItem        = tooltip.SetLootItem
+    local original_SetMerchantItem    = tooltip.SetMerchantItem
+    local original_SetQuestLogItem    = tooltip.SetQuestLogItem
+    local original_SetQuestItem       = tooltip.SetQuestItem
+    local original_SetHyperlink       = tooltip.SetHyperlink
+    local original_SetBagItem         = tooltip.SetBagItem
+    local original_SetInboxItem       = tooltip.SetInboxItem
+    local original_SetInventoryItem   = tooltip.SetInventoryItem
+    local original_SetCraftItem       = tooltip.SetCraftItem
+    local original_SetCraftSpell      = tooltip.SetCraftSpell
+    local original_SetTradeSkillItem  = tooltip.SetTradeSkillItem
+    local original_SetAuctionItem     = tooltip.SetAuctionItem
+    local original_SetAuctionSellItem = tooltip.SetAuctionSellItem
+    local original_SetTradePlayerItem = tooltip.SetTradePlayerItem
+    local original_SetTradeTargetItem = tooltip.SetTradeTargetItem
+
+    local original_OnHide = tooltip:GetScript("OnHide")
+
+    tooltip:SetScript("OnHide", function()
+      if original_OnHide then original_OnHide() end
+      ShoppingTooltip1:Hide()
+      ShoppingTooltip2:Hide()
+      this.itemID = nil
+    end)
+
+    function tooltip.SetLootRollItem(self, rollID)
+      original_SetLootRollItem(self, rollID)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetLootRollItemLink(rollID))
+    end
+
+    function tooltip.SetLootItem(self, slot)
+      original_SetLootItem(self, slot)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetLootSlotLink(slot))
+    end
+
+    function tooltip.SetMerchantItem(self, merchantIndex)
+      original_SetMerchantItem(self, merchantIndex)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetMerchantItemLink(merchantIndex))
+    end
+
+    function tooltip.SetQuestLogItem(self, itemType, index)
+      original_SetQuestLogItem(self, itemType, index)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetQuestLogItemLink(itemType, index))
+    end
+
+    function tooltip.SetQuestItem(self, itemType, index)
+      original_SetQuestItem(self, itemType, index)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetQuestItemLink(itemType, index))
+    end
+
+    function tooltip.SetHyperlink(self, arg1)
+      original_SetHyperlink(self, arg1)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(arg1)
+    end
+
+    function tooltip.SetBagItem(self, container, slot)
+      local hasCooldown, repairCost = original_SetBagItem(self, container, slot)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetContainerItemLink(container, slot))
+      return hasCooldown, repairCost
+    end
+
+    function tooltip.SetInboxItem(self, mailID, attachmentIndex)
+      original_SetInboxItem(self, mailID, attachmentIndex)
+      self.itemID = ShaguTweaks.GetItemLinkByName(GetInboxItem(mailID))
+    end
+
+    function tooltip.SetInventoryItem(self, unit, slot)
+      local hasItem, hasCooldown, repairCost = original_SetInventoryItem(self, unit, slot)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetInventoryItemLink(unit, slot))
+      return hasItem, hasCooldown, repairCost
+    end
+
+    function tooltip.SetCraftItem(self, skill, slot)
+      original_SetCraftItem(self, skill, slot)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetCraftReagentItemLink(skill, slot))
+    end
+
+    function tooltip.SetCraftSpell(self, slot)
+      original_SetCraftSpell(self, slot)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetCraftItemLink(slot))
+    end
+
+    function tooltip.SetTradeSkillItem(self, skillIndex, reagentIndex)
+      original_SetTradeSkillItem(self, skillIndex, reagentIndex)
+      if reagentIndex then
+        self.itemID = ShaguTweaks.GetItemIDFromLink(GetTradeSkillReagentItemLink(skillIndex, reagentIndex))
+      else
+        self.itemID = ShaguTweaks.GetItemIDFromLink(GetTradeSkillItemLink(skillIndex))
+      end
+    end
+
+    function tooltip.SetAuctionItem(self, atype, index)
+      original_SetAuctionItem(self, atype, index)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetAuctionItemLink(atype, index))
+    end
+
+    function tooltip.SetAuctionSellItem(self)
+      original_SetAuctionSellItem(self)
+      self.itemID = ShaguTweaks.GetItemLinkByName(GetAuctionSellItemInfo())
+    end
+
+    function tooltip.SetTradePlayerItem(self, index)
+      original_SetTradePlayerItem(self, index)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetTradePlayerItemLink(index))
+    end
+
+    function tooltip.SetTradeTargetItem(self, index)
+      original_SetTradeTargetItem(self, index)
+      self.itemID = ShaguTweaks.GetItemIDFromLink(GetTradeTargetItemLink(index))
+    end
+  end
+
+  local wrapping_lines = {
+    ["^Set:"] = gsub("^"..ITEM_SET_BONUS, "%%s", ""),
+    ["^%(%d%) Set:"] = gsub(gsub(ITEM_SET_BONUS_GRAY, "%(%%d%)", "^%%(%%d%%)"), "%%s", ""),
+    ["^Effect:"] = gsub("^"..ITEM_SPELL_EFFECT, "%%s", ""),
+    ["^Equip:"] = "^"..ITEM_SPELL_TRIGGER_ONEQUIP,
+    ["^Chance on hit:"] = "^"..ITEM_SPELL_TRIGGER_ONPROC,
+    ["^Use:"] = "^"..ITEM_SPELL_TRIGGER_ONUSE,
+    ["^\nRequires"] = "^\n"..gsub(ITEM_REQ_SKILL, "%%s", "")
+  }
+
+  -- tooltip data cache
+  local lines = {}
+  for i = 1, 30 do lines[i] = {} end
+
+  local function AddHeader(tooltip)
+    local name = tooltip:GetName()
+
+    -- remove previous tooltip data
+    for i in pairs(lines) do
+      for j in pairs(lines[i]) do lines[i][j] = nil end
+    end
+
+    -- store current tooltip data
+    for i = 1, tooltip:NumLines() do
+      local left = _G[name.."TextLeft"..i]
+      local right =  _G[name.."TextRight"..i]
+      local leftText = left:GetText()
+      local rightText = right:IsShown() and right:GetText()
+      local rL, gL, bL = left:GetTextColor()
+      local rR, gR, bR = right:GetTextColor()
+      lines[i][1] = leftText
+      lines[i][2] = rightText
+      lines[i][3] = rL
+      lines[i][4] = gL
+      lines[i][5] = bL
+      lines[i][6] = rR
+      lines[i][7] = gR
+      lines[i][8] = bR
+    end
+
+    -- reconstruct tooltip from the top
+    -- add "Currently Equipped" header
+    tooltip:SetText(CURRENTLY_EQUIPPED, .5, .5, .5, 1, false)
+    for _, data in ipairs(lines) do
+      -- add the rest
+      if data[2] then
+        tooltip:AddDoubleLine(data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8])
+      else
+        local wrap = false
+        -- flavor text is wrapped
+        if strsub(data[1] or "", 1, 1) == "\"" then
+          wrap = true
+        else
+          for _, pattern in pairs(wrapping_lines) do
+            if strfind(data[1] or "", pattern) then
+              wrap = true
+              break
+            end
+          end
+        end
+        tooltip:AddLine(data[1], data[3], data[4], data[5], wrap)
+      end
+    end
+
+    -- update tooltip sizes
+    tooltip:Show()
+  end
+
+  local invtype_to_index = {
+    INVTYPE_AMMO = {0},
+    INVTYPE_HEAD = {1},
+    INVTYPE_NECK = {2},
+    INVTYPE_SHOULDER = {3},
+    INVTYPE_BODY = {4},
+    INVTYPE_CHEST = {5},
+    INVTYPE_ROBE = {5},
+    INVTYPE_WAIST = {6},
+    INVTYPE_LEGS = {7},
+    INVTYPE_FEET = {8},
+    INVTYPE_WRIST = {9},
+    INVTYPE_HAND = {10},
+    INVTYPE_FINGER = {11, 12},
+    INVTYPE_TRINKET = {13, 14},
+    INVTYPE_CLOAK = {15},
+    INVTYPE_2HWEAPON = {16, 17},
+    INVTYPE_WEAPONMAINHAND = {16, 17},
+    INVTYPE_WEAPON = {16, 17},
+    INVTYPE_WEAPONOFFHAND = {16, 17},
+    INVTYPE_HOLDABLE = {16, 17},
+    INVTYPE_SHIELD = {16, 17},
+    INVTYPE_RANGED = {18},
+    INVTYPE_RANGEDRIGHT = {18},
+    INVTYPE_TABARD = {19},
+  }
+
+  local function SlotIndex(invtype)
+    if not invtype_to_index[invtype] then return end
+    return invtype_to_index[invtype][1], invtype_to_index[invtype][2]
+  end
+
+  -- prevent tooltips from going off screen
+  ShoppingTooltip1:SetClampedToScreen(true)
+  ShoppingTooltip2:SetClampedToScreen(true)
+
+  -- restore horizontal alignment caused by AddHeader function
+  for t = 1, 2 do
+    local tooltip = "ShoppingTooltip"..t
+    for i = 1, 30 do
+      _G[tooltip.."TextLeft"..i]:SetJustifyH("LEFT")
+      _G[tooltip.."TextRight"..i]:SetJustifyH("LEFT")
+    end
+  end
+
+  local function ShowCompare(tooltip)
+    -- abort if shift is not pressed
+    if not IsShiftKeyDown() then
+      ShoppingTooltip1:Hide()
+      ShoppingTooltip2:Hide()
+      return
+    end
+
+    if not tooltip.itemID then return end
+
+    local itemName, itemLink, itemQuality, itemLevel, itemType, itemSubType, itemCount, itemEquipLoc, itemTexture = GetItemInfo(tooltip.itemID)
+    local index1, index2 = SlotIndex(itemEquipLoc)
+
+    -- abort if not a piece of gear
+    if not index1 then return end
+
+    -- determine screen part
+    local x = GetCursorPosition() / UIParent:GetEffectiveScale()
+    local anchor = x < GetScreenWidth() / 2 and "TOPLEFT" or "TOPRIGHT"
+    local relative = x < GetScreenWidth() / 2 and "TOPRIGHT" or "TOPLEFT"
+
+    -- overwrite position for tooltips without owner
+    local pos, parent = tooltip:GetPoint()
+    if parent and parent == UIParent and pos == "TOPRIGHT" then
+      anchor = "TOPRIGHT"
+      relative = "TOPLEFT"
+    end
+
+    -- first tooltip
+    ShoppingTooltip1:SetOwner(tooltip, "ANCHOR_NONE")
+    ShoppingTooltip1:ClearAllPoints()
+    ShoppingTooltip1:SetPoint(anchor, tooltip, relative, 0, 0)
+    ShoppingTooltip1:SetInventoryItem("player", index1)
+    ShoppingTooltip1:Show()
+    AddHeader(ShoppingTooltip1)
+
+    -- second tooltip
+    if index2 and GetInventoryItemLink("player", index2) then
+      ShoppingTooltip2:SetOwner(tooltip, "ANCHOR_NONE")
+      ShoppingTooltip2:ClearAllPoints()
+      if ShoppingTooltip1:IsShown() then
+        ShoppingTooltip2:SetPoint(anchor, ShoppingTooltip1, relative, 0, 0)
+      else
+        ShoppingTooltip2:SetPoint(anchor, tooltip, relative, 0, 0)
+      end
+      ShoppingTooltip2:SetInventoryItem("player", index2)
+      ShoppingTooltip2:Show()
+      AddHeader(ShoppingTooltip2)
+    end
+  end
+
+  -- show item compare on default tooltips
+  HookTooltip(GameTooltip)
+  local default = CreateFrame("Frame", nil, GameTooltip)
+  default:SetScript("OnUpdate", function()
+    ShowCompare(GameTooltip)
+  end)
+
+  -- show compare on atlas tooltips
+  ShaguTweaks.HookAddonOrVariable("AtlasLoot", function()
+    HookTooltip(AtlasLootTooltip)
+    HookTooltip(AtlasLootTooltip2)
+    local atlas = CreateFrame("Frame", nil, AtlasLootTooltip)
+    atlas:SetScript("OnUpdate", function()
+      ShowCompare(AtlasLootTooltip)
+      ShowCompare(AtlasLootTooltip2)
+    end)
+  end)
+end

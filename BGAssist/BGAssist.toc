@@ -1,0 +1,21 @@
+﻿## Interface: 11200
+## Title: BGAssist
+## Title-zhCN: |CFFFE0000[战斗]|R BGAssist 战场助手
+## Notes: Handy stuff Battlegrounds
+## Notes-zhCN: BGAssist 老牌战场助手 命令/bga
+## Author: Marc aka Saien on Hyjal, continued my Lokimur on Lothar (EU)
+## SavedVariables: BGAssist_Config
+## OptionalDeps: Ace2, AceLibrary, Babble-Zone-2.0, Deformat-2.0, AceEvent-2.0, AceConsole-2.0
+lib\AceLibrary\AceLibrary.lua
+lib\AceLocale-2.0\AceLocale-2.0.lua
+lib\Babble-Zone-2.0\Babble-Zone-2.0.lua
+lib\AceOO-2.0\AceOO-2.0.lua
+lib\AceEvent-2.0\AceEvent-2.0.lua
+lib\AceConsole-2.0\AceConsole-2.0.lua
+lib\Deformat-2.0\Deformat-2.0.lua
+lib\Glory-2.0\Glory-2.0.lua
+BGAssist.xml
+
+
+
+## X-Turtle-Shell-Version: 1692243390

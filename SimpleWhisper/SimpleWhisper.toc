@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: |CFF33AAFF[辅助]|R|cffffffffSimpleWhisper
+## Notes: |CFFDD66DD简单密语插件|R |n|cFFFFFF00乌龟服定制版 by 吊儿啷当
+## Title-zhCN:|CFF33AAFF[辅助]|RSimpleWhisper
+## Notes: |CFFDD66DD简单密语插件|R |n|cFFFFFF00乌龟服定制版 by 吊儿啷当
+## Author: 吊儿啷当
+## SavedVariablesPerCharacter: SimpleWhisper_Box, SimpleWhisper_Unread
+
+SimpleWhisper.lua

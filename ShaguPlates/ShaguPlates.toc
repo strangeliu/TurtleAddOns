@@ -1,0 +1,17 @@
+## Interface: 11200
+## Title: |cff33ffccShagu|cffffffffPlates
+## Author: Shagu
+## Notes: Nameplate addon featuring castbars, class colors and much more. Type /splates to show the settings.
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] ShaguPlates血条插件
+## Notes-zhCN: Shagu制作的血条插件。|n输入/sp调整设置。
+## Version: 5.4.21
+## SavedVariables: ShaguPlates_profiles, ShaguPlates_addon_profiles, ShaguPlates_cache
+## SavedVariablesPerCharacter: ShaguPlates_config, ShaguPlates_init, ShaguPlates_playerDB
+
+ShaguPlates.lua
+
+init\env.xml
+init\compat.xml
+init\api.xml
+init\libs.xml
+init\modules.xml

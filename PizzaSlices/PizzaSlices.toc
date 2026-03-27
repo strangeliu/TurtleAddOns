@@ -1,0 +1,21 @@
+## Interface: 11200
+## Title: |cffa050ffPizza|cffffffffSlices
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] Pizza Slices 符文星盘
+## Author: Pizzahawaii, Sunelegy
+## Notes: Radial action menus for spells, mounts, macros, raid markers, and more
+## Notes-zhCN: 用于法术、坐骑、宏命令、团队标记等功能的圆环形快捷技能栏。 
+## Version: 1.5.3
+## SavedVariablesPerCharacter: PizzaSlices_config, PizzaSlices_rings
+
+src\main.lua
+src\config.lua
+src\utils.lua
+src\slices.lua
+src\rings.lua
+src\macro.lua
+src\frame.lua
+src\settings.lua
+src\commands.lua
+src\channel.lua
+src\scanner.lua
+src\snowfall.lua

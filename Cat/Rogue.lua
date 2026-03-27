@@ -1,0 +1,403 @@
+if MPPlayerClass ~= "ROGUE" then
+    return  -- 终止文件执行
+end
+
+-- -------------------------------------
+-- 乌龟服 - 盗贼自配置一键宏
+-- 发布日期：2026-03-15 （后面根据时间来判断版本）
+-- 发布者：妖姬变 - 卡拉赞 - 亚服
+-- 有问题游戏里或者kook-德鲁伊频道交流
+--
+-- 可选条件：SuperWoW
+--
+-- -------------------------------------
+--
+-- 功能配置：
+-- 注：修改以下配置，需要在游戏中/reload，或者小退让配置生效
+-- 
+-- 主开关
+-- 以下功能开关：1开启 0关闭
+
+
+local AUTO_RDPS_Trinket_Delay = 3			-- 进入战斗后，3秒后才允许使用饰品
+
+
+-- -------------------------------------
+-- 全局变量，可以直接调用，不需要函数访问，以提高宏的性能
+-- 以下参数请勿手动修改，插件会自动进行变化
+
+
+-- -------------------------------------
+
+
+local QG,GCP,QX,THP,myPower,TX,XX,JRLW,DS,PJ,XF,YG
+local TargetDistance = false
+
+function MPGetMoreStar(Value, Point)
+
+	-- 边际检查
+	if not Point then
+		return 0
+	end
+	if Point<1 or Point>5 then
+		return 0
+	end
+	if not Value then
+		return 0
+	end
+
+	local count = 0
+	if Point==1 then
+		count = Value[1] + Value[2] + Value[3] + Value[4] + Value[5]
+	elseif Point==2 then
+		count = Value[2] + Value[3] + Value[4] + Value[5]
+	elseif Point==3 then
+		count = Value[3] + Value[4] + Value[5]
+	elseif Point==4 then
+		count = Value[4] + Value[5]
+	elseif Point==5 then
+		count = Value[5]
+	end
+	
+	return count
+end
+
+
+
+function MPRogueDPS()
+
+	myPower = UnitMana("player")
+	THP = UnitHealth("target")
+	QX = MPBuff("潜行")
+
+	DS = MPGetRogueEnvenom(MPRogueSaved.LeftTime_Value)	-- 毒伤
+	XX = MPGetRogueBloody(MPRogueSaved.LeftTime_Value)	-- 血腥气息
+	QG = MPGetRogueSlice(MPRogueSaved.LeftTime_Value)	-- 切割
+	PJ = MPGetExposeArmorDot(MPRogueSaved.LeftTime_Value) -- 破甲
+
+	GCP = GetComboPoints("target")
+	--JRLW = MPSpellReady("剑刃乱舞")
+	BEHIND = MPCheckBehind(MPRogueSaved.UnitXP)
+	TX=MPSpellReady("突袭")
+	XF = MPSpellReady("兴奋")
+	YG = MPSpellReady("佯攻")
+	TargetDistance = MPGetTargetDistance()
+
+
+	-- 补充毒药
+
+	if MPRogueSaved.LeaveFight==0 or (MPRogueSaved.LeaveFight==1 and not MPInCombat) then
+
+		-- 主手
+		if MPRogueSaved.MainHand==1 then
+
+			-- 获取武器信息
+			local main, mc, mn = MPGetMainHandCount()
+
+			-- 覆盖
+			if MPRogueSaved.Cover==1 and main then
+				if mn ~= MPRogueSaved.MainHand_Value then
+					MPPutonPostion(MPRogueSaved.MainHand_Value, 16)
+				end
+			end
+
+			if mc<MPRogueSaved.MainHandCount then
+				MPPutonPostion(MPRogueSaved.MainHand_Value, 16)
+			end
+
+		end
+
+		-- 副手
+		if MPRogueSaved.OffHand==1 then
+
+			-- 获取武器信息
+			local off, oc, on = MPGetOffHandCount()
+
+			if MPRogueSaved.Cover==1 and off then
+				if on~=MPRogueSaved.OffHand_Value then
+					MPPutonPostion(MPRogueSaved.OffHand_Value, 17)
+				end
+			end
+
+			if oc<MPRogueSaved.OffHandCount then
+				MPPutonPostion(MPRogueSaved.OffHand_Value, 17)
+			end
+
+		end
+
+	end
+
+
+	-- 在潜行状态
+	if QX and MPRogueSaved.Stealth==1 then
+
+		if MPBuff("放逐术", "target") then
+			return
+		end
+
+		MPStopAttack()
+
+		if MPTargetBleed then
+			CastSpellByName("绞喉")
+			return
+		else
+			if MPRogueMainHand==2 then
+				CastSpellByName("伏击")
+				return
+			else
+				CastSpellByName("偷袭")
+				return
+			end
+		end
+
+	end
+
+
+
+	-- 确认目标的存活和转火
+	MPAutoSwitchTarget(MPRogueSaved.Target)
+
+	-- 开启自动攻击
+	MPStartAttack()
+
+	-- 自动拾取
+	if MPRogueSaved.Pick==1 then
+		MPAutoLoot()
+	end
+
+	-- 功能药水
+	if MPRogueSaved.Power==1 then
+		MPCatPower()
+	end
+
+
+	if MPBuff("放逐术", "target") then
+		return
+	end
+
+	-- 在战斗中
+	if MPInCombat then
+		-- 自动开启饰品
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and TargetDistance and MPRogueSaved.Trinket_Upper==1 then
+			if MPRogueSaved.TUBoss==1 and MPIsBossTarget() then
+				UseInventoryItem(13)
+			elseif MPRogueSaved.TUBoss==0 then
+				UseInventoryItem(13)
+			end
+		end
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and TargetDistance and MPRogueSaved.Trinket_Below==1 then
+			if MPRogueSaved.TBBoss==1 and MPIsBossTarget() then
+				UseInventoryItem(14)
+			elseif MPRogueSaved.TBBoss==0 then
+				UseInventoryItem(14)
+			end
+		end
+
+		if MPRogueSaved.Soulspeed==1 and MPIsBossTarget() then
+			MPUseItemByName("魂能之速")
+		end
+
+		-- 血量危险时处理
+		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
+		if percent<MPRogueSaved.HealthStone_Value and MPRogueSaved.HealthStone==1 then
+			MPUseItemByName("特效治疗石")
+		end
+		if percent<MPRogueSaved.HerbalTea_Value and MPRogueSaved.HerbalTea==1 then
+			MPUseItemByName("糖水茶")
+			MPUseItemByName("诺达纳尔草药茶")
+		end
+		if percent<MPRogueSaved.Carrot_Value and MPRogueSaved.Carrot==1 then
+			MPUseItemByName("鞭根块茎")
+		end
+
+		-- 特定 种族天赋 --
+
+		if MPRogueSaved.RacialTraits==1 and TargetDistance then
+
+			-- 是否自动开启 人类-感知
+			if MPPlayerRace=="Human" then
+				local TF = MPSpellReady("感知")
+				if TF then CastSpellByName("感知") end
+			end
+
+			-- 是否自动开启 兽人-血性狂怒
+			if MPPlayerRace=="Orc" then
+				local TF = MPSpellReady("血性狂怒")
+				if TF then CastSpellByName("血性狂怒") end
+			end
+		
+			-- 是否自动开启 巨魔-狂暴
+			if MPPlayerRace=="Troll" then
+				local TF = MPSpellReady("狂暴")
+				if TF then CastSpellByName("狂暴") end
+			end
+
+		end
+
+	end
+
+	-- 自动打断
+	if MPRogueSaved.Interrupt==1 then
+		MPINTCast()
+	end
+
+	-- 保护剑刃乱舞
+	if MPRogueSaved.Protect==1 and GetTime()-MPRogueProtectTimer>3.0 then
+
+		MPCancelBuffByName("奥术光辉")
+		MPCancelBuffByName("奥术智慧")
+		MPCancelBuffByName("精神祷言")
+		MPCancelBuffByName("神圣之灵")
+		MPCancelBuffByName("智慧祝福")
+		MPCancelBuffByName("强效智慧祝福")
+
+		MPRogueProtectTimer = GetTime()
+
+	end
+
+	-- 剑刃乱舞
+	if MPRogueSaved.BladeFlurry==1 and myPower>24 then
+		if MPScanNearbyEnemiesCount(10)>1 and not MPBuff("剑刃乱舞") then
+			MPCastWithoutNampower("剑刃乱舞")
+		elseif MPScanNearbyEnemiesCount(10)<=1 and MPBuff("剑刃乱舞") then
+			MPCastWithoutNampower("剑刃乱舞")
+		end
+	end
+
+	-- 仇恨高的时候佯攻
+	-- 仇恨高于80
+	if MPRogueSaved.Feint==1 and YG and myPower>=20 and MPGetHatredFromTWT()>=80 then
+		MPCastWithNampower("佯攻")
+		return
+	end
+
+
+	-- 有效连击点数范围
+	if GCP>=1 and GCP<=5 then
+
+		if MPRogueSaved.SliceDiceStar[GCP]==1 and myPower>=MPRogueSliceEnergy and not QG then
+			MPCastWithoutNampower("切割")
+			return
+		end
+		if MPRogueSaved.EnvenomStar[GCP]==1 then
+			if myPower>=20 and not DS and MPRogueEnvenom==1 then
+				MPCastWithoutNampower("毒伤")
+				return
+			end
+		end
+		if MPRogueSaved.BloodyStar[GCP]==1 and myPower>=20 and not XX then
+			MPCastWithoutNampower("割裂")
+			return
+		end
+		if MPRogueSaved.ExposeArmorStar[GCP]==1 and myPower>=20 and not PJ then
+			CastSpellByName("破甲")
+			return
+		end
+		if MPRogueSaved.AdrenalineStar[GCP]==1 and myPower>=20 and XF then
+			CastSpellByName("兴奋")
+			return
+		end
+
+		if MPRogueSaved.EviscerateStar[GCP]==1 and myPower>=30 then
+
+			local allow = 1
+			if MPGetMoreStar(MPRogueSaved.BloodyStar, GCP)>0 and not XX then
+				allow = 0
+			end
+
+			if MPGetMoreStar(MPRogueSaved.EnvenomStar, GCP)>0 and not DS then
+				allow = 0
+			end
+
+			if MPGetMoreStar(MPRogueSaved.SliceDiceStar, GCP)>0 and not QG then
+				allow = 0
+			end
+
+			if MPGetMoreStar(MPRogueSaved.ExposeArmorStar, GCP)>0 and not PJ then
+				allow = 0
+			end
+
+			if MPGetMoreStar(MPRogueSaved.AdrenalineStar, GCP)>0 and XF then
+				allow = 0
+			end
+
+			if allow==1 then
+				MPCastWithoutNampower("剔骨")
+				return
+			end
+			
+		end
+
+	end
+
+
+
+
+	-- 填充技能
+
+
+
+
+	-- 还击
+	if MPRogueSaved.Riposte==1 and myPower>9 then
+		CastSpellByName("还击")
+	end
+
+	-- 背刺
+	if MPRogueSaved.Backstab==1 then
+
+		-- 背刺
+		if BEHIND then
+			if myPower>59 then
+				CastSpellByName("背刺")
+				return
+			end
+		else
+
+			if MPRogueSaved.SinisterStrike==1 and myPower>39 then
+				CastSpellByName("邪恶攻击")
+				return
+			end
+
+		end
+
+	end
+
+	-- 鬼魅攻击
+	if myPower>39 and MPRogueSaved.GhostlyStrike==1 then
+		CastSpellByName("鬼魅攻击")
+	end
+
+
+	-- 出血
+	if MPRogueSaved.Hemo==1 then
+		if myPower>34 then
+			CastSpellByName("出血")
+			return
+		end
+	end
+
+	-- 双刃毒袭
+	if MPRogueSaved.Poison==1 then
+		if myPower>44 then
+			CastSpellByName("双刃毒袭")
+			return
+		end
+	end
+
+	if MPRogueSaved.Sinister==1 and myPower>39 then
+		CastSpellByName("邪恶攻击")
+		return
+	end
+
+	-- 突袭
+	if MPRogueSaved.SurpriseStrike==1 and MPRogueRiposte==1 and myPower>9 and MPRogueSurpriseStrike() and TX then
+		CastSpellByName("突袭")
+		return
+	end
+
+end
+
+
+
+

@@ -1,0 +1,80 @@
+## Interface: 11200
+## Title: |cffffcc00Shagu|cffffffffTweaks
+## Author: Shagu
+## Notes: A collection of tweaks and enhancements to the Default UI
+## Notes-ruRU: Коллекция настроек и улучшений для стандартного пользовательского интерфейса.
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 界面增强美化
+## Notes-zhCN: 在游戏内的菜单栏增加一个【增强选项】可以在魔兽的原始界面下提供很多优化项目，比如更好的显示血条蓝条数字，去除狮头边框等。 
+## Version: GIT
+## SavedVariablesPerCharacter: ShaguTweaks_config, ShaguTweaks_cache
+
+# locales
+locales\locales_enUS.lua
+locales\locales_zhCN.lua
+
+# translations
+locales\translations_enUS.lua
+locales\translations_zhCN.lua
+
+# basic
+main.lua
+helpers.lua
+config.lua
+
+# libraries
+libs\libtipscan.lua
+libs\libspell.lua
+libs\libcast.lua
+libs\libdebuff.lua
+libs\libunitscan.lua
+libs\libhealth.lua
+libs\libnameplate.lua
+libs\libpredict.lua
+
+# custom
+mods\custom.lua
+
+# modules
+mods\dark-ui-elements.lua
+mods\minimap-clock.lua
+mods\minimap-square.lua
+mods\minimap-tweaks.lua
+mods\nameplate-scale.lua
+mods\sell-junk.lua
+mods\unitframes-classcolor.lua
+mods\blue-shaman.lua
+mods\nameplate-classcolor.lua
+mods\nameplate-castbar.lua
+mods\move-unitframes.lua
+mods\target-castbar.lua
+mods\target-debufftimer.lua
+mods\social-colors.lua
+mods\item-colors.lua
+mods\chat-links.lua
+mods\health-numbers.lua
+mods\health-color.lua
+mods\auto-dismount.lua
+mods\auto-stance.lua
+mods\tooltip-details.lua
+mods\hide-errors.lua
+mods\chat-tweaks.lua
+mods\hide-gryphons.lua
+mods\unitframes-bighealth.lua
+mods\unitframes-classportrait.lua
+mods\turtle-wow.lua
+mods\superwow.lua
+mods\reduced-actionbar.lua
+mods\actionbar-improved-expbar.lua
+mods\actionbar-range-color.lua
+mods\actionbar-reagent-count.lua
+mods\bag-search.lua
+mods\unitframes-energy-tick.lua
+mods\equip-compare.lua
+mods\unitframes-morebuffs.lua
+mods\move-unitframes-extended.lua
+# 不加载
+# mods\worldmap-window.lua
+# mods\worldmap-colors.lua
+# mods\worldmap-coordinates.lua
+# mods\cooldown-numbers.lua
+# mods\vendor-values.lua

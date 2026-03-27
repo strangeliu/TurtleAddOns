@@ -1,0 +1,11 @@
+## Interface: 11200
+## Title: |CFFFE0000[战斗]|R 攻击计时条
+## Title-zhCN: |CFFFE0000[战斗]|R 攻击计时条
+## Version: 5.07
+## Author: Udokus
+## X-Credits: Roablock for cleanup
+## Notes: 显示你和敌人攻击速度的进度条|N命令：/abar
+## Notes-zhCN: 显示你和敌人攻击速度的进度条|N命令：/abar
+
+## SavedVariables: AttackBarDB
+Attackbar.xml

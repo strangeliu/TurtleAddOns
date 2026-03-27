@@ -1,0 +1,10 @@
+## Interface: 11200
+## Title:|CFFFF0000[不可禁用]|RSune插件框架
+## Notes: Collects the minimap buttons and puts them into a moveable frame.
+## Title-zhCN:|CFFFF0000[不可禁用]|RSune插件框架
+## Notes-zhCN: 整合小地图的各种插件图标。
+## Author: Sunelegy
+## Version: 2.0
+## SavedVariables: SuneBigFootDB, SuneBigFootConfig
+
+SuneBigFoot.lua

@@ -1,0 +1,12 @@
+## Interface: 11200
+## Title: TargetDistance
+## Notes: An addon that displays the target's distance. It's based on TurtleWow and can be used after enabling the unitXp module.
+## Title-zhCN:|CFF33AAFF[辅助]|R精确距离显示|cffff1450[需unitxp模组]
+## Notes-zhCN:|CFF33AAFFTargetDistance|R|N显示目标距离的插件，基于TurtleWow，打开unitXp模组后可用。|N命令：/tdis option
+## Author: qyj来啦坐, 最爱
+## Version: 1.5.3
+## SavedVariablesPerCharacter: TargetDistanceCharDB
+
+TargetDistance.lua
+DW.lua
+config.lua

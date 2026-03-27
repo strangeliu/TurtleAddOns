@@ -1,0 +1,12 @@
+## Interface: 11200
+## Title: BaudErrorFrame
+## Notes: Improved error reporting
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 插件错误信息收集[Lua]
+## Notes-zhCN:|CFFDD66DDBaudErrorFrame|R|N用于收集插件或宏出现的错误。|N命令：/error
+## X-Repple: 界面
+## Author: Baudzilla, wolftankk, Affli@RU-Howling Fjord, 1.12by狗血编剧男
+## Version: 1.5
+
+BaudErrorFrame.xml
+
+## X-Turtle-Shell-Version: 1693781089

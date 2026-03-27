@@ -1,0 +1,13 @@
+## Interface: 11200
+## Title: Loot Alert
+## Notes: Display loot notifications on screen
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] 拾取提示
+## Notes-zhCN: 在屏幕上显示拾取物品的提示
+## Author: 嘎子
+## Version: 1.1
+## SavedVariables: LootAlertDB
+## OptionalDeps: !Libs
+
+LootAlert.lua
+MinimapButton.lua
+Config.lua

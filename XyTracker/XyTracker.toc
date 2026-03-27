@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: |cff33ffcc[团队工具]|R许愿监视
+## Version: 2.0.3
+## Author: 无道暴君、宇然、天乖乖
+## Notes: 记录许愿和出分，团队频道输入xy+空格+许愿
+## SavedVariables: XyArray, DefaultDKP, XyTrackerOptions, XyTrackerDeclaration, LootList, SavedLootList, SavedWishList
+XyTracker.lua
+XyTracker_QualityFilter.lua
+XyTracker.xml

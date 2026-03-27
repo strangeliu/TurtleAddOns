@@ -1,0 +1,577 @@
+
+
+local ADDON_NAME = "CatMinimapButton"
+
+
+-- 创建小地图按钮
+local miniButton = CreateFrame("Button", ADDON_NAME.."Frame", Minimap)
+miniButton:SetFrameStrata("HIGH")
+miniButton:SetWidth(32)  -- 按钮大小
+miniButton:SetHeight(32)
+miniButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+miniButton:SetFrameLevel(1)
+
+-- 设置初始位置（小地图右侧）
+miniButton:SetPoint("CENTER", Minimap, "CENTER", 80, 0)
+
+function MPInitMiniButton()
+    if MPPublicSaved and MPPublicSaved.MiniButtonX and MPPublicSaved.MiniButtonY then
+        -- 设置存储位置
+        miniButton:SetPoint("CENTER", Minimap, "CENTER", MPPublicSaved.MiniButtonX, MPPublicSaved.MiniButtonY)
+    else
+        -- 设置初始位置（小地图右侧）
+        miniButton:SetPoint("CENTER", Minimap, "CENTER", 54, -58)
+    end
+end
+
+-- ==========================================
+-- 1. 圆形背景（修复版）
+-- ==========================================
+miniButton.background = miniButton:CreateTexture(nil, "BACKGROUND")
+miniButton.background:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")  -- 使用团队标记图标集
+miniButton.background:SetTexCoord(0.5, 1, 0.5, 1)  -- 选择紫色圆形部分
+miniButton.background:SetWidth(24)  -- 与按钮同尺寸
+miniButton.background:SetHeight(24)
+miniButton.background:SetPoint("CENTER", 0, 0)
+
+-- ==========================================
+-- 2. 中心图标（调整尺寸）
+-- ==========================================
+miniButton.icon = miniButton:CreateTexture(nil, "ARTWORK")
+miniButton.icon:SetTexture("Interface\\Icons\\inv_pet_cats_siamesecat")
+miniButton.icon:SetWidth(24)  -- 比背景小
+miniButton.icon:SetHeight(24)
+miniButton.icon:SetPoint("CENTER", 0, 0)
+
+-- ==========================================
+-- 3. 悬停高亮效果
+-- ==========================================
+miniButton.highlight = miniButton:CreateTexture(nil, "HIGHLIGHT")
+miniButton.highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+miniButton.highlight:SetBlendMode("ADD")
+miniButton.highlight:SetWidth(24)  -- 与背景同尺寸
+miniButton.highlight:SetHeight(24)
+miniButton.highlight:SetPoint("CENTER", 0, 0)
+
+-- ==========================================
+-- 4. 使按钮围绕小地图拖动
+-- ==========================================
+miniButton:SetMovable(true)
+miniButton:RegisterForDrag("LeftButton")
+
+miniButton:SetScript("OnDragStart", function()
+    this.isDragging = true
+end)
+
+miniButton:SetScript("OnDragStop", function()
+    this.isDragging = false
+end)
+
+miniButton:SetScript("OnUpdate", function()
+    if this.isDragging then
+        local mx, my = Minimap:GetCenter()
+        local px, py = GetCursorPosition()
+        mx = mx * UIParent:GetScale()
+        my = my * UIParent:GetScale()
+        
+        -- 计算角度并保持在小地图周围
+        local angle = math.atan2(py - my, px - mx)
+        local x = math.cos(angle) * 80
+        local y = math.sin(angle) * 80
+        
+        this:ClearAllPoints()
+        this:SetPoint("CENTER", Minimap, "CENTER", x, y)
+
+        MPPublicSaved.MiniButtonX = x
+        MPPublicSaved.MiniButtonY = y
+    end
+end)
+--[[
+-- ==========================================
+-- 5. 点击功能
+-- ==========================================
+miniButton:SetScript("OnClick", function(self, button)
+
+    -- 两个窗口都关闭
+    if not CatDebugWindow:IsShown() or not CatUISettingsCatWindow:IsShown() then
+
+        CatDebugWindow:Show()
+
+        -- 根据职业打开相关窗口
+        local _, englishClass = UnitClass("player")
+        if englishClass == "DRUID" then
+            MPInitCatSettings()
+            CatUISettingsCatWindow:Show()
+        end
+
+    elseif CatDebugWindow:IsShown() and CatUISettingsCatWindow:IsShown() then
+        CatDebugWindow:Hide()
+        CatUISettingsCatWindow:Hide()
+    end
+
+end)
+]]
+
+function MPCatSettingsCloseAll()
+
+    -- 保护标签
+    if not MPPublicSaved then
+        MPPublicSaved = {}
+    end
+
+    if MPPublicSaved and not MPPublicSaved.AllClass then
+        MPPublicSaved.AllClass = 1
+    end
+
+
+    MPInitAutoLootSettings()
+    CatUISettingAutoLoot:Hide()
+    CatUISettingAutoLoot:ClearAllPoints()
+    CatUISettingAutoLoot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitCatSettings()
+    MPInitBearSettings()
+    MPInitCOOSettings()
+    MPInitDriudHealSettings()
+    CatUISettingsCatWindow:Hide()
+    CatUISettingsCatWindow:ClearAllPoints()
+    CatUISettingsCatWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsBearWindow:Hide()
+    CatUISettingsBearWindow:ClearAllPoints()
+    CatUISettingsBearWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsCOOWindow:Hide()
+    CatUISettingsCOOWindow:ClearAllPoints()
+    CatUISettingsCOOWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsDriudHealWindow:Hide()
+    CatUISettingsDriudHealWindow:ClearAllPoints()
+    CatUISettingsDriudHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitWarriorArmsSettings()
+    MPInitWarriorFurySettings()
+    MPInitWarriorEvilSettings()
+    MPInitWarriorTankSettings()
+
+    CatUISettingsWarriorArms:Hide()
+    CatUISettingsWarriorArms:ClearAllPoints()
+    CatUISettingsWarriorArms:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsWarriorFury:Hide()
+    CatUISettingsWarriorFury:ClearAllPoints()
+    CatUISettingsWarriorFury:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsWarriorEvil:Hide()
+    CatUISettingsWarriorEvil:ClearAllPoints()
+    CatUISettingsWarriorEvil:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsWarriorTank:Hide()
+    CatUISettingsWarriorTank:ClearAllPoints()
+    CatUISettingsWarriorTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitPaladinCJSettings()
+    MPInitPaladinHealSettings()
+    MPInitPaladinMeleeHealSettings()
+    MPInitPaladinTankSettings()
+    MPCatPaladinControlHealInit()
+    CatUISettingsPaladinCJ:Hide()
+    CatUISettingsPaladinCJ:ClearAllPoints()
+    CatUISettingsPaladinCJ:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPaladinHealWindow:Hide()
+    CatUISettingsPaladinHealWindow:ClearAllPoints()
+    CatUISettingsPaladinHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPaladinMeleeHeal:Hide()
+    CatUISettingsPaladinMeleeHeal:ClearAllPoints()
+    CatUISettingsPaladinMeleeHeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPaladinTank:Hide()
+    CatUISettingsPaladinTank:ClearAllPoints()
+    CatUISettingsPaladinTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPCatPaladinSealInit()
+
+    if MPPublicSaved and MPPublicSaved.PaladinSealDisplay and MPPublicSaved.PaladinSealDisplay==1 then
+        CatPaladinSeal:Show()
+    end
+
+    if MPPublicSaved and MPPublicSaved.PaladinHealDisplay and MPPublicSaved.PaladinHealDisplay==1 then
+        CatPaladinHeal:Show()
+    end
+
+
+    MPInitRogueSettings()
+    MPInitRogueCombatSettings()
+    MPInitRogueEnvenomSettings()
+    MPInitRogueArmorSettings()
+    CatUISettingsRogue:Hide()
+    CatUISettingsRogue:ClearAllPoints()
+    CatUISettingsRogue:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsRogueCombat:Hide()
+    CatUISettingsRogueCombat:ClearAllPoints()
+    CatUISettingsRogueCombat:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsRogueEnvenom:Hide()
+    CatUISettingsRogueEnvenom:ClearAllPoints()
+    CatUISettingsRogueEnvenom:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsRogueArmor:Hide()
+    CatUISettingsRogueArmor:ClearAllPoints()
+    CatUISettingsRogueArmor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+
+    MPInitShamanHealSettings()
+    MPInitShamanEnhanceSettings()
+    MPInitShamanElementalSettings()
+    CatUISettingsShamanHealWindow:Hide()
+    CatUISettingsShamanHealWindow:ClearAllPoints()
+    CatUISettingsShamanHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsShamanEnhanceWindow:Hide()
+    CatUISettingsShamanEnhanceWindow:ClearAllPoints()
+    CatUISettingsShamanEnhanceWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsShamanElementalWindow:Hide()
+    CatUISettingsShamanElementalWindow:ClearAllPoints()
+    CatUISettingsShamanElementalWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitWarlockSDSettings()
+    CatUISettingsWarlockSD:Hide()
+    CatUISettingsWarlockSD:ClearAllPoints()
+    CatUISettingsWarlockSD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitWarlockFDSettings()
+    CatUISettingsWarlockFD:Hide()
+    CatUISettingsWarlockFD:ClearAllPoints()
+    CatUISettingsWarlockFD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitWarlockAffSettings()
+    CatUISettingsWarlockAff:Hide()
+    CatUISettingsWarlockAff:ClearAllPoints()
+    CatUISettingsWarlockAff:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitWarlockDemoSettings()
+    CatUISettingsWarlockDemo:Hide()
+    CatUISettingsWarlockDemo:ClearAllPoints()
+    CatUISettingsWarlockDemo:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitMageArcaneSettings()
+    MPInitMageFireSettings()
+    MPInitMageFrostSettings()
+    CatUISettingsMageArcane:Hide()
+    CatUISettingsMageArcane:ClearAllPoints()
+    CatUISettingsMageArcane:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsMageFire:Hide()
+    CatUISettingsMageFire:ClearAllPoints()
+    CatUISettingsMageFire:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsMageFrost:Hide()
+    CatUISettingsMageFrost:ClearAllPoints()
+    CatUISettingsMageFrost:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitPriestHealSettings()
+    MPInitPriestShadowSettings()
+    MPInitPriestDisciplineSettings()
+    CatUISettingsPriestHealWindow:Hide()
+    CatUISettingsPriestHealWindow:ClearAllPoints()
+    CatUISettingsPriestHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPriestShadow:Hide()
+    CatUISettingsPriestShadow:ClearAllPoints()
+    CatUISettingsPriestShadow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPriestDiscipline:Hide()
+    CatUISettingsPriestDiscipline:ClearAllPoints()
+    CatUISettingsPriestDiscipline:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitHunterShotSettings()
+    CatUISettingsHunterShot:Hide()
+    CatUISettingsHunterShot:ClearAllPoints()
+    CatUISettingsHunterShot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitHunterBeastSettings()
+    CatUISettingsHunterBeast:Hide()
+    CatUISettingsHunterBeast:ClearAllPoints()
+    CatUISettingsHunterBeast:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitHunterMeleeSettings()
+    CatUISettingsHunterMelee:Hide()
+    CatUISettingsHunterMelee:ClearAllPoints()
+    CatUISettingsHunterMelee:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+
+    MPInitInterruptSettings()
+    MPInitMultilineDotSettings()
+    MPInitPowerSettings()
+    MPInitElixirSettings()
+    CatUISettingsInterrupt:Hide()
+    CatUISettingsInterrupt:ClearAllPoints()
+    CatUISettingsInterrupt:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsMultilineDot:Hide()
+    CatUISettingsMultilineDot:ClearAllPoints()
+    CatUISettingsMultilineDot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsPower:Hide()
+    CatUISettingsPower:ClearAllPoints()
+    CatUISettingsPower:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    CatUISettingsElixir:Hide()
+    CatUISettingsElixir:ClearAllPoints()
+    CatUISettingsElixir:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    if MPPublicSaved and MPPublicSaved.MeleeWindowDisplay and MPPublicSaved.MeleeWindowDisplay==1 then
+        CatUIMelee:Show()
+    end
+    if MPPublicSaved and MPPublicSaved.ElixirWindowDisplay and MPPublicSaved.ElixirWindowDisplay==1 then
+        MPCatElixirReset()
+        CatElixir:Show()
+    end
+
+    CatUISettingsCatMenu:Hide()
+    CatUISettingsCatMenu:ClearAllPoints()
+    CatUISettingsCatMenu:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+    MPInitMenuSettings()
+
+end
+
+-- ==========================================
+-- 菜单功能
+-- ==========================================
+function MPCreateMiniButtonMenu()
+
+    local dropdown = CreateFrame("Frame", "CatMinimapButtonDropdown", miniButton, "UIDropDownMenuTemplate")
+
+    -- 修改下拉菜单外观为Tooltip风格
+    local backdrop = {
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 }
+    }
+    
+    dropdown:SetBackdrop(backdrop)
+    dropdown:SetBackdropColor(0, 0, 0, 0.8)
+    dropdown:SetBackdropBorderColor(0.8, 0.6, 0, 1)
+
+    dropdown:SetFrameStrata("TOOLTIP")
+    
+    
+    local function InitializeMenu(level)
+        -- 标题
+        local info = {}
+        info.isTitle = 1
+        info.text = "Cat 喵！一键宏"
+        info.notCheckable = 1
+        UIDropDownMenu_AddButton(info)
+
+        local info = {}
+        info.isTitle = 1
+        info.text = "版本: |cFFDDDDDD"..MPCatAddonVer.."|r"
+        info.notCheckable = 1
+        UIDropDownMenu_AddButton(info)
+
+       -- 分隔线
+        info = {}
+        info.disabled = 1
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 打开职业一键宏
+        info = {}
+        info.text = "打开全职业宏"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingsCatMenu:Show() end
+        UIDropDownMenu_AddButton(info,1)
+
+       -- 分隔线
+        info = {}
+        info.disabled = 1
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 打开读条打断
+        info = {}
+        info.text = "|cFFDD4080通用 - 读条打断|r"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingsInterrupt:Show() end
+        UIDropDownMenu_AddButton(info)
+
+        -- 打开多线DOT
+        info = {}
+        info.text = "|cFFDD4080通用 - 多线DOT|r"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingsMultilineDot:Show() end
+        UIDropDownMenu_AddButton(info)
+
+        -- 打开功能药水
+        info = {}
+        info.text = "|cFFDD4080通用 - 功能药水|r"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingsPower:Show() end
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 打开自动拾取
+        info = {}
+        info.text = "|cFFDD4080通用 - 自动拾取|r"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingAutoLoot:Show() end
+        UIDropDownMenu_AddButton(info)
+
+       -- 分隔线
+        info = {}
+        info.disabled = 1
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 打开功能药水
+        info = {}
+        info.text = "|cFF007582附加 - 自动药剂|r"
+        info.notCheckable = 1
+        info.func = function() MPCatSettingsCloseAll() CatUISettingsElixir:Show() end
+        UIDropDownMenu_AddButton(info)
+
+        -- 打开近战距离
+        info = {}
+        info.text = "|cFF007582附加 - 近战距离|r"
+        info.notCheckable = 1
+        info.func = function()
+            if not MP_UnitXP then
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."未发现UnitXP模组，近战距离监视无法使用！")
+            else
+                MPCatSettingsCloseAll() 
+                CatUIMelee:Show() 
+                MPPublicSaved.MeleeWindowDisplay=1 
+            end
+        end
+        UIDropDownMenu_AddButton(info)
+
+        -- 打开监视窗口
+        info = {}
+        info.text = "|cFF007582附加 - 监控窗口|r"
+        info.notCheckable = 1
+        info.func = function() CatDebugWindow:Show() MPPublicSaved.DebugWindowDisplay=1 end
+        UIDropDownMenu_AddButton(info)
+
+
+       -- 分隔线
+        info = {}
+        info.disabled = 1
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 打开监视窗口
+        info = {}
+        if MPPublicSaved.AllClass==0 then
+            info.text = "全职业宏 - [|cFF888888关闭|r]"
+        else
+            info.text = "全职业宏 - [|cFF00FF00打开|r]"
+        end
+        info.notCheckable = 1
+        info.func = function() 
+            if MPPublicSaved.AllClass==1 then 
+                MPPublicSaved.AllClass=0 
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."关闭所有职业宏，仅保留当前职业。")
+            else 
+                MPPublicSaved.AllClass=1 
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."打开所有职业宏。")
+            end
+            MPCatSettingsCloseAll()
+        end
+        UIDropDownMenu_AddButton(info)
+
+       -- 分隔线
+        info = {}
+        info.disabled = 1
+        UIDropDownMenu_AddButton(info)
+
+
+        -- 关闭所有窗口
+        info = {}
+        info.text = "关闭所有窗口"
+        info.notCheckable = 1
+        info.func = function() 
+            MPCatSettingsCloseAll()
+            CatDebugWindow:Hide()
+            MPPublicSaved.DebugWindowDisplay=0
+
+            if MPPlayerClass == "PALADIN" or MPPublicSaved.AllClass==1 then
+                CatPaladinSeal:Hide()
+                MPPublicSaved.PaladinSealDisplay = 0
+            end
+
+        end
+        UIDropDownMenu_AddButton(info)
+    end
+
+
+    UIDropDownMenu_Initialize(dropdown, InitializeMenu)
+    return dropdown
+end
+
+-- 点击显示菜单
+miniButton:SetScript("OnClick", function(self, button)
+
+    if arg1 == "LeftButton" then
+
+        if CatUISettingsCatMenu:IsVisible() then
+            MPCatSettingsCloseAll()
+        else
+            MPCatSettingsCloseAll()
+            CatUISettingsCatMenu:Show()
+        end
+
+    elseif arg1 == "RightButton" then
+
+        local dropdown = MPCreateMiniButtonMenu()
+
+        --local x, y = GetCursorPosition()
+        --local scale = UIParent:GetEffectiveScale()
+        
+        -- 显示在鼠标左侧
+        ToggleDropDownMenu(
+            1, nil, dropdown, 
+            "cursor", 
+            -20, 0, 
+            nil, nil, 
+            "TOPRIGHT", "TOPLEFT"
+        )
+        --ToggleDropDownMenu(1, nil, dropdown, "cursor", 0, 0)
+
+    end
+
+end)
+
+
+-- ==========================================
+-- 6. 鼠标悬停提示
+-- ==========================================
+miniButton:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(this, "ANCHOR_LEFT")
+    GameTooltip:SetText("Cat 喵！一键宏")
+    GameTooltip:AddLine("左键点击打开查看", 0.8, 0.8, 0.8)
+    GameTooltip:Show()
+end)
+
+miniButton:SetScript("OnLeave", function()
+    GameTooltip:Hide()
+end)
+
+-- 确保按钮显示
+miniButton:Show()

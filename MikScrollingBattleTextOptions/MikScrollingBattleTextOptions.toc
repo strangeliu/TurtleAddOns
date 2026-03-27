@@ -1,0 +1,10 @@
+## Interface: 11200
+## Version: 4.43
+## Title: Mik's Scrolling Battle Text Options
+## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] MSBT战斗数值增强设置
+## Notes: Load on demand options for Mik's Scrolling Battle Text
+## Dependencies: MikScrollingBattleText
+## LoadOnDemand: 1
+localization_options.lua
+MSBTOptions.lua
+MSBTOptions.xml
