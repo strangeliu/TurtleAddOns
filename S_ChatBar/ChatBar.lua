@@ -247,28 +247,28 @@ chatbar:SetUserPlaced(true) -- 允许用户放置
 
 -- 在PLAYER_LOGIN事件中修改自动加入逻辑
 chatbar:SetScript("OnEvent", function()
+print("PLAYER_LOGIN 事件开始")
     -- 如果默认是显示状态,那么根据对应插件加载状态设置
     for k, btnName in ipairs(BUTTON_ORDER) do
-        if k >= 15 and btnName ~= "Tracking" and btnName ~= "Emote" and S_ChatBarDB.buttons[btnName] then
+    if k >= 15 and btnName ~= "Tracking" and btnName ~= "Emote" and S_ChatBarDB.buttons[btnName] then
+        if btnName == "AtlasLoot" then
+            S_ChatBarDB.buttons[btnName] = IsAddOnLoaded("AtlasLoot") or IsAddOnLoaded("InstanceJournal")
+        else
             S_ChatBarDB.buttons[btnName] = IsAddOnLoaded(btnName)
         end
     end
+end
     
     -- 初始化离开频道标记
     S_ChatBarDB.leftWorldChannel = S_ChatBarDB.leftWorldChannel or false
     S_ChatBarDB.leftZhongChannel = S_ChatBarDB.leftZhongChannel or false
-    
-    if S_MiniMap then
-        MiniMapTrackingFrame:SetScale(0.4)
-    end
-    
-    -- 只在未标记离开时自动加入频道
-    if not S_ChatBarDB.leftWorldChannel then
-        JoinChannelByName(Getchannel_name(), nil, 3)
-    end
-    
-    ChatFrame_RemoveMessageGroup(ChatFrame1, "CHANNEL")
-    UpdateButtonLayout()
+
+    -- 暂时注释掉可能出错的代码
+    -- if S_MiniMap and MiniMapTrackingFrame then MiniMapTrackingFrame:SetScale(0.4) end
+    -- if not S_ChatBarDB.leftWorldChannel then ... end
+    -- ChatFrame_RemoveMessageGroup(ChatFrame1, "CHANNEL")
+    -- 延迟调用布局
+    C_Timer.After(0.2, UpdateButtonLayout)
 end)
 
 -- 创建按钮的通用函数
@@ -306,16 +306,15 @@ local function CreateChatButton(name, text, tooltip, color, onClick)
     return button
 end
 
--- 改进的 GetChannelID 函数
-local function GetChannelID(channelname)
-    -- 将目标频道名转为小写，用于不区分大小写比较
+-- 改进的 GetChannelID 函数，支持前缀匹配（默认）
+local function GetChannelID(channelname, fuzzy)
     local targetLower = string.lower(channelname)
-    for i = 1, 10 do  -- 检查前10个频道
+    for i = 1, 10 do
         local id, name = GetChannelName(i)
         if name then
-            -- 将实际频道名转为小写后比较
             local nameLower = string.lower(name)
-            if nameLower == targetLower or string.find(nameLower, targetLower) then
+            -- 精确匹配或前缀匹配
+            if nameLower == targetLower or string.sub(nameLower, 1, string.len(targetLower)) == targetLower then
                 return id
             end
         end
@@ -323,16 +322,14 @@ local function GetChannelID(channelname)
     return nil
 end
 
--- 获取综合频道ID的函数
+-- 获取综合频道ID
 local function GetGeneralChannelID()
-    -- 尝试不同的综合频道名称
-    return GetChannelID("综合") or GetChannelID("General") or GetChannelID("普通")
+    return GetChannelID("综合") or GetChannelID("General")
 end
 
--- 获取交易频道ID的函数
+-- 获取交易频道ID
 local function GetTradeChannelID()
-    -- 尝试不同的交易频道名称
-    return GetChannelID("交易") or GetChannelID("Trade") or GetChannelID("贸易")
+    return GetChannelID("交易") or GetChannelID("Trade")
 end
 
 -- 专门处理综合频道的函数
@@ -421,11 +418,37 @@ local function ChannelXyTracker_OnClick()
 end
 
 local function AtlasLoot_OnClick()
-    if AtlasLoot_ShowMenu then
-        if not AtlasLootDefaultFrame:IsShown() then
-            AtlasLootDefaultFrame:Show()
+    local button = arg1
+    if button == "LeftButton" then
+        -- 左键：优先 AtlasLoot，若未加载则尝试 InstanceJournal
+        if IsAddOnLoaded("AtlasLoot") and AtlasLootDefaultFrame then
+            if not AtlasLootDefaultFrame:IsShown() then
+                AtlasLootDefaultFrame:Show()
+            else
+                AtlasLootDefaultFrame:Hide()
+            end
+        elseif IsAddOnLoaded("InstanceJournal") and _G["IJ_InstanceJournalFrame"] then
+            -- 备选：切换到 InstanceJournal
+            local frame = _G["IJ_InstanceJournalFrame"]
+            if frame:IsShown() then
+                frame:Hide()
+            else
+                frame:Show()
+            end
         else
-            AtlasLootDefaultFrame:Hide()
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000未找到 AtlasLoot 或 InstanceJournal 插件|r")
+        end
+    elseif button == "RightButton" then
+        -- 右键：始终尝试打开 InstanceJournal（若已加载）
+        if IsAddOnLoaded("InstanceJournal") and _G["IJ_InstanceJournalFrame"] then
+            local frame = _G["IJ_InstanceJournalFrame"]
+            if frame:IsShown() then
+                frame:Hide()
+            else
+                frame:Show()
+            end
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000InstanceJournal 插件未加载或界面不存在|r")
         end
     end
 end
@@ -656,59 +679,88 @@ local function ChannelWhisper_OnClick()
 end
 
 -- 修改世界频道按钮逻辑
+-- 修改世界频道按钮逻辑（支持中英文频道名）
 local function ChannelWorld_OnClick()
     local button = arg1
-    local channelName = Getchannel_name()
     
     if button == "LeftButton" then
-        -- 左键：正常加入并切换
-        for k, v in pairs({GetChannelList()}) do
-            if not string.find(v, channelName) then
-                JoinChannelByName(channelName, nil, 3)
-            else
-                for i=0, 10 do
-                    local id, name = GetChannelName(i)
-                    if name == channelName then
-                        ChatFrame_OpenChat("/"..id.." ", chatFrame)
+        local chatFrame = SELECTED_DOCK_FRAME or DEFAULT_CHAT_FRAME
+        local channelID = nil
+        local channelName = nil
+        
+        -- 遍历所有频道
+        for i = 1, 10 do
+            local id, name = GetChannelName(i)
+            if name then
+                local nameLower = string.lower(name)
+                -- 1. 精确匹配 "世界" 或 "world"
+                if nameLower == "世界" or nameLower == "world" then
+                    channelID = id
+                    channelName = name
+                    break
+                end
+            end
+        end
+        
+        -- 2. 如果精确匹配失败，前缀匹配但排除防务
+        if not channelID then
+            for i = 1, 10 do
+                local id, name = GetChannelName(i)
+                if name then
+                    local nameLower = string.lower(name)
+                    -- 以“世界”或“world”开头
+                    if string.find(nameLower, "^世界") or string.find(nameLower, "^world") then
+                        -- 排除防务频道
+                        if not string.find(nameLower, "防务") and not string.find(nameLower, "defense") then
+                            channelID = id
+                            channelName = name
+                            break
+                        end
                     end
-                end    
+                end
             end
         end
+        
+        if channelID then
+            -- 已存在，直接切换
+            ChatFrame_OpenChat("/" .. channelID .. " ", chatFrame)
+        else
+            -- 未加入任何世界频道，尝试加入
+            JoinChannelByName("世界", nil, 3)
+			JoinChannelByName("世界频道", nil, 3)
+			JoinChannelByName("world", nil, 3)
+            ChatFrame_OpenChat("/世界 ", chatFrame)
+        end
+        
     elseif button == "RightButton" then
-        -- 右键：离开两个世界频道并设置不再自动加入
-        
-        -- 离开官方世界频道
-        local leftOfficial = false
-        for i=0, 10 do
+        -- 右键：离开所有世界频道（排除防务）
+        local leftAny = false
+        for i = 1, 10 do
             local id, name = GetChannelName(i)
-            if name == channelName then
-                LeaveChannelByName(channelName)
-                leftOfficial = true
-                break
+            if name then
+                local nameLower = string.lower(name)
+                local isWorld = false
+                -- 精确匹配或前缀匹配排除防务
+                if nameLower == "世界" or nameLower == "world" then
+                    isWorld = true
+                elseif (string.find(nameLower, "^世界") or string.find(nameLower, "^world")) then
+                    if not string.find(nameLower, "防务") and not string.find(nameLower, "defense") then
+                        isWorld = true
+                    end
+                end
+                if isWorld then
+                    LeaveChannelByName(name)
+                    leftAny = true
+                    DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00已离开频道: " .. name .. "|r")
+                end
             end
         end
         
-        -- 离开非官方世界频道（中文"世界频道"）
-        local leftUnofficial = false
-        for i=0, 10 do
-            local id, name = GetChannelName(i)
-            -- 检查频道名是否包含"世界频道"（不区分大小写）
-            if name and (string.find(string.lower(name), "世界频道") or name == "世界频道") then
-                LeaveChannelByName(name)
-                leftUnofficial = true
-                DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00已离开非官方世界频道: "..name.."|r")
-            end
-        end
-        
-        -- 设置标记，不再自动加入
-        if leftOfficial or leftUnofficial then
-            S_ChatBarDB.leftWorldChannel = true  -- 标记为已离开
-            if leftOfficial then
-                DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00已离开世界频道，不再自动加入|r")
-            end
-            if not leftOfficial and not leftUnofficial then
-                DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00未在任何世界频道中|r")
-            end
+        if leftAny then
+            S_ChatBarDB.leftWorldChannel = true
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00已离开世界频道，不再自动加入|r")
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00未在任何世界频道中|r")
         end
     end
 end
@@ -847,6 +899,26 @@ roll:SetScript("OnDragStop", function()
 end)
 roll:RegisterForDrag("LeftButton")
 
+-- 修改 AtlasLoot 按钮的鼠标提示，根据加载的插件动态显示
+local atlasButton = buttonFrames["AtlasLoot"]
+if atlasButton then
+    atlasButton:SetScript("OnEnter", function()
+        local hasAtlas = IsAddOnLoaded("AtlasLoot")
+        local hasIJ = IsAddOnLoaded("InstanceJournal")
+        GameTooltip:SetOwner(this, "ANCHOR_TOP", 0, 6)
+        if hasAtlas and hasIJ then
+            GameTooltip:AddLine("左键 掉落查询，右键 副本手册")
+        elseif hasAtlas then
+            GameTooltip:AddLine("掉落查询")
+        elseif hasIJ then
+            GameTooltip:AddLine("副本手册")
+        else
+            GameTooltip:AddLine("未加载 AtlasLoot 或 InstanceJournal")
+        end
+        GameTooltip:Show()
+    end)
+end
+
 --是否乌龟服
 local function IsTurtleServer()
     local _, build = GetBuildInfo()
@@ -881,6 +953,11 @@ UIDropDownMenu_Initialize(S_ChatBar_Menu, function()
                 -- 插件按钮：如果插件已加载或按钮名称为Emote/Tracking则显示
                 if btnName == "Emote" or btnName == "Tracking" then
                     shouldShow = true  -- Emote和Tracking总是显示
+                elseif btnName == "AtlasLoot" then
+                    -- 特殊处理：AtlasLoot或InstanceJournal任一加载即显示
+                    if IsAddOnLoaded("AtlasLoot") or IsAddOnLoaded("InstanceJournal") then
+                        shouldShow = true
+                    end
                 elseif IsAddOnLoaded(btnName) then
                     shouldShow = true
                 end
@@ -926,4 +1003,3 @@ UIDropDownMenu_Initialize(S_ChatBar_Menu, function()
         end
     end
 end, "MENU")
-

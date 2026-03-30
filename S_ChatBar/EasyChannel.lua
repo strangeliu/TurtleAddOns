@@ -100,8 +100,8 @@ ChatFrameEditBox:SetScript("OnTabPressed", function()
         return
     end
 
-    local channel = { ["世界频道"] = 0, ["中国"] = 0, ["World"] = 0, ["China"] = 0 }
-    local keys = { "世界频道", "中国", "World", "China" }
+    local channel = { ["世界频道"] = 0, ["世界"] = 0,["中国"] = 0, ["World"] = 0, ["China"] = 0 }
+    local keys = { "世界频道", "世界","中国", "World", "China" }
     local JoinedChannel = false
     for channelName, channelID in pairs(channel) do
         local id, _ = GetChannelName(channelName)
