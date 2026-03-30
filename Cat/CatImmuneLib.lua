@@ -147,10 +147,10 @@ function MPIsBossTarget()
         return true
     end
     
-    --[[
+
     -- 检查血量（普通BOSS通常血量远高于玩家）
     local healthMax = UnitHealthMax("target")
-    if healthMax > 120000 then
+    if healthMax > 200000 then
         return true
     end
     
@@ -162,7 +162,7 @@ function MPIsBossTarget()
     if bossList[UnitName("target")] then
         return true
     end
-    ]]
+
     
     return false
 end

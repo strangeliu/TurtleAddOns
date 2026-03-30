@@ -39,7 +39,7 @@ MPHasteRating = 0
 MPTipsColor = "|cFF9264cdCat|r |cFFc3a7e2"
 
 -- 版本
-MPCatAddonVer = "2026-03-27"
+MPCatAddonVer = "2026-03-29"
 
 -- 调试
 MPCatDebug = 1
@@ -195,6 +195,20 @@ function MPSwitchDistantTarget(value)
 		return
 	end
 
+	-- 当前有目标
+	local t = UnitExists("target")
+	if t then
+		local dist = UnitXP("distanceBetween", "player", "target")
+		if dist then
+
+			if dist<8 or dist>41 then
+				-- 无效距离
+			else
+				-- 有效距离，不切换
+				return
+			end
+		end
+	end
 
     local list = {}
     local count = 0
@@ -211,9 +225,21 @@ function MPSwitchDistantTarget(value)
 
 	for key, value in pairs(list) do
 		local dist = UnitXP("distanceBetween", "player", key)
-		if dist and dist > farway then
-			farway = dist
-			target = key
+
+		-- 距离41码内
+		if dist and dist<41 and dist > farway then
+
+			-- 目标 1可以攻击 2未死亡 3已进入战斗
+			if UnitCanAttack("player", key) and not UnitIsDeadOrGhost(key) and UnitAffectingCombat(key) then
+
+				-- 视野中
+				local inS = UnitXP("inSight", "player", key)
+				if inS then
+					farway = dist
+					target = key
+				end
+			end
+
 		end
 	end
 
@@ -702,7 +728,10 @@ function MPCastSpellWithoutTarget(spellName, unit, tip)
 	end
 
 	if tip>0 then
-		MPMsg(spellName.."-> ["..UnitName(unit).."]")
+		local name = UnitName(unit)
+		if name then
+			MPMsg(spellName.."-> ["..UnitName(unit).."]")
+		end
 	end
 
     --[[
@@ -831,6 +860,9 @@ function MPCastSpell(spellName)
 	end
 end
 
+
+
+
 --[[ 预备删除
 -- 猫德变身特殊函数
 -- 临时使用
@@ -902,6 +934,10 @@ end
 -- id顺序1-6
 -- return 获取到返回真
 function MPGetShape(id)
+	if not id then
+		return false
+	end
+
 	local _,_,a=GetShapeshiftFormInfo(id)
 	if a then return true end
 

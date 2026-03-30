@@ -289,7 +289,7 @@ function MPFuryDPS(o)
 
 
 	-- 开启血性狂暴
-	if MPWarriorFurySaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat then
+	if MPWarriorFurySaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat and (MPWarriorFurySaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 		if SX and NQ<30 then MPCastWithNampower("血性狂暴") end
 		if XFZ and NQ<25 then MPCastWithNampower("血性狂暴") end
 	end
@@ -339,7 +339,7 @@ function MPFuryDPS(o)
 				YYNQ = 15+YYNQOffset
 				if XFZ then YYNQ = YYNQ+MPWarriorWhirlwind end
 			else
-				YYNQ = 15+YYNQOffset+15
+				YYNQ = 15+YYNQOffset
 				if SX then YYNQ = YYNQ+30 end
 				if XFZ then YYNQ = YYNQ+MPWarriorWhirlwind end
 			end
@@ -351,6 +351,8 @@ function MPFuryDPS(o)
 		-- 选择 英勇 or 顺劈
 		if HPP>=20 and NQ>YYNQ then
 			MPCastWithNampower(Strike)
+		else
+			MPWarriorCancelHeroic()
 		end
 
 		MPFuryTwoHand()

@@ -7,7 +7,7 @@ CatDebugWindow:Hide()
 
 -- 设置窗口基本属性
 CatDebugWindow:SetWidth(240)
-CatDebugWindow:SetHeight(520)
+CatDebugWindow:SetHeight(560)
 CatDebugWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 CatDebugWindow:SetFrameLevel(1)
 
@@ -223,16 +223,9 @@ function MPRefreshInfoUI()
     if englishClass == "DRUID" then
         Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
-        --[[
-        if MPGetOmen() then
-            Text = Text .. "\n清晰预兆… "..string.format("%.1f", 15-(GetTime()-MPGetOmenTimer()) )
-        else
-            Text = Text .. "\n清晰预兆… |cFF888888未激活|r"
-        end
-        ]]
-
-        if MPGetSpellID("重整")==0 then
-            Text = Text .. "\n|cFFEE1111重整技能：未学习|r"
+        -- 重整技能 检查
+        if MPGetSpellID(MPLanguage.Reform)==0 then
+            Text = Text .. "\n|cFFEE1111"..MPLanguage.UI_Mon_ReformNotLearned.."|r"
         end
 
         -- 血袭
@@ -240,15 +233,15 @@ function MPRefreshInfoUI()
             if MP_SuperWoW or MP_Nampower4 then
                 local check = MPGetRavageCheck()
                 if check[guid] then
-                    Text = Text .. "\n血袭… "..string.format("%.1f", MPDriudRavageDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.Ravage.."… "..string.format("%.1f", MPDriudRavageDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n血袭… |cFF888888未激活 (持续:"..MPDriudRavageDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Ravage.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRavageDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n血袭… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.Ravage.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n血袭… |cFF888888未激活 (持续:"..MPDriudRavageDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Ravage.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRavageDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
         -- 扫击
@@ -256,15 +249,15 @@ function MPRefreshInfoUI()
             if MP_SuperWoW or MP_Nampower4 then
                 local check = MPGetRateCheck()
                 if check[guid] then
-                    Text = Text .. "\n扫击… "..string.format("%.1f", MPDriudRakeDuration-(GetTime()-check[guid])).."  跳 "..string.format("%.1f",MPDriudRateJumpTimer-GetTime())
+                    Text = Text .. "\n"..MPLanguage.Rake.."… "..string.format("%.1f", MPDriudRakeDuration-(GetTime()-check[guid])).."  "..MPLanguage.UI_Mon_Tick.." "..string.format("%.1f",MPDriudRateJumpTimer-GetTime())
                 else
-                    Text = Text .. "\n扫击… |cFF888888未激活 (持续:"..MPDriudRakeDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Rake.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRakeDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n扫击… |cFF6dff7b激活|r".."  跳 "..string.format("%.1f",MPDriudRateJumpTimer-GetTime())
+                Text = Text .. "\n"..MPLanguage.Rake.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r".."  "..MPLanguage.UI_Mon_Tick.." "..string.format("%.1f",MPDriudRateJumpTimer-GetTime())
             end
         else
-            Text = Text .. "\n扫击… |cFF888888未激活 (持续:"..MPDriudRakeDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Rake.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRakeDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
         -- 撕扯
@@ -272,35 +265,35 @@ function MPRefreshInfoUI()
             if MP_SuperWoW or MP_Nampower4 then
                 local check = MPGetRipCheck()
                 if check[guid] then
-                    Text = Text .. "\n撕扯… "..string.format("%.1f", MPDriudRipDuration-(GetTime()-check[guid])).."  跳 "..string.format("%.1f",MPDriudRipJumpTimer-GetTime())
+                    Text = Text .. "\n"..MPLanguage.Shred.."… "..string.format("%.1f", MPDriudRipDuration-(GetTime()-check[guid])).."  "..MPLanguage.UI_Mon_Tick.." "..string.format("%.1f",MPDriudRipJumpTimer-GetTime())
                 else
-                    Text = Text .. "\n撕扯… |cFF888888未激活 (持续:"..MPDriudRipDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Shred.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRipDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n撕扯… |cFF6dff7b激活|r".."  跳 "..string.format("%.1f",MPDriudRipJumpTimer-GetTime())
+                Text = Text .. "\n"..MPLanguage.Shred.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r".."  "..MPLanguage.UI_Mon_Tick.." "..string.format("%.1f",MPDriudRipJumpTimer-GetTime())
             end
         else
-            Text = Text .. "\n撕扯… |cFF888888未激活 (持续:"..MPDriudRipDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Shred.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudRipDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
         -- 猛虎之怒
         if MPMHTimer then
             if GetTime()-MPMHTimer<18 then
-                Text = Text .. "\n猛虎之怒… "..string.format("%.1f", 18-(GetTime()-MPMHTimer) ).."  跳 "..string.format("%.1f",MPDriudTigerFuryTimer-GetTime())
+                Text = Text .. "\n"..MPLanguage.TigerFury.."… "..string.format("%.1f", 18-(GetTime()-MPMHTimer) ).."  "..MPLanguage.UI_Mon_Tick.." "..string.format("%.1f",MPDriudTigerFuryTimer-GetTime())
             else
-                Text = Text .. "\n猛虎之怒… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.TigerFury.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
         else
-            Text = Text .. "\n猛虎之怒… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.TigerFury.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-        -- 自动回能 
+        -- 阿莎曼之怒 
         if MPGetDriudAshamane() then
-            Text = Text .. "\n阿莎曼之怒… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.AshamanesRage.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
         elseif MPDriudPrimalFury>0 then
-            Text = Text .. "\n阿莎曼之怒… |cFF6dff7b"..MPDriudPrimalFury.."|r"
+            Text = Text .. "\n"..MPLanguage.AshamanesRage.."… |cFF6dff7b"..MPDriudPrimalFury.."|r"
         else
-            Text = Text .. "\n阿莎曼之怒… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.AshamanesRage.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
@@ -309,15 +302,15 @@ function MPRefreshInfoUI()
             if MP_SuperWoW or MP_Nampower4 then
                 local check = MPGetMoonfireCheck()
                 if check[guid] then 
-                    Text = Text .. "\n月火术… "..string.format("%.1f", MPDriudMoonfireDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.Moonfire.."… "..string.format("%.1f", MPDriudMoonfireDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n月火术… |cFF888888未激活 (持续:"..MPDriudMoonfireDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Moonfire.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudMoonfireDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n月火术… "..string.format("%.1f", MPDriudMoonfireDuration-(GetTime()-MPGetMoonfireCheckUnSW()))
+                Text = Text .. "\n"..MPLanguage.Moonfire.."… "..string.format("%.1f", MPDriudMoonfireDuration-(GetTime()-MPGetMoonfireCheckUnSW()))
             end
         else
-            Text = Text .. "\n月火术… |cFF888888未激活 (持续:"..MPDriudMoonfireDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Moonfire.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudMoonfireDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
         -- 虫群
@@ -325,173 +318,173 @@ function MPRefreshInfoUI()
             if MP_SuperWoW or MP_Nampower4 then
                 local check = MPGetInsectSwarmCheck()
                 if check[guid] then
-                    Text = Text .. "\n虫群… "..string.format("%.1f", MPDriudInsectSwarmDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.InsectSwarm.."… "..string.format("%.1f", MPDriudInsectSwarmDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n虫群… |cFF888888未激活 (持续:"..MPDriudInsectSwarmDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.InsectSwarm.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudInsectSwarmDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n虫群… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.InsectSwarm.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n虫群… |cFF888888未激活 (持续:"..MPDriudInsectSwarmDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.InsectSwarm.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPDriudInsectSwarmDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
-        --[[
+
         -- 日蚀
         if MPGetSolar()>0.0 then
-            Text = Text .. "\n日蚀… |cFF6dff7b激活|r "..string.format("%.1f", MPGetSolar())
+            Text = Text .. "\n"..MPLanguage.SolarEclipse.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r "..string.format("%.1f", MPGetSolar())
         else
-            Text = Text .. "\n日蚀… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.SolarEclipse.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
         -- 月蚀
         if MPGetLunar()>0.0 then
-            Text = Text .. "\n月蚀… |cFF6dff7b激活|r "..string.format("%.1f", MPGetLunar())
+            Text = Text .. "\n"..MPLanguage.LunarEclipse.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r "..string.format("%.1f", MPGetLunar())
         else
-            Text = Text .. "\n月蚀… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.LunarEclipse.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
-        ]]
-
 
 
     -- 圣骑士
     elseif englishClass == "PALADIN" then
-        Text = Text .. "\n|cFFAAAAAA - 动态监控状态 - |r\n"
-
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
         if not MP_SuperWoW then
 
+            -- 智慧圣印
             if MPSeal("智慧圣印") then
-                Text = Text .. "\n智慧圣印… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfWisdom.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n智慧圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfWisdom.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 十字军圣印
             if MPSeal("十字军圣印") then
-                Text = Text .. "\n十字军圣印… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfTheCrusader.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n十字军圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfTheCrusader.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 正义圣印
             if MPSeal("正义圣印") then
-                Text = Text .. "\n正义圣印… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfRighteousness.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n正义圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfRighteousness.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 命令圣印
             if MPSeal("命令圣印") then
-                Text = Text .. "\n命令圣印… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfCommand.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n命令圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfCommand.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 光明圣印
             if MPSeal("光明圣印") then
-                Text = Text .. "\n光明圣印… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfLight.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n光明圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfLight.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
         else
 
+            -- 智慧圣印
             if GetTime()-MPPaladinSealWisdomDuration<30 then
-                Text = Text .. "\n智慧圣印… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealWisdomDuration))
+                Text = Text .. "\n"..MPLanguage.SealOfWisdom.."… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealWisdomDuration))
             else
-                Text = Text .. "\n智慧圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfWisdom.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 十字军圣印
             if GetTime()-MPPaladinSealCrusaderDuration<30 then
-                Text = Text .. "\n十字军圣印… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealCrusaderDuration))
+                Text = Text .. "\n"..MPLanguage.SealOfTheCrusader.."… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealCrusaderDuration))
             else
-                Text = Text .. "\n十字军圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfTheCrusader.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 正义圣印
             if GetTime()-MPPaladinSealJusticeDuration<30 then
-                Text = Text .. "\n正义圣印… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealJusticeDuration))
+                Text = Text .. "\n"..MPLanguage.SealOfRighteousness.."… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealJusticeDuration))
             else
-                Text = Text .. "\n正义圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfRighteousness.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 命令圣印
             if GetTime()-MPPaladinSealCommandDuration<30 then
-                Text = Text .. "\n命令圣印… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealCommandDuration))
+                Text = Text .. "\n"..MPLanguage.SealOfCommand.."… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealCommandDuration))
             else
-                Text = Text .. "\n命令圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfCommand.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
+            -- 光明圣印
             if GetTime()-MPPaladinSealRightDuration<30 then
-                Text = Text .. "\n光明圣印… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealRightDuration))
+                Text = Text .. "\n"..MPLanguage.SealOfLight.."… "..string.format("%.1f", 30-(GetTime()-MPPaladinSealRightDuration))
             else
-                Text = Text .. "\n光明圣印… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.SealOfLight.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
 
         end
 
-        --Text = Text .. "\n"
+        -- 神圣威能
         if GetTime()-MPPaladinHolyStrikeDuration<20 then
-            Text = Text .. "\n神圣威能… "..string.format("%.1f", 20-(GetTime()-MPPaladinHolyStrikeDuration))
+            Text = Text .. "\n"..MPLanguage.UI_Mon_HolyPower.." "..string.format("%.1f", 20-(GetTime()-MPPaladinHolyStrikeDuration))
         else
-            Text = Text .. "\n神圣威能… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_HolyPower.." |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
+
+        -- 狂热
         if MPGetCrusaderStrike() then
-            Text = Text .. "\n狂热… ".." ("..MPPaladinFrenzyLayer.."层) "..string.format("%.1f", 30-(GetTime()-MPPaladinFrenzyDuration))
+            Text = Text .. "\n"..MPLanguage.Zealotry.."… ".." ("..MPPaladinFrenzyLayer..MPLanguage.UI_Mon_Layer..") "..string.format("%.1f", 30-(GetTime()-MPPaladinFrenzyDuration))
         else
-            Text = Text .. "\n狂热… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Zealotry.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
 
     -- 战士
     elseif englishClass == "WARRIOR" then
-        Text = Text .. "\n|cFFAAAAAA - 动态监控状态 - |r\n"
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
-        if MPWarriorDPSType==1 then
-            Text = Text .. "\n天赋技能… 致死打击"
-        elseif MPWarriorDPSType==2 then
-            Text = Text .. "\n天赋技能… 嗜血"
-        elseif MPWarriorDPSSweeping==1 and MPWarriorFlurry==1 then
-            Text = Text .. "\n天赋技能… 邪修"
-        elseif MPWarriorDPSType==3 then
-            Text = Text .. "\n天赋技能… 盾牌猛击"
-        else
-            Text = Text .. "\n天赋技能… |cFF888888未发现|r"
-        end
-
-
-        --if MPGetBattleShout()>0 then
+        -- 战斗怒吼
         if MPBuff("战斗怒吼") then
-            Text = Text .. "\n战斗怒吼… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.BattleShout.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             if MPGetBattleShout()>0 then
-                Text = Text .. " (预估 "..string.format("%.1f", MPGetBattleShout()).."秒)"
+                Text = Text .. " ("..MPLanguage.UI_Mon_Estimate.." "..string.format("%.1f", MPGetBattleShout())..MPLanguage.UI_Mon_Seconds
             end
         else
             if MPGetBattleShout()>0 then
-                Text = Text .. "\n战斗怒吼… |cFF6dff7b猜测激活|r (预估 "..string.format("%.1f", MPGetBattleShout()).."秒)"
+                Text = Text .. "\n"..MPLanguage.BattleShout.."… |cFF6dff7b"..MPLanguage.UI_Mon_GuessActive.."|r ("..MPLanguage.UI_Mon_Estimate.." "..string.format("%.1f", MPGetBattleShout())..MPLanguage.UI_Mon_Seconds
             else
-                Text = Text .. "\n战斗怒吼… |cFF888888未发现|r"
+                Text = Text .. "\n"..MPLanguage.BattleShout.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
         end
 
+        -- 压制
         if MPWarriorOverpower() then
-            Text = Text .. "\n压制… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.Overpower.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
         else
-            Text = Text .. "\n压制… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Overpower.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 复仇
         if MPWarriorCounterAttack() then
-            Text = Text .. "\n复仇… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.Revenge.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
         else
-            Text = Text .. "\n复仇… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Revenge.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 撕裂
         if MP_SuperWoW then
             if MPWarriorRend() and a then
-                Text = Text .. "\n撕裂… |cFF6dff7b激活|r" --..string.format("%.1f", 21-(GetTime()-MPGetWarriorRendValue(guid)))
+                Text = Text .. "\n"..MPLanguage.Rend.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             else
-                Text = Text .. "\n撕裂… |cFF888888未激活|r"
+                Text = Text .. "\n"..MPLanguage.Rend.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
             end
         else
-            Text = Text .. "\n撕裂… |cFF888888未发现SuperWoW|r"
+            Text = Text .. "\n"..MPLanguage.Rend.."… |cFF888888"..MPLanguage.UI_Mon_NoSuperWoW.."|r"
         end
 
-        Text = Text .. "\n英勇/顺劈阈值… "..MPWarrorYYNQ
+        -- 英勇/顺劈阈值
+        Text = Text .. "\n"..MPLanguage.UI_Mon_HeroicRageThresh.."… "..MPWarrorYYNQ
 
 
 
@@ -499,57 +492,60 @@ function MPRefreshInfoUI()
 
     -- 盗贼
     elseif englishClass == "ROGUE" then
-        Text = Text .. "\n|cFFAAAAAA - 动态监控状态 - |r\n"
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
+        -- 突袭
         if MPRogueSurpriseStrike() then
-            Text = Text .. "\n突袭… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.SurpriseStrike.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
         else
-            Text = Text .. "\n突袭… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.SurpriseStrike.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 切割
         if MPGetRogueSlice() then
             if MP_SuperWoW then
-                Text = Text .. "\n切割… "..string.format("%.1f", (MPRogueSliceDuration-(GetTime()-MPSliceTimer)))
+                Text = Text .. "\n"..MPLanguage.SliceAndDice.."… "..string.format("%.1f", (MPRogueSliceDuration-(GetTime()-MPSliceTimer)))
             else
-                Text = Text .. "\n切割… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SliceAndDice.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n切割… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.SliceAndDice.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 割裂
         if MPGetRogueBloody() then
             if MP_SuperWoW then
-                Text = Text .. "\n割裂… "..string.format("%.1f", (MPRogueBloodyDuration-(GetTime()-MPBloodyTimer)))
+                Text = Text .. "\n"..MPLanguage.Rupture.."… "..string.format("%.1f", (MPRogueBloodyDuration-(GetTime()-MPBloodyTimer)))
             else
-                Text = Text .. "\n割裂… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.Rupture.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n割裂… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Rupture.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-
+        -- 毒伤
         if MPGetRogueEnvenom() then
             if MP_SuperWoW then
-                Text = Text .. "\n毒伤… "..string.format("%.1f", (MPRogueEnvenomDuration-(GetTime()-MPEnvenomTimer)))
+                Text = Text .. "\n"..MPLanguage.Envenom.."… "..string.format("%.1f", (MPRogueEnvenomDuration-(GetTime()-MPEnvenomTimer)))
             else
-                Text = Text .. "\n毒伤… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.Envenom.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n毒伤… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Envenom.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-
+        -- 破甲
         if MPGetExposeArmorDot() then
             if MP_SuperWoW then
                 local check = MPGetExposeArmorCheck()
                 if check[guid] then
-                    Text = Text .. "\n破甲… "..string.format("%.1f", (30-(GetTime()-check[guid])) ).." ("..MPExposeArmorCombo.."星)"
+                    Text = Text .. "\n"..MPLanguage.ExposeArmor.."… "..string.format("%.1f", (30-(GetTime()-check[guid])) ).." ("..MPExposeArmorCombo..MPLanguage.UI_Mon_Combo..")"
                 end
             else
-                Text = Text .. "\n破甲… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.ExposeArmor.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n破甲… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.ExposeArmor.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
@@ -559,55 +555,60 @@ function MPRefreshInfoUI()
 
     -- 萨满
     elseif englishClass == "SHAMAN" then
-        Text = Text .. "\n|cFFAAAAAA - 动态监控状态 - |r\n"
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
         local x, y = GetPlayerMapPosition("player")
 
+        -- 大地图腾
         if MPEarthTotem() then
-            Text = Text .. "\n大地图腾… ("..MPEarthTotemName..") "..string.format("%.1f", (MPEarthTotemDuration-(GetTime()-MPEarthTotemTimer)))
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_EarthTotem.."… ("..MPEarthTotemName..") "..string.format("%.1f", (MPEarthTotemDuration-(GetTime()-MPEarthTotemTimer)))
             --Text = Text .. "\n大地图腾距离… "..string.format("%.1f",  MPCalculateTotemDistance(x,y, MPEarthTotemX, MPEarthTotemY))
         else
-            Text = Text .. "\n大地图腾… |cFF888888未激活|r"
-            --Text = Text .. "\n大地图腾距离… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_EarthTotem.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
+            --Text = Text .. "\n大地图腾距离… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 火焰图腾
         if MPFireTotem() then
-            Text = Text .. "\n火焰图腾… ("..MPFireTotemName..") "..string.format("%.1f", (MPFireTotemDuration-(GetTime()-MPFireTotemTimer)))
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_FireTotem.."… ("..MPFireTotemName..") "..string.format("%.1f", (MPFireTotemDuration-(GetTime()-MPFireTotemTimer)))
             --Text = Text .. "\n火焰图腾距离… "..string.format("%.1f",  MPCalculateTotemDistance(x,y, MPFireTotemX, MPFireTotemY))
         else
-            Text = Text .. "\n火焰图腾… |cFF888888未激活|r"
-            --Text = Text .. "\n火焰图腾距离… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_FireTotem.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
+            --Text = Text .. "\n火焰图腾距离… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 水之图腾
         if MPWaterTotem() then
-            Text = Text .. "\n水之图腾… ("..MPWaterTotemName..") "..string.format("%.1f", (MPWaterTotemDuration-(GetTime()-MPWaterTotemTimer)))
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_WaterTotem.."… ("..MPWaterTotemName..") "..string.format("%.1f", (MPWaterTotemDuration-(GetTime()-MPWaterTotemTimer)))
             --Text = Text .. "\n水之图腾距离… "..string.format("%.1f",  MPCalculateTotemDistance(x,y, MPWaterTotemX, MPWaterTotemY))
         else
-            Text = Text .. "\n水之图腾… |cFF888888未激活|r"
-            --Text = Text .. "\n水之图腾距离… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_WaterTotem.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
+            --Text = Text .. "\n水之图腾距离… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 空气图腾
         if MPAirTotem() then
-            Text = Text .. "\n空气图腾… ("..MPAirTotemName..") "..string.format("%.1f", (MPAirTotemDuration-(GetTime()-MPAirTotemTimer)))
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_AirTotem.."… ("..MPAirTotemName..") "..string.format("%.1f", (MPAirTotemDuration-(GetTime()-MPAirTotemTimer)))
             --Text = Text .. "\n空气图腾距离… "..string.format("%.1f",  MPCalculateTotemDistance(x,y, MPAirTotemX, MPAirTotemY))
         else
-            Text = Text .. "\n空气图腾… |cFF888888未激活|r"
-            --Text = Text .. "\n空气图腾距离… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Set_Sham_AirTotem.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
+            --Text = Text .. "\n空气图腾距离… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 烈焰震击
         if MPGetFlameShockDot() then
             if MP_SuperWoW then
                 local check = MPGetFlameShockCheck()
                 if check[guid] then
-                    Text = Text .. "\n烈焰震击… "..string.format("%.1f", MPShamanFlameShockDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.CL_FlameShockName.."… "..string.format("%.1f", MPShamanFlameShockDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n烈焰震击… |cFF888888未激活|r"
+                    Text = Text .. "\n"..MPLanguage.CL_FlameShockName.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
                 end
             else
-                Text = Text .. "\n烈焰震击… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.CL_FlameShockName.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n烈焰震击… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.CL_FlameShockName.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
@@ -616,163 +617,155 @@ function MPRefreshInfoUI()
 
     -- 术士
     elseif englishClass == "WARLOCK" then
-        Text = Text .. "\n|cFFAAAAAA - 动态监控状态 - |r\n"
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
+        -- 痛苦诅咒
         if MPGetCurseAgonyDot() then
             if MP_SuperWoW then
                 local check = MPGetCurseAgonyCheck()
                 if check[guid] then
-                    Text = Text .. "\n痛苦诅咒… "..string.format("%.1f", MPCurseAgonyDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.CurseOfAgony.."… "..string.format("%.1f", MPCurseAgonyDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n痛苦诅咒… |cFF888888未激活 (持续:"..MPCurseAgonyDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.CurseOfAgony.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPCurseAgonyDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n痛苦诅咒… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.CurseOfAgony.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n痛苦诅咒… |cFF888888未激活 (持续:"..MPCurseAgonyDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.CurseOfAgony.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPCurseAgonyDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
+        -- 腐蚀术
         if MPGetCorruptionDot() then
             if MP_SuperWoW then
                 local check = MPGetCorruptionCheck()
                 if check[guid] then
-                    Text = Text .. "\n腐蚀术… "..string.format("%.1f", MPWarlockCorruptionDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.Corruption.."… "..string.format("%.1f", MPWarlockCorruptionDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n腐蚀术… |cFF888888未激活 (持续:"..MPWarlockCorruptionDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Corruption.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockCorruptionDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n腐蚀术… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.Corruption.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n腐蚀术… |cFF888888未激活 (持续:"..MPWarlockCorruptionDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Corruption.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockCorruptionDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
+        -- 生命虹吸
         if MPGetSiphonLifeDot() then
             if MP_SuperWoW then
                 local check = MPGetSiphonLifeCheck()
                 if check[guid] then
-                    Text = Text .. "\n生命虹吸… "..string.format("%.1f", MPWarlockSiphonLifeDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.SiphonLife.."… "..string.format("%.1f", MPWarlockSiphonLifeDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n生命虹吸… |cFF888888未激活 (持续:"..MPWarlockSiphonLifeDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.SiphonLife.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockSiphonLifeDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n生命虹吸… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SiphonLife.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n生命虹吸… |cFF888888未激活 (持续:"..MPWarlockSiphonLifeDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.SiphonLife.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockSiphonLifeDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
+        -- 献祭
         if MPGetImmolateDot() then
             if MP_SuperWoW then
                 local check = MPGetImmolateCheck()
                 if check[guid] then
-                    Text = Text .. "\n献祭… "..string.format("%.1f", MPWarlockImmolateDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.Immolate.."… "..string.format("%.1f", MPWarlockImmolateDuration-(GetTime()-check[guid]))
                 else
-                    Text = Text .. "\n献祭… |cFF888888未激活 (持续:"..MPWarlockImmolateDuration.."秒)|r"
+                    Text = Text .. "\n"..MPLanguage.Immolate.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockImmolateDuration..MPLanguage.UI_Mon_Seconds.."|r"
                 end
             else
-                Text = Text .. "\n献祭… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.Immolate.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n献祭… |cFF888888未激活 (持续:"..MPWarlockImmolateDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.Immolate.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPWarlockImmolateDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
 
-
+        -- 引导技能
         if MPGetWarlockChanneled()>0 then
-            Text = Text .. "\n引导技能… |cFF6dff7b"..string.format("%.1f", MPGetWarlockChanneled()).."|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_Channeled.." |cFF6dff7b"..string.format("%.1f", MPGetWarlockChanneled()).."|r"
         else
-            Text = Text .. "\n引导技能… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_Channeled.." |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 释放潜力
         if MPGetPotential() then
-            Text = Text .. "\n释放潜力… "..MPGetPotentialLayer().."层 |cFF6dff7b"..string.format("%.1f", 20-(GetTime()-MPGetPotentialTimer())).."|r"
+            Text = Text .. "\n"..MPLanguage.UnleashPotential.."… "..MPGetPotentialLayer()..MPLanguage.UI_Mon_Layer.." |cFF6dff7b"..string.format("%.1f", 20-(GetTime()-MPGetPotentialTimer())).."|r"
         else
-            Text = Text .. "\n释放潜力… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UnleashPotential.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-        Text = Text .. "\n大诅咒… "
-        local count = 0
         -- 大诅咒
+        Text = Text .. "\n"..MPLanguage.UI_Mon_Curse.." "
+        local count = 0
+
+        -- 鲁莽诅咒
         if MPBuff("鲁莽诅咒","target") then
-            Text = Text .. "|cFF6dff7b鲁莽诅咒|r"
+            Text = Text .. "|cFF6dff7b"..MPLanguage.CurseOfRecklessness.."|r"
             count = 1
         end
 
+        -- 元素诅咒
         if MPBuff("元素诅咒","target") then
-            Text = Text .. "|cFF6dff7b元素诅咒|r"
+            Text = Text .. "|cFF6dff7b"..MPLanguage.CurseOfTheElements.."|r"
             count = 1
         end
 
+        -- 暗影诅咒
         if MPBuff("暗影诅咒","target") then
-            Text = Text .. "|cFF6dff7b暗影诅咒|r"
+            Text = Text .. "|cFF6dff7b"..MPLanguage.CurseOfShadow.."|r"
             count = 1
         end
 
+        -- 语言诅咒
         if MPBuff("语言诅咒","target") then
-            Text = Text .. "|cFF6dff7b语言诅咒|r"
+            Text = Text .. "|cFF6dff7b"..MPLanguage.CurseOfTongues.."|r"
             count = 1
         end
 
         if count==0 then
-            Text = Text .. "|cFF888888未激活|r"
+            Text = Text .. "|cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
 
     -- 法师
     elseif englishClass == "MAGE" then
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
+        -- 奥术涌动
         if MPGetMageArcaneSurge() then
-            Text = Text .. "\n奥术涌动… |cFF6dff7b激活|r"
+            Text = Text .. "\n"..MPLanguage.ArcaneSurge.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
         else
-            Text = Text .. "\n奥术涌动… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.ArcaneSurge.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 法术连击
         local fslj = 0
         fslj = MPGetBuffApplications("Interface\\Icons\\Ability_Mage_Firestarter")
         if fslj>0 then
-            Text = Text .. "\n法术连击… |cFF6dff7b"..fslj.."|r"
+            Text = Text .. "\n"..MPLanguage.SpellCombo.."… |cFF6dff7b"..fslj.."|r"
         else
-            Text = Text .. "\n法术连击… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.SpellCombo.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-
-        --[[
-        if MPGetFireDot() then
-            if MP_SuperWoW then
-                local check = MPGetScorchCheck()
-                local layer = MPGetFireVulnerabilityLayer()
-                if check[guid] then
-                    Text = Text .. "\n火焰易伤… "..string.format("%.1f", 30-(GetTime()-check[guid])).." ( "..layer[guid].."层 )"
-                end
-            else
-                local yishang = 0
-                yishang = MPGetDebuffApplications("Interface\\Icons\\Spell_Fire_SoulBurn", "target")
-                if yishang>0 then
-                    Text = Text .. "\n火焰易伤… |cFF6dff7b"..yishang.."|r"
-                else
-                    Text = Text .. "\n火焰易伤… |cFF888888未激活|r"
-                end
-                --Text = Text .. "\n火焰易伤… |cFF6dff7b激活|r"
-            end
-        else
-            Text = Text .. "\n火焰易伤… |cFF888888未激活|r"
-        end
-        ]]
+        -- 火焰易伤
         local yishang = 0
         yishang = MPGetDebuffApplications("Interface\\Icons\\Spell_Fire_SoulBurn", "target")
         if yishang>0 then
-            Text = Text .. "\n火焰易伤… |cFF6dff7b"..yishang.."|r"
+            Text = Text .. "\n"..MPLanguage.FireVulnerability.."… |cFF6dff7b"..yishang.."|r"
         else
-            Text = Text .. "\n火焰易伤… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.FireVulnerability.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 引导
         if GetMageArcaneMissiles()>0 then
-            Text = Text .. "\n引导… |cFF6dff7b"..string.format("%.1f", GetMageArcaneMissiles()).."|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_Channeled.." |cFF6dff7b"..string.format("%.1f", GetMageArcaneMissiles()).."|r"
         else
-            Text = Text .. "\n引导… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_Channeled.." |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
@@ -781,107 +774,109 @@ function MPRefreshInfoUI()
 
     -- 牧师
     elseif englishClass == "PRIEST" then
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
+        -- 暗言术：痛
         if MPGetPainDot() then
             if MP_SuperWoW then
                 local check = MPGetPainCheck()
                 if check[guid] then
-                    Text = Text .. "\n暗言术：痛… "..string.format("%.1f", MPPainDuration-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.ShadowWordPain.."… "..string.format("%.1f", MPPainDuration-(GetTime()-check[guid]))
                 end
             else
-                Text = Text .. "\n暗言术：痛… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.ShadowWordPain.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n暗言术：痛… |cFF888888未激活 (持续:"..MPPainDuration.."秒)|r"
+            Text = Text .. "\n"..MPLanguage.ShadowWordPain.."… |cFF888888"..MPLanguage.UI_Mon_InactiveDuration..MPPainDuration..MPLanguage.UI_Mon_Seconds.."|r"
         end
 
+        -- 精神鞭笞
         if MPGetPriestChanneled()>0 then
-            Text = Text .. "\n精神鞭笞… |cFF6dff7b"..string.format("%.1f", MPGetPriestChanneled()).."|r"
+            Text = Text .. "\n"..MPLanguage.MindFlay.."… |cFF6dff7b"..string.format("%.1f", MPGetPriestChanneled()).."|r"
         else
-            Text = Text .. "\n精神鞭笞… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.MindFlay.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 鞭笞阶段
         if MPGetPriestMindFlayCount() > 0 then
-            Text = Text .. "\n鞭笞阶段… |cFF6dff7b"..MPGetPriestMindFlayCount().."|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_MindFlayPhase.." |cFF6dff7b"..MPGetPriestMindFlayCount().."|r"
         else
-            Text = Text .. "\n鞭笞阶段… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.UI_Mon_MindFlayPhase.." |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
-
+        -- 吸血鬼的拥抱
         if MPGetVampiricDot() then
             if MP_SuperWoW then
                 local check = MPGetVampiricCheck()
                 if check[guid] then
-                    Text = Text .. "\n吸血鬼的拥抱… "..string.format("%.1f", 60-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.VampiricEmbrace.."… "..string.format("%.1f", 60-(GetTime()-check[guid]))
                 end
             else
-                Text = Text .. "\n吸血鬼的拥抱… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.VampiricEmbrace.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n吸血鬼的拥抱… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.VampiricEmbrace.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 神圣之火
         if MPGetHolyFireDot() then
             if MP_SuperWoW then
-                Text = Text .. "\n神圣之火… "..string.format("%.1f", MPGetHolyFireCheck(guid))
+                Text = Text .. "\n"..MPLanguage.HolyFire.."… "..string.format("%.1f", MPGetHolyFireCheck(guid))
             else
-                Text = Text .. "\n神圣之火… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.HolyFire.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n神圣之火… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.HolyFire.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
 
 
     -- 猎人
     elseif englishClass == "HUNTER" then
+        Text = Text .. "\n|cFFAAAAAA - "..MPLanguage.UI_Mon_DynamicStatus.." - |r\n"
 
-        Text = Text .. "\n自动射击… "..string.format("%.1f", MPGetHunterShotLeft())..""
+        -- 自动射击
+        Text = Text .. "\n"..MPLanguage.AutoShot.."… "..string.format("%.1f", MPGetHunterShotLeft())..""
 
+        -- 毒蛇钉刺
         if MPGetSerpentStingDot() then
             if MP_SuperWoW then
                 local check = MPGetSerpentStingCheck()
                 if check[guid] then
-                    Text = Text .. "\n毒蛇钉刺… "..string.format("%.1f", 15-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.SerpentSting.."… "..string.format("%.1f", 15-(GetTime()-check[guid]))
                 end
             else
-                Text = Text .. "\n毒蛇钉刺… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.SerpentSting.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n毒蛇钉刺… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.SerpentSting.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 蝰蛇钉刺
         if MPGetViperStingDot() then
             if MP_SuperWoW then
                 local check = MPGetViperStingCheck()
                 if check[guid] then
-                    Text = Text .. "\n蝰蛇钉刺… "..string.format("%.1f", 8-(GetTime()-check[guid]))
+                    Text = Text .. "\n"..MPLanguage.ViperSting.."… "..string.format("%.1f", 8-(GetTime()-check[guid]))
                 end
             else
-                Text = Text .. "\n蝰蛇钉刺… |cFF6dff7b激活|r"
+                Text = Text .. "\n"..MPLanguage.ViperSting.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r"
             end
         else
-            Text = Text .. "\n蝰蛇钉刺… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.ViperSting.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
 
+        -- 割伤
         if MPGetHunterGoreAllow() then
-            Text = Text .. "\n割伤… |cFF6dff7b激活|r "..string.format("%.1f", MPHunterGoreTimer-GetTime())
+            Text = Text .. "\n"..MPLanguage.Lacerate.."… |cFF6dff7b"..MPLanguage.UI_Mon_Active.."|r "..string.format("%.1f", MPHunterGoreTimer-GetTime())
         else
-            Text = Text .. "\n割伤… |cFF888888未激活|r"
+            Text = Text .. "\n"..MPLanguage.Lacerate.."… |cFF888888"..MPLanguage.UI_Mon_Inactive.."|r"
         end
-
-        --[[
-        if GetTime()-MPHunterBaitShotTimer<0 then
-            Text = Text .. "\n诱饵射击… |cFF6dff7b激活|r "..string.format("%.1f", MPHunterBaitShotTimer-GetTime())
-        else
-            Text = Text .. "\n诱饵射击… |cFF888888未激活|r"
-        end
-        ]]
 
 
 
     else
-        Text = Text .. "\n|cFF888888暂未有与之匹配的宏参数|r"
+        Text = Text .. "\n|cFF888888"..MPLanguage.UI_Mon_NoMatchingMacro.."|r"
     end
 
 
@@ -949,7 +944,7 @@ function MPCreateFrame(addonname, fwidth, fheight, titlestr)
     local cr = valueWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     cr:SetPoint("TOPLEFT", valueWindow, "TOPLEFT", 10, -12)
     cr:SetFont("Fonts\\FRIZQT__.TTF", 12)
-    cr:SetText("\67\97\116\32\229\150\181\239\188\129")
+    cr:SetText(MPLanguage.UI_AddonTitle)
 
     -- 添加标准关闭按钮
     local closeButton = CreateFrame("Button", nil, valueWindow, "UIPanelCloseButton")
@@ -962,7 +957,7 @@ function MPCreateFrame(addonname, fwidth, fheight, titlestr)
     addButton:SetHeight(20)
     addButton:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
     addButton:SetPoint("TOPRIGHT", valueWindow, "TOPRIGHT", -55, -8)
-    addButton:SetText("放大 +")
+    addButton:SetText(MPLanguage.UI_Mon_ScaleUp)
     addButton:SetScript("OnClick", function(self)
         local parent = this:GetParent()
         local scale = parent:GetScale()+0.1
@@ -976,7 +971,7 @@ function MPCreateFrame(addonname, fwidth, fheight, titlestr)
     decButton:SetHeight(20)
     decButton:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
     decButton:SetPoint("TOPRIGHT", valueWindow, "TOPRIGHT", -115, -8)
-    decButton:SetText("缩小 -")
+    decButton:SetText(MPLanguage.UI_Mon_ScaleDown)
     decButton:SetScript("OnClick", function(self)
         local parent = this:GetParent()
         local scale = parent:GetScale()-0.1

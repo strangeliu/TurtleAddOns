@@ -307,7 +307,7 @@ local function OnEvent()
     -- 背面判断
     elseif event == "UI_ERROR_MESSAGE" then
         if not MP_Nampower4 then
-            if arg1==MPLanguage.ERR_MustBeBehind then
+            if arg1=="你必须位于目标背后" then
                 ErrorBehindTimer = GetTime()
                 ErrorBehind = false
             end

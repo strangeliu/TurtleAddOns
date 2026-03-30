@@ -296,7 +296,7 @@ function MPEvilDPS(o)
 
 
 	-- 开启血性狂暴
-	if MPWarriorEvilSaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat then
+	if MPWarriorEvilSaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat and (MPWarriorEvilSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 		if SX and NQ<30 then MPCastWithNampower("血性狂暴") end
 		if MPWarriorEvilSaved.Whirlwind==1 and XFZ and NQ<25 then MPCastWithNampower("血性狂暴") end
 		--if NQ<15 then MPCastWithNampower("血性狂暴") end
@@ -343,7 +343,7 @@ function MPEvilDPS(o)
 			YYNQ = 15+YYNQOffset
 			if XFZ then YYNQ = YYNQ+MPWarriorWhirlwind end
 		else
-			YYNQ = 15+YYNQOffset+15+15
+			YYNQ = 15+YYNQOffset
 			if SX then YYNQ = YYNQ+30 end
 			if XFZ then YYNQ = YYNQ+MPWarriorWhirlwind end
 		end
@@ -353,7 +353,11 @@ function MPEvilDPS(o)
 	MPWarrorYYNQ = YYNQ
 
 	-- 选择 英勇 or 顺劈
-	if HPP>=20 and NQ>YYNQ then MPCastWithNampower(Strike) end
+	if HPP>=20 and NQ>YYNQ then
+		MPCastWithNampower(Strike)
+	else
+		MPWarriorCancelHeroic()
+	end
 
 	MPFuryTwoHandOther()
 

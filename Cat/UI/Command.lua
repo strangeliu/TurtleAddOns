@@ -1,12 +1,12 @@
 -- 指令相关
 
-BINDING_HEADER_CAT_PLUGINNAME = "Cat 喵！一键宏"
+BINDING_HEADER_CAT_PLUGINNAME = MPLanguage.UI_BindingHeader
 
 
 -- 注册猫德输出指令
 function MPCatCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -14,7 +14,7 @@ function MPCatCommand()
 end
 function MPCatAshamaneCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -24,7 +24,7 @@ function MPCatAshamaneCommand()
 end
 function MPCatShredCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -32,7 +32,7 @@ function MPCatShredCommand()
 end
 function MPBearCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -40,7 +40,7 @@ function MPBearCommand()
 end
 function MPBearOneCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -48,7 +48,7 @@ function MPBearOneCommand()
 end
 function MPCooCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -56,7 +56,7 @@ function MPCooCommand()
 end
 function MPDHealCommand()
     if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -69,7 +69,7 @@ end
 
 function MPPaladinHealCommand()
     if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -77,7 +77,7 @@ function MPPaladinHealCommand()
 end
 function MPPaladinMeleeHealCommand()
     if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -85,7 +85,7 @@ function MPPaladinMeleeHealCommand()
 end
 function MPPaladinDPSSpellCommand()
     if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -93,7 +93,7 @@ function MPPaladinDPSSpellCommand()
 end
 function MPPaladinTankCommand()
     if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -105,7 +105,7 @@ end
 
 function MPWarriorDPSCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -113,7 +113,7 @@ function MPWarriorDPSCommand()
 end
 function MPWarriorDPSOneCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -122,7 +122,7 @@ end
 
 function MPWarriorArmsCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -130,7 +130,7 @@ function MPWarriorArmsCommand()
 end
 function MPWarriorArmsOneCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -139,7 +139,7 @@ end
 
 function MPWarriorFuryCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -147,7 +147,7 @@ function MPWarriorFuryCommand()
 end
 function MPWarriorFuryOneCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -156,7 +156,7 @@ end
 
 function MPWarriorEvilCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -164,7 +164,7 @@ function MPWarriorEvilCommand()
 end
 function MPWarriorEvilOneCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -174,7 +174,7 @@ end
 
 function MPWarriorTankCommand()
     if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -186,7 +186,7 @@ end
 
 function MPRogueDPSCommand()
     if MPPlayerClass ~= "ROGUE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -196,7 +196,7 @@ end
 
 function MPRogueEnvenomCommand()
     if MPPlayerClass ~= "ROGUE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -205,7 +205,7 @@ end
 
 function MPRogueCombatCommand()
     if MPPlayerClass ~= "ROGUE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -214,7 +214,7 @@ end
 
 function MPRoguePJZCommand()
     if MPPlayerClass ~= "ROGUE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -226,7 +226,7 @@ end
 
 function MPShamanHealCommand()
     if MPPlayerClass ~= "SHAMAN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -234,7 +234,7 @@ function MPShamanHealCommand()
 end
 function MPShamanEnhanceCommand()
     if MPPlayerClass ~= "SHAMAN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -242,7 +242,7 @@ function MPShamanEnhanceCommand()
 end
 function MPShamanFireCommand()
     if MPPlayerClass ~= "SHAMAN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -250,7 +250,7 @@ function MPShamanFireCommand()
 end
 function MPShamanElementalCommand()
     if MPPlayerClass ~= "SHAMAN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -263,7 +263,7 @@ end
 
 function MPWarlockSDCommand()
     if MPPlayerClass ~= "WARLOCK" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -271,7 +271,7 @@ function MPWarlockSDCommand()
 end
 function MPWarlockFDCommand()
     if MPPlayerClass ~= "WARLOCK" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -279,7 +279,7 @@ function MPWarlockFDCommand()
 end
 function MPWarlockAffCommand()
     if MPPlayerClass ~= "WARLOCK" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -287,7 +287,7 @@ function MPWarlockAffCommand()
 end
 function MPWarlockDemoCommand()
     if MPPlayerClass ~= "WARLOCK" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -300,7 +300,7 @@ end
 
 function MPMageArcaneCommand()
     if MPPlayerClass ~= "MAGE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -308,7 +308,7 @@ function MPMageArcaneCommand()
 end
 function MPMageFireCommand()
     if MPPlayerClass ~= "MAGE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -316,7 +316,7 @@ function MPMageFireCommand()
 end
 function MPMageFrostCommand()
     if MPPlayerClass ~= "MAGE" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -329,7 +329,7 @@ end
 
 function MPHolyPriestCommand()
     if MPPlayerClass ~= "PRIEST" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -337,7 +337,7 @@ function MPHolyPriestCommand()
 end
 function MPShadowPriestCommand()
     if MPPlayerClass ~= "PRIEST" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -345,7 +345,7 @@ function MPShadowPriestCommand()
 end
 function MPDisciplinePriestCommand()
     if MPPlayerClass ~= "PRIEST" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -358,7 +358,7 @@ end
 
 function MPHunterShotCommand()
     if MPPlayerClass ~= "HUNTER" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -366,7 +366,7 @@ function MPHunterShotCommand()
 end
 function MPHunterBeastCommand()
     if MPPlayerClass ~= "HUNTER" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
@@ -374,7 +374,7 @@ function MPHunterBeastCommand()
 end
 function MPHunterMeleeCommand()
     if MPPlayerClass ~= "HUNTER" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."职业错误！")
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 

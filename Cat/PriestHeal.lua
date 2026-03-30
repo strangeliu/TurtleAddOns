@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 神牧一键宏
--- 更新日期：2026-03-22 （后面根据时间来判断版本）
+-- 更新日期：2026-03-29 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -121,6 +121,16 @@ function MPPriestAutoHealth()
         end
     end
 
+    if MPPriestHealSaved.PrayerHealing==1 then
+        -- 祷言 本队优先
+        if MPPriestHealSaved.PrayerHealingPartyFirst==1 then
+            MPPrayerHealthParty()
+        end
+
+        -- 祷言 团队
+        MPPrayerHealthRaid()
+    end
+
     -- 自己
     if MPPriestHealSaved.SelfFirst==1 then
         if MPPriestHealth("player") then
@@ -224,7 +234,9 @@ function MPPriestHealth(unit)
         return MPCastSpellWithoutTarget("真言术：盾", unit, 1)
     end
 
+    MPHealthUnit = unit
 
+    -- 恢复
     if (MPIsMoving() or MPPriestHealSaved.FlashHeal==0) and MPPriestHealSaved.MoveRenew==1 and MPPriestRenewManaMaxLevel>0 then
         -- 目标是否已经有恢复
         if not MPBuff("恢复",unit) then
@@ -253,8 +265,11 @@ function MPPriestHealth(unit)
     end
 
 
-    MPHealthUnit = unit
+    -- 治疗祷言
 
+
+
+    -- 强效治疗术
     if percentHealth < MPPriestHealSaved.GreaterHeal_Value and MPPriestHealSaved.GreaterHeal==1 and MPPriestGreaterHealManaMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
@@ -280,6 +295,7 @@ function MPPriestHealth(unit)
         return MPCastSpellWithoutTarget("强效治疗术(等级 "..MPPriestHealSaved.GreaterHealMinLevel..")", unit, 1)
     end
 
+    -- 快速治疗
     if MPPriestHealSaved.FlashHeal==1 and MPPriestFlashHealManaMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
@@ -402,5 +418,106 @@ function MPGetGroupHealthList()
 end
 
 
+-- 治疗祷言 算式
 
+function MPGetUnitScore(unit)
+    local HPP = 0
+    if UnitExists(unit) and UnitIsVisible(unit) and not UnitIsDeadOrGhost(unit) then
+        HPP = 10 - (UnitHealth(unit) / UnitHealthMax(unit) * 10)
+        if HPP > 3 then HPP=3 end
+    end
+
+    return HPP
+end
+
+function MPPrayerHealthParty()
+
+    local unit = "player"
+
+    -- 检查是否在队伍
+    local numPartyMembers = GetNumPartyMembers()
+    if numPartyMembers>0 then
+
+        local score = MPGetUnitScore("player")
+
+        -- 收集权重
+        for i = 1, numPartyMembers do
+            unit = "party" .. i
+            score = score+MPGetUnitScore(unit)
+        end
+
+        --MPMsg("祷言 本队评价:"..score)
+        -- 评分
+        if score >= MPPriestHealSaved.PrayerHealing_Value then
+            MPCastSpellWithoutTarget("治疗祷言", "party1", 1)
+            MPCastSpellWithoutTarget("治疗祷言", "party2", 1)
+            MPCastSpellWithoutTarget("治疗祷言", "party3", 1)
+            MPCastSpellWithoutTarget("治疗祷言", "party4", 1)
+            MPCastSpellWithoutTarget("治疗祷言", "player", 1)
+            return
+        end
+
+    end
+
+    return
+end
+
+function MPPrayerHealthRaid()
+
+    local unit = "player"
+
+    -- 先检查是否在团队（经典旧世团队和队伍互斥）
+    local numRaidMembers = GetNumRaidMembers()
+    if numRaidMembers > 0 then
+        local Party = 0
+        local Score = {}
+
+        -- 收集权重
+        for i=1, 40, 5 do
+
+            Party = Party + 1
+            Score[Party] = 0
+
+            for j=i, i+4 do
+                unit = "raid" .. j
+                Score[Party] = Score[Party]+MPGetUnitScore(unit)
+            end
+
+            --MPMsg("小队"..Party.." - ".. Score[Party])
+
+        end
+
+        -- 选择小队
+        local targetParty = 0
+        local temp = 0
+        for i=1, 8 do
+            if Score[i] > temp then
+                temp = Score[i]
+                targetParty = i
+            end
+        end
+
+        --MPMsg("祷言 小队"..targetParty)
+        -- 评分
+        if temp >= MPPriestHealSaved.PrayerHealing_Value then
+            targetParty = targetParty-1
+            --[[
+            MPMsg("raid"..targetParty*5+1)
+            MPMsg("raid"..targetParty*5+2)
+            MPMsg("raid"..targetParty*5+3)
+            MPMsg("raid"..targetParty*5+4)
+            MPMsg("raid"..targetParty*5+5)
+            ]]
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+1, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+2, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+3, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+4, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+5, 1)
+            return
+        end
+
+    end
+
+    return
+end
 

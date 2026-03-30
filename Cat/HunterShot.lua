@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 射击猎一键宏
--- 发布日期：2026-03-26 （后面根据时间来判断版本）
+-- 发布日期：2026-03-27 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -323,7 +323,10 @@ function MPHunterShotDPS()
 		MPCastWithoutNampower("稳固射击")
 		return
 	else
-		CastSpellByName("奥术射击")
+		if MPHunterShotSaved.ArcaneShot==1 and ASSJ then
+			CastSpellByName("奥术射击")
+			return
+		end
 	end
 
 	if MPGetHunterShotLeft()>MPHunterShotSaved.SteadyShot_Value then
@@ -331,7 +334,10 @@ function MPHunterShotDPS()
 		return
 	else
 		if not MZSJ then
-			CastSpellByName("奥术射击")
+			if MPHunterShotSaved.ArcaneShot==1 and ASSJ then
+				CastSpellByName("奥术射击")
+				return
+			end
 		end
 	end
 

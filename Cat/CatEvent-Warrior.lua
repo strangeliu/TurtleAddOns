@@ -81,6 +81,7 @@ MPWarrorCharge = 0
 MPWarrorYYNQ = 50
 
 
+
 -- 战士撕裂监测
 local RendCheck = {}
 
@@ -458,6 +459,49 @@ function MPWarriorSlamStop()
 		SpellStopCasting()
 
 	end
+
+end
+
+
+-- 英勇打击 顺劈斩 是否激活
+function MPWarriorHeroicAction()
+
+    -- print(GetActionText(25))
+    -- 我的炉石位置
+    -- 用于获取id
+
+	for A=1,172 do
+		local _,_,id = GetActionText(A)
+
+        -- 英勇打击 顺劈斩
+		if id==25286 or id==20569 or id==45961 then
+            --print(A)
+            if IsCurrentAction(A) then
+                return true
+            end
+		end
+	end
+
+    return false
+end
+
+-- 英勇打击类取消
+function MPWarriorCancelHeroic()
+
+	-- 这里要先确认英勇打击类已经被激活
+
+    if MPWarriorHeroicAction() then
+
+ 	    -- 有目标才处理
+	    local _,guid = UnitExists("target")
+	    if guid then
+		    ClearTarget()
+		    TargetUnit(guid)
+	    end
+
+    end
+
+	MPStartAttack()
 
 end
 

@@ -424,6 +424,7 @@ local slider_MoonfireInsectSwarm = CreateFrame("Slider", ADDON_NAME.."SliderMoon
 slider_MoonfireInsectSwarm:SetPoint("TOPLEFT", CatUISettingsCOOWindow, "TOPLEFT", 20, postion_y+40)
 slider_MoonfireInsectSwarm:SetWidth(220) -- 拖动条长度
 slider_MoonfireInsectSwarm:SetHeight(16) -- 拖动条高度
+slider_MoonfireInsectSwarm:Hide()
 
 slider_MoonfireInsectSwarm:SetMinMaxValues(1, 2)
 slider_MoonfireInsectSwarm:SetValueStep(1)

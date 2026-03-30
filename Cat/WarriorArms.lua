@@ -269,7 +269,7 @@ function MPArmsDPS(o)
 
 
 	-- 开启血性狂暴
-	if MPWarriorArmsSaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat then
+	if MPWarriorArmsSaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat and (MPWarriorArmsSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 		if ZS and NQ<30 then MPCastWithNampower("血性狂暴") end
 		if XFZ and NQ<25 then MPCastWithNampower("血性狂暴") end
 	end
@@ -320,16 +320,22 @@ function MPArmsDPS(o)
 			if XFZ then YYNQ = YYNQ+MPWarriorWhirlwind end
 		end
 
+		--[[
 		if MPGetMainHandLeft()>1.0 and YYNQ<50 then
-			YYNQ = YYNQ + 30
+			YYNQ = YYNQ + 15
 		end
+		]]
 
 	end
 
 	MPWarrorYYNQ = YYNQ
 
 	-- 选择 英勇 or 顺劈
-	if HPP>=20 and NQ>YYNQ then MPCastWithNampower(Strike) end
+	if HPP>=20 and NQ>YYNQ then
+		MPCastWithNampower(Strike)
+	else
+		MPWarriorCancelHeroic()
+	end
 
 	MPArmsTwoHand()
 
@@ -355,10 +361,12 @@ function MPArmsTwoHand()
 	-- 进入斩杀线，插入主技能，额外功能，需进行配置
 	if HPP<20 and MPWarriorArmsSaved.ExecuteWithMortal==1 then
 
-		if MPGetMainHandLeft()>2.5 then
-			if NQ>=(MPWarriorExecute+15) and (MPWarriorArmsSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
-				MPCastWithoutNampower("猛击")
-				return
+		if MPWarriorArmsSaved.ExecuteWithoutMonster==0 or (MPWarriorArmsSaved.ExecuteWithoutMonster==1 and MPIsBossTarget()) then
+			if MPGetMainHandLeft()>2.5 then
+				if NQ>=(MPWarriorExecute+15) and (MPWarriorArmsSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+					MPCastWithoutNampower("猛击")
+					return
+				end
 			end
 		end
 

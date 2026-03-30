@@ -85,7 +85,7 @@ function MPCatUIMeleeRun()
     end
 
     if not MP_UnitXP then
-        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."未发现UnitXP模组，近战距离监视无法使用！")
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_NoUnitXPMelee)
         CatUIMelee:Hide()
         MPPublicSaved.MeleeWindowDisplay = 0
     end
@@ -100,14 +100,14 @@ function MPCatUIMeleeRun()
             inMeleeRange = UnitXP("distanceBetween", "player", "target", "meleeAutoAttack")
             if inMeleeRange then
                 if inMeleeRange>0 then
-                    TipText:SetText("|cFFFF0000距离: "..string.format("%.1f",inMeleeRange))
+                    TipText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange))
                     CatUIMelee:SetAlpha(0.5) 
                 else
                     if inMeleeRange>0 then
-                        TipText:SetText("|cFFFF0000距离: "..string.format("%.1f",inMeleeRange))
+                        TipText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange))
                         CatUIMelee:SetAlpha(0.5) 
                     else
-                        TipText:SetText("|cFFAAFFAA护甲: "..string.format("%.0f",UnitArmor("target")))
+                        TipText:SetText("|cFFAAFFAA"..MPLanguage.UI_Melee_Armor..string.format("%.0f",UnitArmor("target")))
                         CatUIMelee:SetAlpha(1.0) 
                     end
                 end

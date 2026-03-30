@@ -3,7 +3,7 @@ local ADDON_NAME = "Settings-CatMenu"
 
 
 -- 创建主框架
-CatUISettingsCatMenu = MPCreateFrame(ADDON_NAME.."Frame", 520, 130, "设置界面 - 快捷入口")
+CatUISettingsCatMenu = MPCreateFrame(ADDON_NAME.."Frame", 520, 130, MPLanguage.UI_SettingsTitle)
 tinsert(UISpecialFrames, ADDON_NAME.."Frame")
 
 
@@ -17,7 +17,7 @@ TipText:SetPoint("BOTTOM", CatUISettingsCatMenu, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("打开菜单命令 -  [ |cFFFFFFFF/CatUI|r ]      [ 版本: "..MPCatAddonVer.." ]")
+TipText:SetText(MPLanguage.UI_Set_MenuCommandVersion..MPCatAddonVer.." ]")
 
 
 
@@ -54,28 +54,28 @@ local height = 0
     TipTextDruid:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextDruid:SetTextColor(1, 0.8, 0)
     TipTextDruid:SetJustifyH("LEFT")
-    TipTextDruid:SetText("|cFFFF7D0A德鲁伊|r")
+    TipTextDruid:SetText(MPLanguage.UI_Druid)
 
-    local buttonCat = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "猫德", function()
+    local buttonCat = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_CatDruid, function()
         MPCatSettingsCloseAll()
         CatUISettingsCatWindow:Show()
     end)
     buttonCat:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonBear = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "熊德", function()
+    local buttonBear = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_BearDruid, function()
         MPCatSettingsCloseAll()
         CatUISettingsBearWindow:Show()
     end)
     buttonBear:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonBird = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "鸟德", function()
+    local buttonBird = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_BalanceDruid, function()
         MPCatSettingsCloseAll()
         CatUISettingsCOOWindow:Show()
     end)
     buttonBird:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
 
-    local buttonHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "奶德", function()
+    local buttonHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_RestoDruid, function()
         MPCatSettingsCloseAll()
         CatUISettingsDriudHealWindow:Show()
     end)
@@ -101,27 +101,27 @@ local height = 0
     TipTextWarrior:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextWarrior:SetTextColor(1, 0.8, 0)
     TipTextWarrior:SetJustifyH("LEFT")
-    TipTextWarrior:SetText("|cFFC79C6E战士|r")
+    TipTextWarrior:SetText(MPLanguage.UI_Warrior)
 
-    local buttonWarriorArms = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "武器", function()
+    local buttonWarriorArms = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ArmsWarrior, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarriorArms:Show()
     end)
     buttonWarriorArms:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonWarriorFury = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "狂暴", function()
+    local buttonWarriorFury = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_FuryWarrior, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarriorFury:Show()
     end)
     buttonWarriorFury:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonWarriorEvil = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "邪修", function()
+    local buttonWarriorEvil = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_EvilWarrior, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarriorEvil:Show()
     end)
     buttonWarriorEvil:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
-    local buttonWarriorTank = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "防战", function()
+    local buttonWarriorTank = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ProtWarrior, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarriorTank:Show()
     end)
@@ -145,27 +145,27 @@ local height = 0
     TipTextPaladin:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextPaladin:SetTextColor(1, 0.8, 0)
     TipTextPaladin:SetJustifyH("LEFT")
-    TipTextPaladin:SetText("|cFFF58CBA圣骑士|r")
+    TipTextPaladin:SetText(MPLanguage.UI_Paladin)
 
-    local buttonPaladinCJ = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "惩戒", function()
+    local buttonPaladinCJ = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_RetPaladin, function()
         MPCatSettingsCloseAll()
         CatUISettingsPaladinCJ:Show()
     end)
     buttonPaladinCJ:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonPaladinTank = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "防骑", function()
+    local buttonPaladinTank = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ProtPaladin, function()
         MPCatSettingsCloseAll()
         CatUISettingsPaladinTank:Show()
     end)
     buttonPaladinTank:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonPaladinHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "奶骑", function()
+    local buttonPaladinHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_HolyPaladin, function()
         MPCatSettingsCloseAll()
         CatUISettingsPaladinHealWindow:Show()
     end)
     buttonPaladinHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
-    local buttonPaladinMeleeHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "近战奶", function()
+    local buttonPaladinMeleeHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_MeleeHealPaladin, function()
         MPCatSettingsCloseAll()
         CatUISettingsPaladinMeleeHeal:Show()
     end)
@@ -191,27 +191,27 @@ local height = 0
     TipTextRogue:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextRogue:SetTextColor(1, 0.8, 0)
     TipTextRogue:SetJustifyH("LEFT")
-    TipTextRogue:SetText("|cFFFFF569盗贼|r")
+    TipTextRogue:SetText(MPLanguage.UI_Rogue)
 
-    local buttonRogueCombatDPS = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "战斗贼", function()
+    local buttonRogueCombatDPS = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_CombatRogue, function()
         MPCatSettingsCloseAll()
         CatUISettingsRogueCombat:Show()
     end)
     buttonRogueCombatDPS:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonRogueEnvenomDPS = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "毒伤贼", function()
+    local buttonRogueEnvenomDPS = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_EnvenomRogue, function()
         MPCatSettingsCloseAll()
         CatUISettingsRogueEnvenom:Show()
     end)
     buttonRogueEnvenomDPS:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonRogueArmor = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "破甲贼", function()
+    local buttonRogueArmor = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ArmorRogue, function()
         MPCatSettingsCloseAll()
         CatUISettingsRogueArmor:Show()
     end)
     buttonRogueArmor:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
-    local buttonRogue = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "自配置", function()
+    local buttonRogue = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_CustomRogue, function()
         MPCatSettingsCloseAll()
         CatUISettingsRogue:Show()
     end)
@@ -237,21 +237,21 @@ local height = 0
     TipTextShaman:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextShaman:SetTextColor(1, 0.8, 0)
     TipTextShaman:SetJustifyH("LEFT")
-    TipTextShaman:SetText("|cFF0070DE萨满|r")
+    TipTextShaman:SetText(MPLanguage.UI_Shaman)
 
-    local buttonShamanEnhance = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "增强萨", function()
+    local buttonShamanEnhance = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_EnhanceShaman, function()
         MPCatSettingsCloseAll()
         CatUISettingsShamanEnhanceWindow:Show()
     end)
     buttonShamanEnhance:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonShamanElemental = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "元素萨", function()
+    local buttonShamanElemental = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ElementalShaman, function()
         MPCatSettingsCloseAll()
         CatUISettingsShamanElementalWindow:Show()
     end)
     buttonShamanElemental:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonShamanHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "奶萨", function()
+    local buttonShamanHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_RestoShaman, function()
         MPCatSettingsCloseAll()
         CatUISettingsShamanHealWindow:Show()
     end)
@@ -276,27 +276,27 @@ local height = 0
     TipTextWarlock:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextWarlock:SetTextColor(1, 0.8, 0)
     TipTextWarlock:SetJustifyH("LEFT")
-    TipTextWarlock:SetText("|cFF9482C9术士|r")
+    TipTextWarlock:SetText(MPLanguage.UI_Warlock)
 
-    local buttonWarlockSD = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "暗毁术", function()
+    local buttonWarlockSD = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ShadowDestroLock, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarlockSD:Show()
     end)
     buttonWarlockSD:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonWarlockFD = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "火毁术", function()
+    local buttonWarlockFD = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_FireDestroLock, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarlockFD:Show()
     end)
     buttonWarlockFD:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonWarlockAff = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "痛苦术", function()
+    local buttonWarlockAff = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_AfflictionLock, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarlockAff:Show()
     end)
     buttonWarlockAff:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
-    local buttonWarlockDemo = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "恶魔术", function()
+    local buttonWarlockDemo = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_DemonLock, function()
         MPCatSettingsCloseAll()
         CatUISettingsWarlockDemo:Show()
     end)
@@ -322,21 +322,21 @@ local height = 0
     TipTextMage:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextMage:SetTextColor(1, 0.8, 0)
     TipTextMage:SetJustifyH("LEFT")
-    TipTextMage:SetText("|cFF69CCF0法师|r")
+    TipTextMage:SetText(MPLanguage.UI_Mage)
 
-    local buttonMageArcane = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "奥法", function()
+    local buttonMageArcane = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ArcaneMage, function()
         MPCatSettingsCloseAll()
         CatUISettingsMageArcane:Show()
     end)
     buttonMageArcane:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonMageFire = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "火法", function()
+    local buttonMageFire = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_FireMage, function()
         MPCatSettingsCloseAll()
         CatUISettingsMageFire:Show()
     end)
     buttonMageFire:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonMageFrost = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "冰法", function()
+    local buttonMageFrost = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_FrostMage, function()
         MPCatSettingsCloseAll()
         CatUISettingsMageFrost:Show()
     end)
@@ -361,21 +361,21 @@ local height = 0
     TipTextPriest:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextPriest:SetTextColor(1, 0.8, 0)
     TipTextPriest:SetJustifyH("LEFT")
-    TipTextPriest:SetText("|cFFFFFFFF牧师|r")
+    TipTextPriest:SetText(MPLanguage.UI_Priest)
 
-    local buttonPriestShadow = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "暗牧", function()
+    local buttonPriestShadow = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_ShadowPriest, function()
         MPCatSettingsCloseAll()
         CatUISettingsPriestShadow:Show()
     end)
     buttonPriestShadow:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonPriestDiscipline = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "戒律牧", function()
+    local buttonPriestDiscipline = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_DiscPriest, function()
         MPCatSettingsCloseAll()
         CatUISettingsPriestDiscipline:Show()
     end)
     buttonPriestDiscipline:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonPriestHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "神牧", function()
+    local buttonPriestHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_HolyPriest, function()
         MPCatSettingsCloseAll()
         CatUISettingsPriestHealWindow:Show()
     end)
@@ -400,21 +400,21 @@ local height = 0
     TipTextHunter:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
     TipTextHunter:SetTextColor(1, 0.8, 0)
     TipTextHunter:SetJustifyH("LEFT")
-    TipTextHunter:SetText("|cFFABD473猎人|r")
+    TipTextHunter:SetText(MPLanguage.UI_Hunter)
 
-    local buttonHunterBeast = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "兽王猎", function()
+    local buttonHunterBeast = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_BeastHunter, function()
         MPCatSettingsCloseAll()
         CatUISettingsHunterBeast:Show()
     end)
     buttonHunterBeast:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-    local buttonHunterShot = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "射击猎", function()
+    local buttonHunterShot = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_MMHunter, function()
         MPCatSettingsCloseAll()
         CatUISettingsHunterShot:Show()
     end)
     buttonHunterShot:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-    local buttonHunterMelee = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, "生存猎", function()
+    local buttonHunterMelee = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_SurvivalHunter, function()
         MPCatSettingsCloseAll()
         CatUISettingsHunterMelee:Show()
     end)
@@ -441,28 +441,28 @@ TipTextNormal:SetWidth(150)
 TipTextNormal:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
 TipTextNormal:SetTextColor(1, 0.8, 0)
 TipTextNormal:SetJustifyH("LEFT")
-TipTextNormal:SetText("|cFFDD4080通用|r")
+TipTextNormal:SetText(MPLanguage.UI_General)
 
-local buttonNormalINT = CreateFlatButton("buttonNormalINT", CatUISettingsCatMenu, nil, nil, "读条打断", function()
+local buttonNormalINT = CreateFlatButton("buttonNormalINT", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_Interrupt, function()
     MPCatSettingsCloseAll()
     CatUISettingsInterrupt:Show()
 end)
 buttonNormalINT:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-local buttonNormalDOT = CreateFlatButton("buttonNormalDOT", CatUISettingsCatMenu, nil, nil, "多线DOT", function()
+local buttonNormalDOT = CreateFlatButton("buttonNormalDOT", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_MultiDot, function()
     MPCatSettingsCloseAll()
     CatUISettingsMultilineDot:Show()
 end)
 buttonNormalDOT:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
 
-local buttonAutoLoot = CreateFlatButton("buttonAutoLoot", CatUISettingsCatMenu, nil, nil, "自动拾取", function()
+local buttonAutoLoot = CreateFlatButton("buttonAutoLoot", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_AutoLoot, function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
 end)
 buttonAutoLoot:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-local buttonPower = CreateFlatButton("buttonPower", CatUISettingsCatMenu, nil, nil, "功能药水", function()
+local buttonPower = CreateFlatButton("buttonPower", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_PowerPotion, function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
@@ -486,18 +486,18 @@ TipTextAdd:SetWidth(150)
 TipTextAdd:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE") -- 使用OUTLINE参数
 TipTextAdd:SetTextColor(1, 0.8, 0)
 TipTextAdd:SetJustifyH("LEFT")
-TipTextAdd:SetText("|cFF007582附加|r")
+TipTextAdd:SetText(MPLanguage.UI_Addon)
 
 
-local buttonNormalElixir = CreateFlatButton("buttonNormalElixir", CatUISettingsCatMenu, nil, nil, "自动药剂", function()
+local buttonNormalElixir = CreateFlatButton("buttonNormalElixir", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_AutoElixir, function()
     MPCatSettingsCloseAll()
     CatUISettingsElixir:Show()
 end)
 buttonNormalElixir:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
 
-local buttonNormalMelee = CreateFlatButton("buttonNormalDebug", CatUISettingsCatMenu, nil, nil, "近战距离", function()
+local buttonNormalMelee = CreateFlatButton("buttonNormalDebug", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_MeleeDistance, function()
     if not MP_UnitXP then
-        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."未发现UnitXP模组，近战距离监视无法使用！")
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_NoUnitXPMelee)
     else
         MPCatSettingsCloseAll()
         CatUIMelee:Show()
@@ -506,7 +506,7 @@ local buttonNormalMelee = CreateFlatButton("buttonNormalDebug", CatUISettingsCat
 end)
 buttonNormalMelee:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
 
-local buttonNormalDebug = CreateFlatButton("buttonNormalDebug", CatUISettingsCatMenu, nil, nil, "实时监控", function()
+local buttonNormalDebug = CreateFlatButton("buttonNormalDebug", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_RealtimeMonitor, function()
     MPCatSettingsCloseAll()
     CatDebugWindow:Show()
     MPPublicSaved.DebugWindowDisplay=1
@@ -514,17 +514,17 @@ end)
 buttonNormalDebug:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
 
-local buttonNormalClassUp = CreateFlatButton("buttonNormalClass", CatUISettingsCatMenu, nil, nil, "收缩↑", function()
+local buttonNormalClassUp = CreateFlatButton("buttonNormalClass", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_Collapse, function()
     MPCatSettingsCloseAll()
     MPPublicSaved.AllClass=0 
-    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."关闭所有职业宏，仅保留当前职业。")
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_CollapseClass)
 end)
 
 buttonNormalClassUp:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*3, postion_y)
-local buttonNormalClassDown = CreateFlatButton("buttonNormalClass", CatUISettingsCatMenu, nil, nil, "展开↓", function()
+local buttonNormalClassDown = CreateFlatButton("buttonNormalClass", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_Expand, function()
     MPCatSettingsCloseAll()
     MPPublicSaved.AllClass=1 
-    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."打开所有职业宏。")
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ExpandClass)
 end)
 buttonNormalClassDown:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*3, postion_y)
 

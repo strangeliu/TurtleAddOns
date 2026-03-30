@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 鸟德一键宏
--- 更新日期：2026-03-24 （后面根据时间来判断版本）
+-- 更新日期：2026-03-27 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -18,21 +18,6 @@ end
 
 -- 以下功能开关：1开启 0关闭
 local AUTO_COO_Use_Trinket = 1				-- 饰品总开关，是否自动使用爆发饰品
-
-local AUTO_COO_Trinket_Upper = 1			-- 是否开启上方饰品
-local AUTO_COO_Trinket_Below = 1			-- 是否开启下方饰品
-
-local AUTO_COO_HealthStone = 1				-- 是否自动使用治疗石
-local AUTO_COO_HealthStone_Value = 0.3		-- 吃治疗石的血线(百分比，默认0.3 即30%)
-
-local AUTO_COO_HerbalTea = 1				-- 是否自动使用草药茶
-local AUTO_COO_HerbalTea_Value = 0.2		-- 吃草药茶的血线(百分比，默认0.2 即20%)
-
-local AUTO_COO_Moonfire = 1					-- 是否自动补月火术
-local AUTO_COO_InsectSwarm = 1				-- 是否自动补虫群
-local AUTO_COO_FaerieFire = 0				-- 是否自动补精灵之火
-
-local AUTO_COO_Target = 0					-- 自动优化目标选择，远程DPS无效
 
 -- -------------------------------------
 
@@ -228,46 +213,56 @@ function MPCoo()
 	end
 
 
-	local dot = false
+	local allowdot = false
 	if MPDriudCOOSaved.BOSS==0 then
-		dot = true
+		allowdot = true
 	else
 		if TargetBOSS then
-			dot = true
+			allowdot = true
 		end
 	end
 
-	if dot then
+	--[[
+	if allowdot then
 
-		if MPDriudCOOSaved.MoonfireInsectSwarm== 1 then
-			-- 补 月火术
-			if MPDriudCOOSaved.Moonfire==1 and not MPGetMoonfireDot() then
-				MPCastMoonfire() -- 月火术
-				return
-			end
-			-- 补 虫群
-			if MPDriudCOOSaved.InsectSwarm==1 and not MPGetInsectSwarmDot() then
-				MPCastInsectSwarm() -- 虫群
-				return
-			end
-		else
-			-- 补 虫群
-			if MPDriudCOOSaved.InsectSwarm==1 and not MPGetInsectSwarmDot() then
-				MPCastInsectSwarm() -- 虫群
-				return
-			end
-
-			-- 补 月火术
-			if MPDriudCOOSaved.Moonfire==1 and not MPGetMoonfireDot() then
-				MPCastMoonfire() -- 月火术
-				return
-			end
+		-- 补 月火术
+		if MPDriudCOOSaved.Moonfire==1 and not MPGetMoonfireDot() then
+			MPCastMoonfire() -- 月火术
+			return
+		end
+		-- 补 虫群
+		if MPDriudCOOSaved.InsectSwarm==1 and not MPGetInsectSwarmDot() then
+			MPCastInsectSwarm() -- 虫群
+			return
 		end
 
 	end
+	]]
 
 
 	-- 日月蚀触发，优先
+
+	if MPBuff("月蚀") then
+
+		-- 补 月火术
+		if MPDriudCOOSaved.Moonfire==1 and allowdot and not MPGetMoonfireDot() then
+			MPCastMoonfire() -- 月火术
+			return
+		end
+
+		MPCastStarfire() -- 星火术
+	else
+
+		-- 补 虫群
+		if MPDriudCOOSaved.InsectSwarm==1 and allowdot and not MPGetInsectSwarmDot() then
+			MPCastInsectSwarm() -- 虫群
+			return
+		end
+
+		MPCastWrath() -- 愤怒
+	end
+
+	--[[
 
 	if MPGetSolar()>0 then --MPBuff("日蚀") then
 		MPCastWrath() -- 愤怒
@@ -285,7 +280,7 @@ function MPCoo()
 
 	-- 用愤怒填补空档
 	MPCastWrath() -- 愤怒
-
+	]]
 end
 
 

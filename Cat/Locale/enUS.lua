@@ -788,6 +788,7 @@ MPLanguage.Item_LifeGem = "Life Gem"
 ----------------------------------------------------------------
 -- UI Messages
 ----------------------------------------------------------------
+MPLanguage.UI_AddonTitle = "Cat Meow!"
 MPLanguage.UI_AddonLoaded = "Cat addon [%s] loaded! Meow~"
 MPLanguage.UI_ClientLanguage = "Client Language: "
 MPLanguage.UI_ClientNotSupported = " |cFFff5c36(Not supported)|r"
@@ -880,6 +881,9 @@ MPLanguage.UI_BearDruid = "Bear"
 MPLanguage.UI_BalanceDruid = "Balance"
 MPLanguage.UI_RestoDruid = "Resto"
 MPLanguage.UI_DPS = "DPS"
+MPLanguage.UI_ArmsWarrior = "Arms"
+MPLanguage.UI_FuryWarrior = "Fury"
+MPLanguage.UI_EvilWarrior = "Evil"
 MPLanguage.UI_ProtWarrior = "Prot"
 MPLanguage.UI_RetPaladin = "Ret"
 MPLanguage.UI_ProtPaladin = "Prot"
@@ -1778,6 +1782,7 @@ MPLanguage.UI_Mon_HunterGore = "Gore"
 ----------------------------------------------------------------
 -- UI Melee (CatUI-Melee)
 ----------------------------------------------------------------
+MPLanguage.UI_Set_MeleeTitle = "Addons - Melee"
 MPLanguage.UI_Melee_Distance = "Dist: "
 MPLanguage.UI_Melee_Armor = "Armor: "
 
@@ -1795,7 +1800,7 @@ MPLanguage.UI_Pal_Crusader = "Crusader"
 ----------------------------------------------------------------
 -- UI MiniButton
 ----------------------------------------------------------------
-MPLanguage.UI_Mini_AddonMonitor = "|cFF007582Addons - Monitor|r"
+MPLanguage.UI_Mini_AddonMonitor = "Addons - Monitor"
 MPLanguage.UI_Mini_AllClassClosed = "All classes - [|cFF888888Off|r]"
 MPLanguage.UI_Mini_AllClassOpen = "All classes - [|cFF00FF00On|r]"
 MPLanguage.UI_Mini_CloseAll = "Close all windows"

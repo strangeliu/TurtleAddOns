@@ -882,6 +882,7 @@ MPLanguage.Item_LifeGem = "生命宝石"
 ----------------------------------------------------------------
 -- UI Messages
 ----------------------------------------------------------------
+MPLanguage.UI_AddonTitle = "Cat 喵!"
 MPLanguage.UI_AddonLoaded = "Cat插件[%s] 加载完成！ 喵～"
 MPLanguage.UI_ClientLanguage = "客户端语言 "
 MPLanguage.UI_ClientNotSupported = " |cFFff5c36(不支持)|r"
@@ -986,6 +987,9 @@ MPLanguage.UI_BearDruid = "熊德"
 MPLanguage.UI_BalanceDruid = "鸟德"
 MPLanguage.UI_RestoDruid = "奶德"
 MPLanguage.UI_DPS = "输出"
+MPLanguage.UI_ArmsWarrior = "武器"
+MPLanguage.UI_FuryWarrior = "狂暴"
+MPLanguage.UI_EvilWarrior = "邪修"
 MPLanguage.UI_ProtWarrior = "防战"
 MPLanguage.UI_RetPaladin = "惩戒"
 MPLanguage.UI_ProtPaladin = "防骑"
@@ -1778,6 +1782,7 @@ MPLanguage.UI_Mon_NoMatchingMacro = "暂未有与之匹配的宏参数"
 ----------------------------------------------------------------
 -- UI Melee (CatUI-Melee)
 ----------------------------------------------------------------
+MPLanguage.UI_Set_MeleeTitle = "附加 - 近战距离"
 MPLanguage.UI_Melee_Distance = "距离: "
 MPLanguage.UI_Melee_Armor = "护甲: "
 
@@ -1795,7 +1800,7 @@ MPLanguage.UI_Pal_Crusader = "十字军"
 ----------------------------------------------------------------
 -- UI MiniButton
 ----------------------------------------------------------------
-MPLanguage.UI_Mini_AddonMonitor = "|cFF007582附加 - 监控窗口|r"
+MPLanguage.UI_Mini_AddonMonitor = "附加 - 监控窗口"
 MPLanguage.UI_Mini_AllClassClosed = "全职业宏 - [|cFF888888关闭|r]"
 MPLanguage.UI_Mini_AllClassOpen = "全职业宏 - [|cFF00FF00打开|r]"
 MPLanguage.UI_Mini_CloseAll = "关闭所有窗口"

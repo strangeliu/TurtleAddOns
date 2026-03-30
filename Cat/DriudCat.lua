@@ -932,7 +932,7 @@ function MPCatBleedNew()
 
 		-- 变身猫的猛虎策略
 		if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-			MPCastWithNampower(MPLanguage.TigerFury)
+			MPCastWithNampower("猛虎之怒")
 		end
 	end
 
@@ -943,7 +943,7 @@ function MPCatBleedNew()
 
 		-- 补撕扯
 		if not MPRip and GCP>=5 and THP>MPDriudCatSaved.OutHPRip then
-			MPCastWithNampower(MPLanguage.Rip)
+			MPCastWithNampower("撕扯")
 			return
 		end
 
@@ -955,7 +955,7 @@ function MPCatBleedNew()
         if check[guid] then
 			local timer = MPDriudRipDuration-(Timer-check[guid])
 			if timer < 3 then 
-				MPCastWithoutNampower(MPLanguage.FerociousBite)
+				MPCastWithoutNampower("凶猛撕咬")
 				MPMsg("|cFFee1111抢救 撕扯|r")
 				return
 			end
@@ -964,7 +964,7 @@ function MPCatBleedNew()
 
 	--清晰预兆
 	if JNSF and BEHIND then
-		MPCastWithNampower(MPLanguage.Shred)
+		MPCastWithNampower("撕碎")
 		return
 	end
 
@@ -980,7 +980,7 @@ function MPCatBleedNew()
 
 	-- 撕咬
 	if AF and myPower<MPDriudCatSaved.Ferocious_Value and MPRip and not JNSF and myPower>=35 then
-		MPCastWithoutNampower(MPLanguage.FerociousBite)
+		MPCastWithoutNampower("凶猛撕咬")
 		return
 	else
 
@@ -988,13 +988,13 @@ function MPCatBleedNew()
 		if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
 			if not BEHIND and not MPRake then 
 
-				MPCastWithNampower(MPLanguage.Rake)
+				MPCastWithNampower("扫击")
 				return
 			end
 		else
 			if not MPRake then 
 
-				MPCastWithNampower(MPLanguage.Rake)
+				MPCastWithNampower("扫击")
 				return
 			end
 		end
@@ -1066,12 +1066,12 @@ function MPCatBackstabNew()
 	if MPDriudCatSaved.TigerFury==1 then
 		-- 变身猫的猛虎策略
 		if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-			MPCastWithNampower(MPLanguage.TigerFury)
+			MPCastWithNampower("猛虎之怒")
 		end
 	end
 
 	if GCP>=5 and myPower<15 and JNSF and MPRip then   -- AllowFerocious(MPDriudCatSaved.Ferocious_Bite)
-		MPCastWithNampower(MPLanguage.FerociousBite)
+		MPCastWithNampower("凶猛撕咬")
 		return
 	end
 

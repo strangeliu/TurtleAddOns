@@ -376,13 +376,13 @@ function MPCreateMiniButtonMenu()
         -- 标题
         local info = {}
         info.isTitle = 1
-        info.text = "Cat 喵！一键宏"
+        info.text = MPLanguage.UI_BindingHeader
         info.notCheckable = 1
         UIDropDownMenu_AddButton(info)
 
         local info = {}
         info.isTitle = 1
-        info.text = "版本: |cFFDDDDDD"..MPCatAddonVer.."|r"
+        info.text = MPLanguage.UI_Mon_Version.." |cFFDDDDDD"..MPCatAddonVer.."|r ]"
         info.notCheckable = 1
         UIDropDownMenu_AddButton(info)
 
@@ -394,7 +394,7 @@ function MPCreateMiniButtonMenu()
 
         -- 打开职业一键宏
         info = {}
-        info.text = "打开全职业宏"
+        info.text = MPLanguage.UI_OpenAllMacros
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingsCatMenu:Show() end
         UIDropDownMenu_AddButton(info,1)
@@ -407,21 +407,21 @@ function MPCreateMiniButtonMenu()
 
         -- 打开读条打断
         info = {}
-        info.text = "|cFFDD4080通用 - 读条打断|r"
+        info.text = "|cFFDD4080"..MPLanguage.UI_Set_InterruptTitle.."|r"
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingsInterrupt:Show() end
         UIDropDownMenu_AddButton(info)
 
         -- 打开多线DOT
         info = {}
-        info.text = "|cFFDD4080通用 - 多线DOT|r"
+        info.text = "|cFFDD4080"..MPLanguage.UI_Set_MultiDotTitle.."|r"
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingsMultilineDot:Show() end
         UIDropDownMenu_AddButton(info)
 
         -- 打开功能药水
         info = {}
-        info.text = "|cFFDD4080通用 - 功能药水|r"
+        info.text = "|cFFDD4080"..MPLanguage.UI_Set_PowerTitle.."|r"
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingsPower:Show() end
         UIDropDownMenu_AddButton(info)
@@ -429,7 +429,7 @@ function MPCreateMiniButtonMenu()
 
         -- 打开自动拾取
         info = {}
-        info.text = "|cFFDD4080通用 - 自动拾取|r"
+        info.text = "|cFFDD4080"..MPLanguage.UI_Set_AutoLootTitle.."|r"
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingAutoLoot:Show() end
         UIDropDownMenu_AddButton(info)
@@ -442,18 +442,18 @@ function MPCreateMiniButtonMenu()
 
         -- 打开功能药水
         info = {}
-        info.text = "|cFF007582附加 - 自动药剂|r"
+        info.text = "|cFF007582"..MPLanguage.UI_Set_ElixirTitle.."|r"
         info.notCheckable = 1
         info.func = function() MPCatSettingsCloseAll() CatUISettingsElixir:Show() end
         UIDropDownMenu_AddButton(info)
 
         -- 打开近战距离
         info = {}
-        info.text = "|cFF007582附加 - 近战距离|r"
+        info.text = "|cFF007582"..MPLanguage.UI_Set_MeleeTitle.."|r"
         info.notCheckable = 1
         info.func = function()
             if not MP_UnitXP then
-                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."未发现UnitXP模组，近战距离监视无法使用！")
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_NoUnitXPMelee)
             else
                 MPCatSettingsCloseAll() 
                 CatUIMelee:Show() 
@@ -464,7 +464,7 @@ function MPCreateMiniButtonMenu()
 
         -- 打开监视窗口
         info = {}
-        info.text = "|cFF007582附加 - 监控窗口|r"
+        info.text = "|cFF007582"..MPLanguage.UI_Mini_AddonMonitor.."|r"
         info.notCheckable = 1
         info.func = function() CatDebugWindow:Show() MPPublicSaved.DebugWindowDisplay=1 end
         UIDropDownMenu_AddButton(info)
@@ -479,18 +479,18 @@ function MPCreateMiniButtonMenu()
         -- 打开监视窗口
         info = {}
         if MPPublicSaved.AllClass==0 then
-            info.text = "全职业宏 - [|cFF888888关闭|r]"
+            info.text = MPLanguage.UI_Mini_AllClassClosed
         else
-            info.text = "全职业宏 - [|cFF00FF00打开|r]"
+            info.text = MPLanguage.UI_Mini_AllClassOpen
         end
         info.notCheckable = 1
         info.func = function() 
             if MPPublicSaved.AllClass==1 then 
                 MPPublicSaved.AllClass=0 
-                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."关闭所有职业宏，仅保留当前职业。")
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_CollapseClass)
             else 
                 MPPublicSaved.AllClass=1 
-                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."打开所有职业宏。")
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ExpandClass)
             end
             MPCatSettingsCloseAll()
         end
@@ -504,7 +504,7 @@ function MPCreateMiniButtonMenu()
 
         -- 关闭所有窗口
         info = {}
-        info.text = "关闭所有窗口"
+        info.text = MPLanguage.UI_Mini_CloseAll
         info.notCheckable = 1
         info.func = function() 
             MPCatSettingsCloseAll()
@@ -564,8 +564,8 @@ end)
 -- ==========================================
 miniButton:SetScript("OnEnter", function()
     GameTooltip:SetOwner(this, "ANCHOR_LEFT")
-    GameTooltip:SetText("Cat 喵！一键宏")
-    GameTooltip:AddLine("左键点击打开查看", 0.8, 0.8, 0.8)
+    GameTooltip:SetText(MPLanguage.UI_BindingHeader)
+    GameTooltip:AddLine(MPLanguage.UI_LeftClickOpen, 0.8, 0.8, 0.8)
     GameTooltip:Show()
 end)
 
