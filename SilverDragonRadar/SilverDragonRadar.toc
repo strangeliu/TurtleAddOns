@@ -1,0 +1,24 @@
+﻿## Interface: 11200
+## Title: SilverDragonRadar
+## Notes: Rare scanner and nearby rare radar. Use /sdz to open the radar window.
+## Title-zhCN:|CFF33AAFF[辅助]|R银龙稀有雷达
+## Notes-zhCN: 稀有怪扫描与近距雷达。使用 /sdz 打开雷达窗口。
+## Version: 2.0
+## Author: Sunelegy, 拉风.小老板娘, Jimmy
+## X-Category: Interface Enhancements
+## X-Donate: Sunelegy
+## Dependencies: !Libs
+## OptionalDependencies: FuBar, Cartographer
+## SavedVariables: SilverDragonDB, ZAOMAODGDB
+## LoadOnDemand: 0
+
+## X-Embeds: !Libs
+## LIBS END
+
+Locale.enUS.lua
+Locale.zhCN.lua
+
+RaresData.lua
+Core.lua
+Defaults.lua
+Radar.lua
