@@ -1,0 +1,21 @@
+﻿## Interface: 11200
+## Author: Saroz improved by Ogrisch, Sunelegy
+## X-Category: Raid
+## Dependencies: !Libs, Zorlen
+## Title: |cff33ffcc[团队工具]|R团队框架|cffffffffSune修改版
+## Title-zhCN: |cff33ffcc[团队工具]|R团队框架|cffffffffSune修改版
+## Version: 1.27
+## Notes: Sunelegy基于sRaidFrames修改的团队框架插件
+## Notes-zhCN: Sunelegy基于sRaidFrames修改的团队框架插件
+## DefaultState: Enabled
+## OptionalDeps: FuBar, JustClick, Clique, BanzaiLib
+## SavedVariables: sRaidFramesDB
+
+
+Libs\Banzai-1.0\Banzai-1.0.lua
+localization.enUS.lua
+localization.zhCN.lua
+sRaidFrames.lua
+sRaidFramesOptions.lua
+sRaidFramesHeals.lua
+sRaidFramesArrows.lua
