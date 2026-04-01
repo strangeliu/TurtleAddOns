@@ -559,6 +559,32 @@ AtlasLoot_TableNames = {
 	["SWRMergothid"] = { AL["Stormwrought Ruins"].." - "..AL["Mergothid"], "AtlasLootItems" },
 	["SWRRemains"] = { AL["Stormwrought Ruins"].." - "..AL["Remains of the Innocent"], "AtlasLootItems" },
 	["SWRTrash"] = { AL["Stormwrought Ruins"].." - "..AL["Trash Mobs"], "AtlasLootItems" },
+	-- Windhorn Canyon（风角峡谷）
+    ["WSCPathunBuskhide"] = { AL["Windhorn Canyon"].." - "..AL["Pathun Buskhide"], "AtlasLootItems" },
+    ["WSCAhgktosThePure"] = { AL["Windhorn Canyon"].." - "..AL["Ahgk'tos the Pure"], "AtlasLootItems" },
+    ["WSCAmbassadorVortalus"] = { AL["Windhorn Canyon"].." - "..AL["Ambassador Vortalus"], "AtlasLootItems" },
+    ["WSCWalganBloodcaller"] = { AL["Windhorn Canyon"].." - "..AL["Walgan Bloodcaller"], "AtlasLootItems" },
+    ["WSCBonespeakerNarlgom"] = { AL["Windhorn Canyon"].." - "..AL["Bonespeaker Narlgom"], "AtlasLootItems" },
+    ["WSCProphetStormhoof"] = { AL["Windhorn Canyon"].." - "..AL["Prophet Stormhoof"], "AtlasLootItems" },
+    ["WSCChieftainShalkBlackwind"] = { AL["Windhorn Canyon"].." - "..AL["Chieftain Shalk Blackwind"], "AtlasLootItems" },
+	["WSCTrash"] = { AL["Windhorn Canyon"].." - "..AL["Trash Mobs"], "AtlasLootItems" },
+	--Frostmane Hollow 霜鬃洞穴
+	["FMHNimbleTansha"] = { AL["Frostmane Hollow"].." - "..AL["Nimble Tansha"], "AtlasLootItems" },
+	["FMHUbbukazBattlefieldOverlord"] = { AL["Frostmane Hollow"].." - "..AL["Ubbukaz Battlefield Overlord"], "AtlasLootItems" },
+	["FMHProphetKanza"] = { AL["Frostmane Hollow"].." - "..AL["Prophet Kanza"], "AtlasLootItems" },
+	["FMHColdHaile"] = { AL["Frostmane Hollow"].." - "..AL["Cold Haile"], "AtlasLootItems" },
+	["FMHTrash"] = { AL["Frostmane Hollow"].." - "..AL["Trash Mobs"], "AtlasLootItems" },
+	--Timbermaw Hold 木侯要塞
+	["TMHKarrshtheSentinel"] = { AL["Timbermaw Hold"].." - "..AL["Karrsh the Sentinel"], "AtlasLootItems" },
+	["TMHRotgrowl"] = { AL["Timbermaw Hold"].." - "..AL["Rotgrowl"], "AtlasLootItems" },
+	["TMHTriochtheDevourer"] = { AL["Timbermaw Hold"].." - "..AL["Trioch the Devourer"], "AtlasLootItems" },
+	["TMHLoktanagtheVile"] = { AL["Timbermaw Hold"].." - "..AL["Loktanag the Vile"], "AtlasLootItems" },
+	["TMHArchdruidKronn"] = { AL["Timbermaw Hold"].." - "..AL["Archdruid Kronn"], "AtlasLootItems" },
+	["TMHOrmanostheCracked"] = { AL["Timbermaw Hold"].." - "..AL["Ormanos the Cracked"], "AtlasLootItems" },
+	["TMHChieftainPartath"] = { AL["Timbermaw Hold"].." - "..AL["Chieftain Partath"], "AtlasLootItems" },
+	["TMHSelenaxxFoulheart"] = { AL["Timbermaw Hold"].." - "..AL["Selenaxx Foulheart"], "AtlasLootItems" },
+	["TMHUrsol"] = { AL["Timbermaw Hold"].." - "..AL["Ursol"], "AtlasLootItems" },
+	["TMHTrash"] = { AL["Timbermaw Hold"].." - "..AL["Trash Mobs"], "AtlasLootItems" },
 	------------
 	--- Sets ---
 	------------
@@ -1001,7 +1027,10 @@ AtlasLoot_TableNames = {
 	--FirstAid
 	["FirstAid1"] = { AL["First Aid"], "AtlasLootCrafting" },
 	--Survival
-	["Survival1"] = { AL["Survival"], "AtlasLootCrafting" },
+	["SurvivalApprentice1"] = { AL["Survival"], "AtlasLootCrafting" },
+	["SurvivalJourneyman1"] = { AL["Survival"], "AtlasLootCrafting" },
+	["SurvivalExpert1"] = { AL["Survival"], "AtlasLootCrafting" },
+	["SurvivalArtisan1"] = { AL["Survival"], "AtlasLootCrafting" },
 	["Survival2"] = { AL["Gardening"], "AtlasLootCrafting" },
 	--Poisons
 	["Poisons1"] = { AL["Rogue"] .. " - " .. AL["Poisons"], "AtlasLootCrafting" },
@@ -1097,6 +1126,7 @@ AtlasLoot_TableNames = {
 	["LEATHERWORKINGMENU"] = { "dummy", "dummy" },
 	["TAILORINGMENU"] = { "dummy", "dummy" },
 	["COOKINGMENU"] = { "dummy", "dummy" },
+	["SURVIVALMENU"] = { "dummy", "dummy" },
 	["FIRSTAIDMENU"] = { "dummy", "dummy" },
 	["WORLDBOSSMENU"] = { "dummy", "dummy" },
 	["JEWELCRAFTMENU"] = { "dummy", "dummy" },
@@ -1713,6 +1743,35 @@ AtlasLoot_TableNamesBoss = {
 		["SWRMergothid"] = { AL["Mergothid"], "AtlasLootItems" },
 		["SWRTrash"] = { AL["Trash Mobs"], "AtlasLootItems" },
 	},
+	["Windhorn Canyon"] = {--1.18.1风角峡谷
+        ["WSCPathunBuskhide"] = { AL["Pathun Buskhide"], "AtlasLootItems" },
+        ["WSCAhgktosThePure"] = { AL["Ahgk'tos the Pure"], "AtlasLootItems" },
+        ["WSCAmbassadorVortalus"] = { AL["Ambassador Vortalus"], "AtlasLootItems" },
+        ["WSCWalganBloodcaller"] = { AL["Walgan Bloodcaller"], "AtlasLootItems" },
+        ["WSCBonespeakerNarlgom"] = { AL["Bonespeaker Narlgom"], "AtlasLootItems" },
+        ["WSCProphetStormhoof"] = { AL["Prophet Stormhoof"], "AtlasLootItems" },
+        ["WSCChieftainShalkBlackwind"] = { AL["Chieftain Shalk Blackwind"], "AtlasLootItems" },
+		["WSCTrash"] = { AL["Trash Mobs"], "AtlasLootItems" },
+    },
+	["Frostmane Hollow"] = {--1.18.1霜鬃谷
+	    ["FMHNimbleTansha"] = { AL["Nimble Tansha"], "AtlasLootItems" },
+		["FMHUbbukazBattlefieldOverlord"] = { AL["Ubbukaz Battlefield Overlord"], "AtlasLootItems" },
+		["FMHProphetKanza"] = { AL["Prophet Kanza"], "AtlasLootItems" },
+		["FMHColdHaile"] = { AL["Cold Haile"], "AtlasLootItems" },
+		["FMHTrash"] = { AL["Trash Mobs"], "AtlasLootItems" },
+	},
+	["Timbermaw Hold"] = {--1.18.1木喉要塞
+		["TMHKarrshtheSentinel"] = { AL["Karrsh the Sentinel"], "AtlasLootItems" },
+		["TMHRotgrowl"] = { AL["Rotgrowl"], "AtlasLootItems" },
+		["TMHTriochtheDevourer"] = { AL["Trioch the Devourer"], "AtlasLootItems" },
+		["TMHLoktanagtheVile"] = { AL["Loktanag the Vile"], "AtlasLootItems" },
+		["TMHArchdruidKronn"] = { AL["Archdruid Kronn"], "AtlasLootItems" },
+		["TMHOrmanostheCracked"] = { AL["Ormanos the Cracked"], "AtlasLootItems" },
+		["TMHChieftainPartath"] = { AL["Chieftain Partath"], "AtlasLootItems" },
+		["TMHSelenaxxFoulheart"] = { AL["Selenaxx Foulheart"], "AtlasLootItems" },
+		["TMHUrsol"] = { AL["Ursol"], "AtlasLootItems" },
+		["TMHTrash"] = { AL["Trash Mobs"], "AtlasLootItems" },
+	},
 	------------
 	--- Sets ---
 	------------
@@ -2192,7 +2251,10 @@ AtlasLoot_TableNamesBoss = {
 		--FirstAid
 		["FirstAid1"] = { AL["First Aid"], "AtlasLootCrafting" },
 		--Survival
-		["Survival1"] = { AL["Survival"], "AtlasLootCrafting" },
+		["SurvivalApprentice1"] = { AL["Survival"], "AtlasLootCrafting" },
+		["SurvivalJourneyman1"] = { AL["Survival"], "AtlasLootCrafting" },
+		["SurvivalExpert1"] = { AL["Survival"], "AtlasLootCrafting" },
+		["SurvivalArtisan1"] = { AL["Survival"], "AtlasLootCrafting" },
 		["Survival2"] = { AL["Gardening"], "AtlasLootCrafting" },
 		--Poisons
 		["Poisons1"] = { AL["Rogue"] .. ": " .. AL["Poisons"], "AtlasLootCrafting" },

@@ -4,12 +4,9 @@
 ## Title-zhCN:|CFF00FF00[|r|CFFDD66DD界面|r|CFF00FF00] MSBT战斗数值增强
 ## Notes: Scrolls battle information around the character model.
 ## Notes-zhCN: 重新整合战斗信息，以流水列表的形式在玩家角色两侧滚动显示。|n/MSBT 
+## Dependencies: !Libs
 ## OptionalDeps: SW_FixLogStrings
 ## SavedVariables: MikSBT_Save
-
-Libs\AceLibrary\AceLibrary.lua
-Libs\AceLocale-2.2\AceLocale-2.2.lua
-Libs\BabbleSpell-2.2\Babble-Spell-2.2.lua
 
 MikScrollingBattleText-enUS.lua
 MikScrollingBattleText-frFR.lua

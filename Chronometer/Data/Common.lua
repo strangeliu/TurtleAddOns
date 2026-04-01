@@ -4,6 +4,34 @@
 -- 引入Ace库中的Babble-Spell-2.2模块，用于处理法术名称相关操作
 local BS = AceLibrary("Babble-Spell-2.2")
 
+local turtleNames = {
+    ["Arcane Eclipse"] = { zhCN = "月蚀" },
+    ["Equilibrium"] = { zhCN = "平衡" },
+    ["Flourish"] = { zhCN = "兴奋" },
+    ["Holy Might"] = { zhCN = "神圣威能" },
+    ["Improved Fire Totems"] = { zhCN = "强化火焰图腾" },
+    ["Mind Quickening"] = { zhCN = "思维敏捷" },
+    ["Nature Eclipse"] = { zhCN = "日蚀" },
+    ["Rapid Solstice"] = { zhCN = "斗转星移" },
+    ["Totemic Mastery"] = { zhCN = "图腾掌握" },
+    ["Totemic Recall"] = { zhCN = "图腾召回" },
+    ["Zeal"] = { zhCN = "狂热" },
+}
+
+function Chronometer:GetLocalizedTurtleName(enUS)
+    local entry = turtleNames[enUS]
+    if not entry then
+        return enUS
+    end
+
+    local locale = GetLocale()
+    if locale == "zhCN" or locale == "zhTW" then
+        return entry.zhCN or enUS
+    end
+
+    return enUS
+end
+
 -- 定义Chronometer对象的CommonSetup方法
 function Chronometer:CommonSetup()
     -- 获取玩家职业（第二个返回值为职业英文缩写）
@@ -27,7 +55,7 @@ function Chronometer:CommonSetup()
     self:AddTimer(self.EVENT, BS["Ephemeral Power"],          	15, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON" })
     -- 添加思维加速效果计时器，持续20秒
     -- 配置项包含显示名称替换（xn参数，显示为Critical Mass）
-    self:AddTimer(self.EVENT, "Mind Quickening",          		20, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON",xn=BS["Critical Mass"]})
+    self:AddTimer(self.EVENT, self:GetLocalizedTurtleName("Mind Quickening"), 20, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON", xn=BS["Critical Mass"] })
 end
 
 -- 将CommonSetup方法插入到Chronometer的数据设置列表中，用于初始化时执行
@@ -101,7 +129,7 @@ function Chronometer:GetSpellDescription(spellName, spellRank)
     
     if not spellID then
         descriptionframe:Hide()
-        return "法术未找到" 
+        return nil
     end
 
     -- 安全设置法术信息
@@ -109,10 +137,14 @@ function Chronometer:GetSpellDescription(spellName, spellRank)
     
     -- 提取描述文本
     local line = _G["Chronometer_ReusableTooltipTextLeft" .. descriptionframe:NumLines()]
-	local description = line:GetText() or ""
+	local description = line and line:GetText() or nil
 
     descriptionframe:ClearLines()  -- 清理内容以便下次复用
     descriptionframe:Hide()        -- 立即隐藏
+
+    if not description then
+        return nil
+    end
 
     return Chronometer:ExtractTimeFromDescription(strtrim(description))
 end
@@ -120,8 +152,8 @@ end
 function Chronometer:ExtractTimeFromDescription(description)
     if not description then return nil end
 	local locale = GetLocale()
-	local channelingformat = channelingFormats[locale] or "持续(%d+%.?%d*)秒"
-	local curseformat = curseFormats[locale] or "在(%d+%.?%d*)秒内"
+	local channelingformat = channelingFormats[locale] or channelingFormats["enUS"]
+	local curseformat = curseFormats[locale] or curseFormats["enUS"]
 	
     local timeValue = string.match(description, curseformat) or string.match(description, channelingformat)
     return tonumber(timeValue) or nil

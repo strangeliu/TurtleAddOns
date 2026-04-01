@@ -1264,6 +1264,7 @@ local activityListFrame = Meeting.GUI.CreateListFrame({
 })
 
 local function ReloadCell(frame, activity)
+	if not frame then return end
     local info = Meeting.GetActivityInfo(activity.code)
     frame.nameFrame:SetText(info.name)
     frame.hcFrame:SetText(activity.isHC and "HC" or "")

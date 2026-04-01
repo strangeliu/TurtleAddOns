@@ -24,68 +24,70 @@ Chronometer.Warlock_Dark_Harvest_Haste = 0
 
 -- 创建主帧
 local WarlockTimerFrame = CreateFrame("Frame")
-WarlockTimerFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-WarlockTimerFrame:RegisterEvent("PLAYER_AURAS_CHANGED")
 WarlockTimerFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 WarlockTimerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+WarlockTimerFrame:RegisterEvent("SPELLS_CHANGED")
 WarlockTimerFrame:RegisterEvent("SPELLCAST_CHANNEL_START")
 WarlockTimerFrame:RegisterEvent("SPELLCAST_CHANNEL_UPDATE")	
+
+local function refreshDuration(spellName, rank, fallback)
+    local rankText = Chronometer:getRank(spellName, rank)
+    return tonumber(Chronometer:GetSpellDescription(spellName, rankText)) or fallback
+end
+
+function Chronometer:RefreshWarlockData()
+    local _, eclass = UnitClass("player")
+    if eclass ~= "WARLOCK" then return end
+
+    self.Warlock_Corruption_H = refreshDuration(BS["Corruption"], 3, 18)
+    self.Warlock_Corruption_M = refreshDuration(BS["Corruption"], 2, 15)
+    self.Warlock_Corruption_L = refreshDuration(BS["Corruption"], 1, 12)
+    self.Warlock_Agony = refreshDuration(BS["Curse of Agony"], 1, 24)
+    self.Warlock_Siphon_Life = refreshDuration(BS["Siphon Life"], 1, 30)
+    self.Warlock_Dark_Harvest = refreshDuration(BS["Dark Harvest"], 1, 8)
+    self.Warlock_Talents_XieZhou = 0
+
+    for t = 1, GetNumTalentTabs() do
+        local numTalents = GetNumTalents(t)
+        for i = 1, numTalents do
+            local _, texture, _, _, currRank = GetTalentInfo(t, i)
+            if texture and strfind(texture, "Interface\\Icons\\Spell_Shadow_CurseOfAchimonde") and currRank == 1 then
+                self.Warlock_Talents_XieZhou = 1
+                break
+            end
+        end
+        if self.Warlock_Talents_XieZhou == 1 then
+            break
+        end
+    end
+
+    self:WarlockSetup()
+end
 	
 WarlockTimerFrame:SetScript("OnEvent", function()
-	if event == "PLAYER_ENTERING_WORLD" or event == "CHARACTER_POINTS_CHANGED" or event == "PLAYER_TARGET_CHANGED" or event== "PLAYER_AURAS_CHANGED" then	
-		--[[if Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 3)) then Chronometer.Warlock_Corruption_H=Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 3));end;
-		if Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 2)) then Chronometer.Warlock_Corruption_M=Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 2));end;
-		if Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 1)) then Chronometer.Warlock_Corruption_L=Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 1));end;
-		]]
--- 修改后：确保数值有效，失败时用默认值-007
-    local corruptionH = Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 3))
-    if corruptionH then 
-        Chronometer.Warlock_Corruption_H = tonumber(corruptionH) or 18  -- 高等级默认18秒
-    end;
-
--- 中低等级同理
-    local corruptionM = Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 2))
-    if corruptionM then 
-        Chronometer.Warlock_Corruption_M = tonumber(corruptionM) or 15  -- 中等级默认15秒
-    end;
-
-    local corruptionL = Chronometer:GetSpellDescription(BS["Corruption"], Chronometer:getRank(BS["Corruption"], 1))
-    if corruptionL then 
-        Chronometer.Warlock_Corruption_L = tonumber(corruptionL) or 12  -- 低等级默认12秒
-    end;
-	--007以上为分隔符记号
-		if Chronometer:GetSpellDescription(BS["Curse of Agony"], Chronometer:getRank(BS["Curse of Agony"], 1)) then Chronometer.Warlock_Agony=Chronometer:GetSpellDescription(BS["Curse of Agony"], Chronometer:getRank(BS["Curse of Agony"], 1));end;
-		if Chronometer:GetSpellDescription(BS["Siphon Life"], Chronometer:getRank(BS["Siphon Life"], 1)) then Chronometer.Warlock_Siphon_Life=Chronometer:GetSpellDescription(BS["Siphon Life"], Chronometer:getRank(BS["Siphon Life"], 1));end;	
-		if Chronometer:GetSpellDescription(BS["Dark Harvest"], Chronometer:getRank(BS["Dark Harvest"], 1)) then Chronometer.Warlock_Dark_Harvest=Chronometer:GetSpellDescription(BS["Dark Harvest"], Chronometer:getRank(BS["Dark Harvest"], 1));end;
-
-
-		for t=1, GetNumTalentTabs() do
-			local numTalents = GetNumTalents(t);
-			for i=1, numTalents do
-				local nameTalent,Texture,_,_,currRank,maxRank = GetTalentInfo(t,i);
-				if nameTalent and strfind(Texture,"Interface\\Icons\\Spell_Shadow_CurseOfAchimonde") and currRank==1 then
-					Chronometer.Warlock_Talents_XieZhou = 1;
-				end;
-			end;
-		end;
-		
-		Chronometer:WarlockSetup()
+	if event == "PLAYER_ENTERING_WORLD" or event == "CHARACTER_POINTS_CHANGED" or event == "SPELLS_CHANGED" then
+		Chronometer:RefreshWarlockData()
 	end
 
 	if event == "SPELLCAST_CHANNEL_START" or event == "SPELLCAST_CHANNEL_UPDATE" then
+        local harvestDuration = tonumber(Chronometer.Warlock_Dark_Harvest) or 8
         -- 检测暗影收割开始
-        if arg1/1000 == tonumber(Chronometer:GetSpellDescription(BS["Dark Harvest"], Chronometer:getRank(BS["Dark Harvest"], 1))) then
+        if arg1 and (arg1 / 1000) == harvestDuration then
             Chronometer.Warlock_Dark_Harvest_Active = 1
             Chronometer.Warlock_Dark_Harvest_StartTime = GetTime()
-            Chronometer.Warlock_Dark_Harvest_EndTime = Chronometer.Warlock_Dark_Harvest_StartTime + arg1/1000 -- 默认
+            Chronometer.Warlock_Dark_Harvest_EndTime = Chronometer.Warlock_Dark_Harvest_StartTime + (arg1 / 1000)
             Chronometer.Warlock_Dark_Harvest_Target = UnitName("target")
+            if not Chronometer.Warlock_Dark_Harvest_Target then
+                Chronometer.Warlock_Dark_Harvest_Active = 0
+                return
+            end
             Chronometer.Warlock_Dark_Harvest_Haste = 1 - ((Chronometer.Warlock_Dark_Harvest_EndTime - Chronometer.Warlock_Dark_Harvest_StartTime) / 8)
 			local currentTime = GetTime()
 			-- 更新所有活跃的DOT计时器，调整剩余时间
 			for i = 1, 20 do
 				local bar = Chronometer.bars[i]
 				if bar and bar.id then
-					if strfind(bar.id,Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
+					if Chronometer.Warlock_Dark_Harvest_Target and strfind(bar.id, Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
 						local duration = bar.endtime - currentTime
 						local orgintime = bar.timer.d
 						if duration > (Chronometer.Warlock_Dark_Harvest_EndTime - Chronometer.Warlock_Dark_Harvest_StartTime) * ( 0.3 + Chronometer.Warlock_Dark_Harvest_Haste ) then
@@ -105,7 +107,7 @@ WarlockTimerFrame:SetScript("OnEvent", function()
 			for i = 1, 20 do
 				local bar = Chronometer.bars[i]
 				if bar and bar.id then
-					if strfind(bar.id,Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
+					if Chronometer.Warlock_Dark_Harvest_Target and strfind(bar.id, Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
 						local duration = bar.endtime - currentTime
 						local orgintime = bar.timer.d
 						bar.timer.d = duration +  (Chronometer.Warlock_Dark_Harvest_EndTime - currentTime) * (0.3 + Chronometer.Warlock_Dark_Harvest_Haste)
@@ -139,7 +141,7 @@ DarkharvestFrame:SetScript("OnUpdate", function()
 		for i = 1, 20 do
 			local bar = Chronometer.bars[i]
 			if bar and bar.id then
-				if strfind(bar.id,Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
+				if Chronometer.Warlock_Dark_Harvest_Target and strfind(bar.id, Chronometer.Warlock_Dark_Harvest_Target) and (bar.name == BS["Corruption"] or bar.name == BS["Curse of Agony"] or bar.name == BS["Siphon Life"]) then
 					local duration = bar.endtime - elapsedTime
 					local orgintime = bar.timer.d
 					bar.timer.d = duration +  (Chronometer.Warlock_Dark_Harvest_EndTime - elapsedTime) * (0.3 + Chronometer.Warlock_Dark_Harvest_Haste)

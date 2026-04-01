@@ -10,8 +10,13 @@ local zDisplayPvPRank
 local zClassIcon
 local zShowIsPlayer
 local zDisplayFaction
-local zPlayerServer
 local zTargetOfMouse
+local zShowChallenges
+local zShowResist
+local zShowManaBar
+local zColorHealthBar
+local zHighlightOwnGuild
+local zHidePvPLine
 local zTip_Default = {
 	["zAnchor"] = 3,
 	["AnchorSlider"] = 3,
@@ -36,36 +41,66 @@ local zTip_Default = {
 	["zClassIcon"] = 1,
 	["zShowIsPlayer"] = 1,
 	["zDisplayFaction"] = 1,
-	["zPlayerServer"] = 1,
 	["zTargetOfMouse"] = 1,
+	["zShowChallenges"] = 1,
+	["zShowResist"] = 1,
+	["zShowManaBar"] = 1,
+	["zColorHealthBar"] = 1,
+	["zHighlightOwnGuild"] = 1,
+	["zHidePvPLine"] = 1,
 }
 
---加载配置
-local zTipFrame = CreateFrame("Frame")
-zTipFrame:RegisterAllEvents()
-zTipFrame:RegisterEvent("VARIABLES_LOADED")
-zTipFrame:SetScript("OnEvent",function()
-	if ( event == "VARIABLES_LOADED" ) then
-		 if not zTip_Saved then
-			zTip_Saved = {}
-			for k, v in zTip_Default do
-				zTip_Saved[k] = v
-			end
+local function zTip_CopyDefaults()
+	for k, v in pairs(zTip_Default) do
+		if zTip_Saved[k] == nil then
+			zTip_Saved[k] = v
 		end
-	zAnchor = zTip_Saved["zAnchor"]
-	zOffsetX = zTip_Saved["zOffsetX"]
-	zOffsetY = zTip_Saved["zOffsetY"]
-	zOrigPosX = zTip_Saved["zOrigPosX"]
-	zOrigPosY = zTip_Saved["zOrigPosY"]
+	end
+end
+
+local function zTip_GetSavedNumber(key)
+	local value = tonumber(zTip_Saved[key])
+	if value == nil then
+		value = zTip_Default[key]
+		zTip_Saved[key] = value
+	end
+	return value
+end
+
+local function zTip_LoadSaved()
+	if not zTip_Saved then
+		zTip_Saved = {}
+	end
+
+	zTip_CopyDefaults()
+
+	zAnchor = zTip_GetSavedNumber("zAnchor")
+	zOffsetX = zTip_GetSavedNumber("zOffsetX")
+	zOffsetY = zTip_GetSavedNumber("zOffsetY")
+	zOrigPosX = zTip_GetSavedNumber("zOrigPosX")
+	zOrigPosY = zTip_GetSavedNumber("zOrigPosY")
 	zScale = zTip_Saved["zScale"]
-	zGuildColorAlpha = zTip_Saved["zGuildColorAlpha"]
+	zGuildColorAlpha = tonumber(zTip_Saved["zGuildColorAlpha"]) or zTip_Default["zGuildColorAlpha"]
 	zFade = zTip_Saved["zFade"]
-	zDisplayPvPRank = zTip_Saved["zDisplayPvPRank"]
+	zDisplayPvPRank = zTip_GetSavedNumber("zDisplayPvPRank")
 	zClassIcon = zTip_Saved["zClassIcon"]
 	zShowIsPlayer = zTip_Saved["zShowIsPlayer"]
 	zDisplayFaction = zTip_Saved["zDisplayFaction"]
-	zPlayerServer = zTip_Saved["zPlayerServer"]
 	zTargetOfMouse = zTip_Saved["zTargetOfMouse"]
+	zShowChallenges = zTip_Saved["zShowChallenges"]
+	zShowResist = zTip_Saved["zShowResist"]
+	zShowManaBar = zTip_Saved["zShowManaBar"]
+	zColorHealthBar = zTip_Saved["zColorHealthBar"]
+	zHighlightOwnGuild = zTip_Saved["zHighlightOwnGuild"]
+	zHidePvPLine = zTip_Saved["zHidePvPLine"]
+end
+
+--加载配置
+local zTipFrame = CreateFrame("Frame")
+zTipFrame:RegisterEvent("VARIABLES_LOADED")
+zTipFrame:SetScript("OnEvent",function()
+	if ( event == "VARIABLES_LOADED" ) then
+		zTip_LoadSaved()
 	end
 end)
 
@@ -96,7 +131,10 @@ function editbox(parent,name)
 end
 function editboxedit(name,savename)
         name:SetScript("OnTextChanged", function(self)
-		zTip_Saved[savename] = name:GetText()
+		local value = tonumber(name:GetText())
+		if value ~= nil then
+			zTip_Saved[savename] = value
+		end
 	end)
 end
 function slider(parent,textname,low,high,step) 
@@ -171,7 +209,7 @@ name:SetScript("OnClick",function()
 			zTip_Saved[xo] = zTip_Saved[xo.."E"]
 			zTip_Saved[yo] = zTip_Saved[yo.."E"]
 			getglobal(xo):SetText(zTip_Saved[xo.."E"])
-			getglobal(yo):SetText(zTip_Saved[xo.."E"])
+			getglobal(yo):SetText(zTip_Saved[yo.."E"])
 		end
 	elseif type ==5 then
 		if name:GetChecked() == nil then
@@ -196,12 +234,14 @@ end
 --设置面板
 local setwindows = CreateFrame("Frame", nil, UIParent);
 setwindows:SetPoint("CENTER",UIParent)
-setwindows:SetHeight(500)
-setwindows:SetWidth(500)
+setwindows:SetHeight(600)
+setwindows:SetWidth(540)
+setwindows:SetMovable(true)
+setwindows:SetClampedToScreen(true)
 setwindows:Hide()
 setwindows.border = CreateFrame("Frame", nil, setwindows);
-setwindows.border:SetHeight(380)
-setwindows.border:SetWidth(450)
+setwindows.border:SetHeight(470)
+setwindows.border:SetWidth(490)
 setwindows.border:SetPoint("CENTER",setwindows)
 setwindows.border:SetBackdrop({
 	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", 
@@ -219,6 +259,22 @@ setwindows.Header:SetPoint("TOP",setwindows.border,0,12)
 setwindows.HeaderText = setwindows.border:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 setwindows.HeaderText:SetText("zTip设置")
 setwindows.HeaderText:SetPoint("TOP",setwindows.border)
+setwindows.DragBar = CreateFrame("Frame", nil, setwindows.border)
+setwindows.DragBar:SetPoint("TOPLEFT", setwindows.Header, "TOPLEFT", 0, 0)
+setwindows.DragBar:SetPoint("BOTTOMRIGHT", setwindows.Header, "BOTTOMRIGHT", 0, 0)
+setwindows.DragBar:EnableMouse(true)
+setwindows.DragBar:SetScript("OnMouseDown", function()
+	if arg1 == "LeftButton" then
+		setwindows:StartMoving()
+	end
+end)
+setwindows.DragBar:SetScript("OnMouseUp", function()
+	setwindows:StopMovingOrSizing()
+end)
+setwindows.DragBar:SetScript("OnHide", function()
+	setwindows:StopMovingOrSizing()
+end)
+gmtip(setwindows.DragBar, "拖动窗口", "按住标题区域左键可拖动 zTip 设置窗口")
 setwindows.Close = CreateFrame("Button", nil, setwindows.border,"OptionsButtonTemplate");
 setwindows.Close:SetPoint("BOTTOM",setwindows.border,"BOTTOM",50,15)
 setwindows.Close:SetText("关闭")
@@ -294,13 +350,33 @@ setwindows.zDisplayFaction = checkbutton(zDisplayFaction,setwindows.border, "是
 setwindows.zDisplayFaction:SetPoint("LEFT",setwindows.zShowIsPlayer,"RIGHT",200,0)
 gmtip(setwindows.zDisplayFaction, "显示NPC声望等级", "是否显示NPC声望等级(注意如果声望面板中折叠了该阵营有可能无法区分崇敬和崇拜！)")
 
-setwindows.zPlayerServer = checkbutton(zPlayerServer,setwindows.border, "是否显示玩家服务器")
-setwindows.zPlayerServer:SetPoint("TOP",setwindows.zShowIsPlayer,"BOTTOM",0,-2)
-gmtip(setwindows.zPlayerServer, "显示玩家服务器", "反选不显示，勾选显示")
+setwindows.zShowChallenges = checkbutton(zShowChallenges,setwindows.border, "显示挑战模式")
+setwindows.zShowChallenges:SetPoint("TOP",setwindows.zShowIsPlayer,"BOTTOM",0,-2)
+gmtip(setwindows.zShowChallenges, "显示挑战模式", "显示乌龟模式、硬核模式、流浪模式等玩家挑战状态")
 
 setwindows.zTargetOfMouse = checkbutton(zTargetOfMouse,setwindows.border, "是否显示对象的目标")
-setwindows.zTargetOfMouse:SetPoint("LEFT",setwindows.zPlayerServer,"RIGHT",200,0)
+setwindows.zTargetOfMouse:SetPoint("LEFT",setwindows.zShowChallenges,"RIGHT",200,0)
 gmtip(setwindows.zTargetOfMouse, "显示鼠标对像的目标", "反选不显示，勾选显示")
+
+setwindows.zShowResist = checkbutton(zShowResist,setwindows.border, "显示抗性与护甲")
+setwindows.zShowResist:SetPoint("TOP",setwindows.zShowChallenges,"BOTTOM",0,-2)
+gmtip(setwindows.zShowResist, "显示抗性与护甲", "显示目标的火抗、冰抗、自然抗、暗抗与护甲")
+
+setwindows.zShowManaBar = checkbutton(zShowManaBar,setwindows.border, "显示法力能量条")
+setwindows.zShowManaBar:SetPoint("LEFT",setwindows.zShowResist,"RIGHT",200,0)
+gmtip(setwindows.zShowManaBar, "显示法力/能量条", "在鼠标提示底部显示目标的法力、能量或怒气条")
+
+setwindows.zHighlightOwnGuild = checkbutton(zHighlightOwnGuild,setwindows.border, "高亮本公会名称")
+setwindows.zHighlightOwnGuild:SetPoint("TOP",setwindows.zShowResist,"BOTTOM",0,-2)
+gmtip(setwindows.zHighlightOwnGuild, "高亮本公会名称", "当目标与自己同公会时，使用更醒目的颜色显示公会行")
+
+setwindows.zColorHealthBar = checkbutton(zColorHealthBar,setwindows.border, "血条随血量染色")
+setwindows.zColorHealthBar:SetPoint("LEFT",setwindows.zHighlightOwnGuild,"RIGHT",200,0)
+gmtip(setwindows.zColorHealthBar, "血条随血量染色", "按照目标当前血量百分比给 tooltip 血条着色")
+
+setwindows.zHidePvPLine = checkbutton(zHidePvPLine,setwindows.border, "隐藏PVP状态行")
+setwindows.zHidePvPLine:SetPoint("TOP",setwindows.zHighlightOwnGuild,"BOTTOM",0,-2)
+gmtip(setwindows.zHidePvPLine, "隐藏PVP状态行", "隐藏系统原始的 PvP 状态文字，使 tooltip 信息更紧凑")
 
 function LoadSet()
 
@@ -309,9 +385,8 @@ setwindows.Close:SetScript("OnClick",function()
 	setwindows:Hide()
 end)
 setwindows.DefaultSet:SetScript("OnClick",function()
-	for k, v in zTip_Default do
-		zTip_Saved[k] = v
-	end
+	zTip_Saved = {}
+	zTip_LoadSaved()
 	setwindows:Hide()
 end)
 
@@ -387,15 +462,40 @@ setwindows:SetScript("OnShow",function()
 	else
 		setwindows.zDisplayFaction:SetChecked(1)
 	end
-	if zPlayerServer == false then
-		setwindows.zPlayerServer:SetChecked(nil)
-	else
-		setwindows.zPlayerServer:SetChecked(1)
-	end
 	if zTargetOfMouse == false then
 		setwindows.zTargetOfMouse:SetChecked(nil)
 	else
 		setwindows.zTargetOfMouse:SetChecked(1)
+	end
+	if zShowChallenges == false then
+		setwindows.zShowChallenges:SetChecked(nil)
+	else
+		setwindows.zShowChallenges:SetChecked(1)
+	end
+	if zShowManaBar == false then
+		setwindows.zShowManaBar:SetChecked(nil)
+	else
+		setwindows.zShowManaBar:SetChecked(1)
+	end
+	if zShowResist == false then
+		setwindows.zShowResist:SetChecked(nil)
+	else
+		setwindows.zShowResist:SetChecked(1)
+	end
+	if zColorHealthBar == false then
+		setwindows.zColorHealthBar:SetChecked(nil)
+	else
+		setwindows.zColorHealthBar:SetChecked(1)
+	end
+	if zHighlightOwnGuild == false then
+		setwindows.zHighlightOwnGuild:SetChecked(nil)
+	else
+		setwindows.zHighlightOwnGuild:SetChecked(1)
+	end
+	if zHidePvPLine == false then
+		setwindows.zHidePvPLine:SetChecked(nil)
+	else
+		setwindows.zHidePvPLine:SetChecked(1)
 	end
 end)
 setwindows:SetScript("OnUpdate",function()
@@ -454,8 +554,13 @@ setwindows:SetScript("OnUpdate",function()
 	zClassIcon = zTip_Saved["zClassIcon"]
 	zShowIsPlayer = zTip_Saved["zShowIsPlayer"]
 	zDisplayFaction = zTip_Saved["zDisplayFaction"]
-	zPlayerServer = zTip_Saved["zPlayerServer"]
 	zTargetOfMouse = zTip_Saved["zTargetOfMouse"]
+	zShowChallenges = zTip_Saved["zShowChallenges"]
+	zShowResist = zTip_Saved["zShowResist"]
+	zShowManaBar = zTip_Saved["zShowManaBar"]
+	zColorHealthBar = zTip_Saved["zColorHealthBar"]
+	zHighlightOwnGuild = zTip_Saved["zHighlightOwnGuild"]
+	zHidePvPLine = zTip_Saved["zHidePvPLine"]
 end)
 
 editcheckbutton(setwindows.zAnchor,"AnchorSlider","zAnchor",4,"zOffsetX","zOffsetY",setwindows.zAnchorSlider)
@@ -467,8 +572,13 @@ editcheckbutton(setwindows.zFade,nil,"zFade",3)
 editcheckbutton(setwindows.zClassIcon,nil,"zClassIcon",3)
 editcheckbutton(setwindows.zShowIsPlayer,nil,"zShowIsPlayer",3)
 editcheckbutton(setwindows.zDisplayFaction,nil,"zDisplayFaction",3)
-editcheckbutton(setwindows.zPlayerServer,nil,"zPlayerServer",3)
 editcheckbutton(setwindows.zTargetOfMouse,nil,"zTargetOfMouse",3)
+editcheckbutton(setwindows.zShowChallenges,nil,"zShowChallenges",3)
+editcheckbutton(setwindows.zShowManaBar,nil,"zShowManaBar",3)
+editcheckbutton(setwindows.zShowResist,nil,"zShowResist",3)
+editcheckbutton(setwindows.zColorHealthBar,nil,"zColorHealthBar",3)
+editcheckbutton(setwindows.zHighlightOwnGuild,nil,"zHighlightOwnGuild",3)
+editcheckbutton(setwindows.zHidePvPLine,nil,"zHidePvPLine",3)
 
 editslider(setwindows.zAnchorSlider,"AnchorSlider","zAnchor")
 editslider(setwindows.zScaleSlider,"ScaleSlider","zScale")
@@ -520,7 +630,7 @@ local function zGetHexColor(color)
 	if not color then
 		return "FFFFFF"
 	else
-		return string.format("%2x%2x%2x",color.r*255,color.g*255,color.b*255)
+		return string.format("%02x%02x%02x", color.r * 255, color.g * 255, color.b * 255)
 	end
 end
 local function zGetUnitFaction(unit)
@@ -552,14 +662,14 @@ end
 --[[ before show ]]
 local z_ClassIcon, targetlinenum
 local RankIcon --军衔图标
-local targetlinetrue --显示目标
-local ShowChallenges_timer --显示玩家挑战项目
+local targetlinetrue = 0 --显示目标
+local ShowChallenges_timer = 0 --显示玩家挑战项目
 local function zTipOnShow()
 	local found
 	local trueNum = GameTooltip:NumLines()
 	for i = 3, trueNum do
 		--~ 删除PVP字符
-		if getglobal("GameTooltipTextLeft"..i):GetText() == PVP_ENABLED then
+		if zHidePvPLine ~= false and getglobal("GameTooltipTextLeft"..i):GetText() == PVP_ENABLED then
 			getglobal("GameTooltipTextLeft"..i):SetText()
 			found = true
 		end
@@ -582,6 +692,7 @@ end
 --鼠标血条随着血量变化染色
 function zTip_HealthBar_OnValueChanged(value, smooth)
 	if not value then return end
+	if zColorHealthBar == false then return end
 
 	if this == GameTooltipStatusBar then
 		this:SetStatusBarColor(SetPercentColor(UnitHealth("mouseover"), UnitHealthMax("mouseover")))
@@ -789,16 +900,6 @@ function zTipFormat(unit)
 		if tmp2 then
 			tip = "<"..tmp2..">"
 		end
-		-- 服务器
-		_, tmp = UnitName(unit)
-		if zPlayerServer and (tmp or tip) then
-			if tmp and tip then
-				tmp2 = " @ "
-			else
-				tmp2 = ""
-			end
-			tip = format("%s|cff00EEEE%s%s|r", tip or "", tmp2, tmp or "")
-		end
 	end
 	if tip then
 		tmp = GameTooltip:NumLines()
@@ -862,7 +963,7 @@ function zTipFormat(unit)
 		end
 	end
 --~ 标记本工会为亮色
-	if isplayer and GetGuildInfo(unit) == GetGuildInfo("player") then
+	if zHighlightOwnGuild ~= false and isplayer and GetGuildInfo(unit) == GetGuildInfo("player") then
 		GameTooltipTextLeft2:SetTextColor(0.9, 0.5, 0.9)
 	end
 	
@@ -980,6 +1081,8 @@ GameTooltip:RegisterEvent("ADDON_LOADED")
 GameTooltip:SetScript("OnEvent", function()
 	if ( event == "UPDATE_MOUSEOVER_UNIT" ) then
 		getglobal(this:GetName().."TextLeft1"):SetTextColor(GameTooltip_UnitColor("mouseover"))
+		GameTooltip.challenges = false
+		GameTooltip.challengePending = nil
 		targetlinetrue = 1 --目标显示
 		ShowChallenges_timer = 0 --显示目标挑战项目
 	elseif event == "PLAYER_ENTERING_WORLD" then
@@ -1104,78 +1207,189 @@ function 	ShowChallenges_time()
 		ShowChallenges_timer = ShowChallenges_timer + 1
 	end
 end
-local ztipframe = CreateFrame("Frame")
-ztipframe:RegisterEvent("CHAT_MSG_ADDON")
-ztipframe:SetScript("OnEvent", function()
-	if ( event == "CHAT_MSG_ADDON" ) then
-		if arg1 == "RESPONSE_PLAYER_CHALLENGES" then
-			local s = strfind(arg2, ":")
-			local player = strsub(arg2, 1, s - 1)
-			if UnitName("mouseover") == player then
-				local mask = strsub(arg2, s + 1)
-				table.insert(Turtle_ChallengesCache[GetRealmName()][player], tonumber(mask))
-			end
-			zTip_UpdateChallenges(player)
-		end
+local zTip_FallbackChallenges = {
+	LEVELING_CHALLENGE_SLOWSTEADY,
+	LEVELING_CHALLENGE_EXHAUSTION,
+	LEVELING_CHALLENGE_WARMODE,
+	LEVELING_CHALLENGE_HARDCORE,
+	LEVELING_CHALLENGE_VAGRANT,
+	LEVELING_CHALLENGE_BOARING,
+	LEVELING_CHALLENGE_LUNATIC,
+	LEVELING_CHALLENGE_CRAFTMASTER,
+	LEVELING_CHALLENGE_BREWMASTER,
+	LEVELING_CHALLENGE_HEROIC,
+}
+
+local function zTip_GetChallengeList()
+	if Turtle_AvailableChallenges and table.getn(Turtle_AvailableChallenges) > 0 then
+		return Turtle_AvailableChallenges
 	end
-end)
-function zTip_UpdateChallenges(player)
-	if GameTooltip.challenges then return end
-	local playerChallenges = Turtle_ChallengesCache[GetRealmName()][player]
-	if playerChallenges and table.getn(playerChallenges) > 1 then
-		local mask = playerChallenges[2]
-		if mask then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(ACTIVE_CHALLENGES)
-			for i, challenge in ipairs(Turtle_AvailableChallenges) do
-				if math.mod(math.floor(mask / 2^(i - 1)), 2) == 1 then
-					GameTooltip:AddLine(challenge.name, 1, 1, 1, true)
-				end
-			end
-		end
-		GameTooltip.challenges = true
-		GameTooltip:Show()
+
+	return zTip_FallbackChallenges
+end
+
+local function zTip_GetChallengeCache()
+	local realm = GetRealmName()
+	if not Turtle_ChallengesCache then
+		Turtle_ChallengesCache = {}
+	end
+	if not Turtle_ChallengesCache[realm] then
+		Turtle_ChallengesCache[realm] = {}
+	end
+
+	return Turtle_ChallengesCache[realm]
+end
+
+local function zTip_GetUnitGuid(unit)
+	local exists, guid = UnitExists(unit)
+	if exists then
+		return guid
 	end
 end
+
+local function zTip_AppendChallenges(mask)
+	local challengeLines = {}
+	local challengeMask = 1
+	local isMouseoverTarget = UnitIsUnit("target", "mouseover")
+	local challengeList = zTip_GetChallengeList()
+
+	if zShowChallenges == false or GameTooltip.challenges or not mask or mask == 0 then
+		return
+	end
+
+	for i = 1, table.getn(challengeList) do
+		local challenge = challengeList[i]
+		if mod(mask, challengeMask * 2) >= challengeMask then
+			table.insert(challengeLines, challenge)
+		end
+		challengeMask = challengeMask * 2
+	end
+
+	if table.getn(challengeLines) == 0 then
+		GameTooltip.challenges = 1
+		return
+	end
+
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(ACTIVE_CHALLENGES)
+
+	for i = 1, table.getn(challengeLines) do
+		local challenge = challengeLines[i]
+		if challenge == LEVELING_CHALLENGE_HARDCORE and isMouseoverTarget and TargetFrameTexture then
+			TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame_HC")
+		end
+		GameTooltip:AddLine(challenge, 1, 1, 1, 1)
+	end
+
+	GameTooltip.challenges = 1
+	GameTooltip:Show()
+end
+
+local function zTip_UpdateChallenges(guid)
+	local challengeCache = zTip_GetChallengeCache()
+	local mask = challengeCache[guid]
+
+	if mask and mask ~= 0 then
+		zTip_AppendChallenges(mask)
+	end
+end
+
+local function zTip_HandleChallengeResponse(message)
+	local cache
+	local guid
+	local mask
+	local mouseoverGuid
+	local separator = strfind(message or "", ADDON_MSG_ARRAY_DELIMITER or ":", 1, true)
+
+	if not separator then
+		return
+	end
+
+	guid = strsub(message, 1, separator - 1)
+	mask = tonumber(strsub(message, separator + 1))
+	if not guid or not mask then
+		return
+	end
+
+	cache = zTip_GetChallengeCache()
+	cache[guid] = mask
+
+	mouseoverGuid = zTip_GetUnitGuid("mouseover")
+	if mouseoverGuid == guid then
+		GameTooltip.challengePending = nil
+		if mask == 0 then
+			GameTooltip.challenges = 1
+		else
+			zTip_UpdateChallenges(guid)
+		end
+	end
+end
+
+local zTipChallengeFrame = CreateFrame("Frame")
+zTipChallengeFrame:RegisterEvent("CHAT_MSG_ADDON")
+zTipChallengeFrame:SetScript("OnEvent", function()
+	if event == "CHAT_MSG_ADDON"
+		and arg1 == "RESPONSE_PLAYER_CHALLENGES"
+	then
+		zTip_HandleChallengeResponse(arg2)
+	end
+end)
+
 function zTip_CheckChallenges(unit)
 	if PLAYER_CHALLENGES == "0"
 	or not unit
 	or not UnitIsPlayer(unit)
+	or zShowChallenges == false
 	or UnitIsUnit("target", "player") then return end
-	local realm = GetRealmName()
-	local name = UnitName(unit)
-	local level = UnitLevel(unit)
-	if name then
-		local playerChallenges = Turtle_ChallengesCache[realm][name]
-		if playerChallenges and playerChallenges[1] <= level then
-			Turtle_ChallengesCache[realm][name][1] = level
-			zTip_UpdateChallenges(name)
-		else
-			Turtle_ChallengesCache[realm][name] = { level }
-			SendAddonMessage("TW_UI", "REQUEST_PLAYER_CHALLENGES;" .. name, "GUILD")
-		end
+
+	local challengeCache = zTip_GetChallengeCache()
+	local guid = zTip_GetUnitGuid(unit)
+	if not guid then
+		return
 	end
+
+	if challengeCache[guid] ~= nil then
+		if challengeCache[guid] == 0 then
+			if GameTooltip.challengePending ~= guid then
+				GameTooltip.challenges = 1
+			end
+		else
+			zTip_UpdateChallenges(guid)
+		end
+		return
+	end
+
+	GameTooltip.challengePending = guid
+	if type(TargetFrame_CheckChallenges) == "function"
+		and type(TargetFrame_HandleChallenges) == "function"
+	then
+		TargetFrame_CheckChallenges(unit)
+		return
+	end
+
+	challengeCache[guid] = 0
+	SendAddonMessage("TW_UI", "REQUEST_PLAYER_CHALLENGES;" .. guid, "GUILD")
 end
 
 -- New Update Way
 local targetline
 GameTooltip:SetScript("OnUpdate", function()
-	if zScale ~= false then GameTooltip:SetScale(zScale) end --修改
-	if zClassIcon == false then --军衔位置修复
+	if zScale and zScale ~= false then GameTooltip:SetScale(zScale) end --修改
+	if RankIcon and z_ClassIcon and zClassIcon == false then --军衔位置修复
 		RankIcon:SetPoint("TOPLEFT",z_ClassIcon,"TOPRIGHT", -14, 0)
-	else
+	elseif RankIcon and z_ClassIcon then
 		RankIcon:SetPoint("TOPLEFT",z_ClassIcon,"TOPRIGHT", 2, 0)
 	end
 	--增加的
-	if GameTooltipStatusBar:IsShown() then
+	if ManaBar and zShowManaBar ~= false and GameTooltipStatusBar:IsShown() then
 		ManaBar:Show()
-	else
+	elseif ManaBar then
 		ManaBar:Hide()
 	end
 
-	if zClassIcon and UnitIsPlayer(this.unit) and strfind(GameTooltipTextLeft1:GetText(), "    ") then
+	if z_ClassIcon and zClassIcon and this.unit and UnitIsPlayer(this.unit) and GameTooltipTextLeft1:GetText() and strfind(GameTooltipTextLeft1:GetText(), "    ") then
 		z_ClassIcon:Show()
-	else
+	elseif z_ClassIcon then
 		z_ClassIcon:Hide()
 	end
 		
@@ -1188,6 +1402,7 @@ GameTooltip:SetScript("OnUpdate", function()
 		targetlinenum = nil
 		mouseTarget = nil
 		isUnitTipShown = nil
+		GameTooltip.challenges = nil
 		return
 	end
 	
@@ -1221,40 +1436,42 @@ GameTooltip:SetScript("OnUpdate", function()
 		end
 	end
 
-	if zTargetOfMouse == false or not targetlinenum then return end
-	
-	targetline = getglobal("GameTooltipTextLeft"..targetlinenum)
-	if not targetline then return end
-	
-	tip, tmp, tmp2 = nil, nil, nil
-	if not UnitExists("mouseovertarget") then
-		mouseTarget = nil
-		targetline:SetText()
-		GameTooltip:Show()
-	elseif UnitName("mouseovertarget") ~= mouseTarget then
-		mouseTarget = UnitName("mouseovertarget") or UNKNOWNOBJECT
-		tip = format("|cffFFFF00%s [|r", locTargeting)
-		-- 指向我自己
-		if UnitIsUnit("mouseovertarget", "player") then
-			tip = format("%s |c00FF0000%s|r", tip, locYOU)
-		-- 指向他自己
-		elseif UnitIsUnit("mouseovertarget", "mouseover") then
-			tip = format("%s |cffFFFFFF%s|r", tip, locSelf)
-		-- 指向其它玩家
-		elseif UnitIsPlayer("mouseovertarget") then
-			tmp, tmp2 = UnitClass("mouseovertarget")
-			--鼠标玩家的目标
-			tip = format("%s |cffFFFFFF%s|r |cff%s(%s)|r", tip,
-				mouseTarget, zGetHexColor(RAID_CLASS_COLORS[(tmp2 or "")]), tmp)
+	if zTargetOfMouse ~= false and targetlinenum then
+		targetline = getglobal("GameTooltipTextLeft"..targetlinenum)
+		if targetline then
+			tip, tmp, tmp2 = nil, nil, nil
+			if not UnitExists("mouseovertarget") then
+				mouseTarget = nil
+				targetline:SetText()
+				GameTooltip:Show()
+			elseif UnitName("mouseovertarget") ~= mouseTarget then
+				mouseTarget = UnitName("mouseovertarget") or UNKNOWNOBJECT
+				tip = format("|cffFFFF00%s [|r", locTargeting)
+				-- 指向我自己
+				if UnitIsUnit("mouseovertarget", "player") then
+					tip = format("%s |c00FF0000%s|r", tip, locYOU)
+				-- 指向他自己
+				elseif UnitIsUnit("mouseovertarget", "mouseover") then
+					tip = format("%s |cffFFFFFF%s|r", tip, locSelf)
+				-- 指向其它玩家
+				elseif UnitIsPlayer("mouseovertarget") then
+					tmp, tmp2 = UnitClass("mouseovertarget")
+					--鼠标玩家的目标
+					tip = format("%s |cffFFFFFF%s|r |cff%s(%s)|r", tip,
+						mouseTarget, zGetHexColor(RAID_CLASS_COLORS[(tmp2 or "")]), tmp)
+				else
+					tip = format("%s |cffFFFFFF%s|r", tip, mouseTarget)
+				end
+				tip = tip.." |cffFFFF00]|r"
+				targetline:SetText(tip)
+				GameTooltip:Show()
+			end
 		else
-			tip = format("%s |cffFFFFFF%s|r", tip, mouseTarget)
+			targetlinenum = nil
 		end
-		tip = tip.." |cffFFFF00]|r"
-		targetline:SetText(tip)
-		GameTooltip:Show()
 	end
 	--显示目标挑战项目
-	if ShowChallenges_timer == 1 then
+	if zShowChallenges ~= false and ShowChallenges_timer == 1 and not GameTooltip.challenges then
 		zTip_CheckChallenges("mouseover")
 	else
 		ShowChallenges_time()
@@ -1263,6 +1480,10 @@ end)
 
 --显示抗性、护甲（狗血编剧男）
 function GetMouseOverResist()
+	if zShowResist == false then
+		return
+	end
+
 	local Moresist, mo = UnitResistance, "mouseover"
 	local GetFire, GetFrost, GetNature, GetShadow, GetArmor = Moresist(mo,2), Moresist(mo,4), Moresist(mo,3), Moresist(mo,5), UnitArmor(mo)
 	--火抗、冰抗
@@ -1286,7 +1507,8 @@ function GetMouseOverResist()
 end
 
 local acehook = {}
-_G.AceLibrary:GetInstance("AceHook-2.0"):embed(acehook)
+local _G = getfenv(0)
+local GameTooltip, UIParent, GTStatusBar = _G.GameTooltip, _G.UIParent, _G.GameTooltipStatusBar
 
 _G.TinyTip_Original_GameTooltip_SetUnit = nil
 function TinyTip_SetUnit(this,unit,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)
@@ -1294,10 +1516,14 @@ function TinyTip_SetUnit(this,unit,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)
 		_G.TinyTip_Original_GameTooltip_SetUnit(this,unit,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)
 	end
 	GameTooltip.unit = unit
+	GameTooltip.challenges = false
+	GameTooltip.challengePending = nil
 end
 
 local function OnEvent()	
 	if _G.event == "UPDATE_MOUSEOVER_UNIT" then
+		GameTooltip.challenges = false
+		GameTooltip.challengePending = nil
 		if UnitExists("mouseover") then
 			GameTooltip:SetUnit("mouseover")
 		end
@@ -1308,9 +1534,12 @@ EventFrame = _G.CreateFrame("Frame", "TinyTipEventFrame", GameTooltip)
 EventFrame:SetScript("OnEvent", OnEvent)
 EventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
-if not acehook:IsHooked(GameTooltip, "SetUnit") then
-	acehook:Hook(GameTooltip, "SetUnit", _G.TinyTip_SetUnit)
-	_G.TinyTip_Original_GameTooltip_SetUnit = acehook.hooks[GameTooltip]["SetUnit"].orig
+if _G.AceLibrary and _G.AceLibrary:HasInstance("AceHook-2.0") then
+	_G.AceLibrary:GetInstance("AceHook-2.0"):embed(acehook)
+	if not acehook:IsHooked(GameTooltip, "SetUnit") then
+		acehook:Hook(GameTooltip, "SetUnit", _G.TinyTip_SetUnit)
+		_G.TinyTip_Original_GameTooltip_SetUnit = acehook.hooks[GameTooltip]["SetUnit"].orig
+	end
 end
 
 local Original_GameTooltip_OnTooltipCleared
@@ -1319,6 +1548,8 @@ function TinyTip_OnTooltipCleared(this,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,a
 		Original_GameTooltip_OnTooltipCleared(this,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)
 	end
 	GameTooltip.unit = nil
+	GameTooltip.challenges = false
+	GameTooltip.challengePending = nil
 end
 
 local Original_GameTooltip_OnTooltipCleared, OnTooltipCleared_IsHooked
@@ -1334,14 +1565,12 @@ local function OnTooltipCleared(this,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg
 	end
 end
 
-if acehook and not acehook:IsHooked(GameTooltip, "OnTooltipCleared") then -- most sure-fire way to hide something
+if acehook.IsHooked and not acehook:IsHooked(GameTooltip, "OnTooltipCleared") then -- most sure-fire way to hide something
 	acehook:HookScript(GameTooltip, "OnTooltipCleared", OnTooltipCleared)
 	Original_GameTooltip_OnTooltipCleared = acehook.hooks[GameTooltip]["OnTooltipCleared"].orig
 end
-	
+
 local tmp
-local _G = getfenv(0)
-local GameTooltip, UIParent, GTStatusBar = _G.GameTooltip, _G.UIParent, _G.GameTooltipStatusBar
 
 local function ManaBar_Init()
 	if GameTooltip.unit then
@@ -1354,7 +1583,9 @@ local function ManaBar_Init()
 		else
 			ManaBar:SetValue( _G.UnitMana( GameTooltip.unit ) or 100)
 			tmp = _G.ManaBarColor[ _G.UnitPowerType( GameTooltip.unit ) ]
-			ManaBar:SetStatusBarColor( tmp.r, tmp.g, tmp.b )
+			if tmp then
+				ManaBar:SetStatusBarColor( tmp.r, tmp.g, tmp.b )
+			end
 		end
 	end
 end
@@ -1367,7 +1598,9 @@ local function ManaBar_OnEvent()
 	elseif _G.event == "UNIT_DISPLAYPOWER" then
 		if _G.arg1 and _G.arg1 == GameTooltip.unit and _G.UnitPowerType( GameTooltip.unit ) and _G.UnitPowerType( GameTooltip.unit ) > 0 then
 			tmp = _G.ManaBarColor[ _G.UnitPowerType( GameTooltip.unit ) ]
-			ManaBar:SetStatusBarColor( tmp.r, tmp.g, tmp.b )
+			if tmp then
+				ManaBar:SetStatusBarColor( tmp.r, tmp.g, tmp.b )
+			end
 		end
 	end
 end
@@ -1397,7 +1630,8 @@ GameTooltipStatusBar:ClearAllPoints()
 GameTooltipStatusBar:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 4, -2)
 GameTooltipStatusBar:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", -4, 2)
 
-SLASH_zTip1 = "/zTip"
-SlashCmdList["zTip"] = function(msg)
+SLASH_ZTIP1 = "/ztip"
+SLASH_ZTIP2 = "/zTip"
+SlashCmdList["ZTIP"] = function(msg)
 	setwindows:Show()
 end

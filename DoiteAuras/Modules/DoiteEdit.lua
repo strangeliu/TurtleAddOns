@@ -23,7 +23,7 @@ local SetGroupMode
 local DEFAULT_CUSTOM_FUNCTION_SOURCE
 local _ReflowCondAreaHeight
 
--- 图标级分类界面辅助工具（稍后在CreateConditionsUI中赋值）
+-- 图标级分类界面辅助工具（稍后在 CreateConditionsUI 中赋值）
 local AuraCond_Managers = {}
 local AuraCond_RegisterManager
 local AuraCond_RefreshFromDB
@@ -34,8 +34,26 @@ local VfxCond_RegisterManager
 local VfxCond_RefreshFromDB
 local VfxCond_ResetEditing
 
+local function _ParseFadeAlphaFromBox(box)
+  local pct = tonumber(box and box:GetText())
+  if not pct then
+    return 0
+  end
+  if pct < 0 then pct = 0 end
+  if pct > 100 then pct = 100 end
+  return pct / 100
+end
+
+local function _NormalizeFadeBox(box, alpha)
+  if not box then return end
+  local pct = math.floor(((alpha or 0) * 100) + 0.5)
+  if pct < 0 then pct = 0 end
+  if pct > 100 then pct = 100 end
+  box:SetText(tostring(pct))
+end
+
 local SOUND_FILES = {
-  "JDO - Dont move, Shackles.ogg", "JDO - Loot banned.ogg", "Trend - Uwu.ogg",
+  "JDO - Dont move, Shackles.ogg", "JDO - Loot banned.ogg", "Trend - Uwu.ogg", "Custom - Poison ammo.ogg", "Custom - Arcane ammo.ogg", "Custom - Explosive ammo.ogg", "Custom - Lock n Load.ogg",
   "MPOWA - Aggro.ogg", "MPOWA - Arrow Swoosh.ogg", "MPOWA - Bam.ogg", "MPOWA - Bigkiss.ogg", "MPOWA - Bite.ogg", "MPOWA - Burp.ogg", "MPOWA - Cat.ogg", "MPOWA - Chant (1).ogg", "MPOWA - Chant (2).ogg", "MPOWA - Chimes.ogg", "MPOWA - Cookie.ogg", "MPOWA - ESpark.ogg", "MPOWA - Fireball.ogg", "MPOWA - Gasp.ogg",
   "MPOWA - Heartbeat.ogg", "MPOWA - Hic.ogg", "MPOWA - Hit (1).ogg", "MPOWA - Hit (2).ogg", "MPOWA - Hit (3).ogg", "MPOWA - Hit (4).ogg", "MPOWA - Hit (5).ogg", "MPOWA - Hit (6).ogg", "MPOWA - Hit (7).ogg", "MPOWA - Hit (8).ogg",
   "MPOWA - Huh.ogg", "MPOWA - Hurricane.ogg", "MPOWA - Hyena.ogg", "MPOWA - Kaching.ogg", "MPOWA - Moan.ogg", "MPOWA - Panther.ogg", "MPOWA - Polarbear.ogg", "MPOWA - Punch.ogg", "MPOWA - Phone.ogg",
@@ -112,7 +130,7 @@ local function DoiteEdit_InitSoundDropdown(dd, typeKey, eventKey, selectedValue)
   ClearDropdown(dd)
 
   local total = table.getn(SOUND_FILES)
-  local perPage = 20  -- 保持在UIDropDownMenu按钮上限之下
+  local perPage = 20  -- 保持在 UIDropDownMenu 按钮上限之下
   local maxPage = 1
   if total > 0 then
     maxPage = math.ceil(total / perPage)
@@ -205,30 +223,17 @@ local function DoiteEdit_InitSoundDropdown(dd, typeKey, eventKey, selectedValue)
   end
 end
 
--- UpdateConditionsUI和其他地方使用的职业门控函数
+-- UpdateConditionsUI 和其他地方使用的职业门控函数
 local function _IsRogueOrDruid()
   local _, c = UnitClass("player")
   c = c and string.upper(c) or ""
   return (c == "ROGUE" or c == "DRUID")
 end
 
--- 如果光环总是由玩家施加给玩家自身，那么所有权就没有意义了。
-local DOITE_AURA_OWNER_LOCK_ON_SELF = {
-  ["狂热"] = true, ["狂暴之怒"] = true,
-}
-
-local function DoiteEdit_ShouldLockAuraOwnerOnSelf(data)
-  if not data then
-    return false
-  end
-  local name = data.displayName or currentKey
-  if not name or name == "" then
-    name = currentKey
-  end
-  if not name then
-    return false
-  end
-  return DOITE_AURA_OWNER_LOCK_ON_SELF[name] == true
+local function _IsHunterOrWarlock()
+  local _, c = UnitClass("player")
+  c = c and string.upper(c) or ""
+  return (c == "HUNTER" or c == "WARLOCK")
 end
 
 local function DoiteEdit_YellowifyButton(btn)
@@ -284,7 +289,7 @@ local _DoiteEdit_PendingHeavy = false
 local _DoiteEdit_Accum = 0
 local _DoiteEdit_Throttle = CreateFrame("Frame", "DoiteEditThrottle")
 
--- 主编辑框或主框被拖拽时置为true
+-- 主编辑框或主框被拖拽时置为 true
 _G["DoiteUI_Dragging"] = _G["DoiteUI_Dragging"] or false
 
 ---------------------------------------------------------------
@@ -433,7 +438,7 @@ _G["DoiteEdit_IsGridShown"] = DoiteEdit_IsGridShown
 
 
 
--- 内部立即执行的重度操作辅助函数（仅由限流器调用，从不直接从UI调用）
+-- 内部立即执行的重度操作辅助函数（仅由限流器调用，从不直接从 UI 调用）
 local function _DoiteEdit_ImmediateRefresh()
   if DoiteAuras_RefreshList then
     DoiteAuras_RefreshList()
@@ -707,6 +712,10 @@ EnsureDBEntry = function(key)
       d.conditions.aura.weaponFilter = nil
     end
 
+    if d.conditions.aura.trackpet == nil then
+      d.conditions.aura.trackpet = false
+    end
+
     -- 清理遗留字段
     d.conditions.aura.target = nil
     d.conditions.aura.targetTarget = nil
@@ -739,7 +748,7 @@ SafeRefresh = function()
   DoiteEdit_QueueHeavy()
 end
 
--- === 根据UIParent动态调整位置和尺寸滑块的范围 ===
+-- === 根据 UIParent 动态调整位置和尺寸滑块的范围 ===
 local function _DA_GetParentDims()
   local uw, uh = UIParent:GetWidth(), UIParent:GetHeight()
   local sw, sh = GetScreenWidth(), GetScreenHeight()
@@ -914,19 +923,19 @@ local function InitNumAurasDropdown(dd, data)
         return
       end
       local d = EnsureDBEntry(currentKey)
-      d.numAuras = picked
-      UIDropDownMenu_SetSelectedValue(dd, picked)
-      UIDropDownMenu_SetText(picked, dd)
-      CloseDropDownMenus()
-      SafeRefresh()
-      SafeEvaluate()
-    end
-    info.checked = (data and data.numAuras == "无限制")
-    UIDropDownMenu_AddButton(info)
-  end)
+        d.numAuras = picked
+        UIDropDownMenu_SetSelectedValue(dd, picked)
+        UIDropDownMenu_SetText(picked, dd)
+        CloseDropDownMenus()
+        SafeRefresh()
+        SafeEvaluate()
+      end
+      info.checked = (data and data.numAuras == "无限制")
+      UIDropDownMenu_AddButton(info)
+    end)
 end
 
--- 统一的形态/姿态下拉框初始化（适用于Ability / Aura / Item）
+-- 统一的形态/姿态下拉框初始化器（适用于 Ability / Aura / Item）
 local function InitFormDropdown(dd, data, condType)
   if not dd then
     return
@@ -1164,6 +1173,16 @@ local function SetExclusiveAbilityMode(mode)
   local d = EnsureDBEntry(currentKey)
   d.conditions = d.conditions or {}
   d.conditions.ability = d.conditions.ability or {}
+
+  if mode ~= nil
+      and mode ~= "usable"
+      and mode ~= "notcd"
+      and mode ~= "oncd"
+      and mode ~= "usableoncd"
+      and mode ~= "nocdoncd" then
+    mode = "notcd"
+  end
+
   d.conditions.ability.mode = mode
   UpdateCondFrameForKey(currentKey)
   SafeRefresh()
@@ -1307,13 +1326,18 @@ local function SetExclusiveAuraFoundMode(mode)
   local d = EnsureDBEntry(currentKey)
   d.conditions = d.conditions or {}
   d.conditions.aura = d.conditions.aura or {}
+
+  if mode ~= nil and mode ~= "found" and mode ~= "missing" and mode ~= "both" then
+    mode = "found"
+  end
+
   d.conditions.aura.mode = mode
   UpdateCondFrameForKey(currentKey)
   SafeRefresh()
   SafeEvaluate()
 end
 
--- 文件作用域辅助函数，供CreateConditionsUI和UpdateConditionsUI调用
+-- 文件作用域辅助函数，供 CreateConditionsUI 和 UpdateConditionsUI 调用
 function _GoldifyDD(dd)
   if not dd or not dd.GetName then
     return
@@ -1578,6 +1602,24 @@ local function CreateConditionsUI()
     return eb
   end
 
+  local function MakeMiniFadeSlider(name, x, y)
+    local parent = _Parent()
+    local eb = CreateFrame("EditBox", name, parent, "InputBoxTemplate")
+    eb:SetPoint("TOPLEFT", parent, "TOPLEFT", x, y)
+    eb:SetWidth(26)
+    eb:SetHeight(16)
+    eb:SetAutoFocus(false)
+    eb:SetJustifyH("CENTER")
+    eb:SetFontObject("GameFontNormalSmall")
+    eb:SetNumeric(true)
+
+    local pct = eb:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    pct:SetPoint("LEFT", eb, "RIGHT", 4, 0)
+    pct:SetText("|cffffd000%|r")
+    eb._pct = pct
+    return eb
+  end
+
   -- 渲染一个小的粗体白色标题，带有“分裂”分隔线，该线不会穿过文本下方
   local function MakeSeparatorRow(parent, y, title, drawLine)
     drawLine = (drawLine ~= false)
@@ -1800,8 +1842,8 @@ local function CreateConditionsUI()
 
   condFrame.cond_ability_glow = MakeCheck("DoiteCond_Ability_Glow", "发光", 0, row5_y)
   condFrame.cond_ability_greyscale = MakeCheck("DoiteCond_Ability_Greyscale", "灰色", 70, row5_y)
-  condFrame.cond_ability_slider_glow = MakeCheck("DoiteCond_Ability_SliderGlow", "冷却发光", 140, row5_y)
-  condFrame.cond_ability_slider_grey = MakeCheck("DoiteCond_Ability_SliderGrey", "冷却灰色", 220, row5_y)
+  condFrame.cond_ability_fade = MakeCheck("DoiteCond_Ability_Fade", "淡出", 140, row5_y)
+  condFrame.cond_ability_fade_slider = MakeMiniFadeSlider("DoiteCond_Ability_FadeSlider", 200, row5_y - 2)
   SetSeparator("ability", 5, "视觉效果", true, true)
 
   -- 技能行：目标距离与类型
@@ -1821,7 +1863,7 @@ local function CreateConditionsUI()
 
   condFrame.cond_ability_slider = MakeCheck("DoiteCond_Ability_Slider", "即将冷却完毕指示器", 0, row7_y)
   condFrame.cond_ability_slider_dir = CreateFrame("Frame", "DoiteCond_Ability_SliderDir", _Parent(), "UIDropDownMenuTemplate")
-  condFrame.cond_ability_slider_dir:SetPoint("LEFT", condFrame.cond_ability_slider, "RIGHT", 110, -3)
+  condFrame.cond_ability_slider_dir:SetPoint("LEFT", condFrame.cond_ability_slider, "RIGHT", 53, -3)
   if UIDropDownMenu_SetWidth then
     pcall(UIDropDownMenu_SetWidth, 60, condFrame.cond_ability_slider_dir)
   end
@@ -1832,6 +1874,8 @@ local function CreateConditionsUI()
   condFrame.cond_ability_remaining_val_enter:SetPoint("LEFT", condFrame.cond_ability_remaining_val, "RIGHT", 4, 0)
   condFrame.cond_ability_remaining_val_enter:SetText("(秒)")
   condFrame.cond_ability_remaining_val_enter:Hide()
+  condFrame.cond_ability_slider_glow = MakeCheck("DoiteCond_Ability_SliderGlow", "发光", 170, row7_y)
+  condFrame.cond_ability_slider_grey = MakeCheck("DoiteCond_Ability_SliderGrey", "灰色", 230, row7_y)
   SetSeparator("ability", 7, "剩余时间", true, true)
 
   condFrame.cond_ability_power = MakeCheck("DoiteCond_Ability_PowerCB", "资源", 0, row8_y)
@@ -2022,6 +2066,8 @@ local function CreateConditionsUI()
 
   condFrame.cond_aura_glow = MakeCheck("DoiteCond_Aura_Glow", "发光", 0, row5_y)
   condFrame.cond_aura_greyscale = MakeCheck("DoiteCond_Aura_Greyscale", "灰色", 70, row5_y)
+  condFrame.cond_aura_fade = MakeCheck("DoiteCond_Aura_Fade", "淡出", 140, row5_y)
+  condFrame.cond_aura_fade_slider = MakeMiniFadeSlider("DoiteCond_Aura_FadeSlider", 200, row5_y - 2)
   SetSeparator("aura", 5, "视觉效果", true, true)
 
   -- 光环行：目标距离与类型
@@ -2158,6 +2204,9 @@ local function CreateConditionsUI()
   condFrame.cond_aura_class_note:SetText("未为你的职业添加专属选项。")
   condFrame.cond_aura_class_note:Hide()
 
+  condFrame.cond_aura_trackpet = MakeCheck("DoiteCond_Aura_TrackPet", "在宠物上跟踪此光环", 0, auraClassRowY)
+  condFrame.cond_aura_trackpet:Hide()
+
   -- 光环：音效
   condFrame.cond_aura_sound_ongain_cb = MakeCheck("DoiteCond_Aura_Sound_OnGain_CB", "获得时", 0, row14_y - 10)
   condFrame.cond_aura_sound_ongain_dd = CreateFrame("Frame", "DoiteCond_Aura_Sound_OnGain_DD", _Parent(), "UIDropDownMenuTemplate")
@@ -2221,6 +2270,7 @@ local function CreateConditionsUI()
   condFrame.cond_item_inv_wep_mainhand = MakeCheck("DoiteCond_Item_Inv_WepMain", "主手", 0, row1_y)
   condFrame.cond_item_inv_wep_offhand = MakeCheck("DoiteCond_Item_Inv_WepOff", "副手", 87, row1_y)
   condFrame.cond_item_inv_wep_ranged = MakeCheck("DoiteCond_Item_Inv_WepRanged", "远程/神像/圣物", 165, row1_y)
+  condFrame.cond_item_inv_wep_ammo = MakeCheck("DoiteCond_Item_Inv_WepAmmo", "弹药", 235, row1_y)
 
   -- 默认标题；在UpdateConditionsUI中针对特殊物品动态更改
   SetSeparator("item", 1, "位置", true, true)
@@ -2290,6 +2340,8 @@ local function CreateConditionsUI()
   -- 视觉效果
   condFrame.cond_item_glow = MakeCheck("DoiteCond_Item_Glow", "发光", 0, row7_y)
   condFrame.cond_item_greyscale = MakeCheck("DoiteCond_Item_Greyscale", "灰色", 70, row7_y)
+  condFrame.cond_item_fade = MakeCheck("DoiteCond_Item_Fade", "淡出", 140, row7_y)
+  condFrame.cond_item_fade_slider = MakeMiniFadeSlider("DoiteCond_Item_FadeSlider", 200, row7_y - 2)
   SetSeparator("item", 7, "视觉效果", true, true)
 
   -- 物品行：目标距离与类型
@@ -2431,6 +2483,8 @@ local function CreateConditionsUI()
   condFrame.itemVfxAnchor:SetPoint("TOPRIGHT", _Parent(), "TOPRIGHT", 0, itemVfxBaseY)
   condFrame.itemVfxAnchor:SetHeight(20)
 
+  -- 旧版图标类别小部件已被移除；组/类别由 DoiteGroup.AttachEditGroupUI 处理。
+
   ----------------------------------------------------------------
   -- '形态'下拉框
   ----------------------------------------------------------------
@@ -2463,34 +2517,74 @@ local function CreateConditionsUI()
   ----------------------------------------------------------------
 
   -- 技能行1脚本（可用 / 不在冷却 / 冷却中）
+  -- 规则：
+  --  * 至少一个必须保持选中。
+  --  * 可用和不在冷却互斥。
+  --  * 可用或不在冷却可以与冷却中组合。
+  local function _SaveAbilityModeFromUI()
+    local usable = condFrame.cond_ability_usable:GetChecked() and true or false
+    local notcd = condFrame.cond_ability_notcd:GetChecked() and true or false
+    local oncd = condFrame.cond_ability_oncd:GetChecked() and true or false
+
+    local mode
+    if usable and oncd then
+      mode = "usableoncd"
+    elseif notcd and oncd then
+      mode = "nocdoncd"
+    elseif oncd then
+      mode = "oncd"
+    elseif usable then
+      mode = "usable"
+    else
+      mode = "notcd"
+    end
+
+    SetExclusiveAbilityMode(mode)
+  end
+
   condFrame.cond_ability_usable:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+
     if this:GetChecked() then
       condFrame.cond_ability_notcd:SetChecked(false)
-      condFrame.cond_ability_oncd:SetChecked(false)
-      SetExclusiveAbilityMode("usable")
-    else
-      SetExclusiveAbilityMode(nil)
+    elseif not condFrame.cond_ability_notcd:GetChecked() and not condFrame.cond_ability_oncd:GetChecked() then
+      this:SetChecked(true)
     end
+
+    _SaveAbilityModeFromUI()
   end)
 
   condFrame.cond_ability_notcd:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+
     if this:GetChecked() then
       condFrame.cond_ability_usable:SetChecked(false)
-      condFrame.cond_ability_oncd:SetChecked(false)
-      SetExclusiveAbilityMode("notcd")
-    else
-      SetExclusiveAbilityMode(nil)
+    elseif not condFrame.cond_ability_usable:GetChecked() and not condFrame.cond_ability_oncd:GetChecked() then
+      this:SetChecked(true)
     end
+
+    _SaveAbilityModeFromUI()
   end)
 
   condFrame.cond_ability_oncd:SetScript("OnClick", function()
-    if this:GetChecked() then
-      condFrame.cond_ability_usable:SetChecked(false)
-      condFrame.cond_ability_notcd:SetChecked(false)
-      SetExclusiveAbilityMode("oncd")
-    else
-      SetExclusiveAbilityMode(nil)
+    if not currentKey then
+      this:SetChecked(false)
+      return
     end
+
+    if (not this:GetChecked())
+        and (not condFrame.cond_ability_usable:GetChecked())
+        and (not condFrame.cond_ability_notcd:GetChecked()) then
+      this:SetChecked(true)
+    end
+
+    _SaveAbilityModeFromUI()
   end)
 
   -- 物品可用性和冷却（NotCD / OnCD 可组合；至少一个必须选中）
@@ -3135,6 +3229,8 @@ function UpdateItemStacksForMissing()
       ic.inventorySlot = "MAINHAND"
     elseif condFrame.cond_item_inv_wep_offhand:GetChecked() then
       ic.inventorySlot = "OFFHAND"
+    elseif condFrame.cond_item_inv_wep_ammo and condFrame.cond_item_inv_wep_ammo:GetChecked() then
+      ic.inventorySlot = "AMMO"
     else
       -- 默认/后备
       ic.inventorySlot = "RANGED"
@@ -3176,6 +3272,7 @@ function UpdateItemStacksForMissing()
       local c1 = condFrame.cond_item_inv_wep_mainhand
       local c2 = condFrame.cond_item_inv_wep_offhand
       local c3 = condFrame.cond_item_inv_wep_ranged
+      local c4 = condFrame.cond_item_inv_wep_ammo
 
       if clicked:GetChecked() then
         if clicked ~= c1 then
@@ -3187,10 +3284,13 @@ function UpdateItemStacksForMissing()
         if clicked ~= c3 then
           c3:SetChecked(false)
         end
+        if c4 and clicked ~= c4 then
+          c4:SetChecked(false)
+        end
       end
 
       -- 确保至少一个被选中
-      if not c1:GetChecked() and not c2:GetChecked() and not c3:GetChecked() then
+      if not c1:GetChecked() and not c2:GetChecked() and not c3:GetChecked() and (not c4 or not c4:GetChecked()) then
         clicked:SetChecked(true)
       end
     end
@@ -3248,6 +3348,7 @@ function UpdateItemStacksForMissing()
     SaveItemInventoryWeaponFromUI()
     SafeRefresh();
     SafeEvaluate()
+    UpdateCondFrameForKey(currentKey)
   end)
   condFrame.cond_item_inv_wep_offhand:SetScript("OnClick", function()
     if not currentKey then
@@ -3258,6 +3359,7 @@ function UpdateItemStacksForMissing()
     SaveItemInventoryWeaponFromUI()
     SafeRefresh();
     SafeEvaluate()
+    UpdateCondFrameForKey(currentKey)
   end)
   condFrame.cond_item_inv_wep_ranged:SetScript("OnClick", function()
     if not currentKey then
@@ -3268,22 +3370,49 @@ function UpdateItemStacksForMissing()
     SaveItemInventoryWeaponFromUI()
     SafeRefresh();
     SafeEvaluate()
+    UpdateCondFrameForKey(currentKey)
+  end)
+  condFrame.cond_item_inv_wep_ammo:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+    EnforceInventoryRadio(this, "WEAPON")
+    SaveItemInventoryWeaponFromUI()
+    SafeRefresh();
+    SafeEvaluate()
+    UpdateCondFrameForKey(currentKey)
   end)
 
 
-  -- 光环互斥（存在 / 缺失）
+  -- 光环模式（存在 / 缺失；两者都允许）。至少一个必须保持选中。
+  local function _SaveAuraModeFromUI()
+    local found = condFrame.cond_aura_found:GetChecked() and true or false
+    local missing = condFrame.cond_aura_missing:GetChecked() and true or false
+
+    local mode
+    if found and missing then
+      mode = "both"
+    elseif missing then
+      mode = "missing"
+    else
+      mode = "found"
+    end
+
+    SetExclusiveAuraFoundMode(mode)
+  end
+
   condFrame.cond_aura_found:SetScript("OnClick", function()
     if not currentKey then
       this:SetChecked(false)
       return
     end
 
-    if this:GetChecked() then
-      condFrame.cond_aura_missing:SetChecked(false)
-      SetExclusiveAuraFoundMode("found")
-    else
-      SetExclusiveAuraFoundMode(nil)
+    if (not this:GetChecked()) and (not condFrame.cond_aura_missing:GetChecked()) then
+      this:SetChecked(true)
     end
+
+    _SaveAuraModeFromUI()
 
     -- 保持数据库/UI逻辑同步（稍后在“缺失”上灰显拥有者时需要）
     if UpdateCondFrameForKey then
@@ -3299,12 +3428,11 @@ function UpdateItemStacksForMissing()
       return
     end
 
-    if this:GetChecked() then
-      condFrame.cond_aura_found:SetChecked(false)
-      SetExclusiveAuraFoundMode("missing")
-    else
-      SetExclusiveAuraFoundMode(nil)
+    if (not this:GetChecked()) and (not condFrame.cond_aura_found:GetChecked()) then
+      this:SetChecked(true)
     end
+
+    _SaveAuraModeFromUI()
 
     if UpdateCondFrameForKey then
       UpdateCondFrameForKey(currentKey)
@@ -3644,6 +3772,7 @@ function UpdateItemStacksForMissing()
     SafeEvaluate()
   end)
 
+
   -- 光环发光 / 灰色
   condFrame.cond_aura_glow:SetScript("OnClick", function()
     if not currentKey then
@@ -3672,6 +3801,37 @@ function UpdateItemStacksForMissing()
     SafeRefresh()
     SafeEvaluate()
   end)
+
+  condFrame.cond_aura_fade:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+    local d = EnsureDBEntry(currentKey)
+    d.conditions = d.conditions or {}
+    d.conditions.aura = d.conditions.aura or {}
+    d.conditions.aura.fade = this:GetChecked() and true or false
+    if d.conditions.aura.fade and not d.conditions.aura.fadeAlpha then
+      d.conditions.aura.fadeAlpha = 0
+    end
+    UpdateCondFrameForKey(currentKey)
+    SafeRefresh()
+    SafeEvaluate()
+  end)
+
+  local function SaveAuraFadeAlpha()
+    if not currentKey then return end
+    local d = EnsureDBEntry(currentKey)
+    d.conditions = d.conditions or {}
+    d.conditions.aura = d.conditions.aura or {}
+    d.conditions.aura.fadeAlpha = _ParseFadeAlphaFromBox(condFrame.cond_aura_fade_slider)
+    _NormalizeFadeBox(condFrame.cond_aura_fade_slider, d.conditions.aura.fadeAlpha)
+    SafeRefresh()
+    SafeEvaluate()
+  end
+  condFrame.cond_aura_fade_slider:SetScript("OnEnterPressed", function() SaveAuraFadeAlpha(); this:ClearFocus() end)
+  condFrame.cond_aura_fade_slider:SetScript("OnEditFocusLost", SaveAuraFadeAlpha)
+  condFrame.cond_aura_fade_slider:SetScript("OnEscapePressed", function() this:ClearFocus() end)
 
   -- === 连击点数启用切换 ===
   condFrame.cond_ability_cp_cb:SetScript("OnClick", function()
@@ -3890,6 +4050,23 @@ function UpdateItemStacksForMissing()
     SafeEvaluate()
   end)
 
+  if condFrame.cond_aura_trackpet then
+    condFrame.cond_aura_trackpet:SetScript("OnClick", function()
+      if not currentKey then
+        this:SetChecked(false)
+        return
+      end
+      local d = EnsureDBEntry(currentKey);
+      d.conditions.aura = d.conditions.aura or {}
+      d.conditions.aura.trackpet = this:GetChecked() and true or false
+      if UpdateCondFrameForKey then
+        UpdateCondFrameForKey(currentKey)
+      end
+      SafeRefresh();
+      SafeEvaluate()
+    end)
+  end
+
   -- === 光环资源切换 ===
   condFrame.cond_aura_power:SetScript("OnClick", function()
     if not currentKey then
@@ -3997,6 +4174,35 @@ function UpdateItemStacksForMissing()
     SafeRefresh();
     SafeEvaluate()
   end)
+  condFrame.cond_item_fade:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+    local d = EnsureDBEntry(currentKey);
+    d.conditions.item = d.conditions.item or {}
+    d.conditions.item.fade = this:GetChecked() and true or false
+    if d.conditions.item.fade and not d.conditions.item.fadeAlpha then
+      d.conditions.item.fadeAlpha = 0
+    end
+    UpdateCondFrameForKey(currentKey);
+    SafeRefresh();
+    SafeEvaluate()
+  end)
+
+  local function SaveItemFadeAlpha()
+    if not currentKey then return end
+    local d = EnsureDBEntry(currentKey)
+    d.conditions.item = d.conditions.item or {}
+    d.conditions.item.fadeAlpha = _ParseFadeAlphaFromBox(condFrame.cond_item_fade_slider)
+    _NormalizeFadeBox(condFrame.cond_item_fade_slider, d.conditions.item.fadeAlpha)
+    SafeRefresh()
+    SafeEvaluate()
+  end
+  condFrame.cond_item_fade_slider:SetScript("OnEnterPressed", function() SaveItemFadeAlpha(); this:ClearFocus() end)
+  condFrame.cond_item_fade_slider:SetScript("OnEditFocusLost", SaveItemFadeAlpha)
+  condFrame.cond_item_fade_slider:SetScript("OnEscapePressed", function() this:ClearFocus() end)
+
 
   -- 物品文本：剩余时间
   condFrame.cond_item_text_time:SetScript("OnClick", function()
@@ -4987,6 +5193,36 @@ function UpdateItemStacksForMissing()
     SafeRefresh()
     SafeEvaluate()
   end)
+  condFrame.cond_ability_fade:SetScript("OnClick", function()
+    if not currentKey then
+      this:SetChecked(false)
+      return
+    end
+    local d = EnsureDBEntry(currentKey)
+    d.conditions = d.conditions or {}
+    d.conditions.ability = d.conditions.ability or {}
+    d.conditions.ability.fade = this:GetChecked() and true or false
+    if d.conditions.ability.fade and not d.conditions.ability.fadeAlpha then
+      d.conditions.ability.fadeAlpha = 0
+    end
+    UpdateCondFrameForKey(currentKey)
+    SafeRefresh()
+    SafeEvaluate()
+  end)
+
+  local function SaveAbilityFadeAlpha()
+    if not currentKey then return end
+    local d = EnsureDBEntry(currentKey)
+    d.conditions = d.conditions or {}
+    d.conditions.ability = d.conditions.ability or {}
+    d.conditions.ability.fadeAlpha = _ParseFadeAlphaFromBox(condFrame.cond_ability_fade_slider)
+    _NormalizeFadeBox(condFrame.cond_ability_fade_slider, d.conditions.ability.fadeAlpha)
+    SafeRefresh()
+    SafeEvaluate()
+  end
+  condFrame.cond_ability_fade_slider:SetScript("OnEnterPressed", function() SaveAbilityFadeAlpha(); this:ClearFocus() end)
+  condFrame.cond_ability_fade_slider:SetScript("OnEditFocusLost", SaveAbilityFadeAlpha)
+  condFrame.cond_ability_fade_slider:SetScript("OnEscapePressed", function() this:ClearFocus() end)
 
   -- 形态下拉框由UpdateConditionsUI初始化/更新
   condFrame.cond_ability_formDD:Hide()
@@ -5017,6 +5253,8 @@ function UpdateItemStacksForMissing()
   condFrame.cond_ability_remaining_val:Hide()
   condFrame.cond_ability_remaining_val_enter:Hide()
   condFrame.cond_ability_greyscale:Hide()
+  condFrame.cond_ability_fade:Hide()
+  condFrame.cond_ability_fade_slider:Hide()
   condFrame.cond_ability_cp_cb:Hide()
   condFrame.cond_ability_cp_comp:Hide()
   condFrame.cond_ability_cp_val:Hide()
@@ -5079,7 +5317,12 @@ function UpdateItemStacksForMissing()
   condFrame.cond_aura_stacks_val:Hide()
   condFrame.cond_aura_stacks_val_enter:Hide()
   condFrame.cond_aura_greyscale:Hide()
+  condFrame.cond_aura_fade:Hide()
+  condFrame.cond_aura_fade_slider:Hide()
   condFrame.cond_aura_mine:Hide()
+  if condFrame.cond_aura_trackpet then
+    condFrame.cond_aura_trackpet:Hide()
+  end
   if condFrame.cond_aura_others then
     condFrame.cond_aura_others:Hide()
   end
@@ -5114,6 +5357,8 @@ function UpdateItemStacksForMissing()
   condFrame.cond_item_target_self:Hide()
   condFrame.cond_item_glow:Hide()
   condFrame.cond_item_greyscale:Hide()
+  condFrame.cond_item_fade:Hide()
+  condFrame.cond_item_fade_slider:Hide()
   condFrame.cond_item_text_time:Hide()
   condFrame.cond_item_power:Hide()
   condFrame.cond_item_power_comp:Hide()
@@ -5147,6 +5392,9 @@ function UpdateItemStacksForMissing()
   condFrame.cond_item_inv_wep_mainhand:Hide()
   condFrame.cond_item_inv_wep_offhand:Hide()
   condFrame.cond_item_inv_wep_ranged:Hide()
+  if condFrame.cond_item_inv_wep_ammo then
+    condFrame.cond_item_inv_wep_ammo:Hide()
+  end
   if condFrame.cond_item_class_note then
     condFrame.cond_item_class_note:Hide()
   end
@@ -5421,33 +5669,41 @@ do
   local function AuraCond_BuildAbilitySpellList()
     local spells = {}
     local seen = {}
-    local i = 1
+    local passiveAllow = _G["DA_AbilityDropdownPassiveAllow"] or {}
 
-    while true do
-      local name, rank = GetSpellName(i, BOOKTYPE_SPELL)
-      if not name then
-        break
-      end
+    local function scanBook(bookType)
+      local i = 1
+      while true do
+        local name, rank = GetSpellName(i, bookType)
+        if not name then
+          break
+        end
 
-      -- 过滤掉被动技能
-      local isPassive = false
-      if IsPassiveSpell then
-        local ok, passive = pcall(IsPassiveSpell, i, BOOKTYPE_SPELL)
-        if ok and passive then
+        local isPassive = false
+        if IsPassiveSpell then
+          local ok, passive = pcall(IsPassiveSpell, i, bookType)
+          if ok and passive then
+            isPassive = true
+          end
+        end
+        if (not isPassive) and rank and string.find(rank, "Passive") then
           isPassive = true
         end
-      end
-      if (not isPassive) and rank and (string.find(rank, "Passive") or string.find(rank, "被动")) then
-        isPassive = true
-      end
 
-      if not isPassive and name and name ~= "" and not seen[name] then
-        table.insert(spells, name)
-        seen[name] = true
-      end
+        if name and name ~= "" then
+          local allowPassive = (passiveAllow[name] == true)
+          if ((not isPassive) or allowPassive) and not seen[name] then
+            table.insert(spells, name)
+            seen[name] = true
+          end
+        end
 
-      i = i + 1
+        i = i + 1
+      end
     end
+
+    scanBook(BOOKTYPE_SPELL)
+    scanBook(BOOKTYPE_PET)
 
     table.sort(spells, function(a, b)
       a = string.lower(a or "")
@@ -5456,6 +5712,41 @@ do
     end)
 
     return spells
+  end
+
+  local function AuraCond_BuildItemOptions()
+    local items, seen = {}, {}
+    local function _Add(name)
+      if not name or name == "" or seen[name] then return end
+      seen[name] = true
+      table.insert(items, name)
+    end
+    local function _NameFromLink(link)
+      if not link or link == "" then return nil end
+      local nm = GetItemInfo and GetItemInfo(link)
+      if nm and nm ~= "" then return nm end
+      local _, _, txt = string.find(link, "%[(.-)%]")
+      return txt
+    end
+    local i
+    for _, i in ipairs({13,14,16,17,18}) do
+      _Add(_NameFromLink(GetInventoryItemLink and GetInventoryItemLink("player", i)))
+    end
+    local bag, slot
+    for bag = 0, 4 do
+      local n = GetContainerNumSlots and GetContainerNumSlots(bag)
+      if n and n > 0 then
+        for slot = 1, n do
+          _Add(_NameFromLink(GetContainerItemLink and GetContainerItemLink(bag, slot)))
+        end
+      end
+    end
+    table.sort(items, function(a, b)
+      return string.lower(a or "") < string.lower(b or "")
+    end)
+    table.insert(items, 1, "---已装备的武器栏位---")
+    table.insert(items, 1, "---已装备的饰品栏位---")
+    return items
   end
 
   -- 初始化/刷新给定编辑行的技能下拉框
@@ -5559,6 +5850,119 @@ do
     end
   end
 
+  local function AuraCond_InitItemDropdown(row)
+    if not row or not row.itemDD then return end
+
+    local items = AuraCond_BuildItemOptions()
+    row._itemOptions = items
+
+    local total = table.getn(items)
+    local perPage = 10
+
+    if total == 0 then
+      UIDropDownMenu_Initialize(row.itemDD, function() end)
+      if UIDropDownMenu_SetText then
+        pcall(UIDropDownMenu_SetText, "未找到物品", row.itemDD)
+      end
+      return
+    end
+
+    local maxPage = math.max(1, math.ceil(total / perPage))
+    local page = row._itemPage or 1
+    if page < 1 then page = 1 end
+    if page > maxPage then page = maxPage end
+    row._itemPage = page
+
+    local function ReopenItemDDNextFrame()
+      local f = row.itemDD and row.itemDD._reopenFrame
+      if not f then
+        f = CreateFrame("Frame", nil, UIParent)
+        if row.itemDD then
+          row.itemDD._reopenFrame = f
+        end
+        f:Hide()
+        f:SetScript("OnUpdate", function()
+          f:Hide()
+          if row and row.itemDD then
+            ToggleDropDownMenu(nil, nil, row.itemDD, row.itemDD, 0, 0)
+          end
+        end)
+      end
+      f:Show()
+    end
+
+    local startIndex = (page - 1) * perPage + 1
+    local endIndex = math.min(startIndex + perPage - 1, total)
+
+    UIDropDownMenu_Initialize(row.itemDD, function(frame, level, menuList)
+      local info
+
+      if page > 1 then
+        info = {}
+        info.text = "|cffffd000<< 上一页|r"
+        info.value = "PREV"
+        info.notCheckable = true
+        info.func = function()
+          row._itemPage = page - 1
+          AuraCond_InitItemDropdown(row)
+          if CloseDropDownMenus then
+            CloseDropDownMenus()
+          end
+          ReopenItemDDNextFrame()
+        end
+        UIDropDownMenu_AddButton(info)
+      end
+
+      local idx = startIndex
+      while idx <= endIndex do
+        local name = items[idx]
+        info = {}
+        info.text = name
+        info.value = name
+        local pickedName = name
+        info.func = function(button)
+          local val = (button and button.value) or pickedName
+          row._itemName = val
+          if UIDropDownMenu_SetSelectedValue then
+            pcall(UIDropDownMenu_SetSelectedValue, row.itemDD, val)
+          end
+          if UIDropDownMenu_SetText then
+            pcall(UIDropDownMenu_SetText, val, row.itemDD)
+          end
+          if _GoldifyDD then
+            _GoldifyDD(row.itemDD)
+          end
+        end
+        info.checked = (row._itemName == name)
+        UIDropDownMenu_AddButton(info)
+        idx = idx + 1
+      end
+
+      if page < maxPage then
+        info = {}
+        info.text = "|cffffd000下一页 >>|r"
+        info.value = "NEXT"
+        info.notCheckable = true
+        info.func = function()
+          row._itemPage = page + 1
+          AuraCond_InitItemDropdown(row)
+          if CloseDropDownMenus then
+            CloseDropDownMenus()
+          end
+          ReopenItemDDNextFrame()
+        end
+        UIDropDownMenu_AddButton(info)
+      end
+    end)
+
+    if UIDropDownMenu_SetText then
+      pcall(UIDropDownMenu_SetText, row._itemName or "选择物品", row.itemDD)
+    end
+    if _GoldifyDD then
+      _GoldifyDD(row.itemDD)
+    end
+  end
+
   local function AuraCond_BuildDescription(buffType, mode, unit, name, stacksEnabled, stacksComp, stacksVal)
     local niceName = AuraCond_TitleCase(name or "")
 
@@ -5572,7 +5976,7 @@ do
       local typePart = typeColor .. "技能" .. "|r"
 
       local modeWord
-      if mode == "oncd" then
+      if mode == "oncd" or mode == "usableoncd" or mode == "nocdoncd" then
         modeWord = "冷却中"
       else
         modeWord = "不在冷却中"
@@ -5601,6 +6005,30 @@ do
       local namePart = white .. (niceName or "") .. "|r"
 
       return talentPart .. " " .. sep .. statePart .. ": " .. namePart
+    elseif buffType == "ITEM" then
+      local whereWord = (mode == "missing") and "缺失" or "在背包/已装备"
+      local cdWord = (unit == "oncd") and "冷却中" or "不在冷却中"
+      local itemPart = yellow .. "物品" .. "|r"
+      local wherePart = yellow .. whereWord .. "|r"
+
+      local prefix = ""
+      if stacksEnabled and stacksComp and stacksComp ~= "" and stacksVal and tostring(stacksVal) ~= "" then
+        local sym = stacksComp
+        if sym == ">=" then sym = "≥"
+        elseif sym == "<=" then sym = "≤"
+        elseif sym == "==" then sym = "="
+        end
+        prefix = tostring(sym) .. tostring(stacksVal) .. "x"
+      end
+
+      local namePart = white .. prefix .. (niceName or "") .. "|r"
+
+      if mode == "missing" then
+        return itemPart .. " " .. sep .. wherePart .. ": " .. namePart
+      end
+
+      local cdPart = yellow .. cdWord .. "|r"
+      return itemPart .. " " .. sep .. wherePart .. " " .. sep .. cdPart .. ": " .. namePart
     end
 
     -- 默认：增益/减益光环行
@@ -5632,6 +6060,38 @@ do
 
     local namePart = white .. prefix .. (niceName or "") .. "|r"
     return typePart .. " " .. sep .. modePart .. " " .. sep .. unitPart .. ": " .. namePart
+  end
+
+  local function AuraCond_ParseAuraInput(rawText)
+    local text = string.gsub(rawText or "", "^%s*(.-)%s*$", "%1")
+    if text == "" then
+      return nil
+    end
+
+    local sid = tonumber(text)
+    if sid and sid > 0 then
+      local sidStr = tostring(sid)
+      local displayName = sidStr
+
+      if type(GetSpellNameAndRankForId) == "function" then
+        local ok, sn = pcall(GetSpellNameAndRankForId, sid)
+        if ok and sn and sn ~= "" then
+          displayName = tostring(sn)
+        end
+      end
+
+      return {
+        name = displayName,
+        spellid = sidStr,
+        Addedviaspellid = true,
+      }
+    end
+
+    return {
+      name = AuraCond_TitleCase(text),
+      spellid = nil,
+      Addedviaspellid = nil,
+    }
   end
 
   -- 仅更新层数控件的可见性 + 继续按钮的启用状态。
@@ -5674,12 +6134,14 @@ do
     row.btn1:Hide()
     row.btn2:Hide()
     if row.btn3 then row.btn3:Hide() end
+    if row.btn4 then row.btn4:Hide() end
     row.closeBtn:Show()
     row.okBtn:Hide()
     row.editBox:Hide()
     row.addButton:Hide()
     row.labelFS:Hide()
     if row.abilityDD then row.abilityDD:Hide() end
+    if row.itemDD then row.itemDD:Hide() end
 
     if row.stacksLabel then row.stacksLabel:Hide() end
     if row.stacksCB then row.stacksCB:Hide() end
@@ -5697,34 +6159,39 @@ do
     if state == "STEP1" then
       row._branch = nil
 
-      local available = parentWidth - closeWidth - spacing * 5
+      local available = parentWidth - closeWidth - spacing * 6
       if available < 80 then available = 80 end
-      local w = math.floor(available / 4)
+      local w = math.floor(available / 5)
 
       row.btn1:SetWidth(w)
       row.btn2:SetWidth(w)
       row.addButton:SetWidth(w)
       if row.btn3 then row.btn3:SetWidth(w) end
+      if row.btn4 then row.btn4:SetWidth(w) end
 
       row.btn1:ClearAllPoints()
       row.btn2:ClearAllPoints()
       row.addButton:ClearAllPoints()
       if row.btn3 then row.btn3:ClearAllPoints() end
+      if row.btn4 then row.btn4:ClearAllPoints() end
 
       row.btn1:SetPoint("LEFT", row, "LEFT", 0, 0)
       row.btn2:SetPoint("LEFT", row.btn1, "RIGHT", spacing, 0)
       row.addButton:SetPoint("LEFT", row.btn2, "RIGHT", spacing, 0)
       if row.btn3 then row.btn3:SetPoint("LEFT", row.addButton, "RIGHT", spacing, 0) end
+      if row.btn4 then row.btn4:SetPoint("LEFT", row.btn3, "RIGHT", spacing, 0) end
 
       row.btn1:SetText("技能")
       row.btn2:SetText("增益效果")
       row.addButton:SetText("减益效果")
       if row.btn3 then row.btn3:SetText("天赋") end
+      if row.btn4 then row.btn4:SetText("物品") end
 
       row.btn1:Show()
       row.btn2:Show()
       row.addButton:Show()
       if row.btn3 then row.btn3:Show() end
+      if row.btn4 then row.btn4:Show() end
 
     elseif state == "STEP2" then
       local available = parentWidth - closeWidth - spacing * 3
@@ -5742,6 +6209,9 @@ do
       if row._branch == "ABILITY" then
         row.btn1:SetText("不在冷却中")
         row.btn2:SetText("冷却中")
+      elseif row._branch == "ITEM" then
+        row.btn1:SetText("在背包/已装备")
+        row.btn2:SetText("缺失")
       elseif row._branch == "TALENT" then
         row.btn1:SetText("已学习")
         row.btn2:SetText("未学习")
@@ -5766,8 +6236,13 @@ do
       row.btn1:SetPoint("LEFT", row, "LEFT", 0, 0)
       row.btn2:SetPoint("LEFT", row.btn1, "RIGHT", spacing, 0)
 
-      row.btn1:SetText("玩家自身")
-      row.btn2:SetText("目标")
+      if row._branch == "ITEM" then
+        row.btn1:SetText("不在冷却中")
+        row.btn2:SetText("冷却中")
+      else
+        row.btn1:SetText("玩家自身")
+        row.btn2:SetText("目标")
+      end
       row.btn1:Show()
       row.btn2:Show()
 
@@ -5785,6 +6260,7 @@ do
       if row.stacksLabel then
         row.stacksLabel:ClearAllPoints()
         row.stacksLabel:SetPoint("LEFT", row, "LEFT", 0, 0)
+        if row._branch == "ITEM" then row.stacksLabel:SetText("数量?") else row.stacksLabel:SetText("层数?") end
         row.stacksLabel:Show()
       end
       if row.stacksCB then
@@ -5819,6 +6295,7 @@ do
       row.editBox:ClearAllPoints()
       row.addButton:ClearAllPoints()
       if row.abilityDD then row.abilityDD:ClearAllPoints() end
+      if row.itemDD then row.itemDD:ClearAllPoints() end
 
       row.editBox:SetWidth(editWidth)
       row.editBox:SetPoint("LEFT", row, "LEFT", 10, 0)
@@ -5835,6 +6312,17 @@ do
           end
           AuraCond_InitAbilityDropdown(row)
           row.abilityDD:Show()
+        end
+        row.addButton:Show()
+      elseif row._branch == "ITEM" then
+        if row.itemDD then
+          row.editBox:Hide()
+          row.itemDD:SetPoint("LEFT", row, "LEFT", -15, -3)
+          if UIDropDownMenu_SetWidth then
+            pcall(UIDropDownMenu_SetWidth, editWidth, row.itemDD)
+          end
+          AuraCond_InitItemDropdown(row)
+          row.itemDD:Show()
         end
         row.addButton:Show()
       else
@@ -5855,6 +6343,8 @@ do
     row._choiceMode = nil
     row._choiceUnit = nil
     row._spellName = nil
+    row._itemName = nil
+    row._choiceItemCd = nil
     row._abilityPage = 1
 
     -- 层数重置
@@ -5921,6 +6411,8 @@ do
       row._choiceMode = (entry and entry.mode) or "found"
       row._choiceUnit = (entry and entry.unit) or "player"
       row._spellName = (entry and entry.name) or ""
+      row._itemName = (entry and entry.name) or ""
+      row._choiceItemCd = (entry and entry.unit) or "notcd"
       row._stacksEnabled = (entry and entry.stacksEnabled) and true or nil
       row._stacksComp    = (entry and entry.stacksComp) or nil
       row._stacksVal     = (entry and entry.stacksVal) or nil
@@ -6010,11 +6502,13 @@ do
     local text
     if row._branch == "ABILITY" then
       text = row._spellName or ""
+    elseif row._branch == "ITEM" then
+      text = row._itemName or ""
     else
       text = row.editBox and row.editBox:GetText() or ""
     end
-    text = string.gsub(text or "", "^%s*(.-)%s*$", "%1")
-    if text == "" then
+    local parsedInput = AuraCond_ParseAuraInput(text)
+    if not parsedInput then
       return
     end
 
@@ -6025,6 +6519,13 @@ do
     if row._branch == "ABILITY" then
       unit = nil
       buffType = "ABILITY"
+    elseif row._branch == "ITEM" then
+      if row._choiceMode == "missing" then
+        unit = nil
+      else
+        unit = row._choiceItemCd or "notcd"
+      end
+      buffType = "ITEM"
     elseif row._branch == "TALENT" then
       -- 天赋行没有单位字段；保持buffType = "TALENT"
       unit = nil
@@ -6041,7 +6542,9 @@ do
       buffType = buffType,
       mode = mode,
       unit = unit,
-      name = AuraCond_TitleCase(text),
+      name = parsedInput.name,
+      spellid = parsedInput.spellid,
+      Addedviaspellid = parsedInput.Addedviaspellid,
     }
 
     -- 仅对于光环（增益/减益），存储可选的层数设置
@@ -6158,13 +6661,33 @@ do
     row.btn1 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.btn2 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.btn3 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    row.btn4 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.closeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-    row.editBox = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+    row.editBox = CreateFrame("EditBox", nil, row)
     row.addButton = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.labelFS = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 
+    row.editBox:SetAutoFocus(false)
+    row.editBox:SetFontObject("GameFontNormalSmall")
+    if row.editBox.SetTextInsets then
+      row.editBox:SetTextInsets(6, 6, 0, 0)
+    end
+    if row.editBox.SetBackdrop then
+      row.editBox:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+      })
+      row.editBox:SetBackdropColor(0, 0, 0, 0.85)
+      row.editBox:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
+    end
+
     local ddName = "DoiteAuraCond_AbilityDD_" .. tostring(mgr.typeKey or "X") .. "_" .. tostring(AuraCond_RowCounter)
     row.abilityDD = CreateFrame("Frame", ddName, row, "UIDropDownMenuTemplate")
+    row.itemDD = CreateFrame("Frame", "DoiteAuraCond_ItemDD_" .. tostring(mgr.typeKey or "X") .. "_" .. tostring(AuraCond_RowCounter), row, "UIDropDownMenuTemplate")
 
     -- ✓ 按钮（位于内容和X之间），在STACKS阶段使用
     row.okBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
@@ -6189,11 +6712,26 @@ do
       pcall(UIDropDownMenu_SetWidth, row._stacksCompWidth, row.stacksCompDD)
     end
 
-    row.stacksVal = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+    row.stacksVal = CreateFrame("EditBox", nil, row)
     row.stacksVal:SetWidth(40)
     row.stacksVal:SetHeight(18)
     row.stacksVal:SetAutoFocus(false)
     row.stacksVal:SetFontObject("GameFontNormalSmall")
+    if row.stacksVal.SetTextInsets then
+      row.stacksVal:SetTextInsets(6, 6, 0, 0)
+    end
+    if row.stacksVal.SetBackdrop then
+      row.stacksVal:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+      })
+      row.stacksVal:SetBackdropColor(0, 0, 0, 0.85)
+      row.stacksVal:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
+    end
 
     row.stacksValEnter = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.stacksValEnter:SetText("(#)")
@@ -6201,9 +6739,11 @@ do
     row.btn1:SetWidth(mainWidth)
     row.btn2:SetWidth(mainWidth)
     row.btn3:SetWidth(mainWidth)
+    row.btn4:SetWidth(mainWidth)
     row.btn1:SetHeight(18)
     row.btn2:SetHeight(18)
     row.btn3:SetHeight(18)
+    row.btn4:SetHeight(18)
 
     row.closeBtn:SetWidth(closeWidth)
     row.closeBtn:SetHeight(18)
@@ -6246,6 +6786,7 @@ do
     DoiteEdit_YellowifyButton(row.btn1)
     DoiteEdit_YellowifyButton(row.btn2)
     DoiteEdit_YellowifyButton(row.btn3)
+    DoiteEdit_YellowifyButton(row.btn4)
     DoiteEdit_YellowifyButton(row.addButton)
     DoiteEdit_YellowifyButton(row.closeBtn)
     DoiteEdit_YellowifyButton(row.okBtn)
@@ -6271,6 +6812,10 @@ do
           row._choiceMode = "notcd"
           AuraCond_SetRowState(row, "INPUT")
 
+        elseif row._branch == "ITEM" then
+          row._choiceMode = "found"
+          AuraCond_SetRowState(row, "STEP3")
+
         elseif row._branch == "TALENT" then
           -- 天赋：已学习
           row._choiceMode = "Known"
@@ -6283,6 +6828,15 @@ do
         end
 
       elseif state == "STEP3" then
+        if row._branch == "ITEM" then
+          row._choiceItemCd = "notcd"
+          if row._choiceMode == "missing" then
+            AuraCond_SetRowState(row, "INPUT")
+          else
+            AuraCond_SetRowState(row, "STACKS")
+          end
+          return
+        end
         -- 光环：玩家自身
         row._choiceUnit = "player"
 
@@ -6313,6 +6867,14 @@ do
         if row._branch == "ABILITY" then
           -- 技能：冷却中
           row._choiceMode = "oncd"
+          AuraCond_SetRowState(row, "INPUT")
+
+        elseif row._branch == "ITEM" then
+          row._choiceMode = "missing"
+          row._choiceItemCd = nil
+          row._stacksEnabled = nil
+          row._stacksComp = nil
+          row._stacksVal  = nil
           AuraCond_SetRowState(row, "INPUT")
 
         elseif row._branch == "TALENT" then
@@ -6347,6 +6909,15 @@ do
         end
 
       elseif state == "STEP3" then
+        if row._branch == "ITEM" then
+          row._choiceItemCd = "oncd"
+          if row._choiceMode == "missing" then
+            AuraCond_SetRowState(row, "INPUT")
+          else
+            AuraCond_SetRowState(row, "STACKS")
+          end
+          return
+        end
         -- 光环：目标
         row._choiceUnit = "target"
 
@@ -6371,6 +6942,20 @@ do
         row._choiceBuffType = "TALENT"
         row._choiceMode = nil
         row._choiceUnit = nil
+        AuraCond_SetRowState(row, "STEP2")
+      end
+    end)
+
+    row.btn4:SetScript("OnClick", function()
+      if not currentKey then
+        return
+      end
+      if row._state == "STEP1" then
+        row._branch = "ITEM"
+        row._choiceBuffType = "ITEM"
+        row._choiceMode = nil
+        row._choiceUnit = nil
+        row._choiceItemCd = nil
         AuraCond_SetRowState(row, "STEP2")
       end
     end)
@@ -6635,6 +7220,154 @@ do
     return string.sub(string.gsub(" " .. str, "%W%l", string.upper), 2)
   end
 
+  local function VfxCond_BuildItemOptions()
+    local items, seen = {}, {}
+    local function _Add(name)
+      if not name or name == "" or seen[name] then return end
+      seen[name] = true
+      table.insert(items, name)
+    end
+    local function _NameFromLink(link)
+      if not link or link == "" then return nil end
+      local nm = GetItemInfo and GetItemInfo(link)
+      if nm and nm ~= "" then return nm end
+      local _, _, txt = string.find(link, "%[(.-)%]")
+      return txt
+    end
+    local i
+    for _, i in ipairs({13,14,16,17,18}) do
+      _Add(_NameFromLink(GetInventoryItemLink and GetInventoryItemLink("player", i)))
+    end
+    local bag, slot
+    for bag = 0, 4 do
+      local n = GetContainerNumSlots and GetContainerNumSlots(bag)
+      if n and n > 0 then
+        for slot = 1, n do
+          _Add(_NameFromLink(GetContainerItemLink and GetContainerItemLink(bag, slot)))
+        end
+      end
+    end
+    table.sort(items, function(a, b)
+      return string.lower(a or "") < string.lower(b or "")
+    end)
+    table.insert(items, 1, "---已装备的武器栏位---")
+    table.insert(items, 1, "---已装备的饰品栏位---")
+    return items
+  end
+
+  local function VfxCond_InitItemDropdown(row)
+    if not row or not row.itemDD then return end
+
+    local items = VfxCond_BuildItemOptions()
+    row._itemOptions = items
+
+    local total = table.getn(items)
+    local perPage = 10
+
+    if total == 0 then
+      UIDropDownMenu_Initialize(row.itemDD, function() end)
+      if UIDropDownMenu_SetText then
+        pcall(UIDropDownMenu_SetText, "未找到物品", row.itemDD)
+      end
+      return
+    end
+
+    local maxPage = math.max(1, math.ceil(total / perPage))
+    local page = row._itemPage or 1
+    if page < 1 then page = 1 end
+    if page > maxPage then page = maxPage end
+    row._itemPage = page
+
+    local function ReopenItemDDNextFrame()
+      local f = row.itemDD and row.itemDD._reopenFrame
+      if not f then
+        f = CreateFrame("Frame", nil, UIParent)
+        if row.itemDD then
+          row.itemDD._reopenFrame = f
+        end
+        f:Hide()
+        f:SetScript("OnUpdate", function()
+          f:Hide()
+          if row and row.itemDD then
+            ToggleDropDownMenu(nil, nil, row.itemDD, row.itemDD, 0, 0)
+          end
+        end)
+      end
+      f:Show()
+    end
+
+    local startIndex = (page - 1) * perPage + 1
+    local endIndex = math.min(startIndex + perPage - 1, total)
+
+    UIDropDownMenu_Initialize(row.itemDD, function(frame, level, menuList)
+      local info
+
+      if page > 1 then
+        info = {}
+        info.text = "|cffffd000<< 上一页|r"
+        info.value = "PREV"
+        info.notCheckable = true
+        info.func = function()
+          row._itemPage = page - 1
+          VfxCond_InitItemDropdown(row)
+          if CloseDropDownMenus then
+            CloseDropDownMenus()
+          end
+          ReopenItemDDNextFrame()
+        end
+        UIDropDownMenu_AddButton(info)
+      end
+
+      local idx = startIndex
+      while idx <= endIndex do
+        local name = items[idx]
+        info = {}
+        info.text = name
+        info.value = name
+        local pickedName = name
+        info.func = function(button)
+          local val = (button and button.value) or pickedName
+          row._itemName = val
+          if UIDropDownMenu_SetSelectedValue then
+            pcall(UIDropDownMenu_SetSelectedValue, row.itemDD, val)
+          end
+          if UIDropDownMenu_SetText then
+            pcall(UIDropDownMenu_SetText, val, row.itemDD)
+          end
+          if _GoldifyDD then
+            _GoldifyDD(row.itemDD)
+          end
+        end
+        info.checked = (row._itemName == name)
+        UIDropDownMenu_AddButton(info)
+        idx = idx + 1
+      end
+
+      if page < maxPage then
+        info = {}
+        info.text = "|cffffd000下一页 >>|r"
+        info.value = "NEXT"
+        info.notCheckable = true
+        info.func = function()
+          row._itemPage = page + 1
+          VfxCond_InitItemDropdown(row)
+          if CloseDropDownMenus then
+            CloseDropDownMenus()
+          end
+          ReopenItemDDNextFrame()
+        end
+        UIDropDownMenu_AddButton(info)
+      end
+    end)
+
+    if UIDropDownMenu_SetText then
+      pcall(UIDropDownMenu_SetText, row._itemName or "选择物品", row.itemDD)
+    end
+    if _GoldifyDD then
+      _GoldifyDD(row.itemDD)
+    end
+  end
+
   local function VfxCond_BuildDescription(buffType, mode, unit, name, stacksEnabled, stacksComp, stacksVal)
     local niceName = VfxCond_TitleCase(name or "")
 
@@ -6672,6 +7405,30 @@ do
       local talentPart = yellow .. "天赋" .. "|r"
       local namePart   = white .. (niceName or "") .. "|r"
       return talentPart .. " " .. sep .. statePart .. ": " .. namePart
+    elseif bt == "ITEM" then
+      local whereWord = (m == "missing") and "缺失" or "在背包/已装备"
+      local cdWord = (u == "oncd") and "冷却中" or "不在冷却中"
+      local itemPart = yellow .. "物品" .. "|r"
+      local wherePart = yellow .. whereWord .. "|r"
+
+      local prefix = ""
+      if stacksEnabled and stacksComp and stacksComp ~= "" and stacksVal and tostring(stacksVal) ~= "" then
+        local sym = stacksComp
+        if sym == ">=" then sym = "≥"
+        elseif sym == "<=" then sym = "≤"
+        elseif sym == "==" then sym = "="
+        end
+        prefix = tostring(sym) .. tostring(stacksVal) .. "x"
+      end
+
+      local namePart = white .. prefix .. (niceName or "") .. "|r"
+
+      if m == "missing" then
+        return itemPart .. " " .. sep .. wherePart .. ": " .. namePart
+      end
+
+      local cdPart = yellow .. cdWord .. "|r"
+      return itemPart .. " " .. sep .. wherePart .. " " .. sep .. cdPart .. ": " .. namePart
     end
 
     -- 默认：增益/减益光环行
@@ -6704,6 +7461,38 @@ do
 
     local namePart = white .. prefix .. (niceName or "") .. "|r"
     return typePart .. " " .. sep .. modePart .. " " .. sep .. unitPart .. ": " .. namePart
+  end
+
+  local function VfxCond_ParseAuraInput(rawText)
+    local text = string.gsub(rawText or "", "^%s*(.-)%s*$", "%1")
+    if text == "" then
+      return nil
+    end
+
+    local sid = tonumber(text)
+    if sid and sid > 0 then
+      local sidStr = tostring(sid)
+      local displayName = sidStr
+
+      if type(GetSpellNameAndRankForId) == "function" then
+        local ok, sn = pcall(GetSpellNameAndRankForId, sid)
+        if ok and sn and sn ~= "" then
+          displayName = tostring(sn)
+        end
+      end
+
+      return {
+        name = displayName,
+        spellid = sidStr,
+        Addedviaspellid = true,
+      }
+    end
+
+    return {
+      name = VfxCond_TitleCase(text),
+      spellid = nil,
+      Addedviaspellid = nil,
+    }
   end
 
   local VfxCond_RowCounter = 0
@@ -6742,30 +7531,39 @@ do
   local function VfxCond_BuildAbilitySpellList()
     local spells = {}
     local seen = {}
-    local i = 1
+    local passiveAllow = _G["DA_AbilityDropdownPassiveAllow"] or {}
 
-    while true do
-      local name, rank = GetSpellName(i, BOOKTYPE_SPELL)
-      if not name then break end
+    local function scanBook(bookType)
+      local i = 1
+      while true do
+        local name, rank = GetSpellName(i, bookType)
+        if not name then break end
 
-      local isPassive = false
-      if IsPassiveSpell then
-        local ok, passive = pcall(IsPassiveSpell, i, BOOKTYPE_SPELL)
-        if ok and passive then
+        local isPassive = false
+        if IsPassiveSpell then
+          local ok, passive = pcall(IsPassiveSpell, i, bookType)
+          if ok and passive then
+            isPassive = true
+          end
+        end
+        if (not isPassive) and rank and string.find(rank, "Passive") then
           isPassive = true
         end
-      end
-      if (not isPassive) and rank and (string.find(rank, "Passive") or string.find(rank, "被动")) then
-        isPassive = true
-      end
 
-      if not isPassive and name and name ~= "" and not seen[name] then
-        table.insert(spells, name)
-        seen[name] = true
-      end
+        if name and name ~= "" then
+          local allowPassive = (passiveAllow[name] == true)
+          if ((not isPassive) or allowPassive) and not seen[name] then
+            table.insert(spells, name)
+            seen[name] = true
+          end
+        end
 
-      i = i + 1
+        i = i + 1
+      end
     end
+
+    scanBook(BOOKTYPE_SPELL)
+    scanBook(BOOKTYPE_PET)
 
     table.sort(spells, function(a, b)
       a = string.lower(a or "")
@@ -6905,14 +7703,19 @@ do
     row.btn1:Hide()
     row.btn2:Hide()
     if row.btn3 then row.btn3:Hide() end
+    if row.btn4 then row.btn4:Hide() end
     row.closeBtn:Show()
     if row.okBtn then row.okBtn:Hide() end
     row.editBox:Hide()
     row.addButton:Hide()
     row.labelFS:Hide()
     if row.abilityDD then row.abilityDD:Hide() end
+    if row.itemDD then row.itemDD:Hide() end
     if row.glowCB then row.glowCB:Hide() end
     if row.greyCB then row.greyCB:Hide() end
+    if row.fadeCB then row.fadeCB:Hide() end
+    if row.fadeSlider then row.fadeSlider:Hide() end
+    if row.fadeSliderPct then row.fadeSliderPct:Hide() end
 
     if row.stacksLabel then row.stacksLabel:Hide() end
     if row.stacksCB then row.stacksCB:Hide() end
@@ -6926,34 +7729,39 @@ do
 
     if state == "STEP1" then
       row._branch = nil
-      local available = parentWidth - closeWidth - spacing * 5
+      local available = parentWidth - closeWidth - spacing * 6
       if available < 80 then available = 80 end
-      local w = math.floor(available / 4)
+      local w = math.floor(available / 5)
 
       row.btn1:SetWidth(w)
       row.btn2:SetWidth(w)
       row.addButton:SetWidth(w)
       if row.btn3 then row.btn3:SetWidth(w) end
+      if row.btn4 then row.btn4:SetWidth(w) end
 
       row.btn1:ClearAllPoints()
       row.btn2:ClearAllPoints()
       row.addButton:ClearAllPoints()
       if row.btn3 then row.btn3:ClearAllPoints() end
+      if row.btn4 then row.btn4:ClearAllPoints() end
 
       row.btn1:SetPoint("LEFT", row, "LEFT", 0, 0)
       row.btn2:SetPoint("LEFT", row.btn1, "RIGHT", spacing, 0)
       row.addButton:SetPoint("LEFT", row.btn2, "RIGHT", spacing, 0)
       if row.btn3 then row.btn3:SetPoint("LEFT", row.addButton, "RIGHT", spacing, 0) end
+      if row.btn4 then row.btn4:SetPoint("LEFT", row.btn3, "RIGHT", spacing, 0) end
 
       row.btn1:SetText("技能")
       row.btn2:SetText("增益效果")
       row.addButton:SetText("减益效果")
       if row.btn3 then row.btn3:SetText("天赋") end
+      if row.btn4 then row.btn4:SetText("物品") end
 
       row.btn1:Show()
       row.btn2:Show()
       row.addButton:Show()
       if row.btn3 then row.btn3:Show() end
+      if row.btn4 then row.btn4:Show() end
 
     elseif state == "STEP2" then
       local available = parentWidth - closeWidth - spacing * 3
@@ -6971,6 +7779,9 @@ do
       if row._branch == "ABILITY" then
         row.btn1:SetText("不在冷却中")
         row.btn2:SetText("冷却中")
+      elseif row._branch == "ITEM" then
+        row.btn1:SetText("在背包/已装备")
+        row.btn2:SetText("缺失")
       elseif row._branch == "TALENT" then
         row.btn1:SetText("已学习")
         row.btn2:SetText("未学习")
@@ -6995,8 +7806,13 @@ do
       row.btn1:SetPoint("LEFT", row, "LEFT", 0, 0)
       row.btn2:SetPoint("LEFT", row.btn1, "RIGHT", spacing, 0)
 
-      row.btn1:SetText("玩家自身")
-      row.btn2:SetText("目标")
+      if row._branch == "ITEM" then
+        row.btn1:SetText("不在冷却中")
+        row.btn2:SetText("冷却中")
+      else
+        row.btn1:SetText("玩家自身")
+        row.btn2:SetText("目标")
+      end
       row.btn1:Show()
       row.btn2:Show()
 
@@ -7015,6 +7831,7 @@ do
       if row.stacksLabel then
         row.stacksLabel:ClearAllPoints()
         row.stacksLabel:SetPoint("LEFT", row, "LEFT", 0, 0)
+        if row._branch == "ITEM" then row.stacksLabel:SetText("数量?") else row.stacksLabel:SetText("层数?") end
         row.stacksLabel:Show()
       end
       if row.stacksCB then
@@ -7049,6 +7866,7 @@ do
       row.editBox:ClearAllPoints()
       row.addButton:ClearAllPoints()
       if row.abilityDD then row.abilityDD:ClearAllPoints() end
+      if row.itemDD then row.itemDD:ClearAllPoints() end
 
       row.editBox:SetWidth(editWidth)
       row.editBox:SetPoint("LEFT", row, "LEFT", 10, 0)
@@ -7066,7 +7884,18 @@ do
           VfxCond_InitAbilityDropdown(row)
           row.abilityDD:Show()
         end
-       row.addButton:Show()
+        row.addButton:Show()
+      elseif row._branch == "ITEM" then
+        if row.itemDD then
+          row.editBox:Hide()
+          row.itemDD:SetPoint("LEFT", row, "LEFT", -15, -3)
+          if UIDropDownMenu_SetWidth then
+            pcall(UIDropDownMenu_SetWidth, editWidth, row.itemDD)
+          end
+          VfxCond_InitItemDropdown(row)
+          row.itemDD:Show()
+        end
+        row.addButton:Show()
       else
         if row.abilityDD then row.abilityDD:Hide() end
         row.editBox:Show()
@@ -7085,9 +7914,28 @@ do
         row.greyCB:ClearAllPoints()
         row.glowCB:SetPoint("TOPLEFT", row, "TOPLEFT", 0, -14)
         row.greyCB:SetPoint("LEFT", row.glowCB, "RIGHT", 40, 0)
+        if row.fadeCB then
+          row.fadeCB:ClearAllPoints()
+          row.fadeCB:SetPoint("LEFT", row.greyCB, "RIGHT", 40, 0)
+        end
+        if row.fadeSlider then
+          row.fadeSlider:ClearAllPoints()
+          row.fadeSlider:SetPoint("LEFT", row.fadeCB, "RIGHT", 45, 0)
+          if row.fadeSliderPct then
+            row.fadeSliderPct:ClearAllPoints()
+            row.fadeSliderPct:SetPoint("LEFT", row.fadeSlider, "RIGHT", 5, 0)
+          end
+        end
 
         row.glowCB:Show()
         row.greyCB:Show()
+        if row.fadeCB then
+          row.fadeCB:Show()
+          if row.fadeCB:GetChecked() and row.fadeSlider then
+            row.fadeSlider:Show()
+            if row.fadeSliderPct then row.fadeSliderPct:Show() end
+          end
+        end
       end
     end
   end
@@ -7098,6 +7946,8 @@ do
     row._choiceMode = nil
     row._choiceUnit = nil
     row._spellName = nil
+    row._itemName = nil
+    row._choiceItemCd = nil
     row._abilityPage = 1
 
     -- 层数重置
@@ -7159,6 +8009,8 @@ do
       row._choiceMode = (entry and entry.mode) or "found"
       row._choiceUnit = (entry and entry.unit) or "player"
       row._spellName = (entry and entry.name) or ""
+      row._itemName = (entry and entry.name) or ""
+      row._choiceItemCd = (entry and entry.unit) or "notcd"
       row._stacksEnabled = (entry and entry.stacksEnabled) and true or nil
       row._stacksComp    = (entry and entry.stacksComp) or nil
       row._stacksVal     = (entry and entry.stacksVal) or nil
@@ -7194,6 +8046,38 @@ do
             UpdateCondFrameForKey(currentKey)
           end
         end)
+      end
+
+      if row.fadeCB then
+        row.fadeCB:SetChecked(entry and entry.fade)
+        row.fadeCB:SetScript("OnClick", function()
+          local list = VfxCond_GetListForType(typeKey)
+          if list and list[row._entryIndex] then
+            list[row._entryIndex].fade = this:GetChecked() and true or nil
+            if list[row._entryIndex].fade and not list[row._entryIndex].fadeAlpha then
+              list[row._entryIndex].fadeAlpha = 0
+            end
+            SafeRefresh(); SafeEvaluate()
+            UpdateCondFrameForKey(currentKey)
+          end
+        end)
+      end
+      if row.fadeSlider then
+        local fadeAlpha = tonumber(entry and entry.fadeAlpha) or 0
+        if fadeAlpha < 0 then fadeAlpha = 0 end
+        if fadeAlpha > 1 then fadeAlpha = 1 end
+        row.fadeSlider:SetText(tostring(math.floor((fadeAlpha * 100) + 0.5)))
+        local function SaveRowFadeAlpha()
+          local list = VfxCond_GetListForType(typeKey)
+          if list and list[row._entryIndex] then
+            list[row._entryIndex].fadeAlpha = _ParseFadeAlphaFromBox(row.fadeSlider)
+            _NormalizeFadeBox(row.fadeSlider, list[row._entryIndex].fadeAlpha)
+            SafeRefresh(); SafeEvaluate()
+          end
+        end
+        row.fadeSlider:SetScript("OnEnterPressed", function() SaveRowFadeAlpha(); this:ClearFocus() end)
+        row.fadeSlider:SetScript("OnEditFocusLost", SaveRowFadeAlpha)
+        row.fadeSlider:SetScript("OnEscapePressed", function() this:ClearFocus() end)
       end
 
       VfxCond_SetRowState(row, "SAVED")
@@ -7248,11 +8132,13 @@ do
     local text
     if row._branch == "ABILITY" then
       text = row._spellName or ""
+    elseif row._branch == "ITEM" then
+      text = row._itemName or ""
     else
       text = row.editBox and row.editBox:GetText() or ""
     end
-    text = string.gsub(text or "", "^%s*(.-)%s*$", "%1")
-    if text == "" then return end
+    local parsedInput = VfxCond_ParseAuraInput(text)
+    if not parsedInput then return end
 
     local buffType = row._choiceBuffType or "BUFF"
     local mode = row._choiceMode or "found"
@@ -7261,6 +8147,13 @@ do
     if row._branch == "ABILITY" then
       unit = nil
       buffType = "ABILITY"
+    elseif row._branch == "ITEM" then
+      if row._choiceMode == "missing" then
+        unit = nil
+      else
+        unit = row._choiceItemCd or "notcd"
+      end
+      buffType = "ITEM"
     elseif row._branch == "TALENT" then
       unit = nil
     else
@@ -7277,7 +8170,11 @@ do
       buffType = buffType,
       mode = mode,
       unit = unit,
-      name = VfxCond_TitleCase(text),
+      name = parsedInput.name,
+      spellid = parsedInput.spellid,
+      Addedviaspellid = parsedInput.Addedviaspellid,
+      fade = nil,
+      fadeAlpha = 0,
     }
 
     -- 仅对于光环（增益/减益），存储可选的层数设置
@@ -7364,14 +8261,34 @@ do
     row.btn1 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.btn2 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.btn3 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    row.btn4 = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.closeBtn = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-    row.editBox = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+    row.editBox = CreateFrame("EditBox", nil, row)
     row.addButton = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
     row.labelFS = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.labelFS:SetJustifyH("LEFT")
 
+    row.editBox:SetAutoFocus(false)
+    row.editBox:SetFontObject("GameFontNormalSmall")
+    if row.editBox.SetTextInsets then
+      row.editBox:SetTextInsets(6, 6, 0, 0)
+    end
+    if row.editBox.SetBackdrop then
+      row.editBox:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+      })
+      row.editBox:SetBackdropColor(0, 0, 0, 0.85)
+      row.editBox:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
+    end
+
     local ddName = "DoiteVfxCond_AbilityDD_" .. tostring(mgr.typeKey or "X") .. "_" .. tostring(VfxCond_RowCounter)
     row.abilityDD = CreateFrame("Frame", ddName, row, "UIDropDownMenuTemplate")
+    row.itemDD = CreateFrame("Frame", "DoiteVfxCond_ItemDD_" .. tostring(mgr.typeKey or "X") .. "_" .. tostring(VfxCond_RowCounter), row, "UIDropDownMenuTemplate")
     row._abilityPage = 1
 
     -- 继续按钮（位于内容和X之间），在STACKS阶段使用
@@ -7396,11 +8313,26 @@ do
       pcall(UIDropDownMenu_SetWidth, row._stacksCompWidth, row.stacksCompDD)
     end
 
-    row.stacksVal = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+    row.stacksVal = CreateFrame("EditBox", nil, row)
     row.stacksVal:SetWidth(40)
     row.stacksVal:SetHeight(18)
     row.stacksVal:SetAutoFocus(false)
     row.stacksVal:SetFontObject("GameFontNormalSmall")
+    if row.stacksVal.SetTextInsets then
+      row.stacksVal:SetTextInsets(6, 6, 0, 0)
+    end
+    if row.stacksVal.SetBackdrop then
+      row.stacksVal:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 16,
+        edgeSize = 12,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 }
+      })
+      row.stacksVal:SetBackdropColor(0, 0, 0, 0.85)
+      row.stacksVal:SetBackdropBorderColor(0.6, 0.6, 0.6, 1)
+    end
 
     row.stacksValEnter = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.stacksValEnter:SetText("(#)")
@@ -7408,9 +8340,11 @@ do
     row.btn1:SetWidth(mainWidth)
     row.btn2:SetWidth(mainWidth)
     row.btn3:SetWidth(mainWidth)
+    row.btn4:SetWidth(mainWidth)
     row.btn1:SetHeight(18)
     row.btn2:SetHeight(18)
     row.btn3:SetHeight(18)
+    row.btn4:SetHeight(18)
 
     row.closeBtn:SetWidth(closeWidth)
     row.closeBtn:SetHeight(18)
@@ -7455,12 +8389,23 @@ do
 
     row.glowCB = CreateMiniCheck("发光")
     row.greyCB = CreateMiniCheck("灰色")
+    row.fadeCB = CreateMiniCheck("淡出")
+    row.fadeSlider = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
+    row.fadeSlider:SetWidth(24)
+    row.fadeSlider:SetHeight(16)
+    row.fadeSlider:SetAutoFocus(false)
+    row.fadeSlider:SetJustifyH("CENTER")
+    row.fadeSlider:SetFontObject("GameFontNormalSmall")
+    row.fadeSlider:SetNumeric(true)
+    row.fadeSliderPct = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    row.fadeSliderPct:SetText("|cffffd000%|r")
 
     row.closeBtn:SetText("X")
 
     DoiteEdit_YellowifyButton(row.btn1)
     DoiteEdit_YellowifyButton(row.btn2)
     DoiteEdit_YellowifyButton(row.btn3)
+    DoiteEdit_YellowifyButton(row.btn4)
     DoiteEdit_YellowifyButton(row.addButton)
     DoiteEdit_YellowifyButton(row.closeBtn)
     DoiteEdit_YellowifyButton(row.okBtn)
@@ -7476,6 +8421,9 @@ do
         if row._branch == "ABILITY" then
           row._choiceMode = "notcd"
           VfxCond_SetRowState(row, "INPUT")
+        elseif row._branch == "ITEM" then
+          row._choiceMode = "found"
+          VfxCond_SetRowState(row, "STEP3")
         elseif row._branch == "TALENT" then
           row._choiceMode = "Known"
           VfxCond_SetRowState(row, "INPUT")
@@ -7484,6 +8432,15 @@ do
           VfxCond_SetRowState(row, "STEP3")
         end
         elseif state == "STEP3" then
+          if row._branch == "ITEM" then
+            row._choiceItemCd = "notcd"
+          if row._choiceMode == "missing" then
+            VfxCond_SetRowState(row, "INPUT")
+          else
+            VfxCond_SetRowState(row, "STACKS")
+          end
+          return
+        end
           row._choiceUnit = "player"
           if row._choiceMode == "missing" then
             VfxCond_SetRowState(row, "INPUT")
@@ -7502,6 +8459,13 @@ do
       elseif state == "STEP2" then
         if row._branch == "ABILITY" then
           row._choiceMode = "oncd"
+          VfxCond_SetRowState(row, "INPUT")
+        elseif row._branch == "ITEM" then
+          row._choiceMode = "missing"
+          row._choiceItemCd = nil
+          row._stacksEnabled = nil
+          row._stacksComp = nil
+          row._stacksVal  = nil
           VfxCond_SetRowState(row, "INPUT")
         elseif row._branch == "TALENT" then
           row._choiceMode = "NotKnown"
@@ -7531,6 +8495,15 @@ do
           VfxCond_SetRowState(row, "STEP3")
         end
         elseif state == "STEP3" then
+          if row._branch == "ITEM" then
+            row._choiceItemCd = "oncd"
+          if row._choiceMode == "missing" then
+            VfxCond_SetRowState(row, "INPUT")
+          else
+            VfxCond_SetRowState(row, "STACKS")
+          end
+          return
+        end
           row._choiceUnit = "target"
           if row._choiceMode == "missing" then
             VfxCond_SetRowState(row, "INPUT")
@@ -7555,6 +8528,17 @@ do
       if row._state == "STEP1" then
         row._branch = "TALENT"
         row._choiceBuffType = "TALENT"
+        VfxCond_SetRowState(row, "STEP2")
+      end
+    end)
+
+    row.btn4:SetScript("OnClick", function()
+      if row._state == "STEP1" then
+        row._branch = "ITEM"
+        row._choiceBuffType = "ITEM"
+        row._choiceMode = nil
+        row._choiceUnit = nil
+        row._choiceItemCd = nil
         VfxCond_SetRowState(row, "STEP2")
       end
     end)
@@ -7653,7 +8637,7 @@ do
       label:SetPoint("TOPLEFT", anchorFrame, "TOPLEFT", 0, -15)
       label:SetJustifyH("LEFT")
       label:SetTextColor(1, 0.82, 0)
-      label:SetText("添加视觉效果条件（发光/灰色）：")
+      label:SetText("添加视觉效果条件（发光/灰色/淡出）：")
       mgr.label = label
     end
 
@@ -7722,6 +8706,14 @@ local function UpdateConditionsUI(data)
   end
   _HideSoundControls()
 
+  -- 重置淡出控件，以防止图标类别之间的视觉泄漏。
+  if condFrame.cond_ability_fade then condFrame.cond_ability_fade:Hide() end
+  if condFrame.cond_ability_fade_slider then condFrame.cond_ability_fade_slider:Hide() end
+  if condFrame.cond_aura_fade then condFrame.cond_aura_fade:Hide() end
+  if condFrame.cond_aura_fade_slider then condFrame.cond_aura_fade_slider:Hide() end
+  if condFrame.cond_item_fade then condFrame.cond_item_fade:Hide() end
+  if condFrame.cond_item_fade_slider then condFrame.cond_item_fade_slider:Hide() end
+
   -- 自定义控件默认隐藏；仅当类型为Custom时显示。
   if condFrame.cond_custom_function_edit then
     condFrame.cond_custom_function_edit:Hide()
@@ -7744,7 +8736,7 @@ local function UpdateConditionsUI(data)
   -- 技能类型
   if data.type == "Ability" then
     -- 显示行
-    ShowSeparatorsForType("ability")
+    if ShowSeparatorsForType then ShowSeparatorsForType("ability") end
     -- 确保不在光环编辑时显示光环专用提示
     if condFrame.cond_aura_tip then
       condFrame.cond_aura_tip:Hide()
@@ -7774,14 +8766,15 @@ local function UpdateConditionsUI(data)
     condFrame.cond_ability_power:Show()
     condFrame.cond_ability_glow:Show()
     condFrame.cond_ability_greyscale:Show()
+    condFrame.cond_ability_fade:Show()
     condFrame.cond_ability_slider:Show()
     condFrame.cond_ability_remaining_cb:Show()
 
     -- 互斥模式
     local mode = (c.ability and c.ability.mode) or nil
-    condFrame.cond_ability_usable:SetChecked(mode == "usable")
-    condFrame.cond_ability_notcd:SetChecked(mode == "notcd")
-    condFrame.cond_ability_oncd:SetChecked(mode == "oncd")
+    condFrame.cond_ability_usable:SetChecked(mode == "usable" or mode == "usableoncd")
+    condFrame.cond_ability_notcd:SetChecked(mode == "notcd" or mode == "nocdoncd")
+    condFrame.cond_ability_oncd:SetChecked(mode == "oncd" or mode == "usableoncd" or mode == "nocdoncd")
 
     -- 战斗状态 -> 现在是独立布尔值，并回退到遗留字符串'combat'
     local inC, outC
@@ -7945,6 +8938,16 @@ local function UpdateConditionsUI(data)
     -- 发光和灰色状态
     condFrame.cond_ability_glow:SetChecked((c.ability and c.ability.glow) or false)
     condFrame.cond_ability_greyscale:SetChecked((c.ability and c.ability.greyscale) or false)
+    condFrame.cond_ability_fade:SetChecked((c.ability and c.ability.fade) or false)
+    if (c.ability and c.ability.fade) then
+      local fadeAlpha = tonumber(c.ability.fadeAlpha) or 0
+      if fadeAlpha < 0 then fadeAlpha = 0 end
+      if fadeAlpha > 1 then fadeAlpha = 1 end
+      condFrame.cond_ability_fade_slider:SetText(tostring(math.floor((fadeAlpha * 100) + 0.5)))
+      condFrame.cond_ability_fade_slider:Show()
+    else
+      condFrame.cond_ability_fade_slider:Hide()
+    end
 
     -- 滑块 vs 剩余
     local slidEnabled = (c.ability and c.ability.slider) and true or false
@@ -7952,7 +8955,7 @@ local function UpdateConditionsUI(data)
     local remEnabled = (c.ability and c.ability.remainingEnabled) and true or false
     condFrame.cond_ability_remaining_cb:SetChecked(remEnabled)
 
-    if mode == "oncd" then
+    if mode == "oncd" or mode == "usableoncd" or mode == "nocdoncd" then
       condFrame.cond_ability_slider:Disable()
       condFrame.cond_ability_slider:Hide()
       condFrame.cond_ability_slider_dir:Hide()
@@ -8041,6 +9044,11 @@ local function UpdateConditionsUI(data)
       condFrame.cond_ability_cp_val:Hide()
       condFrame.cond_ability_cp_val_enter:Hide()
       if condFrame.cond_ability_class_note then
+        if _IsHunterOrWarlock and _IsHunterOrWarlock() then
+          condFrame.cond_ability_class_note:SetText("在此部分下方提供宠物跟踪选项。")
+        else
+          condFrame.cond_ability_class_note:SetText("未为你的职业添加专属选项。")
+        end
         condFrame.cond_ability_class_note:Show()
       end
     end
@@ -8083,7 +9091,7 @@ local function UpdateConditionsUI(data)
     -- 第10行：文本标志（仅有剩余时间；技能从未有层数文本）
 
     -- 剩余时间行为如旧（当模式为usable/notcd时由滑块控制；在'oncd'时显示）
-    if mode == "oncd" then
+    if mode == "oncd" or mode == "usableoncd" or mode == "nocdoncd" then
       condFrame.cond_ability_text_time:Show()
       DoiteEdit_EnableCheck(condFrame.cond_ability_text_time)
       condFrame.cond_ability_text_time:SetChecked((c.ability and c.ability.textTimeRemaining) or false)
@@ -8148,6 +9156,8 @@ local function UpdateConditionsUI(data)
     condFrame.cond_aura_onself:Hide()
     condFrame.cond_aura_glow:Hide()
     condFrame.cond_aura_greyscale:Hide()
+    condFrame.cond_aura_fade:Hide()
+    condFrame.cond_aura_fade_slider:Hide()
     condFrame.cond_aura_remaining_cb:Hide()
     condFrame.cond_aura_remaining_comp:Hide()
     condFrame.cond_aura_remaining_val:Hide()
@@ -8217,6 +9227,9 @@ local function UpdateConditionsUI(data)
     if condFrame.cond_aura_class_note then
       condFrame.cond_aura_class_note:Hide()
     end
+    if condFrame.cond_aura_trackpet then
+      condFrame.cond_aura_trackpet:Hide()
+    end
     if condFrame.cond_aura_weaponDD then
       condFrame.cond_aura_weaponDD:Hide()
     end
@@ -8284,6 +9297,12 @@ local function UpdateConditionsUI(data)
     end
     if condFrame.cond_item_greyscale then
       condFrame.cond_item_greyscale:Hide()
+    end
+    if condFrame.cond_item_fade then
+      condFrame.cond_item_fade:Hide()
+    end
+    if condFrame.cond_item_fade_slider then
+      condFrame.cond_item_fade_slider:Hide()
     end
     if condFrame.cond_item_text_time then
       condFrame.cond_item_text_time:Hide()
@@ -8375,6 +9394,9 @@ local function UpdateConditionsUI(data)
     if condFrame.cond_item_inv_wep_ranged then
       condFrame.cond_item_inv_wep_ranged:Hide()
     end
+    if condFrame.cond_item_inv_wep_ammo then
+      condFrame.cond_item_inv_wep_ammo:Hide()
+    end
     if condFrame.cond_item_class_note then
       condFrame.cond_item_class_note:Hide()
     end
@@ -8416,7 +9438,7 @@ local function UpdateConditionsUI(data)
 
     -- 物品类型
   elseif data.type == "Item" then
-    ShowSeparatorsForType("item")
+    if ShowSeparatorsForType then ShowSeparatorsForType("item") end
     -- 确保不在光环编辑时显示光环专用提示
     if condFrame.cond_aura_tip then
       condFrame.cond_aura_tip:Hide()
@@ -8469,7 +9491,7 @@ local ic = c.item or {}
     local isTrinketSlots = (dispName == "---已装备的饰品栏位---")
     local isWeaponSlots = (dispName == "---已装备的武器栏位---")
 
-    -- 仅当武器槽合成条目且mode=="notcd"时，将“数量”改为“层数”。
+    -- 仅当主手/副手武器槽合成条目且mode=="notcd"/"both"时，将“数量”改为“层数”。
     condFrame._item_qty_cb_default = condFrame._item_qty_cb_default or "数量"
     condFrame._item_qty_sep_default = condFrame._item_qty_sep_default or "数量"
 
@@ -8479,7 +9501,11 @@ local ic = c.item or {}
       _qtyMode = "notcd"
     end
 
-    local useStacks = (isWeaponSlots and (_qtyMode == "notcd" or _qtyMode == "both")) and true or false
+	local _qtySlot = ic.inventorySlot
+	if _qtySlot ~= "MAINHAND" and _qtySlot ~= "OFFHAND" and _qtySlot ~= "RANGED" and _qtySlot ~= "AMMO" then
+	  _qtySlot = "MAINHAND"
+	end
+	local useStacks = (isWeaponSlots and (_qtySlot == "MAINHAND" or _qtySlot == "OFFHAND") and (_qtyMode == "notcd" or _qtyMode == "both")) and true or false
 
     if useStacks then
       if condFrame.cond_item_stacks_cb and condFrame.cond_item_stacks_cb.text and condFrame.cond_item_stacks_cb.text.SetText then
@@ -8510,6 +9536,9 @@ local ic = c.item or {}
           condFrame.cond_item_inv_wep_mainhand:Hide()
           condFrame.cond_item_inv_wep_offhand:Hide()
           condFrame.cond_item_inv_wep_ranged:Hide()
+          if condFrame.cond_item_inv_wep_ammo then
+            condFrame.cond_item_inv_wep_ammo:Hide()
+          end
         end
 
         -- 显示饰品单选钮
@@ -8543,10 +9572,21 @@ local ic = c.item or {}
         condFrame.cond_item_inv_wep_mainhand:Show()
         condFrame.cond_item_inv_wep_offhand:Show()
         condFrame.cond_item_inv_wep_ranged:Show()
+        if condFrame.cond_item_inv_wep_ammo then
+          condFrame.cond_item_inv_wep_ammo:Show()
+        end
 
         local slot = ic.inventorySlot
-        if slot ~= "MAINHAND" and slot ~= "OFFHAND" and slot ~= "RANGED" then
+        if slot ~= "MAINHAND" and slot ~= "OFFHAND" and slot ~= "RANGED" and slot ~= "AMMO" then
           -- 默认：主手
+          slot = "MAINHAND"
+          ic.inventorySlot = slot
+        end
+
+        local _, classTag = UnitClass("player")
+        classTag = classTag and string.upper(classTag) or ""
+        local ammoAllowed = (classTag == "WARRIOR" or classTag == "ROGUE" or classTag == "HUNTER")
+        if (slot == "AMMO") and (not ammoAllowed) then
           slot = "MAINHAND"
           ic.inventorySlot = slot
         end
@@ -8554,6 +9594,15 @@ local ic = c.item or {}
         condFrame.cond_item_inv_wep_mainhand:SetChecked(slot == "MAINHAND")
         condFrame.cond_item_inv_wep_offhand:SetChecked(slot == "OFFHAND")
         condFrame.cond_item_inv_wep_ranged:SetChecked(slot == "RANGED")
+        if condFrame.cond_item_inv_wep_ammo then
+          condFrame.cond_item_inv_wep_ammo:SetChecked(slot == "AMMO")
+          if ammoAllowed then
+            _enCheck(condFrame.cond_item_inv_wep_ammo)
+          else
+            condFrame.cond_item_inv_wep_ammo:SetChecked(false)
+            _disCheck(condFrame.cond_item_inv_wep_ammo)
+          end
+        end
       end
 
       -- isMissing在此保持false → 不会灰显其他行
@@ -8573,6 +9622,9 @@ local ic = c.item or {}
         condFrame.cond_item_inv_wep_mainhand:Hide()
         condFrame.cond_item_inv_wep_offhand:Hide()
         condFrame.cond_item_inv_wep_ranged:Hide()
+        if condFrame.cond_item_inv_wep_ammo then
+          condFrame.cond_item_inv_wep_ammo:Hide()
+        end
       end
 
       condFrame.cond_item_where_equipped:Show()
@@ -8686,11 +9738,14 @@ local ic = c.item or {}
     condFrame.cond_item_notcd:SetChecked(mode == "notcd" or mode == "both")
     condFrame.cond_item_oncd:SetChecked(mode == "oncd" or mode == "both")
 
-    -- 附魔状态下拉框：仅对武器槽 + notcd/both + 非缺失启用。其他地方禁用，并在禁用时清除ic.enchant。
+    local isMainOffhandWeaponSlot = (ic.inventorySlot == "MAINHAND" or ic.inventorySlot == "OFFHAND")
+
+    
+    -- 附魔状态下拉框：仅对主手/副手武器槽 + notcd/both + 非缺失启用。其他地方禁用，并在禁用时清除ic.enchant。
     if condFrame.cond_item_enchant then
       condFrame.cond_item_enchant:Show()
 
-      local allowEnchant = (not isMissing) and isWeaponSlots and (mode == "notcd" or mode == "both")
+      local allowEnchant = (not isMissing) and isWeaponSlots and isMainOffhandWeaponSlot and (mode == "notcd" or mode == "both")
       if allowEnchant then
         _enCheck(condFrame.cond_item_enchant)
 
@@ -8734,11 +9789,11 @@ local ic = c.item or {}
       end
     end
 
-    -- 图标文本：附魔剩余时间。仅对武器槽 + notcd/both + 非缺失启用，且仅当附魔状态不是明确“未附魔”时。如果选择“未附魔”，则强制关闭并禁用 + 清除数据库条目（未附魔时无法显示剩余时间）。
+    -- 图标文本：附魔剩余时间。仅对主手/副手武器槽 + notcd/both + 非缺失启用，且仅当附魔状态不是明确“未附魔”时。如果选择“未附魔”，则强制关闭并禁用 + 清除数据库条目（未附魔时无法显示剩余时间）。
     if condFrame.cond_item_text_enchant then
       condFrame.cond_item_text_enchant:Show()
 
-      local allowEnchantText = (not isMissing) and isWeaponSlots and (mode == "notcd" or mode == "both")
+      local allowEnchantText = (not isMissing) and isWeaponSlots and isMainOffhandWeaponSlot and (mode == "notcd" or mode == "both")
 
       -- 额外规则：“未附魔”禁用此复选框并清除其数据库条目
       if allowEnchantText and (ic.enchant == false) then
@@ -8866,9 +9921,20 @@ local ic = c.item or {}
     -- 视觉效果
     condFrame.cond_item_glow:Show()
     condFrame.cond_item_greyscale:Show()
+    condFrame.cond_item_fade:Show()
     condFrame.cond_item_text_time:Show()
     condFrame.cond_item_glow:SetChecked(ic.glow == true)
     condFrame.cond_item_greyscale:SetChecked(ic.greyscale == true)
+    condFrame.cond_item_fade:SetChecked(ic.fade == true)
+    if ic.fade == true then
+      local fadeAlpha = tonumber(ic.fadeAlpha) or 0
+      if fadeAlpha < 0 then fadeAlpha = 0 end
+      if fadeAlpha > 1 then fadeAlpha = 1 end
+      condFrame.cond_item_fade_slider:SetText(tostring(math.floor((fadeAlpha * 100) + 0.5)))
+      condFrame.cond_item_fade_slider:Show()
+    else
+      condFrame.cond_item_fade_slider:Hide()
+    end
 
     -- 保持物品文本-剩余时间标签不变
     do
@@ -8882,7 +9948,7 @@ local ic = c.item or {}
     -- 图标文本：剩余时间（共享数据库键：ic.textTimeRemaining）
 
     do
-      local allowTime = (not isMissing) and (mode == "oncd" or (not isWeaponSlots and mode == "both"))
+      local allowTime = (not isMissing) and (mode == "oncd" or ((not isMainOffhandWeaponSlot) and mode == "both"))
 
       if allowTime then
         _enCheck(condFrame.cond_item_text_time)
@@ -8891,7 +9957,7 @@ local ic = c.item or {}
         condFrame.cond_item_text_time:SetChecked(false)
         _disCheck(condFrame.cond_item_text_time)
 
-        if not (isWeaponSlots and (mode == "notcd" or mode == "both")) then
+        if not (isMainOffhandWeaponSlot and (mode == "notcd" or mode == "both")) then
           if ic.textTimeRemaining ~= nil then
             ic.textTimeRemaining = nil
           end
@@ -9044,7 +10110,7 @@ local ic = c.item or {}
     -- 剩余时间
     do
       local sepTitle = "剩余时间"
-      if isWeaponSlots then
+      if isMainOffhandWeaponSlot then
         if mode == "notcd" or mode == "both" then
           sepTitle = "剩余时间 (临时武器附魔)"
         elseif mode == "oncd" then
@@ -9054,7 +10120,7 @@ local ic = c.item or {}
       SetSeparator("item", 12, sepTitle, true, true)
     end
     condFrame.cond_item_remaining_cb:Show()
-    if (not isMissing) and (mode == "oncd" or (not isWeaponSlots and mode == "both") or (isWeaponSlots and (mode == "notcd" or mode == "both"))) then
+	if (not isMissing) and (mode == "oncd" or ((not isMainOffhandWeaponSlot) and mode == "both") or (isMainOffhandWeaponSlot and (mode == "notcd" or mode == "both"))) then
       _enCheck(condFrame.cond_item_remaining_cb)
       local remOn = (ic.remainingEnabled == true)
       condFrame.cond_item_remaining_cb:SetChecked(remOn)
@@ -9148,6 +10214,11 @@ local ic = c.item or {}
       condFrame.cond_item_cp_val:Hide()
       condFrame.cond_item_cp_val_enter:Hide()
       if condFrame.cond_item_class_note then
+        if _IsHunterOrWarlock and _IsHunterOrWarlock() then
+          condFrame.cond_item_class_note:SetText("在此部分下方提供宠物跟踪选项。")
+        else
+          condFrame.cond_item_class_note:SetText("未为你的职业添加专属选项。")
+        end
         condFrame.cond_item_class_note:Show()
       end
     end
@@ -9201,6 +10272,8 @@ local ic = c.item or {}
     condFrame.cond_ability_power_val_enter:Hide()
     condFrame.cond_ability_glow:Hide()
     condFrame.cond_ability_greyscale:Hide()
+    condFrame.cond_ability_fade:Hide()
+    condFrame.cond_ability_fade_slider:Hide()
     condFrame.cond_ability_slider:Hide()
     condFrame.cond_ability_slider_dir:Hide()
     condFrame.cond_ability_remaining_cb:Hide()
@@ -9254,6 +10327,8 @@ local ic = c.item or {}
     end
     condFrame.cond_aura_glow:Hide()
     condFrame.cond_aura_greyscale:Hide()
+    condFrame.cond_aura_fade:Hide()
+    condFrame.cond_aura_fade_slider:Hide()
     condFrame.cond_aura_power:Hide()
     condFrame.cond_aura_power_comp:Hide()
     condFrame.cond_aura_power_val:Hide()
@@ -9311,6 +10386,9 @@ local ic = c.item or {}
     if condFrame.cond_aura_class_note then
       condFrame.cond_aura_class_note:Hide()
     end
+    if condFrame.cond_aura_trackpet then
+      condFrame.cond_aura_trackpet:Hide()
+    end
 
   elseif data.type == "Custom" then
     -- 隐藏所有分隔线 – 编辑框填充整个条件区域。
@@ -9367,6 +10445,8 @@ local ic = c.item or {}
     _Hide(condFrame.cond_ability_target_dead)
     _Hide(condFrame.cond_ability_glow)
     _Hide(condFrame.cond_ability_greyscale)
+    _Hide(condFrame.cond_ability_fade)
+    _Hide(condFrame.cond_ability_fade_slider)
     _Hide(condFrame.cond_ability_slider)
     _Hide(condFrame.cond_ability_slider_dir)
     _Hide(condFrame.cond_ability_slider_glow)
@@ -9408,6 +10488,8 @@ local ic = c.item or {}
     _Hide(condFrame.cond_aura_target_dead)
     _Hide(condFrame.cond_aura_glow)
     _Hide(condFrame.cond_aura_greyscale)
+    _Hide(condFrame.cond_aura_fade)
+    _Hide(condFrame.cond_aura_fade_slider)
     _Hide(condFrame.cond_aura_distanceDD)
     _Hide(condFrame.cond_aura_unitTypeDD)
     _Hide(condFrame.cond_aura_power)
@@ -9421,6 +10503,7 @@ local ic = c.item or {}
     _Hide(condFrame.cond_aura_hp_val_enter)
     _Hide(condFrame.cond_aura_mine)
     _Hide(condFrame.cond_aura_others)
+    _Hide(condFrame.cond_aura_trackpet)
     _Hide(condFrame.cond_aura_owner_tip)
     _Hide(condFrame.cond_aura_remaining_cb)
     _Hide(condFrame.cond_aura_remaining_comp)
@@ -9453,6 +10536,7 @@ local ic = c.item or {}
     _Hide(condFrame.cond_item_inv_wep_mainhand)
     _Hide(condFrame.cond_item_inv_wep_offhand)
     _Hide(condFrame.cond_item_inv_wep_ranged)
+    _Hide(condFrame.cond_item_inv_wep_ammo)
     _Hide(condFrame.cond_item_incombat)
     _Hide(condFrame.cond_item_outcombat)
     _Hide(condFrame.cond_item_groupingDD)
@@ -9465,6 +10549,8 @@ local ic = c.item or {}
     _Hide(condFrame.cond_item_target_dead)
     _Hide(condFrame.cond_item_glow)
     _Hide(condFrame.cond_item_greyscale)
+    _Hide(condFrame.cond_item_fade)
+    _Hide(condFrame.cond_item_fade_slider)
     _Hide(condFrame.cond_item_text_time)
     _Hide(condFrame.cond_item_text_time_override)
     _Hide(condFrame.cond_item_text_override_note)
@@ -9501,7 +10587,7 @@ local ic = c.item or {}
 
     -- 光环（增益/减益）
   else
-    ShowSeparatorsForType("aura")
+    if ShowSeparatorsForType then ShowSeparatorsForType("aura") end
 
     if AuraCond_RefreshFromDB then
       AuraCond_RefreshFromDB("aura")
@@ -9549,11 +10635,12 @@ local ic = c.item or {}
     condFrame.cond_aura_sound_onfade_dd:Show()
     condFrame.cond_aura_glow:Show()
     condFrame.cond_aura_greyscale:Show()
+    condFrame.cond_aura_fade:Show()
 
     -- 模式
-    local amode = (c.aura and c.aura.mode) or nil
-    condFrame.cond_aura_found:SetChecked(amode == "found")
-    condFrame.cond_aura_missing:SetChecked(amode == "missing")
+    local amode = (c.aura and c.aura.mode) or "found"
+    condFrame.cond_aura_found:SetChecked(amode == "found" or amode == "both")
+    condFrame.cond_aura_missing:SetChecked(amode == "missing" or amode == "both")
 
     -- 战斗标志（独立）
     local aIn, aOut
@@ -9641,6 +10728,15 @@ local ic = c.item or {}
     condFrame.cond_aura_target_harm:SetChecked(tm)
     condFrame.cond_aura_onself:SetChecked(ts)
 
+    local isTrackPetActive = (_IsHunterOrWarlock and _IsHunterOrWarlock() and c.aura and c.aura.trackpet) and true or false
+    if condFrame.cond_aura_onself and condFrame.cond_aura_onself.text and condFrame.cond_aura_onself.text.SetText then
+      if isTrackPetActive then
+        condFrame.cond_aura_onself.text:SetText("目标 (任意)")
+      else
+        condFrame.cond_aura_onself.text:SetText("玩家自己身上")
+      end
+    end
+
     -- === 目标距离与类型（光环） ===
     if condFrame.cond_aura_distanceDD then
       condFrame.cond_aura_distanceDD:Show()
@@ -9694,6 +10790,16 @@ local ic = c.item or {}
 
     condFrame.cond_aura_glow:SetChecked((c.aura and c.aura.glow) or false)
     condFrame.cond_aura_greyscale:SetChecked((c.aura and c.aura.greyscale) or false)
+    condFrame.cond_aura_fade:SetChecked((c.aura and c.aura.fade) or false)
+    if (c.aura and c.aura.fade) then
+      local fadeAlpha = tonumber(c.aura.fadeAlpha) or 0
+      if fadeAlpha < 0 then fadeAlpha = 0 end
+      if fadeAlpha > 1 then fadeAlpha = 1 end
+      condFrame.cond_aura_fade_slider:SetText(tostring(math.floor((fadeAlpha * 100) + 0.5)))
+      condFrame.cond_aura_fade_slider:Show()
+    else
+      condFrame.cond_aura_fade_slider:Hide()
+    end
 
     local auraSoundGainOn = (c.aura and c.aura.soundOnGainEnabled) == true
     local auraSoundFadeOn = (c.aura and c.aura.soundOnFadeEnabled) == true
@@ -9760,7 +10866,23 @@ local ic = c.item or {}
       condFrame.cond_aura_cp_val:Hide()
       condFrame.cond_aura_cp_val_enter:Hide()
       if condFrame.cond_aura_class_note then
-        condFrame.cond_aura_class_note:Show()
+        if _IsHunterOrWarlock and _IsHunterOrWarlock() then
+          condFrame.cond_aura_class_note:Hide()
+        else
+          condFrame.cond_aura_class_note:SetText("未为你的职业添加专属选项。")
+          condFrame.cond_aura_class_note:Show()
+        end
+      end
+    end
+
+    if condFrame.cond_aura_trackpet then
+      local isHW = _IsHunterOrWarlock and _IsHunterOrWarlock() or false
+      if isHW then
+        condFrame.cond_aura_trackpet:Show()
+        condFrame.cond_aura_trackpet:SetChecked((c.aura and c.aura.trackpet) and true or false)
+      else
+        condFrame.cond_aura_trackpet:Hide()
+        condFrame.cond_aura_trackpet:SetChecked(false)
       end
     end
 
@@ -9826,13 +10948,15 @@ local ic = c.item or {}
       end
     end
 
-    -- If this aura is in the lock-list AND target is "On player (self)", ownership is meaningless.
+    -- If target is "On player (self)", ownership is meaningless.
     local lockOwnerOnSelf = false
-    if isSelfOnly and DoiteEdit_ShouldLockAuraOwnerOnSelf and DoiteEdit_ShouldLockAuraOwnerOnSelf(data) then
+    if isTrackPetActive then
+      lockOwnerOnSelf = true
+    elseif isSelfOnly then
       lockOwnerOnSelf = true
     end
 
-    if amode == "found" then
+    if amode == "found" or amode == "both" then
       if lockOwnerOnSelf then
         -- Grey out / unselectable / uncheck "My Aura" + "Others Aura"
         if condFrame.cond_aura_mine then
@@ -9899,7 +11023,7 @@ local ic = c.item or {}
     end
 
     -- 第10行：文本标志（文本：层数 + 文本：剩余）
-    if amode == "found" then
+    if amode == "found" or amode == "both" then
       -- === 文本：层数计数器 ===
       condFrame.cond_aura_text_stack:Show()
       DoiteEdit_EnableCheck(condFrame.cond_aura_text_stack)
@@ -9908,8 +11032,8 @@ local ic = c.item or {}
       -- === 文本：剩余时间 ===
       condFrame.cond_aura_text_time:Show()
 
-      if isSelfOnly then
-        -- 玩家自身：用户可以自由切换文本：剩余
+      if isTrackPetActive or isSelfOnly then
+        -- 宠物跟踪（或玩家自身）：用户可以自由切换文本：剩余
         DoiteEdit_EnableCheck(condFrame.cond_aura_text_time)
         condFrame.cond_aura_text_time:SetChecked((c.aura and c.aura.textTimeRemaining) or false)
 
@@ -10045,14 +11169,14 @@ local ic = c.item or {}
     -- 剩余（第8行）：行为取决于目标 + “我的光环”
     local aRemEnabled = (c.aura and c.aura.remainingEnabled) and true or false
 
-    if amode == "found" then
+    if amode == "found" or amode == "both" then
       condFrame.cond_aura_remaining_cb:Show()
       if condFrame.cond_aura_remaining_cb.text then
         condFrame.cond_aura_remaining_cb.text:SetText("剩余")
       end
 
-      if isSelfOnly then
-        -- 玩家自身：用户可以自由切换剩余
+      if isTrackPetActive or isSelfOnly then
+        -- 宠物跟踪（或玩家自身）：用户可以自由切换剩余
         DoiteEdit_EnableCheck(condFrame.cond_aura_remaining_cb)
         condFrame.cond_aura_remaining_cb:SetChecked(aRemEnabled)
 
@@ -10118,7 +11242,7 @@ local ic = c.item or {}
     -- 层数行：仅在FOUND时启用，MISSING时灰显
     local aStacksEnabled = (c.aura and c.aura.stacksEnabled) and true or false
     condFrame.cond_aura_stacks_cb:SetChecked(aStacksEnabled)
-    if amode == "found" then
+    if amode == "found" or amode == "both" then
       condFrame.cond_aura_stacks_cb:Show()
       DoiteEdit_EnableCheck(condFrame.cond_aura_stacks_cb)
       if aStacksEnabled then
@@ -10170,6 +11294,8 @@ local ic = c.item or {}
     condFrame.cond_ability_power_val_enter:Hide()
     condFrame.cond_ability_glow:Hide()
     condFrame.cond_ability_greyscale:Hide()
+    condFrame.cond_ability_fade:Hide()
+    condFrame.cond_ability_fade_slider:Hide()
     condFrame.cond_ability_slider:Hide()
     condFrame.cond_ability_slider_dir:Hide()
     condFrame.cond_ability_remaining_cb:Hide()
@@ -10267,6 +11393,12 @@ local ic = c.item or {}
     if condFrame.cond_item_greyscale then
       condFrame.cond_item_greyscale:Hide()
     end
+    if condFrame.cond_item_fade then
+      condFrame.cond_item_fade:Hide()
+    end
+    if condFrame.cond_item_fade_slider then
+      condFrame.cond_item_fade_slider:Hide()
+    end
     if condFrame.cond_item_text_time then
       condFrame.cond_item_text_time:Hide()
     end
@@ -10350,6 +11482,9 @@ local ic = c.item or {}
     end
     if condFrame.cond_item_inv_wep_ranged then
       condFrame.cond_item_inv_wep_ranged:Hide()
+    end
+    if condFrame.cond_item_inv_wep_ammo then
+      condFrame.cond_item_inv_wep_ammo:Hide()
     end
     if condFrame.cond_item_class_note then
       condFrame.cond_item_class_note:Hide()

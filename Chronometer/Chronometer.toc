@@ -7,25 +7,14 @@
 ## Version: 1.18
 ## DefaultState:
 ## Dependencies: !Libs
-## OptionalDeps: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib
+## OptionalDeps: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib, Waterfall-1.0, LibSharedMedia-3.0
 ## SavedVariables: ChronometerDB
 
 ## X-ReleaseDate: $Date: 2022-08-25 $
 ## X-Email: laytya@gmail.com
 ## X-Category: Combat
 ## X-Website: https://github.com/laytya/Chronometer-vanilla
-## X-Embeds: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib
-
-libs\CallbackHandler-1.0\CallbackHandler-1.0.xml 
-
-libs\ParserLib\ParserLib.lua
-libs\ParserLib\FixGlobalString.lua
-libs\ParserLib\optimizer-enUS.lua 
-libs\ParserLib\optimizer-koKR.lua 
-libs\ParserLib\optimizer-zhCN.lua
-
-libs\CandyBar-2.2\CandyBar-2.2.lua
-libs\LibSharedMedia-3.0\lib.xml
+## X-Embeds: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib, Waterfall-1.0, LibSharedMedia-3.0
 
 Core\Chronometer-Locale.lua
 Core\Chronometer.lua

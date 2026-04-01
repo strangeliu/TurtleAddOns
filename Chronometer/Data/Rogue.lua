@@ -11,6 +11,8 @@ function Chronometer:RogueSetup()
     local _, eclass = UnitClass("player")
     if eclass ~= "ROGUE" then return end
 
+    local flourish = self:GetLocalizedTurtleName("Flourish")
+
     --==============================
     -- 技能类计时器（SPELL）
     --==============================
@@ -39,7 +41,7 @@ function Chronometer:RogueSetup()
     -- 反击：持续6秒
     self:AddTimer(self.SPELL, BS["Riposte"],          6, 1, 0, 0)
 	-- 兴奋：基础8秒（1星），每星+2秒，自身buff，橙色显示，支持「强化刀锋战术」天赋（每层+15%，最多3层）
-	self:AddTimer(self.SPELL, "兴奋", 8, 0, 1, 1, { 
+	self:AddTimer(self.SPELL, flourish, 8, 0, 1, 1, {
 		d={
 			cp=2,
 			tn=BS["Improved Blade Tactics"],
@@ -50,14 +52,16 @@ function Chronometer:RogueSetup()
 		tx="Interface\\Icons\\ability_dualwield" 
 	})
 
-    -- 割裂：基础8秒（1星），支持「血腥气息」天赋（每层+2秒，最多3层）。
+    -- 割裂：基础8秒（1星）。
+    -- 当前客户端资料里「血腥气息」实际生效为 2 级：+4 / +6 秒；
+    -- Spell.dbc 仍保留了一个已废弃的第 3 级，数值同样是 +6 秒。
     self:AddTimer(self.SPELL, BS["Rupture"], 8, 1, 0, 0, {
-        d  = { cp=2, tn=BS["Taste for Blood"], ta=2, tp=3 },
+        d  = { cp=2, tn=BS["Taste for Blood"], tt={4, 6, 6} },
         sb = BS["Taste for Blood"], 
     })
 
     self:AddTimer(self.SPELL, BS["Taste for Blood"], 8, 0, 1, 1, {
-        d  = { cp=2, tn=BS["Taste for Blood"], ta=2, tp=3 },
+        d  = { cp=2, tn=BS["Taste for Blood"], tt={4, 6, 6} },
         cr = "GREEN",
         nt = BS["Taste for Blood"], 
 		tx="Interface\\Icons\\inv_misc_bone_09"
@@ -79,7 +83,7 @@ function Chronometer:RogueSetup()
     -- 消失：持续10秒
     self:AddTimer(self.SPELL, BS["Vanish"],          10, 0, 1, 1)
     -- 毒伤：基础12秒，支持连击点（每星+4秒），自身buff监控，紫色显示
-    self:AddTimer(self.SPELL, BS["Envenom"], 12, 0, 1, 1, { d={cp=4, rt=rt}, cr="PURPLE" })
+    self:AddTimer(self.SPELL, BS["Envenom"], 12, 0, 1, 1, { d={cp=4}, cr="PURPLE" })
 
     --==============================
     -- 事件类计时器（EVENT）
@@ -105,9 +109,9 @@ function Chronometer:RogueSetup()
     -- 新增：T3.5套装特效计时器
     --==============================
     -- 运筹（Dispatch）：3件T3.5触发，持续6秒，黄色显示
-    self:AddTimer(self.EVENT, "运筹", 6, 0, 1, 1, { cr="YELLOW", a=1, tx="Interface\\Icons\\Ability_Rogue_SliceDice" })
+    self:AddTimer(self.EVENT, BS["Dispatch"], 6, 0, 1, 1, { cr="YELLOW", a=1, tx="Interface\\Icons\\Ability_Rogue_SliceDice" })
     -- 夜刃（Nightblade）：5件T3.5触发，持续6秒，黄色显示
-    self:AddTimer(self.EVENT, "夜刃", 6, 0, 1, 1, { cr="YELLOW", a=1, tx="Interface\\Icons\\INV_Sword_02" })
+    self:AddTimer(self.EVENT, BS["Nightblade"], 6, 0, 1, 1, { cr="YELLOW", a=1, tx="Interface\\Icons\\INV_Sword_02" })
 end
 
 -- 注册盗贼配置函数到初始化列表

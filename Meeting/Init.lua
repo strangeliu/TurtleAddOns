@@ -9,7 +9,7 @@ Meeting = {
     VERSION = {
         MAJOR = 1,
         MINOR = 1,
-        PATCH = 2,
+        PATCH = 5,
     },
 
     player = UnitName("player"),
@@ -110,6 +110,13 @@ Meeting.Categories = {
 				nomatch = {}  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
             },
             {
+                key = "FH",
+                name = "霜鬃谷",
+                minLevel = 13,
+                match = { "霜鬃", "szg" },
+				nomatch = {}  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
+            },
+            {
                 key = "WC",
                 name = "哀嚎洞穴",
                 minLevel = 17,
@@ -150,7 +157,14 @@ Meeting.Categories = {
                 minLevel = 27,
                 match = { "龙喉","格瑞姆巴托" },
 				nomatch = {}  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
-            },			
+            },	
+            {
+                key = "WINDCAN",
+                name = "风角峡谷",
+                minLevel = 27,
+                match = { "风角","峡谷","牛头本" },
+				nomatch = {}  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
+            },				
             {
                 key = "SMGY",
                 name = "血色修道院墓地",
@@ -394,6 +408,14 @@ Meeting.Categories = {
                 members = 20,
                 match = { "废墟", "fx" },
 				nomatch = { "风暴废墟" }  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
+            },
+            {
+                key = "TH",
+                name = "木喉要塞",
+                minLevel = 60,
+                members = 20,
+                match = { "木喉", "要塞", "熊怪" },
+				nomatch = { "风暴要塞" }  -- 新增排除关键词 by 武藤纯子酱 2025.9.22
             },
             {
                 key = "LKH",

@@ -8,13 +8,17 @@ function Chronometer:ShamanSetup()
     local _, eclass = UnitClass("player")
     if eclass ~= "SHAMAN" then return end
 
+    local totemicMastery = self:GetLocalizedTurtleName("Totemic Mastery")
+    local improvedFireTotems = self:GetLocalizedTurtleName("Improved Fire Totems")
+    local totemicRecall = self:GetLocalizedTurtleName("Totemic Recall")
+
     self:AddGroup(1, false, "FOREST")
     self:AddGroup(2, false, "MAROON")
     self:AddGroup(3, false, "CYAN")
     self:AddGroup(4, false, "NAVY")
 
     -- 图腾掌握天赋配置：单个天赋等级，持续时间+20%
-    local TM = { tn="图腾掌握", tb=20 }
+    local TM = { tn=totemicMastery, tb=20 }
 
     -- 组1：大地系图腾
     self:AddTimer(self.SPELL, BS["Earthbind Totem"],         45,  0,1,0, { gr=1, rc=true })
@@ -24,7 +28,7 @@ function Chronometer:ShamanSetup()
     self:AddTimer(self.SPELL, BS["Tremor Totem"],            120, 0,1,0, { gr=1, rc=true, d=TM })
 
     -- 组2：火焰系图腾
-    self:AddTimer(self.SPELL, BS["Fire Nova Totem"],          4,  0,1,0, { gr=2, rc=true, d={tn="强化火焰图腾", ta=-1, tp=2 }})
+    self:AddTimer(self.SPELL, BS["Fire Nova Totem"],          4,  0,1,0, { gr=2, rc=true, d={tn=improvedFireTotems, ta=-1, tp=2 }})
     self:AddTimer(self.SPELL, BS["Flametongue Totem"],       120, 0,1,0, { gr=2, rc=true, d=TM })
     self:AddTimer(self.SPELL, BS["Frost Resistance Totem"],  120, 0,1,0, { gr=2, rc=true, d=TM })
     self:AddTimer(self.SPELL, BS["Magma Totem"],             20,  0,1,0, { gr=2, rc=true })
@@ -49,12 +53,7 @@ function Chronometer:ShamanSetup()
 
     -- 震击类技能
     self:AddTimer(self.SPELL, BS["Earth Shock"],  2,  1,0,0)
-    self:AddTimer(self.SPELL, BS["Molten Blast"], 0,  1,0,0, {
-        castTime=2,
-        gear={
-            set2t3elemental={castTime=1.8}
-        }
-    })
+    self:AddTimer(self.SPELL, BS["Molten Blast"], 0,  1,0,0)
     self:AddTimer(self.SPELL, BS["Flame Shock"],  15, 1,0,0, {
         rc=true,
         refreshBy={[BS["Molten Blast"]] = true}
@@ -73,8 +72,7 @@ function Chronometer:ShamanSetup()
     self:AddTimer(self.EVENT, BS["Flurry"],              15, 0,1,1, { cr="MAROON", a=1, romc=true })
 
     -- 适配"图腾召回"技能，施放后清除所有图腾计时条
-    local recallSpellName = "图腾召回"
-    self:RegisterRecallSpell(recallSpellName, {1, 2, 3, 4})
+    self:RegisterRecallSpell(totemicRecall, {1, 2, 3, 4})
 end
 
 table.insert(Chronometer.dataSetup, Chronometer.ShamanSetup)

@@ -1631,11 +1631,13 @@ AL:RegisterTranslations("enUS", function() return {
     ["Zul'Lor"] = true,
 	["Zuluhed the Whacked"] = true,
     ["[13-18] Ragefire Chasm"] = WHITE.."[13-18]"..DEFAULT.." Ragefire Chasm",
+    ["[13-20] Frostmane Hollow"] = WHITE.."[13-20]"..DEFAULT.." Frostmane Hollow",
     ["[17-24] The Deadmines"] = WHITE.."[17-24]"..DEFAULT.." The Deadmines",
     ["[17-24] Wailing Caverns"] = WHITE.."[17-24]"..DEFAULT.." Wailing Caverns",
     ["[22-30] Shadowfang Keep"] = WHITE.."[22-30]"..DEFAULT.." Shadowfang Keep",
     ["[22-30] The Stockade"] = WHITE.."[22-30]"..DEFAULT.." The Stockade",
     ["[23-32] Blackfathom Deeps"] = WHITE.."[23-32]"..DEFAULT.." Blackfathom Deeps",
+    ["[26-30] Windhorn Canyon"] = WHITE.."[26-30]"..DEFAULT.." Windhorn Canyon",
 	["[26-35] Dragonmaw Retreat"] = WHITE.."[26-35]"..DEFAULT.." Dragonmaw Retreat",
     ["[27-36] Scarlet Monastery (Graveyard)"] = WHITE.."[27-36]"..DEFAULT.." Scarlet Monastery (Graveyard)",
     ["[27-45] Scarlet Monastery"] = WHITE.."[27-45]"..DEFAULT.." Scarlet Monastery",
@@ -1675,6 +1677,7 @@ AL:RegisterTranslations("enUS", function() return {
     ["[RAID] Temple of Ahn'Qiraj"] = RED.."[RAID]"..DEFAULT.." Temple of Ahn'Qiraj",
     ["[RAID] Upper Karazhan Halls"] = RED.."[RAID]"..DEFAULT.." Upper Karazhan Halls",
     ["[RAID] Zul'Gurub"] = RED.."[RAID]"..DEFAULT.." Zul'Gurub",
+	["[RAID] Timbermaw Hold"] = RED.."[RAID]"..DEFAULT.." Timbermaw Hold",
     ["default"] = true,
     ["has been reset!"] = true,
     ["on this page. The items will be"] = true,
@@ -3305,6 +3308,32 @@ AL:RegisterTranslations("enUS", function() return {
 	["Wound Poison II"] = true,
 	["Wound Poison III"] = true,
 	["Wound Poison IV"] = true,
-	["Broodcommander Axelus"] = true,--1.81新增Boss
-	["Ezzel Darkbrewer"] = true,--1.81新增Boss
+	["Thousand Needles"] = true,
+	["Broodcommander Axelus"] = true,--1.18.1新增Boss
+	["Ezzel Darkbrewer"] = true,--1.18.1新增Boss
+	--风角峡谷
+	["Windhorn Canyon"] = true,
+	["Pathun Buskhide"] = true,--1.18.1新增Boss
+    ["Ahgk'tos the Pure"] = true,--1.18.1新增Boss
+    ["Ambassador Vortalus"] = true,--1.18.1新增Boss
+    ["Walgan Bloodcaller"] = true,--1.18.1新增Boss
+    ["Bonespeaker Narlgom"] = true,--1.18.1新增Boss
+    ["Prophet Stormhoof"] = true,--1.18.1新增Boss
+    ["Chieftain Shalk Blackwind"] = true,--1.18.1新增Boss
+	--霜鬃谷
+	["Frostmane Hollow"] = true, --1.18.1新增
+	["Nimble Tansha"] = true, --1.18.1新增Boss
+	["Ubbukaz Battlefield Overlord"] = true, --1.18.1新增Boss
+	["Prophet Kanza"] = true, --1.18.1新增Boss
+	["Cold Haile"] = true, --1.18.1新增Boss
+	--木喉要塞
+	["Karrsh the Sentinel"] = true,--1.18.1新增Boss
+	["Rotgrowl"] = true,--1.18.1新增Boss
+	["Trioch the Devourer"] = true,--1.18.1新增Boss
+	["Loktanag the Vile"] = true,--1.18.1新增Boss
+	["Archdruid Kronn"] = true,--1.18.1新增Boss
+	["Ormanos the Cracked"] = true,--1.18.1新增Boss
+	["Chieftain Partath"] = true,--1.18.1新增Boss
+	["Selenaxx Foulheart"] = true,--1.18.1新增Boss
+	["Ursol"] = true,--1.18.1新增Boss
 } end)

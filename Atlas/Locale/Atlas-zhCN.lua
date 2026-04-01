@@ -1435,4 +1435,30 @@ Dependencies: AceLibrary, AceLocale-2.2
 	["Subjugator Halthas Shadecrest"] = "征服者哈尔萨斯·暗影之冠";
 	["Mergothid"] = "墨苟斯";
 
+	-- Windhorn Canyon (TurtleWOW)
+    ["Windhorn Canyon"] = "风角峡谷";
+    ["Pathun Buskhide"] = "帕斯恩·暮皮",
+    ["Ahgk'tos the Pure"] = "纯洁者阿格图斯",
+    ["Ambassador Vortalus"] = "沃尔塔卢斯大使",
+    ["Walgan Bloodcaller"] = "瓦尔根·唤血者",
+    ["Bonespeaker Narlgom"] = "骨语者纳尔格姆",
+    ["Prophet Stormhoof"] = "雷角",
+    ["Chieftain Shalk Blackwind"] = "酋长沙尔克·黑风",
+	--
+	["Frostmane Hollow"] = "霜鬃谷";
+	["Nimble Tansha"] = "灵动的坦莎",
+	["Ubbukaz Battlefield Overlord"] = "战场主宰乌布卡兹",
+	["Prophet Kanza"] = "先知坎扎",
+	["Cold Haile"] = "冰冷的海乐",
+	--
+	["Timbermaw Hold"] = "木喉要塞";
+	["Karrsh the Sentinel"] = "哨兵卡什",
+	["Rotgrowl"] = "腐嚎",
+	["Trioch the Devourer"] = "吞噬者提里奥克",
+	["Ormanos the Cracked"] = "裂地者欧曼诺斯",
+	["Loktanag the Vile"] = "落潭",
+	["Chieftain Partath"] = "大酋长帕萨斯",
+	["Selenaxx Foulheart"] = "塞雷纳克斯·腐心",
+	["Archdruid Kronn"] = "大德鲁伊科罗恩",
+	["Ursol"] = "乌索尔",
 } end)

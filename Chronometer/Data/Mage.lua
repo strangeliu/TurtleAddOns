@@ -17,7 +17,7 @@ function Chronometer:MageSetup()
     self:AddTimer(self.SPELL, BS["Arcane Power"],  15, 0,1,1)  -- 奥术强化：持续15秒
     self:AddTimer(self.SPELL, BS["Blast Wave"],     6, 0,0,0)   -- 冲击波：持续6秒
     -- 寒冰锥：持续8秒，附带Permafrost（永久冰冻）相关效果
-    self:AddTimer(self.SPELL, BS["Cone of Cold"],   8, 0,0,0, { rc=true, d={tn=BS["Permafrost"], tb=1} })
+    self:AddTimer(self.SPELL, BS["Cone of Cold"],   8, 0,0,0, { rc=true, d={tn=BS["Permafrost"], ta=1} })
     -- 法术反制：持续10秒，附带沉默效果关联
     self:AddTimer(self.SPELL, BS["Counterspell"],  10, 1,0,0, { ea={[BS["Counterspell - Silenced"]]=1} })
     self:AddTimer(self.SPELL, BS["Detect Magic"], 120, 1,0,0, { rc=true })  -- 侦测魔法：持续120秒
@@ -28,7 +28,7 @@ function Chronometer:MageSetup()
     self:AddTimer(self.SPELL, BS["Frost Nova"],     8, 0,0,0)  -- 冰霜新星：持续8秒
     self:AddTimer(self.SPELL, BS["Frost Ward"],    30, 0,1,0)  -- 冰霜结界：持续30秒
     -- 寒冰箭：持续9秒，附带永久冰冻和寒冬刺骨效果，有随机时间参数
-    self:AddTimer(self.SPELL, BS["Frostbolt"],      9, 1,0,0, { d={rt={5,6,6,7,7,8,8}, tn=BS["Permafrost"], tb=1}, ea={[BS["Winter's Chill"]]=2} })
+    self:AddTimer(self.SPELL, BS["Frostbolt"],      9, 1,0,0, { d={rt={5,6,6,7,7,8,8}, tn=BS["Permafrost"], ta=1}, ea={[BS["Winter's Chill"]]=2} })
     self:AddTimer(self.SPELL, BS["Ice Barrier"],   60, 0,1,1)  -- 冰甲术：持续60秒
     self:AddTimer(self.SPELL, BS["Ice Block"],     10, 0,1,1)  -- 冰障术：持续10秒
     self:AddTimer(self.SPELL, BS["Mana Shield"],   60, 0,1,1, { rc=true })  -- 法力护盾：持续60秒
@@ -54,9 +54,9 @@ function Chronometer:MageSetup()
     self:AddTimer(self.EVENT, BS["Impact"],                2, 1,0,0, { cr="GREEN", a=1 })  -- 冲击：持续2秒，绿色
     self:AddTimer(self.EVENT, BS["Winter's Chill"],       15, 1,0,0, { cr="GREEN" })  -- 寒冬刺骨：持续15秒，绿色
     -- 寒冷：持续5秒，绿色，关联永久冰冻效果
-    self:AddTimer(self.EVENT, BS["Chilled"],       		   5, 1,0,0, { cr="GREEN", a=1, d={tn=BS["Permafrost"],tb=1}})
+    self:AddTimer(self.EVENT, BS["Chilled"],       		   5, 1,0,0, { cr="GREEN", a=1, d={tn=BS["Permafrost"], ta=1}})
     -- 暴风雪：持续1.5秒，绿色，关联永久冰冻效果
-    self:AddTimer(self.EVENT, BS["Blizzard"],       	   1.5, 0,0,0, { cr="GREEN", d={tn=BS["Permafrost"],tb=1}})
+    self:AddTimer(self.EVENT, BS["Blizzard"],       	   1.5, 0,0,0, { cr="GREEN", d={tn=BS["Permafrost"], ta=1}})
 end
 
 -- 将法师设置函数插入到计时器的初始化列表中

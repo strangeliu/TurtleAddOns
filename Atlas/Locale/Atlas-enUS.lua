@@ -1435,4 +1435,27 @@ Dependencies: AceLibrary, AceLocale-2.2
 	["Subjugator Halthas Shadecrest"] = true,
 	["Mergothid"] = true,
 
+	["Windhorn Canyon"] = true,--风角峡谷
+	["Pathun Buskhide"] = true,--1.81新增Boss
+    ["Ahgk'tos the Pure"] = true,--1.81新增Boss
+    ["Ambassador Vortalus"] = true,--1.81新增Boss
+    ["Walgan Bloodcaller"] = true,--1.81新增Boss
+    ["Bonespeaker Narlgom"] = true,--1.81新增Boss
+    ["Prophet Stormhoof"] = true,--1.81新增Boss
+    ["Chieftain Shalk Blackwind"] = true,--1.81新增Boss
+	["Frostmane Hollow"] = true,--霜鬃谷
+	["Nimble Tansha"] = true,--霜鬃谷
+	["Ubbukaz Battlefield Overlord"] = true,--霜鬃谷
+	["Prophet Kanza"] = true,--霜鬃谷
+	["Cold Haile"] = true,--霜鬃谷
+	["Timbermaw Hold"] = true,--木喉要塞
+	["Karrsh the Sentinel"] = true,
+	["Rotgrowl"] = true,
+	["Trioch the Devourer"] = true,
+	["Loktanag the Vile"] = true,
+	["Archdruid Kronn"] = true,
+	["Ormanos the Cracked"] = true,
+	["Chieftain Partath"] = true,
+	["Selenaxx Foulheart"] = true,
+	["Ursol"] = true,
 } end)

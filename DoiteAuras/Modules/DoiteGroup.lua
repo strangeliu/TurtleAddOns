@@ -1,22 +1,22 @@
 ---------------------------------------------------------------
 -- DoiteGroup.lua
--- Handles grouped layout logic for DoiteAuras icons
--- Please respect license note: Ask permission
+-- 处理 DoiteAuras 图标的组布局逻辑
+-- 请尊重许可说明：使用前请询问
 -- WoW 1.12 | Lua 5.0
 ---------------------------------------------------------------
 
--- Use a global-named table (compatible with older loader behavior)
+-- 使用一个全局命名的表（与旧加载器行为兼容）
 local DoiteGroup = _G["DoiteGroup"] or {}
 _G["DoiteGroup"] = DoiteGroup
 
 ---------------------------------------------------------------
--- Helpers
+-- 辅助函数
 ---------------------------------------------------------------
 local function num(v, default)
   return tonumber(v) or default or 0
 end
 
--- Fast frame getter (avoid _G["DoiteIcon_"..key] churn in sorting/layout hot paths)
+-- 快速框架获取器（避免在排序/布局热路径中进行 _G["DoiteIcon_"..key] 搅动）
 local _GetIconFrame = DoiteAuras_GetIconFrame
 if not _GetIconFrame then
   local G = _G
@@ -37,11 +37,11 @@ local function isValidGroupMember(entry)
 end
 
 local function isKnown(entry)
-  -- Abilities might be unknown in another spec; never occupy a slot then
+  -- 技能可能在另一个天赋专精中未知；那时绝不占用槽位
   return not (entry and entry.data and entry.data.isUnknown)
 end
 
--- Resolve sort mode for a group: "prio" (default) or "time"
+-- 解析组的排序模式："prio"（默认）或 "time"
 local function GetGroupSortMode(groupName)
   if not groupName then
     return "prio"
@@ -58,7 +58,7 @@ local function GetGroupSortMode(groupName)
   return "prio"
 end
 
--- Resolve fixed layout mode for a group (false by default)
+-- 解析组的固定布局模式（默认为 false）
 local function GetGroupFixedMode(groupName, leaderData)
   if groupName and DoiteAurasDB and DoiteAurasDB.groupFixed and DoiteAurasDB.groupFixed[groupName] then
     return true
@@ -88,7 +88,7 @@ local function _ComputeOffset(baseX, baseY, growth, pad, steps)
   return x, y
 end
 
--- Centered expansion (keeps whole group centered around baseX/baseY)
+-- 居中扩展（使整个组围绕 baseX/baseY 居中）
 local function _ComputeCenteredOffset(baseX, baseY, growth, pad, index, totalVisible)
   local x = baseX
   local y = baseY
@@ -128,7 +128,7 @@ local function _ApplyPlacement(entry, x, y, size)
   local f = _GetIconFrame(entry.key)
   if f then
     f._daBlockedByGroup = false
-    -- Do not re-anchor while the slider owns the frame this tick
+    -- 当此滴答的幻灯片拥有框架时，不要重新锚定
     if not f._daSliding then
       if f._daGroupX ~= x or f._daGroupY ~= y then
         f._daGroupX = x
@@ -145,13 +145,13 @@ local function _ApplyPlacement(entry, x, y, size)
   end
 end
 
--- Current key being edited
+-- 当前正在编辑的键
 local function editingKey()
   return _G["DoiteEdit_CurrentKey"]
 end
 
 ---------------------------------------------------------------
--- Sort comparators (no per-sort closure allocations)
+-- 排序比较器（无每次排序闭包分配）
 ---------------------------------------------------------------
 local _DG = { editKey = nil }
 
@@ -203,19 +203,19 @@ local function _cmpTime(a, b)
     end
   end
 
-  -- fallback to prio behaviour
+  -- 回退到 prio 行为
   return _cmpPrio(a, b)
 end
 
 ---------------------------------------------------------------
--- Compute layout for a single group, driven by the group's leader
+-- 计算单个组的布局，由组的组长驱动
 ---------------------------------------------------------------
 local function ComputeGroupLayout(entries, groupName)
   if not entries or table.getn(entries) == 0 then
     return {}
   end
 
-  -- 1) Find leader; bail if none (group misconfigured)
+  -- 1) 找到组长；如果没有，则退出（组配置错误）
   local leader = nil
   for _, e in ipairs(entries) do
     if e.data and e.data.isLeader then
@@ -240,7 +240,7 @@ local function ComputeGroupLayout(entries, groupName)
 
   local isCentered = (growth == "水平居中" or growth == "垂直居中")
 
-  -- 2) Build pools: known (for fixed slots) and visible-known (for actual placement)
+  -- 2) 构建池：已知（用于固定槽位）和可见已知（用于实际放置）
   local fixedKnown
   if fixed then
     fixedKnown = DoiteGroup._tmpAllKnown
@@ -254,7 +254,7 @@ local function ComputeGroupLayout(entries, groupName)
     end
   end
 
-  -- Build the pool of items that are BOTH known and WANT to be shown (conditions OR sliding) - reuse & shrink table without realloc
+  -- 构建既已知又*想要*显示的物品池（条件 OR 滑动） - 重用和缩小表而不重新分配
   local visibleKnown = DoiteGroup._tmpVisibleKnown
   if not visibleKnown then
     visibleKnown = {}
@@ -277,13 +277,13 @@ local function ComputeGroupLayout(entries, groupName)
         fixedKnown[an] = e
       end
       local f = _GetIconFrame(e.key)
-      -- Use frame flags; fall back to 'show' from candidates.
-      -- Only use IsShown() fallback if frame flags haven't been initialized yet (avoids blocking collapse).
+      -- 使用框架标志；从候选者回退到 'show'。
+      -- 仅当框架标志尚未初始化时才使用 IsShown() 回退（避免阻塞折叠）。
       local wants = (f and (f._daShouldShow == true or f._daSliding == true))
           or (e.show == true)
           or (f and f._daShouldShow == nil and f._daSliding == nil and f:IsShown())
 
-      -- While editing, always include the edited member in the layout pool
+      -- 编辑时，始终将编辑的成员包含在布局池中
       if editKey and e.key == editKey then
         wants = true
       end
@@ -296,7 +296,7 @@ local function ComputeGroupLayout(entries, groupName)
     i = i + 1
   end
 
-  -- Nothing visible? Clear any previous assignment and exit
+  -- 没有可见的？清除任何先前的分配并退出
   if vn == 0 then
     local j, m = 1, table.getn(entries)
     while j <= m do
@@ -309,7 +309,7 @@ local function ComputeGroupLayout(entries, groupName)
     return {}
   end
 
-  -- Decide how to sort this group: "prio" (default) or "time"
+  -- 决定如何对此组进行排序："prio"（默认）或 "time"
   local groupSortCache = DoiteGroup._sortCache or {}
   DoiteGroup._sortCache = groupSortCache
 
@@ -321,7 +321,7 @@ local function ComputeGroupLayout(entries, groupName)
 
   local sortList = fixed and fixedKnown or visibleKnown
 
-  -- Precompute cheap sort keys once per entry (avoids frame lookups/tostring churn inside comparator)
+  -- 为每个条目预先计算廉价排序键一次（避免比较器内部的框架查找/tostring 搅动）
   local j = 1
   local sn = fixed and an or vn
   while j <= sn do
@@ -350,7 +350,7 @@ local function ComputeGroupLayout(entries, groupName)
     j = j + 1
   end
 
-  -- 3) Order by saved priority or remaining time, depending on sort mode
+  -- 3) 按保存的优先级或剩余时间排序，取决于排序模式
   _DG.editKey = editKey
   if sortMode == "time" then
     table.sort(sortList, _cmpTime)
@@ -358,7 +358,7 @@ local function ComputeGroupLayout(entries, groupName)
     table.sort(sortList, _cmpPrio)
   end
 
-  -- 4) Assign up to numAuras slots, starting from leader’s baseXY
+  -- 4) 分配最多 numAuras 个槽位，从组长的 baseXY 开始
   local placed = DoiteGroup._tmpPlaced
   if not placed then
     placed = {}
@@ -377,7 +377,7 @@ local function ComputeGroupLayout(entries, groupName)
   end
 
   if fixed then
-    -- Assign stable slot indices based on the full known list (no map).
+    -- 基于完整的已知列表分配稳定的槽位索引（无映射）。
     local s = 1
     while s <= an do
       local e = fixedKnown[s]
@@ -387,7 +387,7 @@ local function ComputeGroupLayout(entries, groupName)
       s = s + 1
     end
 
-    -- Place visible-known entries into their fixed slots (up to limit).
+    -- 将可见已知条目放入其固定槽位（最多限制）。
     local p = 0
     local v = 1
     while v <= vn do
@@ -401,7 +401,7 @@ local function ComputeGroupLayout(entries, groupName)
           curX, curY = _ComputeOffset(baseX, baseY, growth, pad, slot - 1)
         end
 
-        -- Inline placement so we can respect _daDragging (avoid fighting the drag owner).
+        -- 内联放置，以便我们可以尊重 _daDragging（避免与拖动所有者冲突）。
         local pos = e._computedPos
         if not pos then
           pos = {}
@@ -415,7 +415,7 @@ local function ComputeGroupLayout(entries, groupName)
         if f then
           f._daBlockedByGroup = false
 
-          -- Do not re-anchor while sliding OR dragging
+          -- 滑动或拖动时不重新锚定
           if not f._daSliding and not f._daDragging then
             if f._daGroupX ~= curX or f._daGroupY ~= curY then
               f._daGroupX = curX
@@ -468,7 +468,7 @@ local function ComputeGroupLayout(entries, groupName)
     end
   end
 
-  -- 5) Everything else must not occupy a position (hide if currently shown)
+  -- 5) 其他所有内容不得占据位置（如果当前显示，则隐藏）
   local placedSet = DoiteGroup._tmpPlacedSet
   if not placedSet then
     placedSet = {}
@@ -494,7 +494,7 @@ local function ComputeGroupLayout(entries, groupName)
       local f = _GetIconFrame(e.key)
       if f then
         if editKey and e.key == editKey then
-          -- While editing: do not block or force-hide this member
+          -- 编辑时：不要阻止或强制隐藏此成员
           f._daBlockedByGroup = false
         else
           f._daBlockedByGroup = true
@@ -512,7 +512,7 @@ local function ComputeGroupLayout(entries, groupName)
 end
 
 ---------------------------------------------------------------
--- Public: ApplyGroupLayout over all candidates
+-- 公开：在所有候选者上应用组布局
 ---------------------------------------------------------------
 function DoiteGroup.ApplyGroupLayout(candidates)
   if not candidates or type(candidates) ~= "table" then
@@ -523,7 +523,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
   end
   _G["DoiteGroup_LayoutInProgress"] = true
 
-  -- Normalize core fields (defensive)
+  -- 规范化核心字段（防御性）
   for _, entry in ipairs(candidates) do
     local d = entry.data or {}
     d.offsetX = num(d.offsetX, 0)
@@ -532,7 +532,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
     d.order = num(d.order, 999)
   end
 
-  -- 1) Partition by group (reuse tables to avoid combat allocations)
+  -- 1) 按组分隔（重用表以避免战斗分配）
   local groups = DoiteGroup._tmpGroups
   if not groups then
     groups = {}
@@ -559,7 +559,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
     end
   end
 
-  -- Mark membership for the hook (cheap skip for non-group icons)
+  -- 为钩子标记成员资格（便宜地跳过非组图标）
   for _, e in ipairs(candidates) do
     local f = e and _GetIconFrame(e.key) or nil
     if f then
@@ -579,7 +579,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
       end
 
       if not seen[g] then
-        -- clear list array once per group
+        -- 每次组清除列表数组一次
         local i = 1
         while list[i] ~= nil do
           list[i] = nil
@@ -595,7 +595,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
     end
   end
 
-  -- remove groups not present this pass (keeps Published table clean)
+  -- 删除此传递中不存在的组（保持发布的表干净）
   for g in pairs(groups) do
     if not seen[g] then
       groups[g] = nil
@@ -608,7 +608,7 @@ function DoiteGroup.ApplyGroupLayout(candidates)
     _hasGroups = true
   end
 
-  -- Build a cached list of sliding keys (used to run a tiny OnUpdate ONLY while sliding)
+  -- 构建滑动键的缓存列表（用于在滑动时运行微小的 OnUpdate）
   local slideList = DoiteGroup._tmpSlideList
   if not slideList then
     slideList = {}
@@ -638,11 +638,11 @@ function DoiteGroup.ApplyGroupLayout(candidates)
   end
   DoiteGroup._slidingCount = sc
 
-  -- 3) Publish for ApplyVisuals
+  -- 3) 为 ApplyVisuals 发布
   _G["DoiteGroup_Computed"] = groups
   _G["DoiteGroup_LayoutInProgress"] = false
 
-  -- If anything is sliding, keep a tiny watcher active; otherwise ensure it's off
+  -- 如果有任何东西在滑动，保持一个微小的观察者活动；否则确保它关闭
   if sc > 0 and DoiteGroup._EnableSlideWatch then
     DoiteGroup._EnableSlideWatch()
   elseif DoiteGroup._DisableSlideWatch then
@@ -651,10 +651,10 @@ function DoiteGroup.ApplyGroupLayout(candidates)
 end
 
 
--- Event/flag-driven reflow (no periodic scanning)
+-- 事件/标志驱动的重排（无周期性扫描）
 local _watch = CreateFrame("Frame", "DoiteGroupWatch")
 
--- Fallback candidate list/pool (only used if DoiteAuras.GetAllCandidates isn't available)
+-- 后备候选列表/池（仅在 DoiteAuras.GetAllCandidates 不可用时使用）
 local _fallbackList = {}
 local _fallbackPool = {}
 
@@ -671,7 +671,7 @@ local function _collectCandidates()
     return DoiteAuras.GetAllCandidates()
   end
 
-  -- Fallback: synthesize from DB (reuse tables)
+  -- 后备：从 DB 合成（重用表）
   local out = _fallbackList
   local pool = _fallbackPool
   _clearArray(out)
@@ -692,7 +692,7 @@ local function _collectCandidates()
   return out
 end
 
--- Slide-only OnUpdate: no layout work, just "are any of our cached sliding keys still sliding?"
+-- 仅滑动 OnUpdate：无布局工作，只是“我们缓存的滑动键中还有任何在滑动吗？”
 local function _SlideTick()
   local slideList = DoiteGroup._tmpSlideList
   local sc = DoiteGroup._slidingCount or 0
@@ -708,7 +708,7 @@ local function _SlideTick()
     if f and f._daSliding == true then
       i = i + 1
     else
-      -- remove from list (swap with last)
+      -- 从列表中删除（与最后一个交换）
       slideList[i] = slideList[sc]
       slideList[sc] = nil
       sc = sc - 1
@@ -717,32 +717,32 @@ local function _SlideTick()
 
   DoiteGroup._slidingCount = sc
 
-  -- If no sliding left and no pending reflow, stop ticking.
+  -- 如果没有滑动剩余且没有挂起的重排，则停止滴答。
   if sc <= 0 and _G["DoiteGroup_NeedReflow"] ~= true then
     _watch:SetScript("OnUpdate", nil)
   end
 end
 
--- One-shot reflow runner (scheduled by RequestReflow / hooked visuals)
+-- 一次性重排运行器（由 RequestReflow / 钩子视觉效果调度）
 local function _RunReflowOnce()
   _watch:SetScript("OnUpdate", nil)
   DoiteGroup._reflowQueued = nil
 
   if _G["DoiteGroup_LayoutInProgress"] then
-    -- try again next frame (layout may be mid-flight)
+    -- 下一帧再试（布局可能正在进行中）
     DoiteGroup._reflowQueued = 1
     _watch:SetScript("OnUpdate", _RunReflowOnce)
     return
   end
 
   if _G["DoiteGroup_NeedReflow"] ~= true then
-    -- If something requested reflow after, queue it.
+    -- 如果之后有东西请求重排，将其排队。
     if _G["DoiteGroup_NeedReflow"] == true then
       DoiteGroup.RequestReflow()
       return
     end
 
-    -- Nothing requested; if sliding exists, keep slide tick, else off.
+    -- 无请求；如果存在滑动，保持滑动滴答，否则关闭。
     if (DoiteGroup._slidingCount or 0) > 0 then
       _watch:SetScript("OnUpdate", _SlideTick)
     end
@@ -755,19 +755,19 @@ local function _RunReflowOnce()
   if candidates and table.getn(candidates) > 0 then
     DoiteGroup.ApplyGroupLayout(candidates)
   else
-    -- nothing to do; ensure slide watch is off
+    -- 无事可做；确保滑动观察关闭
     DoiteGroup._slidingCount = 0
     _watch:SetScript("OnUpdate", nil)
   end
 
-  -- If something requested another reflow during this run, queue again.
+  -- 如果在这次运行期间有东西请求了另一次重排，再次排队。
   if _G["DoiteGroup_NeedReflow"] == true and not _G["DoiteGroup_LayoutInProgress"] then
     DoiteGroup.RequestReflow()
     return
   end
 end
 
--- Public API: request a group reflow (preferred over directly setting the global flag)
+-- 公开 API：请求组重排（优先于直接设置全局标志）
 function DoiteGroup.RequestReflow()
   if DoiteGroup.CleanupDanglingGroupData then pcall(DoiteGroup.CleanupDanglingGroupData) end
   _G["DoiteGroup_NeedReflow"] = true
@@ -778,13 +778,13 @@ function DoiteGroup.RequestReflow()
   _watch:SetScript("OnUpdate", _RunReflowOnce)
 end
 
--- Public API: invalidate cached sort mode for a group (call when sort mode changes)
+-- 公开 API：使组的缓存排序模式失效（在排序模式更改时调用）
 function DoiteGroup.InvalidateSortCache(groupName)
   if DoiteGroup._sortCache then
     if groupName then
       DoiteGroup._sortCache[groupName] = nil
     else
-      -- Clear entire cache if no group specified
+      -- 如果未指定组，清除整个缓存
       for k in pairs(DoiteGroup._sortCache) do
         DoiteGroup._sortCache[k] = nil
       end
@@ -792,7 +792,7 @@ function DoiteGroup.InvalidateSortCache(groupName)
   end
 end
 
--- Internal helpers called by ApplyGroupLayout (Patch 1/2)
+-- ApplyGroupLayout 调用的内部辅助函数（补丁 1/2）
 function DoiteGroup._EnableSlideWatch()
   if (DoiteGroup._slidingCount or 0) > 0 then
     _watch:SetScript("OnUpdate", _SlideTick)
@@ -806,9 +806,8 @@ function DoiteGroup._DisableSlideWatch()
 end
 
 ---------------------------------------------------------------
--- Hook visuals to automatically request reflow when the real-name
--- flags change for any key (shouldShow / sliding)
--- (No assumptions: only hooks if the table+function exist.)
+-- 钩子视觉效果，以便在 any key 的真实名称标志（shouldShow / sliding）更改时自动请求重排
+-- （无假设：仅在表和函数存在时钩子。）
 ---------------------------------------------------------------
 local function _IsKeyGrouped(key)
   local d
@@ -835,37 +834,41 @@ local function _HookApplyVisualsIfPresent()
 
   local orig = DoiteConditions.ApplyVisuals
 
-  DoiteConditions.ApplyVisuals = function(a, b, c, d, e)
-    -- Supports both call styles:
-    --   DoiteConditions:ApplyVisuals(key, show, glow, grey)
-    --   DoiteConditions.ApplyVisuals(key, show, glow, grey)
-    local self, key, show, glow, grey
+  DoiteConditions.ApplyVisuals = function(a, b, c, d, e, f, g)
+    -- 支持两种调用风格：
+    --   DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
+    --   DoiteConditions.ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
+    local self, key, show, glow, grey, fade, fadeAlpha
     if type(a) == "table" then
       self = a
       key = b
       show = c
       glow = d
       grey = e
+      fade = f
+      fadeAlpha = g
     else
       self = DoiteConditions
       key = a
       show = b
       glow = c
       grey = d
+      fade = e
+      fadeAlpha = f
     end
 
     local f = _GetIconFrame(key)
 
-    -- Fast skip: only track grouped keys (works even before first ApplyGroupLayout)
+    -- 快速跳过：仅跟踪分组键（甚至在第一次 ApplyGroupLayout 之前也能工作）
     if not _IsKeyGrouped(key) then
-      return orig(self, key, show, glow, grey)
+      return orig(self, key, show, glow, grey, fade, fadeAlpha)
     end
 
-    -- Normalize nil/false so first-time values don't cause "fake changes"
+    -- 规范化 nil/false，以便初始值不会导致“虚假更改”
     local oldShould = (f and f._daShouldShow == true) and 1 or 0
     local oldSliding = (f and f._daSliding == true) and 1 or 0
 
-    local r = orig(self, key, show, glow, grey)
+    local r = orig(self, key, show, glow, grey, fade, fadeAlpha)
 
     f = _GetIconFrame(key)
     if f then
@@ -882,7 +885,7 @@ local function _HookApplyVisualsIfPresent()
   DoiteGroup._applyVisualsHooked = true
 end
 
--- Attempt hook now, and again on login/addon load (covers load order)
+-- 现在尝试钩子，并在登录/插件加载时再次尝试（覆盖加载顺序）
 _HookApplyVisualsIfPresent()
 _watch:RegisterEvent("PLAYER_LOGIN")
 _watch:RegisterEvent("ADDON_LOADED")
@@ -891,7 +894,7 @@ _watch:SetScript("OnEvent", function()
 end)
 
 ---------------------------------------------------------------
--- Edit UI helpers for dynamic Group/Category management
+-- 动态组/类别管理的编辑 UI 辅助函数
 ---------------------------------------------------------------
 local function _DA_DB()
   DoiteAurasDB = DoiteAurasDB or {}

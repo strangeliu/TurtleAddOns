@@ -40,6 +40,7 @@ ModernMapMarkers_Locale:RegisterZones("zhCN", {
     ["Westfall"]             = "西部荒野",
     ["Wetlands"]             = "湿地",
     ["Alah'Thalas"]          = "阿尔萨拉斯",
+    ["Thousand Needles"]     = "千针石林",
 })
 
 ModernMapMarkers_Locale:RegisterMarkers("zhCN", {
@@ -84,6 +85,8 @@ ModernMapMarkers_Locale:RegisterMarkers("zhCN", {
     ["Uldaman"]                             = "奥达曼",
     ["Uldaman - Main Entrance"]             = "奥达曼",
     ["Uldaman - Back Entrance"]             = "奥达曼 - 后门",
+    ["Windhorn Canyon"]                     = "风角峡谷",--1.18.1新增
+    ["Frostmane Hollow"]                    = "霜鬃谷",--1.18.1新增
 
     -- Raids
     ["Onyxia's Lair"]          = "奥妮克希亚的巢穴",
@@ -96,6 +99,7 @@ ModernMapMarkers_Locale:RegisterMarkers("zhCN", {
     ["Tower of Karazhan"]      = "卡拉赞之塔",
     ["Naxxramas"]              = "纳克萨玛斯",
     ["Zul'Gurub"]              = "祖尔格拉布",
+    ["Timbermaw Hold"]     = "木喉要塞",--1.18.1新增
 
     -- World Bosses
     ["Emerald Dragon"]                      = "翡翠巨龙",

@@ -5,20 +5,7 @@
 -- 引入Babble-Spell-2.2库，该库提供本地化的技能名称映射，确保在不同语言客户端下能正确识别技能
 local BS = AceLibrary("Babble-Spell-2.2")
 
-Chronometer.Priest_Shadow_Word_Pain=18;
-
--- 创建主帧
-local TimerFrame = CreateFrame("Frame")
-TimerFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-TimerFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
-TimerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	
-TimerFrame:SetScript("OnEvent", function()
-	if event == "PLAYER_ENTERING_WORLD" or event == "CHARACTER_POINTS_CHANGED" or event == "PLAYER_TARGET_CHANGED" then	
-		if Chronometer:GetSpellDescription(BS["Shadow Word: Pain"], Chronometer:getRank(BS["Shadow Word: Pain"], 1)) then Chronometer.Priest_Shadow_Word_Pain=Chronometer:GetSpellDescription(BS["Shadow Word: Pain"], Chronometer:getRank(BS["Shadow Word: Pain"], 1));end;
-		Chronometer:PriestSetup()
-	end
-end)
+local SHADOW_WORD_PAIN_DURATION = 18
 
 -- 定义Chronometer对象的PriestSetup方法，用于初始化牧师职业的计时器配置
 function Chronometer:PriestSetup()
@@ -48,7 +35,9 @@ function Chronometer:PriestSetup()
     self:AddTimer(self.SPELL, BS["Psychic Scream"],      8, 0,0,0)                       -- 精神尖叫：持续8秒
     self:AddTimer(self.SPELL, BS["Renew"],              15, 1,1,1, { rc=true })          -- 恢复：持续15秒，可刷新
     self:AddTimer(self.SPELL, BS["Shackle Undead"],     30, 1,0,0, { rc=true, d={rs=10} })  -- 束缚亡灵：持续30秒，可刷新，额外数据rs=10（推测为刷新相关延迟）
-    self:AddTimer(self.SPELL, BS["Shadow Word: Pain"],   (Chronometer.Priest_Shadow_Word_Pain-6), 1,0,0, { rc=true, d={tn=BS["Improved Shadow Word: Pain"], tb=3} })  -- 暗影 word：痛：持续18秒，可刷新，关联强化暗影 word：痛天赋（基础值3）
+    -- Spell.dbc 中 589/594/970/992/2767/10892/10893 的持续时间都固定为 18 秒，
+    -- 这里只叠加强化暗言术：痛带来的 +3/+6 秒修正。
+    self:AddTimer(self.SPELL, BS["Shadow Word: Pain"],   SHADOW_WORD_PAIN_DURATION, 1,0,0, { rc=true, d={tn=BS["Improved Shadow Word: Pain"], ta=3, tp=2} })
     self:AddTimer(self.SPELL, BS["Silence"],             5, 1,0,0)                       -- 沉默：持续5秒
     self:AddTimer(self.SPELL, BS["Starshards"],          6, 1,0,0)                       -- 星碎片：持续6秒（注：牧师技能中无此技能，可能为本地化名称误差）
     self:AddTimer(self.SPELL, BS["Touch of Weakness"],   120, 0,1,1, { rc=true })        -- 虚弱之触：持续120秒，可刷新

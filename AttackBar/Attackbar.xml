@@ -149,7 +149,7 @@
     </Backdrop>
     <Layers>
       <Layer level="ARTWORK">
-        <FontString name="Abar_Text" inherits="GameFontNormal" text="敌方计时条位置">
+        <FontString name="Ebar_Text" inherits="GameFontNormal" text="敌方计时条位置">
           <Anchors>
             <Anchor point="TOP">
               <Offset>

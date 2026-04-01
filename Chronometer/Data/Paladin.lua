@@ -10,6 +10,9 @@ function Chronometer:PaladinSetup()
     local _, eclass = UnitClass("player")
     if eclass ~= "PALADIN" then return end
 
+    local holyMight = self:GetLocalizedTurtleName("Holy Might")
+    local zeal = self:GetLocalizedTurtleName("Zeal")
+
     -- 添加3个计时器组，分别设置为不同颜色和显示模式
     -- 参数说明：组ID，是否自动隐藏，颜色
     self:AddGroup(1, false, "CYAN")         -- 组1：青色，不自动隐藏
@@ -18,7 +21,7 @@ function Chronometer:PaladinSetup()
 
     -- 添加各种圣骑士技能的计时器（法术类型）
     -- 参数说明：类型（SPELL/EVENT），法术名称，持续时间，是否显示图标，是否显示剩余时间，是否显示冷却，额外参数
-    self:AddTimer(self.SPELL, BS["Blessing of Freedom"],    10, 1,1,1, { gr=1, d={tn=BS["Guardian's Favor"], tb=3} })         -- 自由祝福：10秒，使用组1，受"守护者的宠爱"影响延长3秒
+    self:AddTimer(self.SPELL, BS["Blessing of Freedom"],    10, 1,1,1, { gr=1, d={tn=BS["Guardian's Favor"], ta=3, tp=2} })         -- 自由祝福：10秒，使用组1，受"守护者的宠爱"影响延长3秒
     self:AddTimer(self.SPELL, BS["Blessing of Kings"],     600, 1,1,1, { gr=1, rc=true })                                    -- 王者祝福：300秒，使用组1，可刷新
     self:AddTimer(self.SPELL, BS["Blessing of Light"],     600, 1,1,1, { gr=1, rc=true })                                    -- 光明祝福：300秒，使用组1，可刷新
     self:AddTimer(self.SPELL, BS["Blessing of Might"],     600, 1,1,1, { gr=1, rc=true })                                    -- 力量祝福：300秒，使用组1，可刷新
@@ -34,9 +37,9 @@ function Chronometer:PaladinSetup()
     self:AddTimer(self.SPELL, BS["Holy Shield"],            10, 1,0,0       )                            -- 神圣之盾：10秒，显示图标
     self:AddTimer(self.SPELL, BS["Judgement"],               0, 1,0,0, { gr=2, ea={[BS["Judgement of Justice"]]=1, [BS["Judgement of Light"]]=1, [BS["Judgement of Wisdom"]]=1, [BS["Judgement of the Crusader"]]=1} })  -- 审判：0秒，使用组2，关联多种审判效果
     self:AddTimer(self.SPELL, BS["Crusader Strike"],              0, 1,0,0)                             -- 十字军打击：0秒，显示图标
-    self:AddTimer(self.SPELL, "神圣打击",                        0, 1,0,0, { sb="神圣威能" })                             -- 神圣打击：0秒，显示图标，触发神圣威能
+    self:AddTimer(self.SPELL, BS["Holy Strike"],                 0, 1,0,0, { sb=holyMight })                            -- 神圣打击：0秒，显示图标，触发神圣威能
     self:AddTimer(self.SPELL, BS["Lay on Hands"],            0, 1,1,1, { ea={[BS["Lay on Hands"]]=2} })                       -- 圣疗术：0秒，显示图标、剩余时间和冷却，受自身效果影响
-    self:AddTimer(self.SPELL, "神圣威能",                        20, 1,1,1, { cr="YELLOW", rc=true, tx="Interface\\Icons\\Spell_Holy_HolyGuidance" })                                  -- 神圣威能：20秒，显示图标、剩余时间和冷却，黄色，可刷新
+    self:AddTimer(self.SPELL, holyMight,                       20, 1,1,1, { cr="YELLOW", rc=true, tx="Interface\\Icons\\Spell_Holy_HolyGuidance" })                                  -- 神圣威能：20秒，显示图标、剩余时间和冷却，黄色，可刷新
     self:AddTimer(self.SPELL, BS["Repentance"],              6, 1,0,0)                                                       -- 忏悔：6秒，显示图标
     self:AddTimer(self.SPELL, BS["Seal of Command"],        30, 0,1,1, { gr=2, rc=true })                                    -- 命令圣印：30秒，显示剩余时间和冷却，使用组2，可刷新
     self:AddTimer(self.SPELL, BS["Seal of Justice"],        30, 0,1,1, { gr=2, rc=true })                                    -- 公正圣印：30秒，显示剩余时间和冷却，使用组2，可刷新
@@ -49,14 +52,14 @@ function Chronometer:PaladinSetup()
     -- 添加各种圣骑士相关事件的计时器（事件类型）
     self:AddTimer(self.EVENT, BS["Forbearance"],               60, 1,0,1 )                                                     -- 自律：60秒，显示图标和冷却
     self:AddTimer(self.EVENT, BS["Judgement of Justice"],      10, 1,0,0, { cr="RED", xn=BS["Seal of Justice"], rom=true })    -- 公正审判：10秒，显示图标，红色，关联公正圣印，可叠加
-    self:AddTimer(self.EVENT, BS["Judgement of Light"],        10, 1,0,0, { cr="RED", xn=BS["Seal of Light"],  d={tn=BS["Lasting Judgement"], tb=10}, rom=true })  -- 光明审判：10秒，显示图标，红色，关联光明圣印，受"持久审判"影响延长10秒，可叠加
-    self:AddTimer(self.EVENT, BS["Judgement of Wisdom"],       10, 1,0,0, { cr="RED", xn=BS["Seal of Wisdom"], d={tn=BS["Lasting Judgement"], tb=10}, rom=true })  -- 智慧审判：10秒，显示图标，红色，关联智慧圣印，受"持久审判"影响延长10秒，可叠加
+    self:AddTimer(self.EVENT, BS["Judgement of Light"],        10, 1,0,0, { cr="RED", xn=BS["Seal of Light"],  d={tn=BS["Lasting Judgement"], ta=10, tp=3}, rom=true })  -- 光明审判：10秒，显示图标，红色，关联光明圣印，受"持久审判"影响延长10秒，可叠加
+    self:AddTimer(self.EVENT, BS["Judgement of Wisdom"],       10, 1,0,0, { cr="RED", xn=BS["Seal of Wisdom"], d={tn=BS["Lasting Judgement"], ta=10, tp=3}, rom=true })  -- 智慧审判：10秒，显示图标，红色，关联智慧圣印，受"持久审判"影响延长10秒，可叠加
     self:AddTimer(self.EVENT, BS["Judgement of the Crusader"], 10, 1,0,0, { cr="RED", xn=BS["Seal of the Crusader"], rom=true })  -- 十字军审判：10秒，显示图标，红色，关联十字军圣印，可叠加
     self:AddTimer(self.EVENT, BS["Lay on Hands"],             120, 1,1,1, { cr="BLUE" })                                       -- 圣疗术（事件）：120秒，显示图标、剩余时间和冷却，蓝色
     self:AddTimer(self.EVENT, BS["Redoubt"],                   12, 0,1,1, { cr="GREEN",a=1 })                                  -- 正义壁垒：12秒，显示剩余时间和冷却，绿色
     self:AddTimer(self.EVENT, BS["Vengeance"],                  30, 0,1,1, { cr="GREEN", a=3 })                                  -- 复仇：30秒，显示剩余时间和冷却，绿色
     self:AddTimer(self.EVENT, BS["Vindication"],                8, 1,0,0, { cr="RED", a=2 })                                  --  辩护：10秒，显示图标，红色
-    self:AddTimer(self.EVENT, "狂热",                           30, 0,1,1, { cr="ORANGE",a=3, tx="Interface\\Icons\\Spell_Holy_CrusaderStrike" })                                  -- 狂热：30秒，显示剩余时间和冷却，橘色
+    self:AddTimer(self.EVENT, zeal,                           30, 0,1,1, { cr="ORANGE",a=3, tx="Interface\\Icons\\Spell_Holy_CrusaderStrike" })                                  -- 狂热：30秒，显示剩余时间和冷却，橘色
     
     -- 注释掉的技能：愤怒之锤（可能未完成或暂不启用）
     -- self:AddTimer(A.SKILL, C.HAMMER_OF_WRATH,            5, 0,1,1, { cr="YELLOW" })

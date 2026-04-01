@@ -269,6 +269,7 @@ BCS["L_MANAREGEN"] = {
 	["arcane_mage_3T2"] = "^套装：魔甲术可使你的所有抗性提高15，并在施法时保持(%d+)%%的法力恢复速度。",
 	["Sylvan_Blessing"] = "^施法时仍保持(%d+)%%的法力恢复速度",
 	["Aspect_of_Strider"] = "^距离陆行鸟50码范围内的小队成员在战斗中将获得(%d+)%%的法力值回复和20%%的生命值回复。该效果持续到主动取消。",
+	["sprit_tap"] = "^精神提高100%%，施法时保持(%d+)%%的法力值回复速度。",
 	
 	
 	["Shadowform"]="^使你能造成的暗影伤害提高(%d+)%%，受到物理攻击时承受的伤害降低(%d+)%%。不能施放神圣系的法术。",
@@ -324,7 +325,7 @@ BCS["L_SPELLPOWER"] = {
 	["^%+(%d+) Spell Damage and Healing"] = "^法术治疗和伤害 %+(%d+)",
 	["^%+(%d+) Damage and Healing Spells"] = "^%+(%d+) 伤害和治疗法术",
 	["Healing Spells and Damage %+(%d+)"] = "治疗和法术伤害 %+(%d+)",
-	["Desecration"] = "装备： 法术伤害和治疗效果增加(%d+)",
+	["Desecration"] = "装备： 法术伤害和治疗效果提高(%d+)",
 	["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = "^套装：提高所有法术和魔法效果所造成的伤害和治疗效果，最多(%d+)点。",
 	
 	["Magical damage dealt is increased by up to (%d+)."] = "^法术伤害提高最多(%d+)点。",
@@ -394,4 +395,12 @@ BCS["L_ARMORPENETRATION"] = {
 BCS["L_WEAPONTYPE"] = {
 	["ONE_HANDED_MACE"] = "单手锤",
 	["TWO_HANDED_MACE"] = "双手锤",
+}
+
+BCS["L_LUCKY"] = {
+	["LUCKY_1"] = "使你触发装备物品效果的几率提高(%d+)%%。",
+}
+
+BCS["L_AVOID"] = {
+	["AVOID_1"] = "受到范围法术和技能伤害降低(%d+)%%。",
 }

@@ -248,7 +248,10 @@ local function GetEnchantText(itemLink)
         if LibItemEnchant then
             local spellID = LibItemEnchant:GetEnchantSpellID(itemLink)
             if spellID then
-                local enchantName = GetSpellInfo(spellID)
+                local enchantName
+                if type(GetSpellInfo) == "function" then
+                    enchantName = GetSpellInfo(spellID)
+                end
                 if enchantName then
                     return " |cFF00FF00[" .. enchantName .. "]|r"
                 end

@@ -1838,6 +1838,11 @@ function BCS:GetLiveManaRegen()
 		casting_percent = casting_percent + tonumber(value)
 	end
 	
+	_, _, value = BCS:GetPlayerAura(L_MANAREGEN["sprit_tap"])
+	if value then
+		casting_percent = casting_percent + tonumber(value)
+	end
+		
 	_, _, mp5FromAura = BCS:GetPlayerAura(L_MANAREGEN["Mana_Spring_totem"])
 	if mp5FromAura then
 		mp5 = mp5 + tonumber(mp5FromAura) * 2.5

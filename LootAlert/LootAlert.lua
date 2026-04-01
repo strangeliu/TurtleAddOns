@@ -645,16 +645,16 @@ local defaults = {
     autoSoundByQuality = true,  -- 根据品质自动选择音效
     maxAlerts = 12,  -- 最多同时显示12个（和 ls_Toasts 一样）
     duration = 3,  -- 显示时长3秒（和 ls_Toasts 的 fadeout_delay 一样）
-    scale = 1.0,  -- 缩放1.0（和 ls_Toasts 默认一样）
+    scale = 0.8,  -- 缩放1.0（和 ls_Toasts 默认一样）
     displayInterval = 0,  -- 显示间隔0秒，立即显示（和 ls_Toasts 一样）
-    bgAlpha = 1.0,  -- 背景透明度：1.0=完全不透明（和 ls_Toasts 一样）
+    bgAlpha = 0.5,  -- 背景透明度：1.0=完全不透明（和 ls_Toasts 一样）
     goldThreshold = 1,  -- 金币阈值（铜币），低于此值不显示，默认1铜（显示所有）
     useGoldThreshold = false,  -- 是否启用金币阈值
     trackLoss = false,  -- 是否追踪金币损失（维修、购买等），默认关闭（和 ls_Toasts 一样）
     growDirection = "down",  -- 生长方向："down"=向下（和 ls_Toasts 一样）
     strata = "HIGH",  -- 框架层级："BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG"（和 ls_Toasts 一样）
     showItemLevel = true,  -- 显示物品等级（和 ls_Toasts 一样）
-    spacing = 14,  -- 提示框之间的间距（像素），默认14（和 ls_Toasts 一样）
+    spacing = 10,  -- 提示框之间的间距（像素），默认14（和 ls_Toasts 一样）
     
     -- 颜色设置（完全模仿 ls_Toasts）
     colors = {

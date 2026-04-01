@@ -1,4 +1,7 @@
 function SpecialTalentFrame_LoadUI()
+	if ( SpecialTalentFrame or SpecialTalentFrame_Toggle ) then
+		return;
+	end
 	UIParentLoadAddOn("SpecialTalentUI");
 end
 
@@ -15,15 +18,6 @@ function ToggleTalentFrame()
 end
 
 function UpdateTalentButton()
---[[ Always show talent button
-	if ( UnitLevel("player") < 10 ) then
-		TalentMicroButton:Hide();
-		QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
-	else	
-		TalentMicroButton:Show();
-		QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -2, 0);
-	end
---]]
 end
 
 local oldUpdateMicroButtons = UpdateMicroButtons;

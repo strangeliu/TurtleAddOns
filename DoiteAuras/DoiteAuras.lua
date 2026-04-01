@@ -1,13 +1,13 @@
 ---------------------------------------------------------------
 -- DoiteAuras.lua
--- Simplified WeakAura-style addon for WoW
--- Please respect license note: Ask permission
+-- 简化的类 WeakAura 插件，适用于魔兽世界
+-- 请尊重许可说明：使用前请询问
 -- WoW 1.12 | Lua 5.0
 ---------------------------------------------------------------
 
 if DoiteAurasFrame then return end
 
--- SavedVariables init (guarded; do NOT clobber existing data)
+-- SavedVariables 初始化（保护性，不要覆盖已有数据）
 DoiteAurasDB = DoiteAurasDB or {}
 DoiteAurasDB.spells         = DoiteAurasDB.spells         or {}
 DoiteAurasDB.cache          = DoiteAurasDB.cache          or {}
@@ -26,7 +26,7 @@ local DA_ClearRenameState
 local DA_CancelRename
 local DA_IsRenameNameDuplicate
 
--- Always return a valid name->texture cache table
+-- 始终返回一个有效的名称->纹理缓存表
 local function DA_Cache()
   DoiteAurasDB = DoiteAurasDB or {}
   DoiteAurasDB.cache = DoiteAurasDB.cache or {}
@@ -34,7 +34,7 @@ local function DA_Cache()
 end
 
 ---------------------------------------------------------------
--- pfUI Border Styling Helpers
+-- pfUI 边框样式辅助函数
 ---------------------------------------------------------------
 local function DA_IsPfUIAvailable()
     if type(IsAddOnLoaded) ~= "function" then
@@ -44,25 +44,25 @@ local function DA_IsPfUIAvailable()
     return (ok == 1 or ok == true)
 end
 
--- Callable from other addon files
+-- 可供其他插件文件调用
 function DoiteAuras_HasPfUI()
     return DA_IsPfUIAvailable() == true
 end
 
--- Apply/remove helpers
+-- 应用/移除辅助函数
 local function DA_ApplyPfUIBorder(frame)
     if not frame or not DA_IsPfUIAvailable() then return end
 
-    -- Remove existing backdrop if any
+    -- 移除现有背景
     if frame.backdrop then
         frame.backdrop:Hide()
         frame.backdrop = nil
     end
 
-    -- Apply pfUI backdrop
+    -- 应用 pfUI 背景
     pfUI.api.CreateBackdrop(frame)
 
-    -- Apply texture cropping to icon
+    -- 对图标应用纹理裁剪
     if frame.icon and frame.icon.SetTexCoord then
         frame.icon:SetTexCoord(.08, .92, .08, .92)
     end
@@ -96,18 +96,18 @@ local function DA_ApplyBorderToAllIcons()
     end
 end
 
--- Export callable functions for other addon files
+-- 为其他插件文件导出可调用函数
 function DoiteAuras_ApplyBorderToAllIcons() DA_ApplyBorderToAllIcons() end
 
--- Enforce default/forced state:
--- - If pfUI is available and pfuiBorder is unset (nil): default ON
--- - If pfUI is NOT available and pfuiBorder is unset (nil): default OFF
+-- 强制执行默认/强制状态：
+-- - 如果 pfUI 可用且 pfuiBorder 未设置（nil）：默认开启
+-- - 如果 pfUI 不可用且 pfuiBorder 未设置（nil）：默认关闭
 local function DA_EnsurePfUIBorderDefault()
     DoiteAurasDB = DoiteAurasDB or {}
 
     local has = DA_IsPfUIAvailable()
 
-    -- Only set a default when the user has NOT chosen anything yet
+    -- 仅在用户尚未做出选择时设置默认值
     if DoiteAurasDB.pfuiBorder == nil then
         if has then
             DoiteAurasDB.pfuiBorder = true
@@ -116,20 +116,20 @@ local function DA_EnsurePfUIBorderDefault()
         end
     end
 
-    -- If pfUI is available now, make sure existing icons match the setting
+    -- 如果 pfUI 现在可用，确保现有图标匹配设置
     if has and DoiteAuras_ApplyBorderToAllIcons then
         pcall(DoiteAuras_ApplyBorderToAllIcons)
     end
 end
 
--- Run once shortly after entering world, and also when pfUI loads
+-- 在进入世界后不久运行一次，以及当 pfUI 加载时
 do
     local f = CreateFrame("Frame", "DoiteAurasPfUIInit")
     f:RegisterEvent("PLAYER_ENTERING_WORLD")
     f:RegisterEvent("ADDON_LOADED")
     f:SetScript("OnEvent", function()
         if event == "ADDON_LOADED" then
-            -- If pfUI loads after DoiteAuras, default+apply then
+            -- 如果 pfUI 在 DoiteAuras 之后加载，则设置默认值并应用
             if arg1 == "pfUI" then
                 DA_EnsurePfUIBorderDefault()
             end
@@ -145,10 +145,10 @@ do
 end
 
 ---------------------------------------------------------------
--- Nampower / UnitXP SP3 requirement helper
--- Requires UnitXP & a specific Nampower version
+-- Nampower / UnitXP SP3 需求辅助函数
+-- 需要 UnitXP 和特定的 Nampower 版本
 ---------------------------------------------------------------
-local _NP_REQ_MAJOR, _NP_REQ_MINOR, _NP_REQ_PATCH = 2, 40, 0 -- Change when needed
+local _NP_REQ_MAJOR, _NP_REQ_MINOR, _NP_REQ_PATCH = 2, 40, 0 -- 根据需要更改
 
 local function _NP_GetVersion()
   if type(GetNampowerVersion) == "function" then
@@ -165,7 +165,7 @@ local function _NP_VersionString(maj, min, pat, hasFn)
   return tostring(maj) .. "." .. tostring(min) .. "." .. tostring(pat)
 end
 
--- returns: ok(bool), verStr(string)
+-- 返回：ok(bool), verStr(string)
 local function _NP_AtLeast(reqMaj, reqMin, reqPat)
   local maj, min, pat, hasFn = _NP_GetVersion()
   local verStr = _NP_VersionString(maj, min, pat, hasFn)
@@ -187,13 +187,13 @@ end
 local function DA_GetMissingRequiredMods()
   local missing = {}
 
-  -- Nampower: must be >= the version in _NP_REQ_MAJOR/_NP_REQ_MINOR/_NP_REQ_PATCH
+  -- Nampower：必须 >= _NP_REQ_MAJOR/_NP_REQ_MINOR/_NP_REQ_PATCH 中指定的版本
   local npOK, npVerStr = _NP_AtLeast(_NP_REQ_MAJOR, _NP_REQ_MINOR, _NP_REQ_PATCH)
   if not npOK then
-    table.insert(missing, "Nampower 2.40.0+ (you have " .. tostring(npVerStr) .. ")")
+    table.insert(missing, "Nampower 2.40.0+ (你有 " .. tostring(npVerStr) .. ")")
   end
 
-  -- UnitXP SP3: pcall(UnitXP, "nop", "nop") must succeed
+  -- UnitXP SP3：pcall(UnitXP, "nop", "nop") 必须成功
   local hasUnitXP = false
   if type(UnitXP) == "function" then
     local ok = pcall(UnitXP, "nop", "nop")
@@ -212,11 +212,11 @@ local function DA_IsHardDisabled()
   return _G["DoiteAuras_HardDisabled"] == true
 end
 
--- Persistent store for group layout computed positions
+-- 持久存储组布局计算位置
 _G["DoiteGroup_Computed"]       = _G["DoiteGroup_Computed"]       or {}
 _G["DoiteGroup_LastLayoutTime"] = _G["DoiteGroup_LastLayoutTime"] or 0
 
--- ========= Spell Texture Cache (abilities) =========
+-- ========= 法术纹理缓存（技能） =========
 
 local function DoiteAuras_RebuildSpellTextureCache()
     local cache = DA_Cache()
@@ -235,7 +235,7 @@ local function DoiteAuras_RebuildSpellTextureCache()
         end
     end
 
-    -- If already have configured Ability entries, seed their .iconTexture for immediate use
+    -- 如果已有配置的技能条目，为其 .iconTexture 播种以便立即使用
     if DoiteAurasDB.spells then
         for key, data in pairs(DoiteAurasDB.spells) do
             if data and data.type == "Ability" then
@@ -246,7 +246,7 @@ local function DoiteAuras_RebuildSpellTextureCache()
         end
     end
 
-    -- Spellbook indices can shift; force a fresh slot lookup next refresh
+    -- 法术书索引可能改变；强制下次刷新时重新查找槽位
     if DoiteAuras then
         DoiteAuras._spellSlotCache = nil
     end
@@ -271,7 +271,7 @@ local function DA_GetSpellTextureById(spellId)
     return nil
 end
 
--- Event hook: rebuild on login/world and whenever the spellbook changes (talent/build swaps)
+-- 事件钩子：在登录/进入世界以及法术书改变（天赋/配置切换）时重建
 local _daSpellTex = CreateFrame("Frame", "DoiteSpellTex")
 _daSpellTex:RegisterEvent("PLAYER_ENTERING_WORLD")
 _daSpellTex:RegisterEvent("SPELLS_CHANGED")
@@ -284,8 +284,8 @@ _daSpellTex:SetScript("OnEvent", function()
     if DoiteAuras_RefreshIcons then pcall(DoiteAuras_RefreshIcons) end
 end)
 
--- Title-case function with exceptions for small words (keeps first word capitalized)
--- Special-case Roman numerals like "II", "IV", "VIII", "X" so they stay fully uppercase. Also: if a letter appears directly after ".", keep it capital (fixes "R.O.I.D.S." => "R.O.I.D.S.").
+-- 标题大小写函数，对小词有例外（保持首词大写）
+-- 特殊处理罗马数字如 "II", "IV", "VIII", "X"，使其保持全大写。同时，如果字母直接出现在 "." 之后，保持大写（修复 "R.O.I.D.S." => "R.O.I.D.S."）。
 local function TitleCase(str)
     if not str then return "" end
     str = tostring(str)
@@ -299,20 +299,20 @@ local function TitleCase(str)
     local function IsRomanNumeralToken(core)
         if not core or core == "" then return false end
         local upper = string.upper(core)
-        -- Only Roman numeral characters
+        -- 仅包含罗马数字字符
         if not string.find(upper, "^[IVXLCDM]+$") then
             return false
         end
-        -- Optional: avoid crazy long sequences; ranks are usually short
+        -- 可选：避免过长的序列；等级通常较短
         if string.len(upper) > 4 then
             return false
         end
         return true
     end
 
-    -- Lowercase letters normally, BUT uppercase any letter that is:
-    --  - the first character (when capFirst is true)
-    --  - immediately after a '.'
+    -- 通常小写字母，但将满足以下条件的字母大写：
+    --  - 第一个字符（当 capFirst 为 true 时）
+    --  - 紧跟在 '.' 之后
     local function DotAwareCase(core, capFirst)
         if not core or core == "" then
             return ""
@@ -324,7 +324,7 @@ local function TitleCase(str)
         while i <= n do
             local ch = string.sub(core, i, i)
 
-            -- Determine if ch is a letter (A-Z / a-z)
+            -- 判断 ch 是否为字母 (A-Z / a-z)
             if string.find(ch, "%a") then
                 if i == 1 then
                     if capFirst then
@@ -353,7 +353,7 @@ local function TitleCase(str)
     local result, first = "", true
 
     for word in string.gfind(str, "%S+") do
-        -- If the word starts with "(", force-capitalize the first letter after "(".
+        -- 如果单词以 "(" 开头，强制大写 "(" 后的第一个字母。
         local startsParen = (string.sub(word, 1, 1) == "(")
         local leading     = startsParen and "(" or ""
         local core        = startsParen and string.sub(word, 2) or word
@@ -361,23 +361,23 @@ local function TitleCase(str)
         local lowerCore = string.lower(core or "")
         local upperCore = string.upper(core or "")
 
-        -- 1) Roman numerals: keep them fully uppercase, everywhere
+        -- 1) 罗马数字：始终保持全大写
         if IsRomanNumeralToken(core) then
             result = result .. leading .. upperCore .. " "
             first = false
 
         else
-            -- 2) Normal title-case rules (dot-aware)
+            -- 2) 标准标题大小写规则（点感知）
             if first then
-                -- Always capitalize the very first word
+                -- 始终大写第一个词
                 result = result .. leading .. DotAwareCase(core, true) .. " "
                 first = false
             else
                 if startsParen then
-                    -- First word inside parentheses: force-capitalize regardless of exceptions
+                    -- 括号内的第一个词：不管例外，强制大写
                     result = result .. leading .. DotAwareCase(core, true) .. " "
                 elseif exceptions[lowerCore] then
-                    -- Normal small-word behavior (kept lower)
+                    -- 正常小词行为（保持小写）
                     result = result .. lowerCore .. " "
                 else
                     result = result .. leading .. DotAwareCase(core, true) .. " "
@@ -390,7 +390,7 @@ local function TitleCase(str)
     return result
 end
 
--- === Duplicate handling helpers ===
+-- === 重复项处理辅助函数 ===
 local function BaseKeyFor(data_or_name, typ)
   if type(data_or_name) == "table" then
     local d = data_or_name
@@ -404,7 +404,7 @@ local function BaseKeyFor(data_or_name, typ)
   end
 end
 
--- Generate a unique storage key for DB & frames
+-- 为数据库和框架生成唯一存储键
 local function GenerateUniqueKey(name, typ)
   local base = BaseKeyFor(name, typ)
   if not DoiteAurasDB.spells[base] then
@@ -417,7 +417,7 @@ local function GenerateUniqueKey(name, typ)
   return (base .. "#" .. tostring(n)), base, n
 end
 
--- Find siblings (same displayName & type)
+-- 查找兄弟（相同的 displayName 和类型）
 local function IterSiblings(name, typ)
   local base = BaseKeyFor(name, typ)
   local function iter(_, last)
@@ -433,11 +433,11 @@ local function IterSiblings(name, typ)
   return iter, nil, nil
 end
 
--- Tooltip for buff/debuff scanning
+-- 用于增益/减益扫描的工具提示
 local daTip = CreateFrame("GameTooltip", "DoiteAurasTooltip", nil, "GameTooltipTemplate")
 daTip:SetOwner(UIParent, "ANCHOR_NONE")
 
--- Cache tooltip fontstrings once´
+-- 缓存工具提示字体字符串
 local DA_TipLeft = {}
 do
     local i = 1
@@ -457,7 +457,7 @@ local function GetBuffName(unit, index, debuff)
     return DoiteAurasTooltipTextLeft1:GetText()
 end
 
--- Main frame (layout & sizes)
+-- 主框架（布局和尺寸）
 local frame = CreateFrame("Frame", "DoiteAurasFrame", UIParent)
 frame:SetWidth(385)
 frame:SetHeight(470)
@@ -489,17 +489,17 @@ sep:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -20, -35)
 sep:SetTexture(1,1,1)
 if sep.SetVertexColor then sep:SetVertexColor(1,1,1,0.25) end
 
--- Intro text
+-- 介绍文本
 local intro = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 intro:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -40)
 intro:SetText("输入名称（通用名称匹配）或通过法术 ID（唯一）添加：")
 
--- Close button
+-- 关闭按钮
 local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -6)
 closeBtn:SetScript("OnClick", function() this:GetParent():Hide() end)
 
--- Import / Export buttons (to the left of the close "X")
+-- 导入 / 导出按钮（在关闭 "X" 左侧）
 local exportBtn = CreateFrame("Button", "DoiteAurasExportButton", frame, "UIPanelButtonTemplate")
 exportBtn:SetWidth(60)
 exportBtn:SetHeight(20)
@@ -530,14 +530,14 @@ importBtn:SetScript("OnClick", function()
     end
 end)
 
--- Settings button
+-- 设置按钮
 local settingsBtn = CreateFrame("Button", "DoiteAurasSettingsButton", frame, "UIPanelButtonTemplate")
 settingsBtn:SetWidth(70)
 settingsBtn:SetHeight(20)
 settingsBtn:SetPoint("RIGHT", importBtn, "LEFT", -4, 0)
 settingsBtn:SetText("设置")
 
--- External call
+-- 外部调用
 settingsBtn:SetScript("OnClick", function()
     DA_CancelRename()
     if DoiteAuras_RefreshList then pcall(DoiteAuras_RefreshList) end
@@ -548,7 +548,7 @@ settingsBtn:SetScript("OnClick", function()
     end
 end)
 
--- Input box + Add
+-- 输入框 + 添加
 local input = CreateFrame("EditBox", "DoiteAurasInput", frame, "InputBoxTemplate")
 input:SetWidth(240)
 input:SetHeight(20)
@@ -561,15 +561,15 @@ addBtn:SetHeight(20)
 addBtn:SetPoint("LEFT", input, "RIGHT", 10, 0)
 addBtn:SetText("添加")
 
--- Abilities dropdown (spellbook-based, non-passive)
+-- 技能下拉框（基于法术书，非被动）
 local abilityDropDown = CreateFrame("Frame", "DoiteAurasAbilityDropDown", frame, "UIDropDownMenuTemplate")
-abilityDropDown:SetPoint("TOPLEFT", input, "TOPLEFT", -23, 3) -- tuned to visually overlap input
+abilityDropDown:SetPoint("TOPLEFT", input, "TOPLEFT", -23, 3) -- 调整以视觉上重叠输入框
 UIDropDownMenu_Initialize(abilityDropDown, function() end)
 UIDropDownMenu_SetWidth(230, abilityDropDown)
 UIDropDownMenu_SetText("从下拉列表中选择", abilityDropDown)
 abilityDropDown:Hide()
 
--- Force the ability dropdown text to be left-aligned
+-- 强制技能下拉框文本左对齐
 local abilityText  = getglobal("DoiteAurasAbilityDropDownText")
 local abilityMiddle = getglobal("DoiteAurasAbilityDropDownMiddle")
 if abilityText then
@@ -582,15 +582,15 @@ if abilityText then
     abilityText:SetJustifyH("LEFT")
 end
 
--- Items dropdown
+-- 物品下拉框
 local itemDropDown = CreateFrame("Frame", "DoiteAurasItemDropDown", frame, "UIDropDownMenuTemplate")
-itemDropDown:SetPoint("TOPLEFT", input, "TOPLEFT", -23, 3) -- tuned to visually overlap input
+itemDropDown:SetPoint("TOPLEFT", input, "TOPLEFT", -23, 3) -- 调整以视觉上重叠输入框
 UIDropDownMenu_Initialize(itemDropDown, function() end)
 UIDropDownMenu_SetWidth(230, itemDropDown)
 UIDropDownMenu_SetText("从下拉列表中选择", itemDropDown)
 itemDropDown:Hide()
 
--- Force the item dropdown text to be left-aligned
+-- 强制物品下拉框文本左对齐
 local itemText  = getglobal("DoiteAurasItemDropDownText")
 local itemMiddle = getglobal("DoiteAurasItemDropDownMiddle")
 if itemText then
@@ -606,7 +606,7 @@ end
 local barDropDown = CreateFrame("Frame", "DoiteAurasBarDropDown", frame, "UIDropDownMenuTemplate")
 barDropDown:SetPoint("TOPLEFT", input, "TOPLEFT", -23, 3)
 
--- Populate Bars dropdown with static "coming soon" entries
+-- 用静态的“即将推出”条目填充 Bars 下拉框
 UIDropDownMenu_Initialize(barDropDown, function()
     local info
 
@@ -643,7 +643,7 @@ UIDropDownMenu_SetWidth(230, barDropDown)
 UIDropDownMenu_SetText("从下拉列表中选择", barDropDown)
 barDropDown:Hide()
 
--- Force the bar dropdown text to be left-aligned
+-- 强制 Bars 下拉框文本左对齐
 local barText  = getglobal("DoiteAurasBarDropDownText")
 local barMiddle = getglobal("DoiteAurasBarDropDownMiddle")
 if barText then
@@ -657,13 +657,13 @@ if barText then
 end
 
 -- =========================
--- Ability dropdown scanning (spellbook, non-passive)
+-- 技能下拉框扫描（法术书，非被动）
 -- =========================
 
--- Holds the current ability names shown in the dropdown
+-- 保存当前下拉框中显示的技能名称
 local DA_AbilityOptions = {}
 local DA_AbilityMenuOffset = 0
-local DA_ABILITY_PAGE_SIZE = 20  -- how many real entries per "page"
+local DA_ABILITY_PAGE_SIZE = 20  -- 每页显示的条目数
 
 local function DA_ClearAbilityOptions()
     local n = table.getn(DA_AbilityOptions)
@@ -685,7 +685,7 @@ local function DA_AddAbilityOption(name)
     DA_AbilityOptions[n + 1] = name
 end
 
--- Helper: close + reopen abilities dropdown on the next frame
+-- 辅助函数：在下一帧关闭并重新打开技能下拉框
 local function DA_RepageAbilityDropdown()
     if not abilityDropDown then return end
     local dd = abilityDropDown
@@ -709,17 +709,17 @@ local function DA_AbilityMenu_Initialize()
     local total = table.getn(DA_AbilityOptions)
     local info
 
-    -- Previous page button
+    -- 上一页按钮
     if DA_AbilityMenuOffset > 0 then
         info = {}
         info.text = "|cffffff00<< 上一页 <<|r"
         info.func = function()
-            -- Move one page up, clamped at 0
+            -- 向上翻一页，限制在 0
             local newOffset = DA_AbilityMenuOffset - DA_ABILITY_PAGE_SIZE
             if newOffset < 0 then newOffset = 0 end
             DA_AbilityMenuOffset = newOffset
 
-            -- Reopen dropdown with new page
+            -- 用新页面重新打开下拉框
             DA_RepageAbilityDropdown()
         end
         info.keepShownOnClick = 1
@@ -743,7 +743,7 @@ local function DA_AbilityMenu_Initialize()
         UIDropDownMenu_AddButton(info)
     end
 
-    -- Next page button
+    -- 下一页按钮
     if endIndex < total then
         info = {}
         info.text = "|cffffff00>> 下一页 >>|r"
@@ -767,6 +767,12 @@ local function DA_AbilityMenu_Initialize()
     end
 end
 
+-- 添加仍然可能导致冷却时间（值得跟踪）的被动技能
+local DA_AbilityDropdownPassiveAllow = {
+    ["Reincarnation"] = true,
+}
+_G["DA_AbilityDropdownPassiveAllow"] = DA_AbilityDropdownPassiveAllow
+
 local function DA_RebuildAbilityDropDown()
     if not abilityDropDown then return end
 
@@ -774,41 +780,49 @@ local function DA_RebuildAbilityDropDown()
 
     local seen = {}
 
-    -- linear scan over spellbook, filter passives by IsPassiveSpell + rank "Passive"
-    local i = 1
-    while true do
-        local name, rank = GetSpellName(i, BOOKTYPE_SPELL)
-        if not name then
-            break
-        end
+    local function scanBook(bookType)
+        local i = 1
+        while true do
+            local name, rank = GetSpellName(i, bookType)
+            if not name then
+                break
+            end
 
-        local isPassive = false
+            local isPassive = false
 
-        if IsPassiveSpell then
-            -- best-effort: use IsPassiveSpell if available (signature may differ)
-            local ok, passive = pcall(IsPassiveSpell, i, BOOKTYPE_SPELL)
-            if ok and passive then
+            if IsPassiveSpell then
+                -- 尽力而为：如果可用，使用 IsPassiveSpell（签名可能不同）
+                local ok, passive = pcall(IsPassiveSpell, i, bookType)
+                if ok and passive then
+                    isPassive = true
+                end
+            end
+
+            -- 备选：许多被动技能在等级字符串中有“Passive”
+            if (not isPassive) and rank and string.find(rank, "Passive") then
                 isPassive = true
             end
-        end
 
-        -- Fallback: many passives have "Passive" in the rank string
-        if (not isPassive) and rank and (string.find(rank, "Passive") or string.find(rank, "被动")) then
-            isPassive = true
-        end
+            if name and name ~= "" then
+                local lname = string.lower(name or "")
+                local allowPassive = (DA_AbilityDropdownPassiveAllow[name] == true)
 
-        if (not isPassive) and name ~= "" then
-            local lname = string.lower(name or "")
-            if not seen[lname] then
-                seen[lname] = true
-                DA_AddAbilityOption(name)
+                if ((not isPassive) or allowPassive) and not seen[lname] then
+                    seen[lname] = true
+                    DA_AddAbilityOption(name)
+                end
             end
-        end
 
-        i = i + 1
+            i = i + 1
+        end
     end
 
-    -- Sort 0–9 A–Z (case-insensitive; ties broken by original)
+    -- 玩家技能
+    scanBook(BOOKTYPE_SPELL)
+    -- 宠物技能（猎人/术士等）
+    scanBook(BOOKTYPE_PET)
+
+    -- 排序 0–9 A–Z（不区分大小写；相同时按原字符串排序）
     table.sort(DA_AbilityOptions, function(a, b)
         local la = string.lower(a or "")
         local lb = string.lower(b or "")
@@ -818,22 +832,22 @@ local function DA_RebuildAbilityDropDown()
         return la < lb
     end)
 
-    -- Reset paging to the top and hook custom initializer
+    -- 重置分页到顶部，并挂接自定义初始化器
     DA_AbilityMenuOffset = 0
     UIDropDownMenu_Initialize(abilityDropDown, DA_AbilityMenu_Initialize)
 
-    -- Reset shown text each time rebuild
+    -- 每次重建时重置显示的文本
     UIDropDownMenu_SetText("从下拉列表中选择", abilityDropDown)
 end
 
 -- =========================
--- Item dropdown scanning (bags + equipped)
+-- 物品下拉框扫描（背包 + 已装备）
 -- =========================
 
--- Holds the current item names shown in the dropdown
+-- 保存当前下拉框中显示的物品名称
 local DA_ItemOptions = {}
 local DA_ItemMenuOffset = 0
-local DA_ITEMMENU_PAGE_SIZE = 20  -- how many real entries per "page"
+local DA_ITEMMENU_PAGE_SIZE = 20  -- 每页显示的条目数
 
 local function DA_ClearItemOptions()
     local n = table.getn(DA_ItemOptions)
@@ -845,7 +859,7 @@ end
 
 local function DA_AddItemOption(name)
     if not name or name == "" then return end
-    -- avoid duplicates by plain name
+    -- 按纯名称去重
     local n = table.getn(DA_ItemOptions)
     local i
     for i = 1, n do
@@ -856,7 +870,7 @@ local function DA_AddItemOption(name)
     DA_ItemOptions[n + 1] = name
 end
 
--- Check current DoiteAurasTooltip for a line that looks like "Use..." or "consume..."
+-- 检查当前 DoiteAurasTooltip 中是否有类似“使用...”或“消耗...”的行
 local function DA_TooltipHasUseOrConsume()
     local i
     for i = 1, 15 do
@@ -865,7 +879,7 @@ local function DA_TooltipHasUseOrConsume()
             local txt = fs:GetText()
             if txt then
                 local lower = string.lower(txt)
-                if string.find(lower, "use:") or string.find(lower, "use ") or string.find(lower, "consume") or string.find(txt, "使用：") or string.find(txt, "消耗") then
+                if string.find(lower, "use:") or string.find(lower, "use ") or string.find(lower, "consume") then
                     return true
                 end
             end
@@ -874,9 +888,9 @@ local function DA_TooltipHasUseOrConsume()
     return false
 end
 
--- Scan equipped trinkets + weapons for usable / consumable effects
+-- 扫描已装备的饰品和武器中可用的/消耗性效果
 local function DA_ScanEquippedUsable()
-    -- Trinket1 (13), Trinket2 (14), Main hand (16), Off hand (17), Ranged/Wand (18)
+    -- 饰品1 (13), 饰品2 (14), 主手 (16), 副手 (17), 远程/魔杖 (18)
     local slots = { 13, 14, 16, 17, 18 }
     local i
     for i = 1, table.getn(slots) do
@@ -894,7 +908,7 @@ local function DA_ScanEquippedUsable()
     end
 end
 
--- Scan all bags (0 = backpack, 1–4 = bag slots) for usable / consumable items
+-- 扫描所有背包（0 = 背包，1–4 = 背包栏）中可用的/消耗性物品
 local function DA_ScanBagUsable()
     if not GetContainerNumSlots or not GetContainerItemLink then return end
 
@@ -919,13 +933,13 @@ local function DA_ScanBagUsable()
     end
 end
 
--- Find the icon texture for a specific item name (case-insensitive)
+-- 查找特定物品名称的图标纹理（不区分大小写）
 local function DA_FindItemTextureByName(itemName)
     if not itemName or itemName == "" then return nil end
 
     local target = string.lower(itemName)
 
-    -- 1) Equipped trinkets + weapons (13,14,16,17,18)
+    -- 1) 已装备的饰品和武器 (13,14,16,17,18)
     local slots = { 13, 14, 16, 17, 18 }
     local i
     for i = 1, table.getn(slots) do
@@ -945,7 +959,7 @@ local function DA_FindItemTextureByName(itemName)
         end
     end
 
-    -- 2) Bags (0–4)
+    -- 2) 背包 (0–4)
     if not GetContainerNumSlots or not GetContainerItemLink or not GetContainerItemInfo then
         return nil
     end
@@ -974,7 +988,7 @@ local function DA_FindItemTextureByName(itemName)
     return nil
 end
 
--- Helper: close + reopen dropdown on the next frame
+-- 辅助函数：在下一帧关闭并重新打开下拉框
 local function DA_RepageItemDropdown()
     if not itemDropDown then return end
     local dd = itemDropDown
@@ -998,20 +1012,20 @@ local function DA_ItemMenu_Initialize()
     local total = table.getn(DA_ItemOptions)
     local info
 
-    -- Previous page button
+    -- 上一页按钮
     if DA_ItemMenuOffset > 0 then
         info = {}
         info.text = "|cffffff00<< 上一页 <<|r"
         info.func = function()
-            -- Move one page up, clamped at 0
+            -- 向上翻一页，限制在 0
             local newOffset = DA_ItemMenuOffset - DA_ITEMMENU_PAGE_SIZE
             if newOffset < 0 then newOffset = 0 end
             DA_ItemMenuOffset = newOffset
 
-            -- Reopen dropdown with new page
+            -- 用新页面重新打开下拉框
             DA_RepageItemDropdown()
         end
-        -- pager rows are not real options: no check, no radio, stay non-selected
+        -- 分页行不是真正的选项：无复选，无单选，保持未选中状态
         info.keepShownOnClick = 1
         info.notCheckable     = 1
         info.isNotRadio       = 1
@@ -1030,11 +1044,11 @@ local function DA_ItemMenu_Initialize()
         info.func = function()
             UIDropDownMenu_SetText(caption, itemDropDown)
         end
-        -- normal entries: default behaviour (select + close)
+        -- 正常条目：默认行为（选择+关闭）
         UIDropDownMenu_AddButton(info)
     end
 
-    -- Next page button
+    -- 下一页按钮
     if endIndex < total then
         info = {}
         info.text = "|cffffff00>> 下一页 >>|r"
@@ -1062,16 +1076,16 @@ end
 local function DA_RebuildItemDropDown()
     if not itemDropDown then return end
 
-    -- constants for headers to keep them consistent everywhere
+    -- 常量，用于保持各处一致的标题
     local HEADER_TRINKETS = "---已装备的饰品栏位---"
     local HEADER_WEAPONS  = "---已装备的武器栏位---"
 
-    -- 1) Gather raw items into DA_ItemOptions via scans
+    -- 1) 通过扫描将原始物品收集到 DA_ItemOptions
     DA_ClearItemOptions()
     DA_ScanEquippedUsable()
     DA_ScanBagUsable()
 
-    -- 2) Split out and dedupe, then sort the real items
+    -- 2) 分离并去重，然后对真实物品排序
     local seen  = {}
     local items = {}
     local i
@@ -1080,7 +1094,7 @@ local function DA_RebuildItemDropDown()
         if nm and nm ~= "" then
             if not seen[nm] then
                 seen[nm] = true
-                -- headers are added separately, so skip them here
+                -- 标题单独添加，因此这里跳过
                 if nm ~= HEADER_TRINKETS and nm ~= HEADER_WEAPONS then
                     table.insert(items, nm)
                 end
@@ -1097,8 +1111,8 @@ local function DA_RebuildItemDropDown()
         return la < lb
     end)
 
-    -- 3) Rebuild DA_ItemOptions in final display order:
-    --    headers first, then sorted items
+    -- 3) 按最终显示顺序重建 DA_ItemOptions：
+    --    先标题，然后排序后的物品
     DA_ClearItemOptions()
     DA_AddItemOption(HEADER_TRINKETS)
     DA_AddItemOption(HEADER_WEAPONS)
@@ -1106,15 +1120,15 @@ local function DA_RebuildItemDropDown()
         DA_AddItemOption(items[i])
     end
 
-    -- 4) Reset paging to the top and hookcustom initializer
+    -- 4) 重置分页到顶部，并挂接自定义初始化器
     DA_ItemMenuOffset = 0
     UIDropDownMenu_Initialize(itemDropDown, DA_ItemMenu_Initialize)
 
-    -- Reset shown text each time
+    -- 每次重置显示的文本
     UIDropDownMenu_SetText("从下拉列表中选择", itemDropDown)
 end
 
--- Helper to read current dropdown text
+-- 辅助函数：读取当前下拉框文本
 local function DA_GetDropDownText(dd)
     if not dd or not dd.GetName then return nil end
     local n = dd:GetName()
@@ -1126,25 +1140,25 @@ local function DA_GetDropDownText(dd)
     return nil
 end
 
--- Type selector checkboxes
+-- 类型选择复选框
 local currentType = "Ability"
 local abilityCB, buffCB, debuffCB, itemsCB, barsCB, customCB
 
 local function DA_UpdateTypeUI()
     if currentType == "Ability" then
-        -- Abilities: use dropdown populated from spellbook (non-passive)
+        -- 技能：使用从法术书填充的下拉框（非被动）
         intro:SetText("从下拉列表中选择技能（来自法术书）。")
         input:Hide()
         if abilityDropDown then
             abilityDropDown:Show()
-            -- Text is set/reset by DA_RebuildAbilityDropDown when needed
+            -- 文本由 DA_RebuildAbilityDropDown 在需要时设置/重置
         end
         if itemDropDown then itemDropDown:Hide() end
         if barDropDown  then barDropDown:Hide()  end
         if addBtn then addBtn:Enable() end
 
     elseif currentType == "Buff" or currentType == "Debuff" then
-        -- Buffs/Debuffs: manual text input
+        -- 增益/减益：手动文本输入
         intro:SetText("输入名称（通用名称匹配）或通过法术 ID（唯一）添加：")
         input:Show()
         if abilityDropDown then abilityDropDown:Hide() end
@@ -1205,7 +1219,7 @@ debuffCB.text = debuffCB:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 debuffCB.text:SetPoint("LEFT", debuffCB, "RIGHT", 2, 0)
 debuffCB.text:SetText("减益")
 
--- Items checkbox
+-- 物品复选框
 itemsCB = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
 itemsCB:SetWidth(20); itemsCB:SetHeight(20)
 itemsCB:SetPoint("TOPLEFT", input, "BOTTOMLEFT", 177, -3)
@@ -1213,7 +1227,7 @@ itemsCB.text = itemsCB:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 itemsCB.text:SetPoint("LEFT", itemsCB, "RIGHT", 2, 0)
 itemsCB.text:SetText("物品")
 
--- Bars checkbox (to the right of Items)
+-- 条复选框（在物品右侧）
 barsCB = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
 barsCB:SetWidth(20); barsCB:SetHeight(20)
 barsCB:SetPoint("TOPLEFT", input, "BOTTOMLEFT", 230, -3)
@@ -1221,7 +1235,7 @@ barsCB.text = barsCB:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 barsCB.text:SetPoint("LEFT", barsCB, "RIGHT", 2, 0)
 barsCB.text:SetText("条")
 
--- Custom checkbox (to the right of Bars)
+-- 自定义复选框（在条右侧）
 customCB = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
 customCB:SetWidth(20); customCB:SetHeight(20)
 customCB:SetPoint("TOPLEFT", input, "BOTTOMLEFT", 275, -3)
@@ -1241,7 +1255,7 @@ abilityCB:SetScript("OnClick", function()
     if customCB then customCB:SetChecked(false) end
     currentType = "Ability"
     DA_UpdateTypeUI()
-    -- Re-scan spellbook each time Abilities is (re)selected (for quick respecs)
+    -- 每次（重新）选择技能时重新扫描法术书（用于快速洗天赋）
     if DA_RebuildAbilityDropDown then
         DA_RebuildAbilityDropDown()
     end
@@ -1280,7 +1294,7 @@ itemsCB:SetScript("OnClick", function()
     if DoiteAuras_RefreshList then pcall(DoiteAuras_RefreshList) end
 
     if not itemsCB:GetChecked() then
-        -- prevent "nothing selected": keep it checked if Item is current
+        -- 防止“未选择任何项”：如果当前类型是物品，则保持选中
         if currentType == "Item" then
             itemsCB:SetChecked(true)
             return
@@ -1297,7 +1311,7 @@ itemsCB:SetScript("OnClick", function()
     currentType = "Item"
     DA_UpdateTypeUI()
 
-    -- Build / refresh the dropdown from bags + equipped items
+    -- 从背包和已装备物品构建/刷新下拉框
     DA_RebuildItemDropDown()
 end)
 
@@ -1352,7 +1366,7 @@ frame:SetScript("OnShow", function()
     if customCB then customCB:SetChecked(false) end
     currentType = "Ability"
     DA_UpdateTypeUI()
-    -- On open (/da or minimap), rebuild the ability dropdown from the current spellbook
+    -- 打开（/da 或小地图）时，从当前法术书重建技能下拉框
     if DA_RebuildAbilityDropDown then
         DA_RebuildAbilityDropDown()
     end
@@ -1364,7 +1378,7 @@ end)
 frame:SetScript("OnHide", function()
     DA_CancelRename()
 
-    -- Force-close Import / Export / Settings windows when the main DoiteAuras frame is hidden
+    -- 当主 DoiteAuras 框架隐藏时，强制关闭导入/导出/设置窗口
     local f
 
     f = _G["DoiteAurasImportFrame"]
@@ -1377,7 +1391,7 @@ frame:SetScript("OnHide", function()
     if f and f.Hide then f:Hide() end
 end)
 
--- Scrollable container
+-- 可滚动容器
 local listContainer = CreateFrame("Frame", nil, frame)
 listContainer:SetWidth(330)
 listContainer:SetHeight(260)
@@ -1389,7 +1403,7 @@ listContainer:SetBackdrop({
 listContainer:SetBackdropColor(0,0,0,0.7)
 
 local scrollFrame = CreateFrame("ScrollFrame", "DoiteAurasScroll", listContainer, "UIPanelScrollFrameTemplate")
--- Slightly wider & closer to the border so it feels less "inset"
+-- 稍宽并更靠近边框，使其感觉不那么“内凹”
 scrollFrame:SetWidth(320)
 scrollFrame:SetHeight(250)
 scrollFrame:SetPoint("TOPLEFT", listContainer, "TOPLEFT", 5, -5)
@@ -1399,7 +1413,7 @@ listContent:SetWidth(320)
 listContent:SetHeight(252)
 scrollFrame:SetScrollChild(listContent)
 
--- Test All button (toggle)
+-- 全部测试按钮（切换）
 local testAllBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 testAllBtn:SetWidth(80)
 testAllBtn:SetHeight(18)
@@ -1435,7 +1449,7 @@ end)
 
 _DA_UpdateTestAllButton()
 
--- Guide text
+-- 指南文本
 local guide = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
 guide:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 20, 20)
 guide:SetWidth(345)
@@ -1443,7 +1457,7 @@ guide:SetJustifyH("LEFT")
 if guide.SetTextColor then guide:SetTextColor(0.7,0.7,0.7) end
 guide:SetText("指南：DoiteAuras 仅在你真正需要时显示重要的内容——技能、增益、减益、物品或条状元素。添加一个图标或条，选择其类型，并使用简单的条件（如冷却时间、光环状态、战斗状态或目标）定义其出现时机。所有内容都会自动更新，一旦见过便会记住纹理，保持你的界面整洁且响应迅速。")
 
--- storage
+-- 存储
 local spellButtons, icons, groupHeaders = {}, {}, {}
 renameState = {
     key = nil,
@@ -1615,7 +1629,7 @@ function DoiteAuras_GetIconFrame(key)
     return f
 end
 
--- Helpers
+-- 辅助函数
 local function GetOrderedSpells()
     local list = {}
     for key, data in pairs(DoiteAurasDB.spells) do
@@ -1625,7 +1639,7 @@ local function GetOrderedSpells()
     return list
 end
 
--- One shared comparator
+-- 一个共享的比较器
 if DoiteAuras and not DoiteAuras._cmpSpellKeyByOrder then
     DoiteAuras._cmpSpellKeyByOrder = function(a, b)
         local da = DoiteAurasDB.spells[a]
@@ -1636,7 +1650,7 @@ if DoiteAuras and not DoiteAuras._cmpSpellKeyByOrder then
     end
 end
 
--- small helpers for group-aware list building and movement
+-- 用于组感知列表构建和移动的小辅助函数
 local function DA_IsGrouped(data)
     if not data then return false end
     if not data.group or data.group == "" or data.group == "no" then return false end
@@ -1653,15 +1667,15 @@ local function DA_ParseGroupIndex(groupName)
     return 9999
 end
 
--- category helper for ungrouped icons (shared with DoiteEdit)
+-- 未分组图标的类别辅助函数（与 DoiteEdit 共享）
 local function DA_GetCategoryForEntry(entry)
     if not entry or not entry.data then return nil end
     local d = entry.data
 
-    -- Prefer category stored on the DoiteAuras spell data itself
+    -- 优先使用 DoiteAuras 法术数据本身存储的类别
     local cat = d.category
 
-    -- Fallback: look at legacy DoiteDB.icons if present
+    -- 备选：如果存在，查看遗留的 DoiteDB.icons
     if (not cat or cat == "" or cat == "no") and DoiteDB and DoiteDB.icons and DoiteDB.icons[entry.key] then
         cat = DoiteDB.icons[entry.key].category
     end
@@ -1672,7 +1686,7 @@ local function DA_GetCategoryForEntry(entry)
     return nil
 end
 
--- Per-group sort mode helper ("prio" or "time", default "prio")
+-- 每组排序模式辅助函数（"prio" 或 "time"，默认为 "prio"）
 local function DA_GetGroupSortMode(groupName)
     if not DoiteAurasDB then DoiteAurasDB = {} end
     DoiteAurasDB.groupSort = DoiteAurasDB.groupSort or {}
@@ -1689,7 +1703,7 @@ local function DA_GetGroupSortMode(groupName)
     return mode
 end
 
--- Shared helpers for per-bucket Disable (groups, categories, ungrouped)
+-- 每桶（组、类别、未分组）禁用的共享辅助函数
 local function DA_GetBucketKeyForHeaderEntry(entry)
     if not entry then return nil end
     if entry.kind == "group" then
@@ -1706,19 +1720,19 @@ local function DA_GetBucketKeyForCandidate(entry)
     if not entry or not entry.data then return nil end
     local d = entry.data
 
-    -- Grouped entries: bucket is the group name.
+    -- 已分组的条目：桶是组名。
     if DA_IsGrouped(d) then
         return d.group
     end
 
-    -- Ungrouped: use the same category logic as DA_BuildDisplayList.
+    -- 未分组：使用与 DA_BuildDisplayList 相同的类别逻辑。
     local dummy = { key = entry.key, data = d }
     local cat = DA_GetCategoryForEntry(dummy)
     if cat and cat ~= "" then
         return cat
     end
 
-    -- Plain ungrouped
+    -- 纯未分组
     return "Ungrouped"
 end
 
@@ -1728,7 +1742,7 @@ local function DA_IsBucketDisabled(bucketKey)
     return DoiteAurasDB.bucketDisabled[bucketKey] == true
 end
 
--- Accordion collapse helpers
+-- 手风琴折叠辅助函数
 local function DA_IsBucketCollapsed(bucketKey)
     if not bucketKey then return false end
     DoiteAurasDB.bucketCollapsed = DoiteAurasDB.bucketCollapsed or {}
@@ -1750,7 +1764,7 @@ local function DoiteAuras_IsKeyDisabled(key)
     local data = DoiteAurasDB.spells[key]
     if not data then return false end
 
-    -- Reuse existing bucket logic
+    -- 重用现有桶逻辑
     local entry = { key = key, data = data }
     local bucketKey = DA_GetBucketKeyForCandidate(entry)
     if not bucketKey then return false end
@@ -1778,7 +1792,7 @@ local function DA_BuildDisplayList(ordered)
             end
             table.insert(groupedByName[g], entry)
         else
-            -- Ungrouped: split into categories vs plain ungrouped
+            -- 未分组：拆分为类别和纯未分组
             local cat = DA_GetCategoryForEntry(entry)
             if cat then
                 if not categorizedByName[cat] then
@@ -1792,7 +1806,7 @@ local function DA_BuildDisplayList(ordered)
         end
     end
 
-    -- sort groups by "Group N" numeric index when possible, otherwise by name
+    -- 尽可能按 "Group N" 数字索引排序组，否则按名称
     table.sort(groupOrderList, function(a, b)
         local ia = DA_ParseGroupIndex(a)
         local ib = DA_ParseGroupIndex(b)
@@ -1802,7 +1816,7 @@ local function DA_BuildDisplayList(ordered)
         return tostring(a or "") < tostring(b or "")
     end)
 
-    -- sort categories in 0–9 A–Z order (case-insensitive)
+    -- 按 0–9 A–Z 顺序排序类别（不区分大小写）
     table.sort(categoryOrderList, function(a, b)
         local la = string.lower(a or "")
         local lb = string.lower(b or "")
@@ -1812,7 +1826,7 @@ local function DA_BuildDisplayList(ordered)
         return la < lb
     end)
 
-    -- Stamp per-bucket index/total for category + ungrouped
+    -- 为类别 + 未分组打上每桶索引/总数
     local _, catName
     for _, catName in ipairs(categoryOrderList) do
         local list = categorizedByName[catName]
@@ -1840,56 +1854,56 @@ local function DA_BuildDisplayList(ordered)
     local display = {}
 
     local _, groupName
-	for _, groupName in ipairs(groupOrderList) do
-		table.insert(display, { isHeader = true, groupName = groupName, kind = "group" })
+    for _, groupName in ipairs(groupOrderList) do
+        table.insert(display, { isHeader = true, groupName = groupName, kind = "group" })
 
-		-- Accordion: only add members when not collapsed
-		if not DA_IsBucketCollapsed(groupName) then
-			local list = groupedByName[groupName]
-			local j
-			for j = 1, table.getn(list) do
-				table.insert(display, list[j])
-			end
-		end
-	end
+        -- 手风琴：仅当未折叠时才添加成员
+        if not DA_IsBucketCollapsed(groupName) then
+            local list = groupedByName[groupName]
+            local j
+            for j = 1, table.getn(list) do
+                table.insert(display, list[j])
+            end
+        end
+    end
 
-	for _, catName in ipairs(categoryOrderList) do
-		table.insert(display, { isHeader = true, groupName = catName, kind = "category" })
+    for _, catName in ipairs(categoryOrderList) do
+        table.insert(display, { isHeader = true, groupName = catName, kind = "category" })
 
-		-- Accordion: only add members when not collapsed
-		if not DA_IsBucketCollapsed(catName) then
-			local list = categorizedByName[catName]
-			local j
-			for j = 1, table.getn(list) do
-				table.insert(display, list[j])
-			end
-		end
-	end
+        -- 手风琴：仅当未折叠时才添加成员
+        if not DA_IsBucketCollapsed(catName) then
+            local list = categorizedByName[catName]
+            local j
+            for j = 1, table.getn(list) do
+                table.insert(display, list[j])
+            end
+        end
+    end
 
     local showUngroupedHeader = false
     if unTotal > 0 and (table.getn(groupOrderList) > 0 or table.getn(categoryOrderList) > 0) then
         showUngroupedHeader = true
     end
 
-	if showUngroupedHeader then
-		table.insert(display, { isHeader = true, groupName = "未分组/未分类", kind = "ungrouped" })
-	end
+    if showUngroupedHeader then
+        table.insert(display, { isHeader = true, groupName = "未分组/未分类", kind = "ungrouped" })
+    end
 
-	-- Accordion key for ungrouped bucket
-	local unKey = "Ungrouped"
+    -- 未分组桶的手风琴键
+    local unKey = "Ungrouped"
 
-	-- Only add ungrouped entries when not collapsed
-	if not (showUngroupedHeader and DA_IsBucketCollapsed(unKey)) then
-		local j
-		for j = 1, unTotal do
-			table.insert(display, ungrouped[j])
-		end
-	end
+    -- 仅当未折叠时才添加未分组条目
+    if not (showUngroupedHeader and DA_IsBucketCollapsed(unKey)) then
+        local j
+        for j = 1, unTotal do
+            table.insert(display, ungrouped[j])
+        end
+    end
 
     return display
 end
 
--- Move an entry within its group only; returns true if a swap occurred
+-- 仅在其组内移动条目；如果发生交换则返回 true
 local function DA_MoveOrderWithinGroup(key, direction)
     local data = DoiteAurasDB.spells[key]
     if not DA_IsGrouped(data) then return false end
@@ -1899,7 +1913,7 @@ local function DA_MoveOrderWithinGroup(key, direction)
     local groupMembers = {}
     local i
 
-    -- Collect all members of this group in order[]
+    -- 按 order[] 收集该组的所有成员
     for i = 1, table.getn(ordered) do
         local e = ordered[i]
         if e.data and e.data.group == grp then
@@ -1918,7 +1932,7 @@ local function DA_MoveOrderWithinGroup(key, direction)
     if not idx then return false end
 
     if direction == "up" then
-        -- move towards the start of the group
+        -- 向组的开始移动
         if idx <= 1 then return false end
         local swapKey = groupMembers[idx - 1].key
         local tmp = DoiteAurasDB.spells[key].order
@@ -1927,7 +1941,7 @@ local function DA_MoveOrderWithinGroup(key, direction)
         return true
 
     elseif direction == "down" then
-        -- move towards the end of the group
+        -- 向组的结束移动
         if idx >= n then return false end
         local swapKey = groupMembers[idx + 1].key
         local tmp = DoiteAurasDB.spells[key].order
@@ -1939,13 +1953,13 @@ local function DA_MoveOrderWithinGroup(key, direction)
     return false
 end
 
--- Move an ungrouped entry within its category bucket (or plain Ungrouped) only
+-- 仅在其类别桶（或纯未分组）内移动未分组条目
 local function DA_MoveOrderWithinCategoryOrUngrouped(key, direction)
     if not key then return false end
     local data = DoiteAurasDB.spells[key]
     if not data or DA_IsGrouped(data) then return false end
 
-    -- Determine this entry's bucket name: its category or "Ungrouped"
+    -- 确定此条目的桶名称：其类别或 "Ungrouped"
     local dummyEntry = { key = key, data = data }
     local cat = DA_GetCategoryForEntry(dummyEntry)
     local bucketName = cat or "Ungrouped"
@@ -1954,7 +1968,7 @@ local function DA_MoveOrderWithinCategoryOrUngrouped(key, direction)
     local bucket = {}
     local i
 
-    -- Collect all ungrouped entries that share the same bucket
+    -- 收集所有共享同一桶的未分组条目
     for i = 1, table.getn(ordered) do
         local e = ordered[i]
         local d = e.data
@@ -1996,7 +2010,7 @@ local function DA_MoveOrderWithinCategoryOrUngrouped(key, direction)
     return false
 end
 
--- Throttle RefreshIcons() to avoid recursive layout overrides
+-- 限制 RefreshIcons() 以避免递归布局覆盖
 local _lastRefresh = 0
 local function _CanRunRefresh()
     local now = GetTime and GetTime() or 0
@@ -2013,15 +2027,18 @@ end
 local function FindSpellBookSlot(spellName)
     if not spellName or spellName == "" then return nil end
 
-    -- Prefer Nampower fast lookup when available
+    -- 当可用时，优先使用 Nampower 快速查找
     if type(GetSpellSlotTypeIdForName) == "function" then
         local ok, slot, bookType = pcall(GetSpellSlotTypeIdForName, spellName)
         if ok and slot and slot > 0 and (bookType == "spell" or bookType == "pet" or bookType == "unknown") then
-            return slot
+            if bookType == "pet" then
+                return slot, BOOKTYPE_PET
+            end
+            return slot, BOOKTYPE_SPELL
         end
     end
 
-    -- Fallback: legacy full spellbook scan (should almost never run with Nampower present)
+    -- 备选：旧版完整法术书扫描（有 Nampower 时几乎不会运行）
     if not GetNumSpellTabs or not GetSpellTabInfo or not GetSpellName then
         return nil
     end
@@ -2033,19 +2050,31 @@ local function FindSpellBookSlot(spellName)
                 local idx  = offset + i
                 local name = GetSpellName(idx, BOOKTYPE_SPELL)
                 if name == spellName then
-                    return idx
+                    return idx, BOOKTYPE_SPELL
                 end
             end
         end
     end
+
+    -- 备选宠物法术书扫描
+    local p = 1
+    while true do
+        local name = GetSpellName(p, BOOKTYPE_PET)
+        if not name then break end
+        if name == spellName then
+            return p, BOOKTYPE_PET
+        end
+        p = p + 1
+    end
+
     return nil
 end
 
--- Helper: Use item by name scanning bags/inventory
+-- 辅助函数：按名称使用物品，扫描背包/装备栏
 local function DA_UseItemByName(itemName)
     if not itemName or itemName == "" then return end
 
-    -- Check bags 0-4
+    -- 检查背包 0-4
     for bag = 0, 4 do
         local slots = GetContainerNumSlots(bag)
         if slots and slots > 0 then
@@ -2064,8 +2093,8 @@ local function DA_UseItemByName(itemName)
         end
     end
 
-    -- Check equipped inventory (e.g. trinkets)
-    -- Slots 0-19 covers all equipment
+    -- 检查已装备的装备（例如饰品）
+    -- 槽位 0-19 覆盖所有装备
     for slot = 0, 19 do
         local link = GetInventoryItemLink("player", slot)
         if link then
@@ -2084,7 +2113,7 @@ end
 local function DA_ShowDetailedItemTooltip(frame, itemName)
     if not itemName or itemName == "" then return end
 
-    -- Smart anchor: pick a direction that keeps the tooltip on-screen
+    -- 智能锚点：选择一个方向使工具提示保持在屏幕上
     local anchor = "ANCHOR_RIGHT"
     if frame.GetCenter and UIParent.GetWidth then
         local cx, cy = frame:GetCenter()
@@ -2105,7 +2134,7 @@ local function DA_ShowDetailedItemTooltip(frame, itemName)
 
     GameTooltip:SetOwner(frame, anchor)
 
-    -- 1) Scan equipped inventory
+    -- 1) 扫描已装备的装备栏
     for slot = 0, 19 do
         local link = GetInventoryItemLink("player", slot)
         if link then
@@ -2118,7 +2147,7 @@ local function DA_ShowDetailedItemTooltip(frame, itemName)
         end
     end
 
-    -- 2) Scan bags
+    -- 2) 扫描背包
     for bag = 0, 4 do
         local slots = GetContainerNumSlots(bag)
         if slots and slots > 0 then
@@ -2136,7 +2165,7 @@ local function DA_ShowDetailedItemTooltip(frame, itemName)
         end
     end
 
-    -- 3) Fallback to basic info if item not currently held
+    -- 3) 如果物品当前未持有，回退到基本信息
     local _, link = GetItemInfo(itemName)
     if link then
         GameTooltip:SetHyperlink(link)
@@ -2146,54 +2175,54 @@ local function DA_ShowDetailedItemTooltip(frame, itemName)
     GameTooltip:Show()
 end
 
--- Create or update icon *structure only* (no positioning or texture changes here)
+-- 创建或更新图标 *仅结构*（此处不进行定位或纹理更改）
 local function CreateOrUpdateIcon(key, layer)
     local globalName = "DoiteIcon_" .. key
     local f = _G[globalName]
     if not f then
         f = CreateFrame("Button", globalName, UIParent)
         f:SetFrameStrata("MEDIUM")
-        -- default size; actual sizing applied in RefreshIcons
+        -- 默认尺寸；实际尺寸在 RefreshIcons 中应用
         f:SetWidth(36)
         f:SetHeight(36)
-        f:EnableMouse(false)  -- Will be enabled when editing this icon
-        f:SetMovable(true)    -- Allow movement when dragged
+        f:EnableMouse(false)  -- 编辑此图标时将启用
+        f:SetMovable(true)    -- 拖动时允许移动
         f:RegisterForDrag("LeftButton")
         f:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
-        -- icon texture (created once)
+        -- 图标纹理（创建一次）
         f.icon = f:CreateTexture(nil, "BACKGROUND")
         f.icon:SetAllPoints(f)
 
-        -- Apply pfUI border if enabled
+        -- 如果启用，应用 pfUI 边框
         if DoiteAurasDB.pfuiBorder then
             DA_ApplyPfUIBorder(f)
         end
 
-        -- optional count text (created once)
+        -- 可选计数文本（创建一次）
         local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         fs:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -2, 2)
         fs:SetText("")
         f.count = fs
 
-        -- Store key for drag handlers
+        -- 为拖动处理程序存储键
         f._daKey = key
 
-        -- Drag start handler (only active in edit mode)
+        -- 拖动开始处理程序（仅在编辑模式下活动）
         f:SetScript("OnDragStart", function()
             local frameKey = this._daKey
             local editKey = _G["DoiteEdit_CurrentKey"]
 
-            -- Only allow drag if this icon is being edited
+            -- 仅当此图标正在被编辑时才允许拖动
             if not editKey or editKey ~= frameKey then
                 return
             end
 
-            -- Check if this is a group member (non-leader) - don't allow drag
+            -- 检查这是否是组成员（非组长）- 不允许拖动
             local data = DoiteAurasDB and DoiteAurasDB.spells and DoiteAurasDB.spells[frameKey]
             if data and data.group and data.group ~= "" and data.group ~= "No" then
                 if not data.isLeader then
-                    -- Show tooltip hint instead of dragging
+                    -- 显示工具提示提示而不是拖动
                     GameTooltip:SetOwner(this, "ANCHOR_TOP")
                     GameTooltip:AddLine("拖动组组长来移动此组", 1, 0.8, 0)
                     GameTooltip:Show()
@@ -2201,13 +2230,13 @@ local function CreateOrUpdateIcon(key, layer)
                 end
             end
 
-            -- Start dragging (MoveAnything style: plain StartMoving + flag)
+            -- 开始拖动（MoveAnything 风格：纯 StartMoving + 标志）
             _G["DoiteUI_Dragging"] = true
             this:StartMoving()
             this._daDragging = true
         end)
 
-        -- Drag stop handler
+        -- 拖动停止处理程序
         f:SetScript("OnDragStop", function()
             this:StopMovingOrSizing()
             this._daDragging = nil
@@ -2216,31 +2245,31 @@ local function CreateOrUpdateIcon(key, layer)
 
             local frameKey = this._daKey
 
-            -- Only save if valid key
+            -- 仅在有效键时保存
             if not frameKey then return end
 
-            -- MoveAnything Coordinate Formula:
-            -- Precise deviation from screen center, normalized to frame scale.
+            -- MoveAnything 坐标公式：
+            -- 精确的屏幕中心偏差，按框架缩放归一化。
 
-            -- 1. Screen Center (Reference)
+            -- 1. 屏幕中心（参考）
             local rScale = UIParent:GetEffectiveScale()
             local rX, rY = UIParent:GetCenter()
             rX, rY = rX * rScale, rY * rScale
 
-            -- 2. Frame Center (Target)
+            -- 2. 框架中心（目标）
             local pScale = this:GetEffectiveScale()
             local pX, pY = this:GetCenter()
             pX, pY = pX * pScale, pY * pScale
 
-            -- 3. Offset = (Frame - Screen) / FrameScale
+            -- 3. 偏移量 = (框架 - 屏幕) / 框架缩放
             local x = (pX - rX) / pScale
             local y = (pY - rY) / pScale
 
-            -- Round for cleaner DB
+            -- 四舍五入以使数据库更整洁
             x = math.floor(x * 10 + 0.5) / 10
             y = math.floor(y * 10 + 0.5) / 10
 
-            -- Update DB
+            -- 更新数据库
             local data = DoiteAurasDB and DoiteAurasDB.spells and DoiteAurasDB.spells[frameKey]
             if data then
                 data.point = "CENTER"
@@ -2249,7 +2278,7 @@ local function CreateOrUpdateIcon(key, layer)
                 data.offsetY = y
             end
 
-            -- Sync sliders
+            -- 同步滑块
             if DoiteEdit_SyncSlidersToPosition then
                 DoiteEdit_SyncSlidersToPosition(frameKey, x, y)
             end
@@ -2258,14 +2287,14 @@ local function CreateOrUpdateIcon(key, layer)
                 DoiteEdit_FlushHeavy()
             end
 
-            -- Force group layout re-calc so followers snap to new leader pos immediately
+            -- 强制重新计算组布局，以便追随者立即捕捉到新组长位置
             if DoiteGroup and DoiteGroup.RequestReflow then
                 DoiteGroup.RequestReflow()
             end
         end)
     end
 
-    -- Wrap Show() exactly once so bucket Disable always wins
+    -- 精确包装 Show() 一次，使桶禁用始终胜出
     if not f._daOrigShow then
         f._daOrigShow = f.Show
         f._daOrigHide = f.Hide
@@ -2277,7 +2306,7 @@ local function CreateOrUpdateIcon(key, layer)
             end
 
             if blocked then
-                -- Force hidden even if someone tries to show it
+                -- 即使有人试图显示，也强制隐藏
                 if self._daOrigHide then
                     self._daOrigHide(self)
                 else
@@ -2292,7 +2321,7 @@ local function CreateOrUpdateIcon(key, layer)
         end
     end
 
-    -- Enable mouse only when this icon is being edited
+    -- 仅当此图标正在被编辑时才启用鼠标
     local editKey = _G["DoiteEdit_CurrentKey"]
     if editKey and editKey == key then
         f:EnableMouse(true)
@@ -2300,27 +2329,27 @@ local function CreateOrUpdateIcon(key, layer)
         f:EnableMouse(false)
     end
 
-    -- cache locally as before
+    -- 本地缓存
     icons[key] = f
     if layer then f:SetFrameLevel(layer) end
 
     return f
 end
 
--- Refresh icons (group-aware)
--- Lightweight initialization of defaults (simplified from DoiteEdit EnsureDBEntry)
--- Ensures that critical data structures (like conditions tables) exist on startup
+-- 刷新图标（组感知）
+-- 默认值的轻量级初始化（简化自 DoiteEdit EnsureDBEntry）
+-- 确保关键数据结构（如条件表）在启动时存在
 local function EnsureDefaults(key)
     if not DoiteAurasDB.spells[key] then return end
     local d = DoiteAurasDB.spells[key]
 
-    -- Structure must exist
+    -- 结构必须存在
     if not d.conditions then d.conditions = {} end
 
     if d.type == "Item" then
         if not d.conditions.item then d.conditions.item = {} end
-        -- Note: Don't force 'clickable' to true here, respect the saved value (or nil).
-        -- Just ensure the TABLE exists so checks like 'd.conditions.item.clickable' don't crash or fail logic.
+        -- 注意：不要强制将 'clickable' 设为 true，尊重保存的值（或 nil）。
+        -- 仅确保表存在，以便检查如 'd.conditions.item.clickable' 不会崩溃或使逻辑失败。
     elseif d.type == "Ability" then
         if not d.conditions.ability then d.conditions.ability = {} end
     end
@@ -2328,7 +2357,7 @@ end
 
 local function RefreshIcons(force)
     if DA_IsHardDisabled() then
-        -- Make sure all existing icon frames stay hidden
+        -- 确保所有现有图标框架保持隐藏
         if icons then
             for _, f in pairs(icons) do
                 if f and f.Hide then f:Hide() end
@@ -2338,12 +2367,12 @@ local function RefreshIcons(force)
     end
     if not _CanRunRefresh(force) then return end
 
-    -- While editing, force the edited key visible so it always shows reliably.
+    -- 编辑时，强制被编辑的键可见，以便始终可靠显示。
     local editKey   = _G["DoiteEdit_CurrentKey"]
     local editFrame = _G["DoiteEdit_Frame"] or _G["DoiteEditMain"] or _G["DoiteEdit"]
     local editOpen  = (editFrame and editFrame.IsShown and editFrame:IsShown() == 1)
     local testAll   = (_G["DoiteAuras_TestAll"] == true)
-    -- Build a sorted key list by "order" without allocating {key,data,order} tables each refresh.
+    -- 按 "order" 构建排序键列表，无需每次刷新分配 {key,data,order} 表。
     local keyList = DoiteAuras._orderedKeyList
     if not keyList then
         keyList = {}
@@ -2363,7 +2392,7 @@ local function RefreshIcons(force)
     if DoiteAuras._cmpSpellKeyByOrder then
         table.sort(keyList, DoiteAuras._cmpSpellKeyByOrder)
     else
-        -- Fallback (should not happen if Patch 1 applied)
+        -- 备选（如果补丁 1 未应用，不应发生）
         table.sort(keyList, function(a, b)
             local da = DoiteAurasDB.spells[a]
             local db = DoiteAurasDB.spells[b]
@@ -2373,7 +2402,7 @@ local function RefreshIcons(force)
         end)
     end
 
-    -- Candidates + pool (internal only) to avoid per-refresh tables
+    -- 候选 + 池（仅内部使用）以避免每次刷新分配表
     local candidates = DoiteAuras._refreshCandidates
     if not candidates then
         candidates = {}
@@ -2388,17 +2417,17 @@ local function RefreshIcons(force)
     local oldN = table.getn(candidates)
     local n = 0
 
-    -- Cache table is stable; avoid re-calling DA_Cache() per entry
+    -- 缓存表稳定；避免每次条目都调用 DA_Cache()
     local cache = DA_Cache()
 
-    -- Cache spellbook slot per displayName (cleared on SPELLS_CHANGED via _daSpellTex)
+    -- 按 displayName 缓存法术书槽位（通过 _daSpellTex 在 SPELLS_CHANGED 时清除）
     local slotCache = DoiteAuras._spellSlotCache
     if not slotCache then
         slotCache = {}
         DoiteAuras._spellSlotCache = slotCache
     end
 
-    -- Build leader maps so grouped followers can inherit leader size and have a sane temp anchor
+    -- 构建组长映射，以便组内追随者可以继承组长尺寸并具有合理的临时锚点
     local leaderSizeByGroup = DoiteAuras._leaderSizeByGroup
     if not leaderSizeByGroup then
         leaderSizeByGroup = {}
@@ -2433,11 +2462,11 @@ local function RefreshIcons(force)
         end
     end
 
-    -- Step 1: collect lightweight icon state (no extra combat logic – DoiteConditions owns that)
+    -- 第 1 步：收集轻量级图标状态（无需额外战斗逻辑 – DoiteConditions 拥有该逻辑）
     for i = 1, total do
         local key  = keyList[i]
 
-        -- Ensure defaults exist so condition checks don't fail on nil tables
+        -- 确保默认值存在，以便条件检查不会因 nil 表而失败
         EnsureDefaults(key)
 
         local data = DoiteAurasDB.spells[key]
@@ -2445,28 +2474,29 @@ local function RefreshIcons(force)
 
         local displayName = (data and (data.displayName or data.name)) or key
 
-        -- Start from any cached/saved texture
+        -- 从任何缓存的/保存的纹理开始
         local tex = cache[displayName]
         if not tex and data and data.iconTexture then
             tex = data.iconTexture
         end
 
-        -- For Abilities only: single cheap fallback via spell slot (Nampower-accelerated)
+        -- 仅对于技能：通过法术槽位进行一次廉价后备（Nampower 加速）
         if not tex and typ == "Ability" then
             local slot = slotCache[displayName]
+            local slotBookType = BOOKTYPE_SPELL
             if slot == nil then
-                slot = FindSpellBookSlot(displayName)
+                slot, slotBookType = FindSpellBookSlot(displayName)
                 slotCache[displayName] = slot or false
             elseif slot == false then
                 slot = nil
             end
 
             if slot and GetSpellTexture then
-                tex = GetSpellTexture(slot, BOOKTYPE_SPELL)
+                tex = GetSpellTexture(slot, slotBookType or BOOKTYPE_SPELL)
             end
         end
 
-        -- Persist texture back into cache + DB once its known
+        -- 一旦知道纹理，将其持久化回缓存 + 数据库
         if tex then
             cache[displayName] = tex
             if data and not data.iconTexture then
@@ -2474,14 +2504,14 @@ local function RefreshIcons(force)
             end
         end
 
-        -- Show/hide intent comes solely from DoiteConditions via icon flags
+        -- 显示/隐藏意图完全来自 DoiteConditions 通过图标标志
         local f = (DoiteAuras_GetIconFrame and DoiteAuras_GetIconFrame(key)) or _G["DoiteIcon_" .. key]
         local wants = false
         if f then
             wants = (f._daShouldShow == true) or (f._daSliding == true)
         end
 
-        -- Editing/TestAll should treat the icon as "wanted" so layouts & buckets behave predictably.
+        -- 编辑/全部测试应将图标视为“想要”，以便布局和桶行为可预测。
         if testAll then
             wants = true
         end
@@ -2496,7 +2526,7 @@ local function RefreshIcons(force)
             pool[n] = candidate
         end
 
-        -- Overwrite all downstream-used fields so reuse can't leak state
+        -- 覆盖所有下游使用的字段，以便重用不会泄漏状态
         candidate.key  = key
         candidate.data = data
         candidate.show = wants
@@ -2513,25 +2543,25 @@ local function RefreshIcons(force)
         end
         candidate._computedPos = nil
 
-        -- Stamp the logical bucket this icon belongs to (group/category/ungrouped)
+        -- 标记此图标所属的逻辑桶（组/类别/未分组）
         candidate.bucketKey = DA_GetBucketKeyForCandidate(candidate)
 
         candidates[n] = candidate
     end
 
-    -- Trim old references so candidates[] doesn't keep stale pooled entries alive
+    -- 修剪旧引用，以便 candidates[] 不会使陈旧的池条目保持活动状态
     for i = n + 1, oldN do
         candidates[i] = nil
     end
 
-    -- Step 2: ensure icons exist first, then apply group layout once
+    -- 第 2 步：首先确保图标存在，然后应用一次组布局
     for _, entry in ipairs(candidates) do
         if not (DoiteAuras_GetIconFrame and DoiteAuras_GetIconFrame(entry.key)) then
             CreateOrUpdateIcon(entry.key, 36)
         end
     end
 
-    -- exclude icons in disabled buckets so groups don't account for them
+    -- 排除已禁用桶中的图标，以便组不考虑它们
     local layoutCandidates = candidates
     if DoiteGroup and DoiteGroup.ApplyGroupLayout then
         local lc = DoiteAuras._layoutCandidates
@@ -2560,53 +2590,53 @@ local function RefreshIcons(force)
         pcall(DoiteGroup.ApplyGroupLayout, layoutCandidates)
     end
 
-	-- Persist the computed layout so future refresh passes keep using it
-	do
-		local map = _G["DoiteGroup_Computed"]
-		local now = (GetTime and GetTime()) or 0
-		for _, e in ipairs(candidates) do
-			local d = e.data
-			if d and d.group and d.group ~= "" and d.group ~= "no" and e._computedPos then
-				map[d.group] = map[d.group] or {}
-				local list = map[d.group]
+    -- 持久化计算的布局，以便未来的刷新传递继续使用它
+    do
+        local map = _G["DoiteGroup_Computed"]
+        local now = (GetTime and GetTime()) or 0
+        for _, e in ipairs(candidates) do
+            local d = e.data
+            if d and d.group and d.group ~= "" and d.group ~= "no" and e._computedPos then
+                map[d.group] = map[d.group] or {}
+                local list = map[d.group]
 
-				-- Update in-place to avoid allocating new tables each refresh
-				local found = false
-				for i = 1, table.getn(list) do
-					local li = list[i]
-					if li and li.key == e.key then
-						li.key = e.key
-						local p = li._computedPos
-						if not p then
-							p = {}
-							li._computedPos = p
-						end
-						p.x = e._computedPos.x
-						p.y = e._computedPos.y
-						p.size = e._computedPos.size
-						found = true
-						break
-					end
-				end
+                -- 就地更新以避免每次刷新分配新表
+                local found = false
+                for i = 1, table.getn(list) do
+                    local li = list[i]
+                    if li and li.key == e.key then
+                        li.key = e.key
+                        local p = li._computedPos
+                        if not p then
+                            p = {}
+                            li._computedPos = p
+                        end
+                        p.x = e._computedPos.x
+                        p.y = e._computedPos.y
+                        p.size = e._computedPos.size
+                        found = true
+                        break
+                    end
+                end
 
-				if not found then
-					-- First time this key is seen in this group: create once (same data shape as before)
-					table.insert(list, { key = e.key, _computedPos = {
-						x = e._computedPos.x, y = e._computedPos.y, size = e._computedPos.size
-					}})
-				end
-			end
-		end
-		_G["DoiteGroup_LastLayoutTime"] = now
-	end
+                if not found then
+                    -- 此键首次在该组中出现：创建一次（与之前相同的数据形状）
+                    table.insert(list, { key = e.key, _computedPos = {
+                        x = e._computedPos.x, y = e._computedPos.y, size = e._computedPos.size
+                    }})
+                end
+            end
+        end
+        _G["DoiteGroup_LastLayoutTime"] = now
+    end
 
-    -- Step 3: create/update frames and apply positions (single place)
+    -- 第 3 步：创建/更新框架并应用位置（单一位置）
     if _G["DoiteAuras_RefreshInProgress"] then return end
     _G["DoiteAuras_RefreshInProgress"] = true
 
     local cache = DA_Cache()
 
-    -- Track which keys were processed this refresh, so removed icons (that previously visible) get hidden immediately.
+    -- 跟踪此刷新中处理的键，以便删除的图标（以前可见）立即隐藏。
     local used = DoiteAuras._iconsUsed
     if not used then
         used = {}
@@ -2624,10 +2654,10 @@ local function RefreshIcons(force)
             used[key] = true
         end
 
-        -- Prefer the local icons[] cache to avoid per-icon string concat + _G lookup
+        -- 优先使用本地 icons[] 缓存，避免每个图标的字符串连接 + _G 查找
         local f = (icons and icons[key]) or nil
         if not f then
-            -- Rare fallback: pick up an existing global frame if icons[] was reset
+            -- 罕见回退：如果 icons[] 被重置，拾取现有的全局框架
             f = _G["DoiteIcon_" .. key]
             if f and icons then
                 icons[key] = f
@@ -2638,18 +2668,18 @@ local function RefreshIcons(force)
             f = CreateOrUpdateIcon(key, 36)
         end
 
-        -- compute final pos/size (group-aware, sticky)
+        -- 计算最终位置/尺寸（组感知，粘性）
         local posX, posY, size
         local isGrouped = (data and data.group and data.group ~= "" and data.group ~= "no")
         local isLeader  = (data and data.isLeader == true)
 
-        -- 1) Prefer the freshly computed position (if present on this entry)
+        -- 1) 优先使用新计算的位置（如果此条目上存在）
         if entry._computedPos then
             posX = entry._computedPos.x
             posY = entry._computedPos.y
             size = entry._computedPos.size
 
-        -- 2) Otherwise prefer the persisted computed layout from the last layout tick
+        -- 2) 否则优先使用上次布局滴答中持久化的计算布局
         elseif isGrouped and _G["DoiteGroup_Computed"] and _G["DoiteGroup_Computed"][data.group] then
             local list = _G["DoiteGroup_Computed"][data.group]
             for i = 1, table.getn(list) do
@@ -2665,7 +2695,7 @@ local function RefreshIcons(force)
 
         if not posX then
             if isGrouped and not isLeader then
-                -- keep current point; but size must follow leader when grouped
+                -- 保持当前点；但分组时尺寸必须跟随组长
                 local currentSize = (data and (data.iconSize or data.size)) or 36
                 if leaderSizeByGroup and data and data.group then
                     local ls = leaderSizeByGroup[data.group]
@@ -2674,7 +2704,7 @@ local function RefreshIcons(force)
                     end
                 end
                 size = size or currentSize
-                -- DO NOT SetPoint here for follower without computed pos (avoid snap-back)
+                -- 对于没有计算位置的追随者，不要 SetPoint（避免回弹）
             else
                 size = size or (data and (data.iconSize or data.size)) or 36
             end
@@ -2690,17 +2720,17 @@ local function RefreshIcons(force)
         f:SetAlpha((data and data.alpha) or 1)
         f:SetWidth(size); f:SetHeight(size)
 
-        -- Do not re-anchor while a slide preview owns the frame for this tick AND do not re-anchor if this frame is currently being dragged (prevents snapping back)
+        -- 当此滴答的幻灯片预览拥有框架时，不要重新锚定，并且如果此框架当前正在被拖动，也不要重新锚定（防止回弹）
         local isDraggingThis = (f._daDragging == true)
         if not f._daSliding and not isDraggingThis then
-            -- If this is a grouped follower and don't computed layout yet, do NOT snap to its own saved coords (often 0,0). Use leader saved coords as a temp anchor.
+            -- 如果这是组追随者且尚未计算布局，则不要快照到其自身保存的坐标（通常为 0,0）。使用组长保存的坐标作为临时锚点。
             if isGrouped and (not isLeader) and (not posX) then
                 local lp = (leaderPosByGroup and data and data.group) and leaderPosByGroup[data.group]
                 if lp and lp.x and lp.y then
                     f:ClearAllPoints()
                     f:SetPoint("CENTER", UIParent, "CENTER", lp.x, lp.y)
                 else
-                    -- No leader position found: keep current points as-is. (Do not ClearAllPoints / SetPoint here.)
+                    -- 未找到组长位置：保持当前点不变。（此处不进行 ClearAllPoints / SetPoint）
                 end
             else
                 f:ClearAllPoints()
@@ -2713,7 +2743,7 @@ local function RefreshIcons(force)
         end
 
 
-        -- Texture handling (with saved iconTexture fallback; no extra game queries here)
+        -- 纹理处理（使用保存的 iconTexture 回退；此处不进行额外游戏查询）
         local displayName = (data and (data.displayName or data.name)) or key
         local texToUse    = entry.tex
                           or cache[displayName]
@@ -2728,14 +2758,14 @@ local function RefreshIcons(force)
 
         f.icon:SetTexture(texToUse or "Interface\\Icons\\INV_Misc_QuestionMark")
 
-        -- Visibility: conditions OR slide … but the group limit and bucket Disable have final say
+        -- 可见性：条件 OR 幻灯片 … 但组限制和桶禁用有最终决定权
         local wantsFromConditions = (f._daShouldShow == true)
         local wantsFromSlide      = (f._daSliding == true)
         local wantsFromEdit       = (editOpen and editKey == key)
         local wantsFromTestAll    = (testAll == true)
         local blockedByGroup      = (f._daBlockedByGroup == true)
 
-        -- Per-bucket Disable (group/category/ungrouped)
+        -- 每桶禁用（组/类别/未分组）
         local blockedByBucket = false
         if entry.bucketKey then
             blockedByBucket = DA_IsBucketDisabled(entry.bucketKey)
@@ -2745,19 +2775,19 @@ local function RefreshIcons(force)
                              and (not blockedByGroup)
                              and (not blockedByBucket)
 
-        -- MOVED OUTSIDE of visibility check to ensure handlers are attached even if the icon is initially hidden (e.g. startup race).
-        -- Visibility is dynamic (DoiteConditions), but the handler must be ready when it shows.
+        -- 移出可见性检查，以确保即使在图标最初隐藏时（例如启动竞态条件）也附加处理程序。
+        -- 可见性是动态的（DoiteConditions），但处理程序必须在图标显示时准备好。
 
         local ic = data and data.conditions and data.conditions.item
-        -- Only allow clicking if configured, NOT greyed out, and NOT in edit mode
-        -- STRICTLY restrict to Items only
+        -- 仅在配置了可点击、未灰色且不在编辑模式下才允许点击
+        -- 严格限制为物品
         local isClickable = (data and data.type == "Item" and ic and ic.clickable and (not f._daDragging) and (not _G["DoiteEdit_CurrentKey"]))
-        -- Always show tooltips for items when not in edit mode
-        -- Show tooltips for items only when enabled in DB and not in edit mode
-		local showTooltips = (data and data.type == "Item"
-			and (DoiteAurasDB and DoiteAurasDB.showtooltip == true)
-			and (not f._daDragging)
-			and (not _G["DoiteEdit_CurrentKey"]))
+        -- 不在编辑模式时始终显示物品工具提示
+        -- 仅当数据库启用且不在编辑模式时才显示物品工具提示
+        local showTooltips = (data and data.type == "Item"
+            and (DoiteAurasDB and DoiteAurasDB.showtooltip == true)
+            and (not f._daDragging)
+            and (not _G["DoiteEdit_CurrentKey"]))
 
         if _G["DoiteEdit_CurrentKey"] then
             showTooltips = false
@@ -2768,10 +2798,10 @@ local function RefreshIcons(force)
 
              if isClickable then
                  f:SetScript("OnClick", function()
-                     -- Block item use while in edit mode (Issue #50)
+                     -- 编辑模式下阻止物品使用（问题 #50）
                      if _G["DoiteEdit_CurrentKey"] then return end
                      if arg1 == "LeftButton" or arg1 == "RightButton" then
-                        -- Fallback to 'key' if name is missing (fixes nil error)
+                        -- 如果名称缺失，回退到 'key'（修复 nil 错误）
                         local n = (data.displayName or data.name) or key
                         if n and n ~= "" then
                              DA_UseItemByName(n)
@@ -2796,7 +2826,7 @@ local function RefreshIcons(force)
              end
         elseif data and data.type == "Item" then
 
-             -- Even during edit, clear tooltip scripts so they can't “stick”.
+             -- 即使在编辑期间，也要清除工具提示脚本，使它们不会“粘住”。
              f:SetScript("OnEnter", nil)
              f:SetScript("OnLeave", nil)
              if not _G["DoiteEdit_CurrentKey"] then
@@ -2812,7 +2842,7 @@ local function RefreshIcons(force)
         end
     end
 
-    -- If an icon was removed while visible, it may still exist in the local icons[] cache and would otherwise remain visible until /reload.
+    -- 如果图标在可见时被删除，它可能仍然存在于本地 icons[] 缓存中，并且否则将保持可见，直到 /reload。
     if icons and DoiteAurasDB and DoiteAurasDB.spells then
         local used = DoiteAuras._iconsUsed
         local k, f
@@ -2820,7 +2850,7 @@ local function RefreshIcons(force)
             if f and (not used or not used[k]) then
                 if not DoiteAurasDB.spells[k] then
                     f:Hide()
-                    -- keep or drop the cache entry; dropping avoids table growth on add/remove churn
+                    -- 保留或删除缓存条目；删除可避免添加/删除循环中表无限增长
                     icons[k] = nil
                 end
             end
@@ -2829,13 +2859,13 @@ local function RefreshIcons(force)
 
     _G["DoiteAuras_RefreshInProgress"] = false
 
-    -- Ensure conditions are evaluated immediately so "grey" state is correct on startup
+    -- 确保立即评估条件，以便启动时“灰色”状态正确
     if DoiteConditions and DoiteConditions.EvaluateAll then
         DoiteConditions:EvaluateAll()
     end
 end
 
--- Refresh list (group-aware, but still uses .order as the only truth)
+-- 刷新列表（组感知，但仍仅使用 .order 作为唯一真实依据）
 local function RefreshList()
     if DA_IsHardDisabled() then
         return
@@ -2843,7 +2873,7 @@ local function RefreshList()
 
     local _, v
 
-    -- Mark all existing row frames "unused" for this rebuild, and hide them.
+    -- 将所有现有行框架标记为“未使用”用于此重建，并隐藏它们。
     for _, v in pairs(spellButtons) do
         if v then
             v._daInList = false
@@ -2851,7 +2881,7 @@ local function RefreshList()
         end
     end
 
-    -- Hide all existing header frames (reuse by index)
+    -- 隐藏所有现有标题框架（按索引重用）
     local oldHeaderN = table.getn(groupHeaders)
     local i
     for i = 1, oldHeaderN do
@@ -2861,7 +2891,7 @@ local function RefreshList()
 
     local ordered = GetOrderedSpells()
 
-    -- Duplicate-info for "(i/N)" suffix based on name+type
+    -- 重复项信息，用于基于名称+类型的 "(i/N)" 后缀
     local groupCount = {}
     local groupIndex = {}
 
@@ -2901,7 +2931,7 @@ local function RefreshList()
 
     local displayList = DA_BuildDisplayList(ordered)
 
-    -- compute content height based on separate header + row heights
+    -- 根据单独的标题和行高度计算内容高度
     local headerCount, entryCount = 0, 0
     for _, entry in ipairs(displayList) do
         if entry.isHeader then
@@ -2913,7 +2943,7 @@ local function RefreshList()
     local totalHeight = headerCount * 25 + entryCount * 55 + 20
     listContent:SetHeight(math.max(160, totalHeight))
 
-    -- running vertical offset (tighter spacing for headers)
+    -- 运行垂直偏移（标题间距更紧）
     local yOffset = 0
 
     local headerIndex = 0
@@ -2922,7 +2952,7 @@ local function RefreshList()
         if entry.isHeader then
             headerIndex = headerIndex + 1
 
-            -- Reuse header frame by index
+            -- 按索引重用标题框架
             local hdr = groupHeaders[headerIndex]
             if not hdr then
                 hdr = CreateFrame("Frame", nil, listContent)
@@ -2934,26 +2964,26 @@ local function RefreshList()
 
                 hdr.label = hdr:CreateFontString(nil, "OVERLAY", "GameFontNormal")
                 hdr.label:SetPoint("LEFT", hdr, "LEFT", 22, 0)
-				-- Accordion toggle (+ / -)
-				hdr.toggleBtn = CreateFrame("Button", nil, hdr, "UIPanelButtonTemplate")
-				hdr.toggleBtn:SetWidth(16); hdr.toggleBtn:SetHeight(16)
-				hdr.toggleBtn:SetPoint("LEFT", hdr, "LEFT", 3, 0)
-				hdr.toggleBtn:SetText("-")
-				hdr.toggleBtn:SetScript("OnClick", function()
-					local p = this:GetParent()
-					local bk = p and p.bucketKey
-					if not bk then return end
+                -- 手风琴切换 (+ / -)
+                hdr.toggleBtn = CreateFrame("Button", nil, hdr, "UIPanelButtonTemplate")
+                hdr.toggleBtn:SetWidth(16); hdr.toggleBtn:SetHeight(16)
+                hdr.toggleBtn:SetPoint("LEFT", hdr, "LEFT", 3, 0)
+                hdr.toggleBtn:SetText("-")
+                hdr.toggleBtn:SetScript("OnClick", function()
+                    local p = this:GetParent()
+                    local bk = p and p.bucketKey
+                    if not bk then return end
 
-					local collapsed = DA_IsBucketCollapsed(bk)
-					DA_SetBucketCollapsed(bk, not collapsed)
+                    local collapsed = DA_IsBucketCollapsed(bk)
+                    DA_SetBucketCollapsed(bk, not collapsed)
 
-					-- Rebuild list so it collapses/expands
-					if DoiteAuras_RefreshList then
-						pcall(DoiteAuras_RefreshList)
-					end
-				end)
+                    -- 重建列表以折叠/展开
+                    if DoiteAuras_RefreshList then
+                        pcall(DoiteAuras_RefreshList)
+                    end
+                end)
 
-                -- Disable checkbox (created once; shown/hidden per header)
+                -- 禁用复选框（创建一次；每个标题显示/隐藏）
                 hdr.disableCheck = CreateFrame("CheckButton", nil, hdr, "UICheckButtonTemplate")
                 hdr.disableCheck:SetWidth(14); hdr.disableCheck:SetHeight(14)
                 hdr.disableCheck:SetHitRectInsets(0, -40, 0, 0)
@@ -2982,80 +3012,80 @@ local function RefreshList()
                     end
                 end)
 
-	                -- Group mode dropdown (group-only; replaces sort/fixed/disable checks)
-	                hdr.groupModeDropdown = CreateFrame("Frame", "DoiteAurasGroupModeDropdown" .. tostring(headerIndex), hdr, "UIDropDownMenuTemplate")
-	                UIDropDownMenu_SetWidth(80, hdr.groupModeDropdown)
+                -- 组模式下拉框（仅组；取代排序/固定/禁用复选框）
+                hdr.groupModeDropdown = CreateFrame("Frame", "DoiteAurasGroupModeDropdown" .. tostring(headerIndex), hdr, "UIDropDownMenuTemplate")
+                UIDropDownMenu_SetWidth(80, hdr.groupModeDropdown)
 
-	                hdr.groupModeLabels = {
-	                    prio = "按优先级排序",
-	                    time = "按时间排序",
-	                    fixed = "固定",
-	                    disabled = "禁用组",
-	                }
+                hdr.groupModeLabels = {
+                    prio = "按优先级排序",
+                    time = "按时间排序",
+                    fixed = "固定",
+                    disabled = "禁用组",
+                }
 
-	                local function DA_ApplyGroupModeSelection(parent, selectedMode)
-	                    if not parent or not parent.groupName or parent.groupName == "" then return end
+                local function DA_ApplyGroupModeSelection(parent, selectedMode)
+                    if not parent or not parent.groupName or parent.groupName == "" then return end
 
-	                    local groupName = parent.groupName
-	                    local bucketKey = parent.bucketKey
+                    local groupName = parent.groupName
+                    local bucketKey = parent.bucketKey
 
-	                    DoiteAurasDB.groupSort = DoiteAurasDB.groupSort or {}
-	                    DoiteAurasDB.groupFixed = DoiteAurasDB.groupFixed or {}
-	                    DoiteAurasDB.bucketDisabled = DoiteAurasDB.bucketDisabled or {}
+                    DoiteAurasDB.groupSort = DoiteAurasDB.groupSort or {}
+                    DoiteAurasDB.groupFixed = DoiteAurasDB.groupFixed or {}
+                    DoiteAurasDB.bucketDisabled = DoiteAurasDB.bucketDisabled or {}
 
-	                    if bucketKey then
-	                        if selectedMode == "disabled" then
-	                            DoiteAurasDB.bucketDisabled[bucketKey] = true
-	                        else
-	                            DoiteAurasDB.bucketDisabled[bucketKey] = nil
-	                        end
-	                    end
+                    if bucketKey then
+                        if selectedMode == "disabled" then
+                            DoiteAurasDB.bucketDisabled[bucketKey] = true
+                        else
+                            DoiteAurasDB.bucketDisabled[bucketKey] = nil
+                        end
+                    end
 
-	                    if selectedMode == "time" or selectedMode == "prio" then
-	                        DoiteAurasDB.groupSort[groupName] = selectedMode
-	                        DoiteAurasDB.groupFixed[groupName] = nil
-	                        DoiteGroup.InvalidateSortCache(groupName)
-	                        _G["DoiteGroup_NeedReflow"] = true
-	                    elseif selectedMode == "fixed" then
-	                        DoiteAurasDB.groupFixed[groupName] = true
-	                        if DoiteGroup and DoiteGroup.RequestReflow then
-	                            DoiteGroup.RequestReflow()
-	                        else
-	                            _G["DoiteGroup_NeedReflow"] = true
-	                        end
-	                    end
+                    if selectedMode == "time" or selectedMode == "prio" then
+                        DoiteAurasDB.groupSort[groupName] = selectedMode
+                        DoiteAurasDB.groupFixed[groupName] = nil
+                        DoiteGroup.InvalidateSortCache(groupName)
+                        _G["DoiteGroup_NeedReflow"] = true
+                    elseif selectedMode == "fixed" then
+                        DoiteAurasDB.groupFixed[groupName] = true
+                        if DoiteGroup and DoiteGroup.RequestReflow then
+                            DoiteGroup.RequestReflow()
+                        else
+                            _G["DoiteGroup_NeedReflow"] = true
+                        end
+                    end
 
-	                    UIDropDownMenu_SetSelectedValue(parent.groupModeDropdown, selectedMode)
-	                    UIDropDownMenu_SetText(parent.groupModeLabels[selectedMode] or parent.groupModeLabels.prio, parent.groupModeDropdown)
+                    UIDropDownMenu_SetSelectedValue(parent.groupModeDropdown, selectedMode)
+                    UIDropDownMenu_SetText(parent.groupModeLabels[selectedMode] or parent.groupModeLabels.prio, parent.groupModeDropdown)
 
-	                    if DoiteAuras_RefreshIcons then
-	                        pcall(DoiteAuras_RefreshIcons)
-	                    end
-	                end
+                    if DoiteAuras_RefreshIcons then
+                        pcall(DoiteAuras_RefreshIcons)
+                    end
+                end
 
-	                UIDropDownMenu_Initialize(hdr.groupModeDropdown, function(level)
-	                    local p = hdr
-	                    if not p or not p.groupModeLabels then return end
+                UIDropDownMenu_Initialize(hdr.groupModeDropdown, function(level)
+                    local p = hdr
+                    if not p or not p.groupModeLabels then return end
 
-	                    local function addOption(modeValue)
-	                        local info = UIDropDownMenu_CreateInfo()
-	                        info.text = p.groupModeLabels[modeValue] or "按优先级排序"
-	                        info.value = modeValue
-	                        info.func = function()
-	                            local selected = (this and this.value) or modeValue
-	                            DA_ApplyGroupModeSelection(p, selected)
-	                        end
-	                        info.checked = (UIDropDownMenu_GetSelectedValue(p.groupModeDropdown) == modeValue)
-	                        UIDropDownMenu_AddButton(info, level or 1)
-	                    end
+                    local function addOption(modeValue)
+                        local info = UIDropDownMenu_CreateInfo()
+                        info.text = p.groupModeLabels[modeValue] or "按优先级排序"
+                        info.value = modeValue
+                        info.func = function()
+                            local selected = (this and this.value) or modeValue
+                            DA_ApplyGroupModeSelection(p, selected)
+                        end
+                        info.checked = (UIDropDownMenu_GetSelectedValue(p.groupModeDropdown) == modeValue)
+                        UIDropDownMenu_AddButton(info, level or 1)
+                    end
 
-	                    addOption("prio")
-	                    addOption("time")
-	                    addOption("fixed")
-	                    addOption("disabled")
-	                end)
+                    addOption("prio")
+                    addOption("time")
+                    addOption("fixed")
+                    addOption("disabled")
+                end)
 
-	                hdr.sepTex = hdr:CreateTexture(nil, "ARTWORK")
+                hdr.sepTex = hdr:CreateTexture(nil, "ARTWORK")
                 hdr.sepTex:SetHeight(1)
                 hdr.sepTex:SetPoint("BOTTOMLEFT", hdr, "BOTTOMLEFT", 0, -2)
                 hdr.sepTex:SetPoint("BOTTOMRIGHT", hdr, "BOTTOMRIGHT", 0, -2)
@@ -3064,66 +3094,66 @@ local function RefreshList()
                 groupHeaders[headerIndex] = hdr
             end
 
-            -- Update dynamic header text
+            -- 更新动态标题文本
             hdr.groupName = entry.groupName or ""
             local hdrName = string.upper(hdr.groupName or "")
             hdr.label:SetText(hdrName)
 
-            -- Bucket key + disable toggle visibility/state
+            -- 桶键 + 禁用切换可见性/状态
             hdr.bucketKey = DA_GetBucketKeyForHeaderEntry(entry)
             DoiteAurasDB.bucketDisabled = DoiteAurasDB.bucketDisabled or {}
 
-			if hdr.bucketKey then
-				hdr.disableCheck:ClearAllPoints()
-				hdr.disableCheck:SetPoint("RIGHT", hdr, "RIGHT", -45, 0)
-				hdr.disableCheck:SetChecked(DoiteAurasDB.bucketDisabled[hdr.bucketKey] == true)
-				if hdr.disableCheck.text then hdr.disableCheck.text:Show() end
+            if hdr.bucketKey then
+                hdr.disableCheck:ClearAllPoints()
+                hdr.disableCheck:SetPoint("RIGHT", hdr, "RIGHT", -45, 0)
+                hdr.disableCheck:SetChecked(DoiteAurasDB.bucketDisabled[hdr.bucketKey] == true)
+                if hdr.disableCheck.text then hdr.disableCheck.text:Show() end
 
-				-- Accordion toggle text
-				if hdr.toggleBtn then
-					if DA_IsBucketCollapsed(hdr.bucketKey) then
-						hdr.toggleBtn:SetText("+")
-					else
-						hdr.toggleBtn:SetText("-")
-					end
-					hdr.toggleBtn:Show()
-				end
-			else
-				hdr.disableCheck:Hide()
-				if hdr.disableCheck.text then hdr.disableCheck.text:Hide() end
-				if hdr.toggleBtn then hdr.toggleBtn:Hide() end
-			end
+                -- 手风琴切换文本
+                if hdr.toggleBtn then
+                    if DA_IsBucketCollapsed(hdr.bucketKey) then
+                        hdr.toggleBtn:SetText("+")
+                    else
+                        hdr.toggleBtn:SetText("-")
+                    end
+                    hdr.toggleBtn:Show()
+                end
+            else
+                hdr.disableCheck:Hide()
+                if hdr.disableCheck.text then hdr.disableCheck.text:Hide() end
+                if hdr.toggleBtn then hdr.toggleBtn:Hide() end
+            end
 
-            -- Group mode dropdown (only for group headers)
+            -- 组模式下拉框（仅用于组标题）
             if entry.kind == "group" and hdr.groupName and hdr.groupName ~= "" then
-                local mode = DA_GetGroupSortMode(hdr.groupName)  -- "prio" or "time"
+                local mode = DA_GetGroupSortMode(hdr.groupName)  -- "prio" 或 "time"
                 DoiteAurasDB.groupFixed = DoiteAurasDB.groupFixed or {}
                 local fixed = DoiteAurasDB.groupFixed[hdr.groupName] == true
 
-				hdr.disableCheck:Hide()
-				if hdr.disableCheck.text then hdr.disableCheck.text:Hide() end
+                hdr.disableCheck:Hide()
+                if hdr.disableCheck.text then hdr.disableCheck.text:Hide() end
 
-				local selectedMode = "prio"
-				if hdr.bucketKey and DoiteAurasDB.bucketDisabled[hdr.bucketKey] == true then
-					selectedMode = "disabled"
-				elseif fixed then
-					selectedMode = "fixed"
-				elseif mode == "time" then
-					selectedMode = "time"
-				end
+                local selectedMode = "prio"
+                if hdr.bucketKey and DoiteAurasDB.bucketDisabled[hdr.bucketKey] == true then
+                    selectedMode = "disabled"
+                elseif fixed then
+                    selectedMode = "fixed"
+                elseif mode == "time" then
+                    selectedMode = "time"
+                end
 
-				hdr.groupModeDropdown:ClearAllPoints()
-				hdr.groupModeDropdown:SetPoint("RIGHT", hdr, "RIGHT", 8, -2)
-				UIDropDownMenu_SetSelectedValue(hdr.groupModeDropdown, selectedMode)
-				UIDropDownMenu_SetText(hdr.groupModeLabels[selectedMode] or hdr.groupModeLabels.prio, hdr.groupModeDropdown)
-				hdr.groupModeDropdown:Show()
-	            else
-				hdr.disableCheck:Show()
-				if hdr.disableCheck.text then hdr.disableCheck.text:Show() end
-				hdr.groupModeDropdown:Hide()
-	            end
+                hdr.groupModeDropdown:ClearAllPoints()
+                hdr.groupModeDropdown:SetPoint("RIGHT", hdr, "RIGHT", 8, -2)
+                UIDropDownMenu_SetSelectedValue(hdr.groupModeDropdown, selectedMode)
+                UIDropDownMenu_SetText(hdr.groupModeLabels[selectedMode] or hdr.groupModeLabels.prio, hdr.groupModeDropdown)
+                hdr.groupModeDropdown:Show()
+            else
+                hdr.disableCheck:Show()
+                if hdr.disableCheck.text then hdr.disableCheck.text:Show() end
+                hdr.groupModeDropdown:Hide()
+            end
 
-            -- Position header
+            -- 定位标题
             hdr:ClearAllPoints()
             hdr:SetPoint("TOPLEFT", listContent, "TOPLEFT", 0, yOffset)
             yOffset = yOffset - 25
@@ -3133,12 +3163,12 @@ local function RefreshList()
             local key, data = entry.key, entry.data
             if key and data then
                 local display = (data.shownName and data.shownName ~= "" and data.shownName) or (data.displayName or key)
-                -- show "(i/N)" only if N > 1 (duplicates of same name+type)
+                -- 仅当 N > 1（相同名称+类型的重复项）时显示 "(i/N)"
                 if entry._groupCnt and entry._groupCnt > 1 then
                     display = string.format("%s (%d/%d)", display, entry._groupIdx, entry._groupCnt)
                 end
 
-                -- Reuse per-key row frame
+                -- 按键重用行框架
                 local btn = spellButtons[key]
                 if not btn then
                     btn = CreateFrame("Frame", nil, listContent)
@@ -3183,7 +3213,7 @@ local function RefreshList()
                     btn.renameInput = CreateFrame("EditBox", nil, btn, "InputBoxTemplate")
                     btn.renameInput:SetWidth(120); btn.renameInput:SetHeight(18)
                     btn.renameInput:SetAutoFocus(false)
-                    -- Rename-controls row anchor
+                    -- 重命名控件行锚点
                     btn.renameInput:SetPoint("TOPLEFT", btn, "TOPLEFT", 15, -49)
 
                     btn.renameAddBtn = CreateFrame("Button", nil, btn, "UIPanelButtonTemplate")
@@ -3213,10 +3243,10 @@ local function RefreshList()
                 btn._daInList = true
                 btn.daKey = key
 
-                -- Update row visuals
+                -- 更新行视觉
                 btn.fontString:SetText(display)
 
-                -- Type + group/ungrouped priority text
+                -- 类型 + 组/未分组优先级文本
                 local baseLabel, baseColor
                 if data.type == "Ability" then
                     baseLabel = "技能"
@@ -3261,40 +3291,40 @@ local function RefreshList()
                 local typeText = baseColor .. baseLabel .. "|r|cffaaaaaa" .. suffix .. "|r"
                 btn.tag:SetText(typeText)
 
-                -- Scripts are re-bound each refresh (keeps exact existing logic with current locals)
+                -- 脚本在每次刷新时重新绑定（使用当前局部变量保持确切的现有逻辑）
                 btn.removeBtn:SetScript("OnClick", function()
-					DA_CancelRename()
+                    DA_CancelRename()
 
-					-- detect if this was the last icon using them.
-					local groupName    = data and data.group
-					local categoryName = data and data.category
+                    -- 检测这是否是最后一个使用它们的图标。
+                    local groupName    = data and data.group
+                    local categoryName = data and data.category
 
-					-- Close the edit frame if it's open for this aura
-					local ef = _G["DoiteEdit_Frame"]
-					if ef and ef:IsShown() and _G["DoiteEdit_CurrentKey"] == key then
-						ef:Hide()
-					end
+                    -- 如果此光环的编辑框架打开，则关闭它
+                    local ef = _G["DoiteEdit_Frame"]
+                    if ef and ef:IsShown() and _G["DoiteEdit_CurrentKey"] == key then
+                        ef:Hide()
+                    end
 
-					-- Remove from DoiteAuras DB
-					DoiteAurasDB.spells[key] = nil
+                    -- 从 DoiteAuras 数据库中移除
+                    DoiteAurasDB.spells[key] = nil
 
-					-- Keep group/category metadata maps in sync when last icon is deleted.
-					if DoiteGroup and DoiteGroup.CleanupDanglingGroupData then
-						pcall(DoiteGroup.CleanupDanglingGroupData)
-					end
+                    -- 当最后一个图标被删除时，保持组/类别元数据映射同步。
+                    if DoiteGroup and DoiteGroup.CleanupDanglingGroupData then
+                        pcall(DoiteGroup.CleanupDanglingGroupData)
+                    end
 
-					-- Also drop any legacy DoiteDB entry so evaluation stops touching this key
-					if DoiteDB and DoiteDB.icons and DoiteDB.icons[key] then
-						DoiteDB.icons[key] = nil
-					end
+                    -- 同时删除任何遗留的 DoiteDB 条目，以便评估停止触及此键
+                    if DoiteDB and DoiteDB.icons and DoiteDB.icons[key] then
+                        DoiteDB.icons[key] = nil
+                    end
 
-					-- Remove cached row frame reference so add/remove cycles don't grow without bound
-					if spellButtons and spellButtons[key] then
-						spellButtons[key]:Hide()
-						spellButtons[key] = nil
-					end
+                    -- 移除缓存的行框架引用，以便添加/删除循环不会无限制增长
+                    if spellButtons and spellButtons[key] then
+                        spellButtons[key]:Hide()
+                        spellButtons[key] = nil
+                    end
 
-                    -- Immediately hide the icon frame so it disappears even if refresh throttle would skip.
+                    -- 立即隐藏图标框架，即使刷新节流可能跳过。
                     local gf = _G["DoiteIcon_" .. key]
                     if gf then
                         gf:Hide()
@@ -3305,7 +3335,7 @@ local function RefreshList()
                         icons[key] = nil
                     end
 
-                    -- Rebuild ordering + UI (force icon refresh so delete is always visible instantly)
+                    -- 重建顺序 + UI（强制图标刷新，以便删除始终立即可见）
                     RebuildOrder()
                     if DoiteGroup and DoiteGroup.InvalidateSortCache then
                         DoiteGroup.InvalidateSortCache()
@@ -3313,10 +3343,10 @@ local function RefreshList()
                     RefreshList()
                     RefreshIcons(true)
 
-					if DoiteConditions_RequestEvaluate then
-						DoiteConditions_RequestEvaluate()
-					end
-				end)
+                    if DoiteConditions_RequestEvaluate then
+                        DoiteConditions_RequestEvaluate()
+                    end
+                end)
 
                 btn.editBtn:SetScript("OnClick", function()
                     DA_CancelRename()
@@ -3363,10 +3393,10 @@ local function RefreshList()
                     local moved = false
 
                     if isGrouped then
-                        -- move "up" inside the group (towards first member)
+                        -- 在组内向上移动（向第一个成员）
                         moved = DA_MoveOrderWithinGroup(key, "up")
                     else
-                        -- ungrouped: move only within its category / Ungrouped bucket
+                        -- 未分组：仅在其类别 / Ungrouped 桶内移动
                         moved = DA_MoveOrderWithinCategoryOrUngrouped(key, "up")
                     end
 
@@ -3427,7 +3457,7 @@ local function RefreshList()
                     btn:SetHeight(53)
                 end
 
-                -- Position row (ClearAllPoints is important when reusing frames)
+                -- 定位行（重用框架时 ClearAllPoints 很重要）
                 btn:ClearAllPoints()
                 btn:SetPoint("TOPLEFT", listContent, "TOPLEFT", 0, yOffset)
                 if renameState.key == key then
@@ -3440,7 +3470,7 @@ local function RefreshList()
         end
     end
 
-    -- Hide any row frames that weren't used this refresh (covers removed keys)
+    -- 隐藏此次刷新未使用的任何行框架（覆盖已删除的键）
     for _, v in pairs(spellButtons) do
         if v and (v._daInList ~= true) then
             if v.Hide then v:Hide() end
@@ -3450,14 +3480,14 @@ local function RefreshList()
     scrollFrame:SetScrollChild(listContent)
 end
 
--- Add button
+-- 添加按钮
 addBtn:SetScript("OnClick", function()
   DA_CancelRename()
 
   local t = currentType
   local name
 
-  -- Bars are UI-only placeholders for now: never add them to the DB
+  -- Bars 目前仅作为 UI 占位符：从不将它们添加到数据库
   if t == "Bar" then
     (DEFAULT_CHAT_FRAME or ChatFrame1):AddMessage("|cff6FA8DCDoiteAuras:|r 条状元素尚未实现（即将推出）。")
     return
@@ -3479,7 +3509,7 @@ addBtn:SetScript("OnClick", function()
       name = TitleCase(name)
   end
 
-  -- Detect pure numeric Buff/Debuff input as "spell ID mode"
+  -- 检测纯数字的 Buff/Debuff 输入作为“法术 ID 模式”
   local spellIdStr = nil
   local shownName  = nil
 
@@ -3487,7 +3517,7 @@ addBtn:SetScript("OnClick", function()
       if string.find(name, "^(%d+)$") then
           spellIdStr = name
 
-          -- Nampower: resolve spell name + rank immediately
+          -- Nampower：立即解析法术名称+等级
           local resolvedSpellName = nil
           local resolvedSpellRank = nil
 
@@ -3502,32 +3532,32 @@ addBtn:SetScript("OnClick", function()
           end
 
           if resolvedSpellName then
-              -- Matching name (same as adding by name)
+              -- 匹配名称（与按名称添加相同）
               name = resolvedSpellName
 
-              -- Pretty list label (your current behavior, but stored separately)
+              -- 漂亮的列表标签（你当前的行为，但分开存储）
               shownName = DA_GetSpellIdShownName(spellIdStr)
           else
-              -- Fallback if resolver isn't available yet
+              -- 如果解析器尚不可用，则回退
               shownName = DA_GetSpellIdShownName(spellIdStr)
               name = shownName
           end
       end
   end
 
-  -- Ability validation stays
+  -- 技能验证保持不变
   if t == "Ability" and not FindSpellBookSlot(name) then
     (DEFAULT_CHAT_FRAME or ChatFrame1):AddMessage("|cffff0000DoiteAuras:|r 法术书中未找到该技能。")
     return
   end
 
   ----------------------------------------------------------------
-  -- Buff/Debuff duplicate rule:
-  -- Only allow ONE entry per (name,type) while NONE of the existing
-  -- siblings have a texture yet (iconTexture or cache entry).
+  -- Buff/Debuff 重复项规则：
+  -- 当现有的同 (name,type) 条目都还没有纹理（iconTexture 或缓存条目）时，
+  -- 仅允许一个条目。
   --
-  -- For spell ID entries this still groups by the visible label
-  -- "Spell ID: 12345 (will update when seen)".
+  -- 对于法术 ID 条目，这仍然按可见标签分组
+  -- “法术 ID: 12345（将在看到时更新）”。
   ----------------------------------------------------------------
   if t == "Buff" or t == "Debuff" then
       local cache   = DA_Cache()
@@ -3556,7 +3586,7 @@ addBtn:SetScript("OnClick", function()
           end
       end
 
-      -- If there is already at least one Buff/Debuff with this name+type and NONE of them have a texture yet, block adding another.
+      -- 如果已经至少有一个具有此名称+类型的增益/减益条目，且它们都没有纹理，则阻止添加另一个。
       if hasSibling and not siblingHasTexture then
           local cf = (DEFAULT_CHAT_FRAME or ChatFrame1)
           if cf then
@@ -3567,13 +3597,13 @@ addBtn:SetScript("OnClick", function()
   end
   ----------------------------------------------------------------
 
-  -- generate unique key; baseKey groups duplicates by name+type
+  -- 生成唯一键；baseKey 按名称+类型对重复项分组
   local key, baseKey, instanceIdx = GenerateUniqueKey(name, t)
 
-  -- Order = append at end
+  -- 顺序 = 追加到最后
   local nextOrder = table.getn(GetOrderedSpells()) + 1
 
-  -- Create the DB entry (defaults filled later by EnsureDBEntry/DoiteEdit)
+  -- 创建数据库条目（稍后由 EnsureDBEntry/DoiteEdit 填充默认值）
   DoiteAurasDB.spells[key] = {
     order       = nextOrder,
     type        = t,
@@ -3586,14 +3616,14 @@ addBtn:SetScript("OnClick", function()
   local entry = DoiteAurasDB.spells[key]
   local cache = DA_Cache()
 
-  -- If this was created by spell ID, persist it so DoiteConditions can resolve it by ID.
+  -- 如果这是通过法术 ID 创建的，持久化它，以便 DoiteConditions 可以通过 ID 解析它。
   if spellIdStr then
       entry.spellid = spellIdStr
       entry.Addedviaspellid = true
   end
 
-  -- Auto-prime texture: SpellID-added Buff/Debuff: try Nampower spell texture lookup immediately.
-  -- If it returns nil, do NOTHING here so existing fallback logic below (cache/siblings) and DoiteConditions "seen" updates remain unchanged.
+  -- 自动预加载纹理：通过法术 ID 添加的增益/减益：立即尝试 Nampower 法术纹理查找。
+  -- 如果返回 nil，此处不执行任何操作，以便现有的后备逻辑（缓存/兄弟）和 DoiteConditions 的“已见”更新保持不变。
   if spellIdStr then
       local tex = DA_GetSpellTextureById(spellIdStr)
       if tex then
@@ -3603,9 +3633,9 @@ addBtn:SetScript("OnClick", function()
   end
 
   if t == "Ability" then
-    local slot = FindSpellBookSlot(name)
+    local slot, slotBookType = FindSpellBookSlot(name)
     if slot and GetSpellTexture then
-      local tex = GetSpellTexture(slot, BOOKTYPE_SPELL)
+      local tex = GetSpellTexture(slot, slotBookType or BOOKTYPE_SPELL)
       if tex then
         cache[name]       = tex
         entry.iconTexture = tex
@@ -3613,14 +3643,14 @@ addBtn:SetScript("OnClick", function()
     end
 
   elseif t == "Item" then
-    -- Items: use real item icon where possible, or "?" for special EQUIPPED headers
+    -- 物品：尽可能使用真实物品图标，对于特殊装备标题使用“？”
     if isSpecialHeader then
-      -- "EQUIPPED TRINKET SLOTS" / "EQUIPPED WEAPON SLOTS" -> placeholder for later conditions
+      -- “已装备的饰品栏位” / “已装备的武器栏位” -> 后续条件的占位符
       local tex = "Interface\\Icons\\INV_Misc_QuestionMark"
       cache[name]       = tex
       entry.iconTexture = tex
     else
-      -- Concrete item selected: capture its icon now so it persists even if unequipped later
+      -- 选择了具体物品：立即捕获其图标，以便即使以后卸下也能持久化
       local itemTex = DA_FindItemTextureByName(name)
       if itemTex then
         cache[name]       = itemTex
@@ -3629,7 +3659,7 @@ addBtn:SetScript("OnClick", function()
     end
   end
 
-  -- Generic fallback: use any existing cache or sibling iconTexture if still missing
+  -- 通用后备：如果仍然缺失，使用任何现有缓存或兄弟 iconTexture
   if not entry.iconTexture then
     local cached = DA_Cache()[name]
     if cached then
@@ -3652,7 +3682,7 @@ addBtn:SetScript("OnClick", function()
 end)
 
 -- =========================
--- Minimap Button (DoiteAuras)
+-- 小地图按钮 (DoiteAuras)
 -- =========================
 local function DA_GetVersion()
   local v = (GetAddOnMetadata and GetAddOnMetadata("DoiteAuras", "Version")) or (DoiteAuras_Version) or "?"
@@ -3661,7 +3691,7 @@ end
 
 local function _DA_MiniSV()
   DoiteAurasDB.minimap = DoiteAurasDB.minimap or {}
-  if DoiteAurasDB.minimap.angle == nil then DoiteAurasDB.minimap.angle = 45 end -- default angle
+  if DoiteAurasDB.minimap.angle == nil then DoiteAurasDB.minimap.angle = 45 end -- 默认角度
   return DoiteAurasDB.minimap
 end
 
@@ -3679,13 +3709,13 @@ local function DA_CreateMinimapButton()
   btn:SetFrameStrata("MEDIUM")
   btn:SetWidth(31); btn:SetHeight(31)
 
-  -- Ring overlay
+  -- 环覆盖
   local overlay = btn:CreateTexture(nil, "OVERLAY")
   overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
   overlay:SetWidth(54); overlay:SetHeight(54)
   overlay:SetPoint("TOPLEFT", 0, 0)
 
-  -- Icon (DA tga)
+  -- 图标 (DA tga)
   local icon = btn:CreateTexture(nil, "BACKGROUND")
   icon:SetTexture("Interface\\AddOns\\DoiteAuras\\Textures\\doiteauras-icon")
   icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
@@ -3700,7 +3730,7 @@ local function DA_CreateMinimapButton()
   btn:RegisterForDrag("LeftButton", "RightButton")
   btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
-  -- drag to move along the minimap ring
+  -- 拖动以沿小地图环移动
   btn:SetScript("OnDragStart", function()
     btn:SetScript("OnUpdate", function()
       local x, y = GetCursorPosition()
@@ -3713,14 +3743,14 @@ local function DA_CreateMinimapButton()
   end)
   btn:SetScript("OnDragStop", function() btn:SetScript("OnUpdate", nil) end)
 
-  -- click: opens/close DoiteAuras
+  -- 点击：打开/关闭 DoiteAuras
   btn:SetScript("OnClick", function()
     if DA_IsHardDisabled and DA_IsHardDisabled() then
       local cf = (DEFAULT_CHAT_FRAME or ChatFrame1)
       if cf then
         local missing = DA_GetMissingRequiredMods()
-		local list = table.concat(missing, ", ")
-		cf:AddMessage("|cff6FA8DCDoiteAuras:|r 已禁用，因为缺少所需模组（" .. list .. "）。")
+        local list = table.concat(missing, ", ")
+        cf:AddMessage("|cff6FA8DCDoiteAuras:|r 已禁用，因为缺少所需模组（" .. list .. "）。")
       end
       return
     end
@@ -3728,23 +3758,23 @@ local function DA_CreateMinimapButton()
     if DoiteAurasFrame and DoiteAurasFrame:IsShown() then
       DoiteAurasFrame:Hide()
     else
-      -- center-on-open logic (keeps Step #1 behavior)
+      -- 居中打开逻辑（保持步骤 #1 行为）
       if DoiteAurasFrame then
         DoiteAurasFrame:ClearAllPoints()
         DoiteAurasFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         DoiteAurasFrame:Show()
 
-        -- IMPORTANT: /da calls RefreshList() on open; minimap must do the same
+        -- 重要：/da 在打开时调用 RefreshList()；小地图必须执行相同操作
         RefreshList()
       end
     end
   end)
 
 
-  -- tooltip
+  -- 工具提示
   btn:SetScript("OnEnter", function()
     GameTooltip:SetOwner(btn, "ANCHOR_LEFT")
-    GameTooltip:AddLine("DOITEAURAS", 0.435, 0.659, 0.863) -- #6FA8DC = DoiteAuras color - personal note
+    GameTooltip:AddLine("DOITEAURAS", 0.435, 0.659, 0.863) -- #6FA8DC = DoiteAuras 颜色 - 个人笔记
     GameTooltip:AddLine("点击打开 DoiteAuras", 1, 1, 1)
     GameTooltip:AddLine("版本: " .. tostring(DA_GetVersion()), 0.9, 0.9, 0.9)
     GameTooltip:Show()
@@ -3753,11 +3783,11 @@ local function DA_CreateMinimapButton()
     if GameTooltip:IsOwned(btn) then GameTooltip:Hide() end
   end)
 
-  -- initial placement
+  -- 初始放置
   _DA_PlaceMini(btn)
 end
 
--- create/show on load
+-- 在加载时创建/显示
 local _daMiniInit = CreateFrame("Frame", "DoiteMiniInit")
 _daMiniInit:RegisterEvent("ADDON_LOADED")
 _daMiniInit:SetScript("OnEvent", function()
@@ -3765,18 +3795,18 @@ _daMiniInit:SetScript("OnEvent", function()
   DA_CreateMinimapButton()
 end)
 
--- /slash commands
+-- /slash 命令
 SLASH_DOITEAURAS1="/da"
 SLASH_DOITEAURAS2="/doiteaurs"
 SLASH_DOITEAURAS3="/doiteaura"
 SLASH_DOITEAURAS4="/doite"
 
 SlashCmdList["DOITEAURAS"] = function(msg)
-  -- msg is a plain string, no methods on it
+  -- msg 是普通字符串，没有方法
   msg = msg or ""
   msg = string.lower(msg)
 
-  -- Split into first word (cmd) and rest (arguments)
+  -- 拆分为第一个单词（cmd）和其余部分（参数）
   local cmd, rest
   local firstSpace = string.find(msg, " ", 1, true)
   if firstSpace then
@@ -3787,7 +3817,7 @@ SlashCmdList["DOITEAURAS"] = function(msg)
     rest = ""
   end
 
-  -- Trim whitespace around rest
+  -- 修剪 rest 周围的空白
   rest = string.gsub(rest, "^%s+", "")
   rest = string.gsub(rest, "%s+$", "")
 
@@ -3806,13 +3836,13 @@ SlashCmdList["DOITEAURAS"] = function(msg)
     return
   end
 
-  -- Normal DoiteAuras toggle
+  -- 正常 DoiteAuras 切换
   if DA_IsHardDisabled() then
     local cf = (DEFAULT_CHAT_FRAME or ChatFrame1)
     if cf then
       local missing = DA_GetMissingRequiredMods()
-	  local list = table.concat(missing, ", ")
-	  cf:AddMessage("|cff6FA8DCDoiteAuras:|r 已禁用，因为缺少所需模组（" .. list .. "）。")
+      local list = table.concat(missing, ", ")
+      cf:AddMessage("|cff6FA8DCDoiteAuras:|r 已禁用，因为缺少所需模组（" .. list .. "）。")
     end
     return
   end
@@ -3820,7 +3850,7 @@ SlashCmdList["DOITEAURAS"] = function(msg)
   if frame:IsShown() then
     frame:Hide()
   else
-    -- Always (re)center on open
+    -- 打开时始终（重新）居中
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     frame:Show()
@@ -3829,12 +3859,12 @@ SlashCmdList["DOITEAURAS"] = function(msg)
 end
 
 -- =========================
--- Version WHO (/daversionwho)
+-- 版本 WHO (/daversionwho)
 -- =========================
 local DA_PREFIX = "DOITEAURAS"
 
 local function DA_GetVersion_Safe()
-  -- Reuse existing DA_GetVersion() if present (minimap section defines it)
+  -- 如果存在，重用现有 DA_GetVersion()（小地图部分定义它）
   if type(DA_GetVersion) == "function" then
     return DA_GetVersion() or "?"
   end
@@ -3853,7 +3883,7 @@ local function DA_BroadcastVersionAll()
   end
 end
 
--- Version compare helpers
+-- 版本比较辅助函数
 local function DA_ParseVersion(v)
   local s = tostring(v or "")
   local _, _, a, b, c = string.find(s, "^(%d+)%.(%d+)%.?(%d*)$")
@@ -3871,7 +3901,7 @@ end
 local _daVerNotifiedOnce = false
 local _daVerLastEcho = 0
 
--- /daversionwho: ask others to report their version (silent: only requester prints)
+-- /daversionwho：要求其他人报告其版本（静默：只有请求者打印）
 SLASH_DAVERSIONWHO1 = "/daversionwho"
 SlashCmdList["DAVERSIONWHO"] = function()
   local cf = (DEFAULT_CHAT_FRAME or ChatFrame1)
@@ -3883,9 +3913,9 @@ SlashCmdList["DAVERSIONWHO"] = function()
 
   local sent = false
   if me and me ~= "" then
-    local rid = tostring(((GetTime and GetTime()) or 0)) -- request id to avoid collisions
+    local rid = tostring(((GetTime and GetTime()) or 0)) -- 请求 ID，以避免冲突
 
-    -- store locally so ONLY this client prints matching replies
+    -- 本地存储，以便只有此客户端打印匹配的回复
     _G["DoiteAuras_WhoRid"] = rid
 
     if UnitInRaid and UnitInRaid("player") then
@@ -3902,7 +3932,7 @@ SlashCmdList["DAVERSIONWHO"] = function()
   end
 end
 
--- Small delayed runner
+-- 小延迟运行器
 function DA_RunLater(delay, func)
   local f = CreateFrame("Frame")
   local acc = 0
@@ -3915,7 +3945,7 @@ function DA_RunLater(delay, func)
   end)
 end
 
--- Version event listener (compare, notify, echo replies)
+-- 版本事件监听器（比较，通知，回显回复）
 local _daVer = CreateFrame("Frame", "DoiteVersion")
 _daVer:RegisterEvent("CHAT_MSG_ADDON")
 _daVer:SetScript("OnEvent", function()
@@ -3926,19 +3956,19 @@ _daVer:SetScript("OnEvent", function()
   local mine = tostring(DA_GetVersion_Safe())
   local cf   = (DEFAULT_CHAT_FRAME or ChatFrame1)
 
-  -- WHO request: "DA_WHO:<requesterName>:<rid>"
+  -- WHO 请求："DA_WHO:<requesterName>:<rid>"
   if string.sub(text, 1, 7) == "DA_WHO:" then
     local payload = string.sub(text, 8) or ""
     local _, _, requester, rid = string.find(payload, "^([^:]+)%:(.+)$")
 
     if requester and requester ~= "" and rid and rid ~= "" and channel and SendAddonMessage then
-      -- reply on SAME channel (RAID/PARTY/GUILD). Everyone replies, but only requester will print.
+      -- 在相同频道上回复（RAID/PARTY/GUILD）。每个人都会回复，但只有请求者会打印。
       SendAddonMessage(DA_PREFIX, "DA_ME:" .. requester .. ":" .. rid .. ":" .. mine, channel)
     end
     return
   end
 
-  -- WHO reply: "DA_ME:<requesterName>:<rid>:<version>"
+  -- WHO 回复："DA_ME:<requesterName>:<rid>:<version>"
   if string.sub(text, 1, 6) == "DA_ME:" then
     local payload = string.sub(text, 7) or ""
     local _, _, requester, rid, other = string.find(payload, "^([^:]+)%:([^:]+)%:(.*)$")
@@ -3946,18 +3976,18 @@ _daVer:SetScript("OnEvent", function()
     local meName = (UnitName and UnitName("player")) or ""
     local myRid  = _G["DoiteAuras_WhoRid"]
 
-    -- Only the requester that initiated THIS rid prints.
+    -- 只有发起此 rid 的请求者打印。
     if requester and requester == meName and rid and myRid and rid == myRid then
       if cf then
         cf:AddMessage(string.format("|cff6FA8DCDoiteAuras:|r %s 拥有 %s（你拥有 %s）", tostring(sender or "?"), tostring(other or "?"), tostring(mine)))
       end
 
-      -- notify once if theirs is newer than mine (requester-only)
+      -- 如果对方的版本比我的新，则通知一次（仅请求者）
       if (not _daVerNotifiedOnce) and DA_IsNewer(other, mine) then
         _daVerNotifiedOnce = true
         DA_RunLater(8, function()
           if cf then
-            cf:AddMessage(string.format("|cff6FA8DCDoiteAuras:|r 有更新的版本可用（你的版本：%s，最新见到的：%s）。考虑更新。", tostring(mine), tostring(other)))
+            cf:AddMessage(string.format("|cff6FA8DCDoiteAuras:|r 有更新的版本可用（你的版本：%s，最新见到的：%s）。考虑更新：https://github.com/Player-Doite/DoiteAuras", tostring(mine), tostring(other)))
           end
         end)
       end
@@ -3968,16 +3998,16 @@ _daVer:SetScript("OnEvent", function()
 
   if string.sub(text, 1, 7) == "DA_VER:" then
     local other = string.sub(text, 8)
-    -- notify once if theirs is newer than mine
+    -- 如果对方的版本比我的新，则通知一次
     if (not _daVerNotifiedOnce) and DA_IsNewer(other, mine) then
       _daVerNotifiedOnce = true
       DA_RunLater(8, function()
         if cf then
-          cf:AddMessage(string.format("|cff6FA8DCDoiteAuras:|r 有更新的版本可用（你的版本：%s，最新见到的：%s）。考虑更新。", tostring(mine), tostring(other)))
+          cf:AddMessage(string.format("|cff6FA8DCDoiteAuras:|r 有更新的版本可用（你的版本：%s，最新见到的：%s）。考虑更新：https://github.com/Player-Doite/DoiteAuras", tostring(mine), tostring(other)))
         end
       end)
     end
-    -- echo mine back (rate-limited) so others see my version too
+    -- 回显我的版本（速率限制），以便其他人也看到我的版本
     if channel and SendAddonMessage then
       local now = (GetTime and GetTime()) or 0
       if now - _daVerLastEcho > 10 then
@@ -3990,7 +4020,7 @@ _daVer:SetScript("OnEvent", function()
 end)
 
 
--- Loaded message + delayed version broadcast(s)
+-- 加载消息 + 延迟版本广播
 local _daRaidAnnounced = false
 
 local _daLoad = CreateFrame("Frame", "DoiteLoad")
@@ -4000,7 +4030,7 @@ _daLoad:RegisterEvent("RAID_ROSTER_UPDATE")
 
 _daLoad:SetScript("OnEvent", function()
   if event == "ADDON_LOADED" and arg1 == "DoiteAuras" then
-    -- 1s after load: run modern-mod check, then print either "loaded" or "missing" line
+    -- 加载后 1 秒：运行现代模组检查，然后打印“已加载”或“缺失”行
     DA_RunLater(1, function()
       local cf = (DEFAULT_CHAT_FRAME or ChatFrame1)
       if not cf then return end
@@ -4008,17 +4038,17 @@ _daLoad:SetScript("OnEvent", function()
       local missing = DA_GetMissingRequiredMods()
 
       if table.getn(missing) == 0 then
-        -- All required mods present → normal loaded message
+        -- 所有所需模组都存在 → 正常加载消息
         local v = tostring(DA_GetVersion_Safe())
         cf:AddMessage("|cff6FA8DCDoiteAuras|r v"..v.." 已加载。使用 |cffffff00/da|r（或小地图图标）。")
       else
-        -- One or more missing → modern client requirement message
+        -- 一个或多个缺失 → 现代客户端需求消息
         local list = table.concat(missing, ", ")
         cf:AddMessage("|cff6FA8DCDoiteAuras:|r 此插件需要 Nampower 2.40.0+ 和 UnitXP SP3。缺失：" .. list .. "。")
-        -- BLOCKER: after printing the message, hard-disable the addon
+        -- 阻塞器：打印消息后，硬禁用插件
         _G["DoiteAuras_HardDisabled"] = true
 
-        -- Hide config frame and any icons if they exist
+        -- 如果存在，隐藏配置框架和任何图标
         if DoiteAurasFrame and DoiteAurasFrame.Hide then
           DoiteAurasFrame:Hide()
         end
@@ -4031,13 +4061,13 @@ _daLoad:SetScript("OnEvent", function()
     end)
 
   elseif event == "PLAYER_ENTERING_WORLD" then
-    -- 10s after entering world: broadcast my version to an available channel
+    -- 进入世界后 10 秒：向可用频道广播我的版本
     DA_RunLater(10, function()
       DA_BroadcastVersionAll()
     end)
 
   elseif event == "RAID_ROSTER_UPDATE" then
-    -- first time player are in a raid: announce on RAID after ~3s
+    -- 玩家首次进入团队时：约 3 秒后在 RAID 上宣布
     if not _daRaidAnnounced and UnitInRaid and UnitInRaid("player") then
       _daRaidAnnounced = true
       DA_RunLater(3, function()
@@ -4049,7 +4079,7 @@ _daLoad:SetScript("OnEvent", function()
   end
 end)
 
--- Update icons frequently
+-- 频繁更新图标
 local updateFrame = CreateFrame("Frame", "DoiteUpdateFrame")
 updateFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 updateFrame:SetScript("OnEvent", function()
@@ -4062,7 +4092,7 @@ RebuildOrder(); RefreshList(); RefreshIcons()
 DoiteAuras_RefreshList  = RefreshList
 DoiteAuras_RefreshIcons = RefreshIcons
 
--- Reusable candidate list/pool
+-- 可重用候选列表/池
 local _daCandidates_list = {}
 local _daCandidates_pool = {}
 
@@ -4090,7 +4120,7 @@ function DoiteAuras.GetAllCandidates()
 
     local n = 0
     for key, data in pairs(DoiteAurasDB.spells or {}) do
-        -- Skip entries whose bucket is disabled, unless the helper doesn't exist
+        -- 跳过其桶被禁用的条目，除非辅助函数不存在
         if (not DoiteAuras_IsKeyDisabled) or (not DoiteAuras_IsKeyDisabled(key)) then
             local f = (DoiteAuras_GetIconFrame and DoiteAuras_GetIconFrame(key)) or _G["DoiteIcon_" .. key]
 
@@ -4098,11 +4128,11 @@ function DoiteAuras.GetAllCandidates()
             if f then
                 wants = (f._daShouldShow == true) or (f._daSliding == true)
             end
-          -- While testing all: force the edited key into the pool so groups can place it
+          -- 全部测试时：强制将编辑的键放入池中，以便组可以放置它
             if testAll then
                 wants = true
             end
-            -- While editing: force the edited key into the pool so groups can place it
+            -- 编辑时：强制将编辑的键放入池中，以便组可以放置它
             if editOpen and editKey == key then
                 wants = true
             end
@@ -4127,7 +4157,7 @@ function DoiteAuras.GetAllCandidates()
     return list
 end
 
--- Ensure an icon frame exists for a given key (no visibility changes)
+-- 确保给定键的图标框架存在（无可见性更改）
 function DoiteAuras_TouchIcon(key)
   if not key then return end
   if DA_IsHardDisabled and DA_IsHardDisabled() then return end

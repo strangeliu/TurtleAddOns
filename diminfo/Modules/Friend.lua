@@ -15,8 +15,10 @@ end
 
 -- 在线人数	
 local function OnEvent()
-	local onlineF = GetNumberFriends()
-	Text:SetText(FRIENDS..onlineF)
+	if (event == "PLAYER_ENTERING_WORLD") or (event == "FRIENDLIST_UPDATE") then
+		local onlineFriends = GetNumberFriends()
+		Text:SetText(FRIENDS.."|cff00FF00"..onlineFriends.."|r")
+	end
 end
 
 -- 鼠标提示

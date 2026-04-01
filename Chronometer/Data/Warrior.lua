@@ -38,7 +38,7 @@ function Chronometer:WarriorSetup()
     self:AddTimer(self.SPELL, BS["Demoralizing Shout"],  30, 0,0,0, { rc=true, d={tn=BS["Booming Voice"], tp=5, tb=10} })
     -- 缴械: 持续10秒, 目标指向, 非增益效果, 无目标选择
     -- 额外参数: 有冷却时间, 受"强化缴械"天赋影响(延长1秒)
-    self:AddTimer(self.SPELL, BS["Disarm"],              10, 1,0,0, { rc=true, d={tn=BS["Improved Disarm"], tb=1} })
+    self:AddTimer(self.SPELL, BS["Disarm"],              10, 1,0,0, { rc=true })
     -- 断筋: 持续15秒, 目标指向, 非增益效果, 无目标选择
     -- 额外参数: 强化缴械
     self:AddTimer(self.SPELL, BS["Hamstring"],           15, 1,0,0, { rc=true })
@@ -75,7 +75,7 @@ function Chronometer:WarriorSetup()
     self:AddTimer(self.SPELL, BS["Shield Block"],         5, 0,1,1, { d={tn=BS["Improved Shield Block"], tt={0.5, 1, 2}} })
     -- 盾墙: 持续10秒, 非目标指向, 增益效果, 自身生效
     -- 额外参数: 受"强化盾牌格挡"天赋影响(延长3秒, 冷却时间减少2分钟)
-    self:AddTimer(self.SPELL, BS["Shield Wall"],         10, 0,1,1, { d={tn=BS["Improved Shield Wall"], tb=3, ts=2} })
+    self:AddTimer(self.SPELL, BS["Shield Wall"],         10, 0,1,1, { d={tn=BS["Improved Shield Wall"], tt={1, 2}} })
     -- 破甲攻击: 持续30秒, 目标指向, 非增益效果, 无目标选择
     -- 额外参数: 有冷却时间
     self:AddTimer(self.SPELL, BS["Sunder Armor"],        30, 1,0,0, { rc=true } )

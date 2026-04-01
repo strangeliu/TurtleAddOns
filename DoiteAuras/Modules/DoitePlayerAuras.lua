@@ -1,29 +1,29 @@
 ---------------------------------------------------------------
 -- DoitePlayerAuras.lua
--- Player aura cache + lookup helpers (buffs/debuffs, slot + stack counts)
--- Please respect license note: Ask permission
+-- 玩家光环缓存 + 查找辅助函数（增益/减益，槽位 + 层数计数）
+-- 请尊重许可说明：使用前请询问
 -- WoW 1.12 | Lua 5.0
 ---------------------------------------------------------------
 local MAX_BUFF_SLOTS = 32
 local MAX_DEBUFF_SLOTS = 16
 
 local DoitePlayerAuras = {
-  buffs = {}, -- slot -> { spellId, stacks }
-  debuffs = {}, -- slot -> { spellId, stacks }
+  buffs = {}, -- 槽位 -> { spellId, stacks }
+  debuffs = {}, -- 槽位 -> { spellId, stacks }
 
-  spellIdToNameCache = {}, -- spellId -> spell name
-  spellNameToIdCache = {}, -- spell name -> spellId
-  spellNameToMaxStacks = {}, -- spell name -> max stacks
+  spellIdToNameCache = {}, -- spellId -> 法术名称
+  spellNameToIdCache = {}, -- 法术名称 -> spellId
+  spellNameToMaxStacks = {}, -- 法术名称 -> 最大层数
 
-  activeBuffs = {}, -- spell name -> slot
-  activeDebuffs = {}, -- spell name -> slot
-  activeBuffSpellIds = {}, -- spellId -> slot
-  activeDebuffSpellIds = {}, -- spellId -> slot
+  activeBuffs = {}, -- 法术名称 -> 槽位
+  activeDebuffs = {}, -- 法术名称 -> 槽位
+  activeBuffSpellIds = {}, -- spellId -> 槽位
+  activeDebuffSpellIds = {}, -- spellId -> 槽位
 
-  cappedBuffsExpirationTime = {}, -- spell name -> expiration time in seconds
-  cappedBuffsStacks = {}, -- spell name -> stacks
+  cappedBuffsExpirationTime = {}, -- 法术名称 -> 过期时间（秒）
+  cappedBuffsStacks = {}, -- 法术名称 -> 层数
 
-  playerBuffIndexCache = {}, -- spell name -> player buff index (for GetPlayerBuffX functions)
+  playerBuffIndexCache = {}, -- 法术名称 -> 玩家增益索引（用于 GetPlayerBuffX 函数）
 
   numActiveBuffs = 0,
   numActiveDebuffs = 0,
@@ -31,9 +31,9 @@ local DoitePlayerAuras = {
   playerGuid = "",
 
   buffCapEventsEnabled = false,
-  debugBuffCap = false -- set to true to disable regular events and force buff cap events for testing
+  debugBuffCap = false -- 设置为 true 以禁用常规事件并强制测试缓冲上限事件
 }
--- initialize all buff/debuff indexes
+-- 初始化所有增益/减益索引
 for i = 1, MAX_BUFF_SLOTS do
   table.insert(DoitePlayerAuras.buffs, {
     spellId = nil,
@@ -56,7 +56,7 @@ local function MarkActive(spellId, activeTable, slot)
     DoitePlayerAuras.activeDebuffSpellIds[spellId] = slot
   end
 
-  -- cache spell name if not already cached
+  -- 如果尚未缓存法术名称，则缓存
   if not DoitePlayerAuras.spellIdToNameCache[spellId] then
     local spellName = GetSpellRecField(spellId, "name")
     if spellName then
@@ -65,7 +65,7 @@ local function MarkActive(spellId, activeTable, slot)
       activeTable[spellName] = slot
     end
   else
-    -- mark as active with slot
+    -- 标记为活跃并记录槽位
     local spellName = DoitePlayerAuras.spellIdToNameCache[spellId]
     if spellName then
       activeTable[spellName] = slot
@@ -87,9 +87,9 @@ local function MarkInactive(spellId, activeTable)
 end
 
 local function RemoveCappedBuff(spellName)
-  -- set expiration to 0
+  -- 将过期时间设置为 0
   DoitePlayerAuras.cappedBuffsExpirationTime[spellName] = 0
-  -- wipe stacks
+  -- 清除层数
   DoitePlayerAuras.cappedBuffsStacks[spellName] = 0
 end
 
@@ -97,19 +97,19 @@ local function UpdateAuras()
   local auraSpellIds = GetUnitField("player", "aura")
   local auraStacks = GetUnitField("player", "auraApplications")
 
-  -- clear active buffs/debuffs
+  -- 清除活跃的增益/减益
   DoitePlayerAuras.activeBuffs = {}
   DoitePlayerAuras.activeDebuffs = {}
   DoitePlayerAuras.activeBuffSpellIds = {}
   DoitePlayerAuras.activeDebuffSpellIds = {}
 
-  -- aura array becomes 1-indexed in Lua: 1-32 are buffs, 33-48 are debuffs
+  -- aura 数组在 Lua 中变为 1 索引：1-32 是增益，33-48 是减益
   DoitePlayerAuras.numActiveBuffs = 0
   for i = 1, MAX_BUFF_SLOTS do
     local spellId = auraSpellIds[i]
     if spellId and spellId ~= 0 then
       DoitePlayerAuras.buffs[i].spellId = spellId
-      DoitePlayerAuras.buffs[i].stacks = auraStacks[i] + 1 -- raw buff stacks are 0-indexed, add 1
+      DoitePlayerAuras.buffs[i].stacks = auraStacks[i] + 1 -- 原始增益层数是 0 索引，加 1
       MarkActive(spellId, DoitePlayerAuras.activeBuffs, i)
       DoitePlayerAuras.numActiveBuffs = i
     else
@@ -118,13 +118,13 @@ local function UpdateAuras()
     end
   end
 
-  -- debuffs: aura indices 33-48
+  -- 减益：aura 索引 33-48
   DoitePlayerAuras.numActiveDebuffs = 0
   for i = 1, MAX_DEBUFF_SLOTS do
     local spellId = auraSpellIds[MAX_BUFF_SLOTS + i]
     if spellId and spellId ~= 0 then
       DoitePlayerAuras.debuffs[i].spellId = spellId
-      DoitePlayerAuras.debuffs[i].stacks = auraStacks[MAX_BUFF_SLOTS + i] + 1 -- raw debuff stacks are 0-indexed, add 1
+      DoitePlayerAuras.debuffs[i].stacks = auraStacks[MAX_BUFF_SLOTS + i] + 1 -- 原始减益层数是 0 索引，加 1
       MarkActive(spellId, DoitePlayerAuras.activeDebuffs, i)
       DoitePlayerAuras.numActiveDebuffs = i
     else
@@ -140,7 +140,7 @@ function DoitePlayerAuras.IsHiddenByBuffCap(spellName)
     if expirationTime > GetTime() then
       return true
     else
-      -- expired, remove the capped buff
+      -- 已过期，移除缓冲上限的增益
       RemoveCappedBuff(spellName)
     end
   end
@@ -167,7 +167,7 @@ function DoitePlayerAuras.HasBuffSpellId(spellId)
 end
 
 function DoitePlayerAuras.HasDebuff(spellName)
-  -- don't think it's possible to hit debuff cap as a player currently, not gonna worry about it
+  -- 目前认为玩家不太可能达到减益上限，暂时不处理
   return DoitePlayerAuras.activeDebuffs[spellName] or false
 end
 
@@ -213,10 +213,10 @@ function DoitePlayerAuras.GetActiveAuraSlotBySpellId(spellId)
 end
 
 function DoitePlayerAuras.GetBuffStacks(spellName)
-  -- check if spell is active and get cached slot
+  -- 检查法术是否活跃并获取缓存的槽位
   local cachedSlot = DoitePlayerAuras.activeBuffs[spellName]
   if not cachedSlot then
-    -- check if hidden by buff cap
+    -- 检查是否被缓冲上限隐藏
     if DoitePlayerAuras.IsHiddenByBuffCap(spellName) then
       return DoitePlayerAuras.cappedBuffsStacks[spellName]
     end
@@ -229,12 +229,12 @@ function DoitePlayerAuras.GetBuffStacks(spellName)
     return nil
   end
 
-  -- check cached slot first
+  -- 首先检查缓存的槽位
   if DoitePlayerAuras.buffs[cachedSlot] and DoitePlayerAuras.buffs[cachedSlot].spellId == spellId then
     return DoitePlayerAuras.buffs[cachedSlot].stacks
   end
 
-  -- fallback: search through buffs for matching spell ID
+  -- 回退：搜索所有增益槽位以匹配法术 ID
   for i = 1, MAX_BUFF_SLOTS do
     if not DoitePlayerAuras.buffs[i].spellId then
       break
@@ -272,7 +272,7 @@ function DoitePlayerAuras.GetBuffStacksBySpellId(spellId)
 end
 
 function DoitePlayerAuras.GetDebuffStacks(spellName)
-  -- check if active and get cached slot
+  -- 检查是否活跃并获取缓存的槽位
   local cachedSlot = DoitePlayerAuras.activeDebuffs[spellName]
   if not cachedSlot then
     return nil
@@ -283,12 +283,12 @@ function DoitePlayerAuras.GetDebuffStacks(spellName)
     return nil
   end
 
-  -- check cached slot first
+  -- 首先检查缓存的槽位
   if DoitePlayerAuras.debuffs[cachedSlot] and DoitePlayerAuras.debuffs[cachedSlot].spellId == spellId then
     return DoitePlayerAuras.debuffs[cachedSlot].stacks
   end
 
-  -- fallback: search through debuffs for matching spell ID
+  -- 回退：搜索所有减益槽位以匹配法术 ID
   for i = 1, MAX_DEBUFF_SLOTS do
     if not DoitePlayerAuras.debuffs[i].spellId then
       break
@@ -332,13 +332,13 @@ function DoitePlayerAuras.GetHiddenBuffRemaining(spellName)
     if remaining > 0 then
       return remaining
     end
-    -- expired, remove the capped buff
+    -- 已过期，移除缓冲上限的增益
     RemoveCappedBuff(spellName)
   end
   return nil
 end
 
--- Frame for PLAYER_ENTERING_WORLD event
+-- PLAYER_ENTERING_WORLD 事件的框架
 local PlayerEnteringWorldFrame = CreateFrame("Frame", "DoitePlayerAuras_PlayerEnteringWorld")
 PlayerEnteringWorldFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 PlayerEnteringWorldFrame:SetScript("OnEvent", function()
@@ -349,13 +349,13 @@ PlayerEnteringWorldFrame:SetScript("OnEvent", function()
   local _, guid = UnitExists("player")
   DoitePlayerAuras.playerGuid = guid or ""
 
-  -- if at buff cap enable extra events
+  -- 如果达到缓冲上限，启用额外事件
   if DoitePlayerAuras.numActiveBuffs >= MAX_BUFF_SLOTS or DoitePlayerAuras.debugBuffCap then
     DoitePlayerAuras.RegisterBuffCapEvents()
   end
 end)
 
--- Frame for BUFF_ADDED_SELF event
+-- BUFF_ADDED_SELF 事件的框架
 local BuffAddedFrame = CreateFrame("Frame", "DoitePlayerAuras_BuffAdded")
 if not DoitePlayerAuras.debugBuffCap then
   BuffAddedFrame:RegisterEvent("BUFF_ADDED_SELF")
@@ -363,16 +363,16 @@ end
 BuffAddedFrame:SetScript("OnEvent", function()
   local spellId = arg3
   local stacks = arg4
-  local auraSlot = arg6 -- 0-based raw slot (0-31 for buffs)
-  local state = arg7 -- 0=added, 1=removed, 2=modified (stack change)
+  local auraSlot = arg6 -- 0 为基础的原始槽位（0-31 用于增益）
+  local state = arg7 -- 0=添加，1=移除，2=修改（层数更改）
 
-  local slot = auraSlot + 1 -- convert to 1-based for internal buffs table
+  local slot = auraSlot + 1 -- 转换为 1 基础，用于内部 buffs 表
   DoitePlayerAuras.buffs[slot].spellId = spellId
   DoitePlayerAuras.buffs[slot].stacks = stacks
   MarkActive(spellId, DoitePlayerAuras.activeBuffs, slot)
 
   if state == 0 then
-    -- newly added
+    -- 新添加
     DoitePlayerAuras.numActiveBuffs = DoitePlayerAuras.numActiveBuffs + 1
 
     if DoitePlayerAuras.numActiveBuffs >= MAX_BUFF_SLOTS or DoitePlayerAuras.debugBuffCap then
@@ -381,7 +381,7 @@ BuffAddedFrame:SetScript("OnEvent", function()
   end
 end)
 
--- Frame for BUFF_REMOVED_SELF event
+-- BUFF_REMOVED_SELF 事件的框架
 local BuffRemovedFrame = CreateFrame("Frame", "DoitePlayerAuras_BuffRemoved")
 if not DoitePlayerAuras.debugBuffCap then
   BuffRemovedFrame:RegisterEvent("BUFF_REMOVED_SELF")
@@ -389,20 +389,20 @@ end
 BuffRemovedFrame:SetScript("OnEvent", function()
   local spellId = arg3
   local stacks = arg4
-  local auraSlot = arg6 -- 0-based raw slot (0-31 for buffs)
-  local state = arg7 -- 0=added, 1=removed, 2=modified (stack decrease)
+  local auraSlot = arg6 -- 0 为基础的原始槽位（0-31 用于增益）
+  local state = arg7 -- 0=添加，1=移除，2=修改（层数减少）
 
-  local slot = auraSlot + 1 -- convert to 1-based for internal buffs table
+  local slot = auraSlot + 1 -- 转换为 1 基础，用于内部 buffs 表
 
   if state == 1 then
-    -- fully removed
+    -- 完全移除
     DoitePlayerAuras.buffs[slot].spellId = nil
     DoitePlayerAuras.buffs[slot].stacks = nil
     MarkInactive(spellId, DoitePlayerAuras.activeBuffs)
     DoitePlayerAuras.numActiveBuffs = DoitePlayerAuras.numActiveBuffs - 1
 
     if DoitePlayerAuras.buffCapEventsEnabled then
-      -- check if any capped buffs are still active before unregistering
+      -- 检查是否有任何缓冲上限的增益仍然活跃，然后再取消注册
       local hasActiveCappedBuffs = false
       for _, expiration in pairs(DoitePlayerAuras.cappedBuffsExpirationTime) do
         if expiration > GetTime() then
@@ -415,12 +415,12 @@ BuffRemovedFrame:SetScript("OnEvent", function()
       end
     end
   else
-    -- state == 2, stack decrease
+    -- state == 2，层数减少
     DoitePlayerAuras.buffs[slot].stacks = stacks
   end
 end)
 
--- Frame for DEBUFF_ADDED_SELF event
+-- DEBUFF_ADDED_SELF 事件的框架
 local DebuffAddedFrame = CreateFrame("Frame", "DoitePlayerAuras_DebuffAdded")
 if not DoitePlayerAuras.debugBuffCap then
   DebuffAddedFrame:RegisterEvent("DEBUFF_ADDED_SELF")
@@ -428,21 +428,21 @@ end
 DebuffAddedFrame:SetScript("OnEvent", function()
   local spellId = arg3
   local stacks = arg4
-  local auraSlot = arg6 -- 0-based raw slot (32-47 for debuffs)
-  local state = arg7 -- 0=added, 1=removed, 2=modified (stack change)
+  local auraSlot = arg6 -- 0 为基础的原始槽位（32-47 用于减益）
+  local state = arg7 -- 0=添加，1=移除，2=修改（层数更改）
 
-  local slot = auraSlot - MAX_BUFF_SLOTS + 1 -- convert to 1-based debuff index (1-16)
+  local slot = auraSlot - MAX_BUFF_SLOTS + 1 -- 转换为 1 基础的减益索引（1-16）
   DoitePlayerAuras.debuffs[slot].spellId = spellId
   DoitePlayerAuras.debuffs[slot].stacks = stacks
   MarkActive(spellId, DoitePlayerAuras.activeDebuffs, slot)
 
   if state == 0 then
-    -- newly added
+    -- 新添加
     DoitePlayerAuras.numActiveDebuffs = DoitePlayerAuras.numActiveDebuffs + 1
   end
 end)
 
--- Frame for DEBUFF_REMOVED_SELF event
+-- DEBUFF_REMOVED_SELF 事件的框架
 local DebuffRemovedFrame = CreateFrame("Frame", "DoitePlayerAuras_DebuffRemoved")
 if not DoitePlayerAuras.debugBuffCap then
   DebuffRemovedFrame:RegisterEvent("DEBUFF_REMOVED_SELF")
@@ -450,37 +450,37 @@ end
 DebuffRemovedFrame:SetScript("OnEvent", function()
   local spellId = arg3
   local stacks = arg4
-  local auraSlot = arg6 -- 0-based raw slot (32-47 for debuffs)
-  local state = arg7 -- 0=added, 1=removed, 2=modified (stack decrease)
+  local auraSlot = arg6 -- 0 为基础的原始槽位（32-47 用于减益）
+  local state = arg7 -- 0=添加，1=移除，2=修改（层数减少）
 
-  local slot = auraSlot - MAX_BUFF_SLOTS + 1 -- convert to 1-based debuff index (1-16)
+  local slot = auraSlot - MAX_BUFF_SLOTS + 1 -- 转换为 1 基础的减益索引（1-16）
 
   if state == 1 then
-    -- fully removed
+    -- 完全移除
     DoitePlayerAuras.debuffs[slot].spellId = nil
     DoitePlayerAuras.debuffs[slot].stacks = nil
     MarkInactive(spellId, DoitePlayerAuras.activeDebuffs)
     DoitePlayerAuras.numActiveDebuffs = DoitePlayerAuras.numActiveDebuffs - 1
   else
-    -- state == 2, stack decrease
+    -- state == 2，层数减少
     DoitePlayerAuras.debuffs[slot].stacks = stacks
   end
 end)
 
--- Frame for AURA_CAST_ON_SELF event (dynamically registered during buff cap)
+-- AURA_CAST_ON_SELF 事件的框架（在缓冲上限期间动态注册）
 local AuraCastFrame = CreateFrame("Frame", "DoitePlayerAuras_AuraCast")
 AuraCastFrame:SetScript("OnEvent", function()
-  -- only care about buffs when at buff cap
-  -- int auraCapStatus - bitfield: 1 = buff bar full, 2 = debuff bar full (3 means both)
+  -- 仅在达到缓冲上限时关心增益
+  -- int auraCapStatus - 位域：1 = 增益条满，2 = 减益条满（3 表示两者都满）
   local spellId, durationMs, auraCapStatus = arg1, arg8, arg9
 
   local applyCappedBuff = auraCapStatus == 1 or auraCapStatus == 3 or DoitePlayerAuras.debugBuffCap
 
 
 
-  -- double check we are buff capped
+  -- 双重检查我们是否达到了缓冲上限
   if applyCappedBuff then
-    -- cache spell name if not already cached
+    -- 如果尚未缓存法术名称，则缓存
     local spellName = DoitePlayerAuras.spellIdToNameCache[spellId]
     if not spellName then
       spellName = GetSpellRecField(spellId, "name")
@@ -492,7 +492,7 @@ AuraCastFrame:SetScript("OnEvent", function()
       end
     end
 
-    -- cache max stacks for spell
+    -- 缓存法术的最大层数
     if not DoitePlayerAuras.spellNameToMaxStacks[spellName] then
       local maxStacks = GetSpellRecField(spellId, "stackAmount")
       if maxStacks == 0 then
@@ -501,7 +501,7 @@ AuraCastFrame:SetScript("OnEvent", function()
       DoitePlayerAuras.spellNameToMaxStacks[spellName] = maxStacks
     end
 
-    -- if expired wipe previous stacks
+    -- 如果已过期，清除之前的层数
     local expirationTime = DoitePlayerAuras.cappedBuffsExpirationTime[spellName]
     if expirationTime and expirationTime > 0 and expirationTime <= GetTime() then
       DoitePlayerAuras.cappedBuffsStacks[spellName] = 0
@@ -509,7 +509,7 @@ AuraCastFrame:SetScript("OnEvent", function()
 
     DoitePlayerAuras.cappedBuffsExpirationTime[spellName] = GetTime() + durationMs / 1000.0
 
-    -- increment stacks, capped at max stacks
+    -- 增加层数，上限为最大层数
     local currentStacks = DoitePlayerAuras.cappedBuffsStacks[spellName] or 0
     local maxStacks = DoitePlayerAuras.spellNameToMaxStacks[spellName] or 1
 
@@ -517,7 +517,7 @@ AuraCastFrame:SetScript("OnEvent", function()
   end
 end)
 
--- Shared logic for processing spell casts that may consume stacks or clearcasting
+-- 处理可能消耗层数或节能施法的法术施放的共享逻辑
 local function ProcessBuffCappedSpell(spellId, casterGUID, targetGUID)
   if DoiteBuffData.stackModifiers[spellId] then
     local modifiedBuffName = DoiteBuffData.stackModifiers[spellId].modifiedBuffName
@@ -543,11 +543,11 @@ local function ProcessBuffCappedSpell(spellId, casterGUID, targetGUID)
       end
     end
   end
-  -- check for clearcasting
+  -- 检查节能施法
   if DoitePlayerAuras.IsHiddenByBuffCap("节能施法") and
       targetGUID ~= casterGUID then
-    -- remove clearcasting buff on any spell cast that costs mana and doesn't target yourself
-    -- not perfect as buffs on others will remove but pretty good
+    -- 在施放任何消耗法力且不指向自己的法术后移除节能施法增益
+    -- 不完美，因为对他人施放的增益也会移除，但相当好
     local manaCost = GetSpellRecField(spellId, "manaCost")
     if manaCost and manaCost > 0 then
       RemoveCappedBuff("节能施法")
@@ -555,7 +555,7 @@ local function ProcessBuffCappedSpell(spellId, casterGUID, targetGUID)
   end
 end
 
--- Frame for SPELL_GO_SELF event
+-- SPELL_GO_SELF 事件的框架
 local SpellGoSelfFrame = CreateFrame("Frame", "DoitePlayerAuras_SpellGoSelf")
 SpellGoSelfFrame:SetScript("OnEvent", function()
   local spellId = arg2
@@ -564,12 +564,12 @@ SpellGoSelfFrame:SetScript("OnEvent", function()
   ProcessBuffCappedSpell(spellId, casterGUID, targetGUID)
 end)
 
--- Frame for SPELL_CHANNEL_START event (fires when player starts or updates a channeled spell)
+-- SPELL_CHANNEL_START 事件的框架（当玩家开始或更新引导法术时触发）
 local SpellChannelStartFrame = CreateFrame("Frame", "DoitePlayerAuras_SpellChannelStart")
 SpellChannelStartFrame:SetScript("OnEvent", function()
   local spellId = arg1
-  local targetGUID = arg2 -- from ChannelTargetGuid, "0x0000000000000000" if none
-  -- arg3 = durationMs (unused for stack/clearcasting logic)
+  local targetGUID = arg2 -- 来自 ChannelTargetGuid，如果没有则为 "0x0000000000000000"
+  -- arg3 = durationMs（用于层数/节能施法逻辑，未使用）
   ProcessBuffCappedSpell(spellId, DoitePlayerAuras.playerGuid, targetGUID)
 end)
 
@@ -583,8 +583,8 @@ function DoitePlayerAuras.RegisterBuffCapEvents()
   SpellChannelStartFrame:RegisterEvent("SPELL_CHANNEL_START")
 end
 
--- Currently unused as it is hard to know when we can safely unregister these events
--- shouldn't be an issue if left registered even after someone drops below buff cap
+-- 目前未使用，因为很难知道何时可以安全取消注册这些事件
+-- 即使某人低于缓冲上限后，让它们保持注册应该不是问题
 function DoitePlayerAuras.UnregisterBuffCapEvents()
   if not DoitePlayerAuras.buffCapEventsEnabled then
     return
@@ -599,22 +599,22 @@ function DoitePlayerAuras.ToggleDebugBuffCap()
   DoitePlayerAuras.debugBuffCap = not DoitePlayerAuras.debugBuffCap
 
   if DoitePlayerAuras.debugBuffCap then
-    -- Enabling debug mode: unregister normal events and register buff cap events
+    -- 启用调试模式：取消注册正常事件并注册缓冲上限事件
     BuffAddedFrame:UnregisterEvent("BUFF_ADDED_SELF")
     BuffRemovedFrame:UnregisterEvent("BUFF_REMOVED_SELF")
     DebuffAddedFrame:UnregisterEvent("DEBUFF_ADDED_SELF")
     DebuffRemovedFrame:UnregisterEvent("DEBUFF_REMOVED_SELF")
     DoitePlayerAuras.RegisterBuffCapEvents()
-    print("DoitePlayerAuras: Debug buff cap enabled - simulating buff cap behavior")
+    print("DoitePlayerAuras: 调试缓冲上限已启用 - 模拟缓冲上限行为")
   else
-    -- Disabling debug mode: register normal events and unregister buff cap events
+    -- 禁用调试模式：注册正常事件并取消注册缓冲上限事件
     BuffAddedFrame:RegisterEvent("BUFF_ADDED_SELF")
     BuffRemovedFrame:RegisterEvent("BUFF_REMOVED_SELF")
     DebuffAddedFrame:RegisterEvent("DEBUFF_ADDED_SELF")
     DebuffRemovedFrame:RegisterEvent("DEBUFF_REMOVED_SELF")
     DoitePlayerAuras.UnregisterBuffCapEvents()
-    -- Refresh buff/debuff state
+    -- 刷新增益/减益状态
 	UpdateAuras()
-    print("DoitePlayerAuras: Debug buff cap disabled")
+    print("DoitePlayerAuras: 调试缓冲上限已禁用")
   end
 end

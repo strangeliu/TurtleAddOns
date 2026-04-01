@@ -40,8 +40,8 @@ function Chronometer:HunterSetup()
     -- 添加各种事件的计时器（事件类型）
     -- 参数说明：类型（事件）、事件名称、持续时间、是否显示图标、是否显示倒计时、是否为增益效果、附加参数
     self:AddTimer(self.EVENT, BS["Explosive Trap Effect"],   20, 1,0,1, { gr=1, xn=BS["Explosive Trap"] })  -- 爆炸陷阱效果：20秒，显示图标，不显示倒计时，增益效果，附加：归组1、关联法术为爆炸陷阱
-    self:AddTimer(self.EVENT, BS["Freezing Trap Effect"],    10, 1,0,1, { gr=1, d={rs=5, tn=BS["Clever Traps"], tb=0.15, tp=1}, xn=BS["Freezing Trap"] })  -- 冰冻陷阱效果：10秒，显示图标，不显示倒计时，增益效果，附加：归组1、额外数据{重置时间5秒、天赋名称=精巧陷阱、天赋加成=0.15、天赋点数=1}、关联法术为冰冻陷阱
-    self:AddTimer(self.EVENT, BS["Frost Trap Aura"],       30, 0,0,0, { gr=1, d={tn=BS["Clever Traps"], tb=0.15, tp=1}, xn=BS["Frost Trap"] })  -- 冰霜陷阱光环：30秒，不显示图标，不显示倒计时，非增益效果，附加：归组1、额外数据{天赋名称=精巧陷阱、天赋加成=0.15、天赋点数=1}、关联法术为冰霜陷阱
+    self:AddTimer(self.EVENT, BS["Freezing Trap Effect"],    10, 1,0,1, { gr=1, d={rs=5, tn=BS["Clever Traps"], tb=15, tp=2}, xn=BS["Freezing Trap"] })  -- 冰冻陷阱效果：10秒，显示图标，不显示倒计时，增益效果，受灵巧陷阱天赋影响
+    self:AddTimer(self.EVENT, BS["Frost Trap Aura"],       30, 0,0,0, { gr=1, d={tn=BS["Clever Traps"], tb=15, tp=2}, xn=BS["Frost Trap"] })  -- 冰霜陷阱光环：30秒，不显示图标，不显示倒计时，非增益效果，受灵巧陷阱天赋影响
     self:AddTimer(self.EVENT, BS["Immolation Trap Effect"],  15, 1,0,1, { gr=1, xn=BS["Immolation Trap"] })  -- 献祭陷阱效果：15秒，显示图标，不显示倒计时，增益效果，附加：归组1、关联法术为献祭陷阱
     self:AddTimer(self.EVENT, BS["Improved Concussive Shot"], 3, 1,0,0, { cr="GREEN", xn=BS["Concussive Shot"] })  -- 强化震荡射击：3秒，显示图标，不显示倒计时，非增益效果，附加：颜色=绿色、关联法术为震荡射击
     self:AddTimer(self.EVENT, BS["Improved Wing Clip"],       5, 1,0,0, { cr="GREEN", xn=BS["Wing Clip"] } )  -- 强化翼击：5秒，显示图标，不显示倒计时，非增益效果，附加：颜色=绿色、关联法术为翼击

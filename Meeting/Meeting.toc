@@ -3,7 +3,7 @@
 ## Title-zhCN: |CFF33AAFF[辅助]|R集合石
 ## Notes:|CFF33AAFFMeeting|R|N帮助你寻找队伍的小工具
 ## Notes-zhCN: |CFF33AAFFMeeting|R|N帮助你寻找队伍的小工具
-## Version: 1.1.2
+## Version: 1.1.5
 ## Author: 龟壳, 武藤纯子酱, Wind, Sunelegy
 ## SavedVariablesPerCharacter: MEETING_DB
 

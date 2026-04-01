@@ -303,6 +303,97 @@ WBT_Options.NPC = {
     Nefarian_Horde = { name = "萨鲁法尔大王", yell = "奈法利安被杀掉了" },
 }
 
+local function WBT_GetFactionByRace()
+    local localizedRace, raceToken = UnitRace("player")
+    local race = raceToken or localizedRace
+    local allianceRaces = {
+        Human = true,
+        Dwarf = true,
+        NightElf = true,
+        Gnome = true,
+        Draenei = true,
+        HighElf = true,
+        ["人类"] = true,
+        ["矮人"] = true,
+        ["暗夜精灵"] = true,
+        ["侏儒"] = true,
+        ["德莱尼"] = true,
+        ["高等精灵"] = true,
+    }
+    local hordeRaces = {
+        Orc = true,
+        Scourge = true,
+        Undead = true,
+        Tauren = true,
+        Troll = true,
+        BloodElf = true,
+        Goblin = true,
+        ["兽人"] = true,
+        ["亡灵"] = true,
+        ["牛头人"] = true,
+        ["巨魔"] = true,
+        ["血精灵"] = true,
+        ["地精"] = true,
+    }
+
+    if allianceRaces[race] then
+        return "Alliance"
+    end
+    if hordeRaces[race] then
+        return "Horde"
+    end
+    return nil
+end
+
+local function WBT_IsValidConcern(key)
+    if key == "Priority_display" then
+        return true
+    end
+    return key ~= nil and WBT_Timer_Output[key] ~= nil
+end
+
+local function WBT_GetPriorityConcernKey()
+    local candidates = {}
+    if WBT_Player.faction and WBT_Timer_Output[WBT_Player.faction .. "_Onyxia"] and WBT_Timer_Output[WBT_Player.faction .. "_Nefarian"] then
+        candidates = {
+            WBT_Player.faction .. "_Onyxia",
+            WBT_Player.faction .. "_Nefarian"
+        }
+    else
+        candidates = {
+            "Alliance_Onyxia",
+            "Alliance_Nefarian",
+            "Horde_Onyxia",
+            "Horde_Nefarian"
+        }
+    end
+
+    local selectedKey = nil
+    local selectedRemaining = nil
+    for _, candidate in ipairs(candidates) do
+        local data = WBT_Timer_Output[candidate]
+        if data then
+            local remaining = data.remaining or 0
+            if not selectedKey then
+                selectedKey = candidate
+                selectedRemaining = remaining
+            elseif remaining > 0 and (selectedRemaining == 0 or remaining < selectedRemaining) then
+                selectedKey = candidate
+                selectedRemaining = remaining
+            end
+        end
+    end
+
+    return selectedKey or "Alliance_Onyxia"
+end
+
+local function WBT_GetDefaultConcern()
+    if WBT_Player.faction and WBT_Timer_Output[WBT_Player.faction .. "_Onyxia"] then
+        return WBT_Player.faction .. "_Onyxia"
+    end
+    return "Priority_display"
+end
+
 local WBT_Handler = {
     init = function(self)
         --current realm name
@@ -383,15 +474,19 @@ local WBT_Handler = {
         WBT_Timer_Data = WorldBuffsTracker_SaveData[WBT_Player.realm] or WBT_Timer_Data;
     end,
     Get_CharacterInfo = function()
-        WBT_Player.faction = UnitFactionGroup('PLAYER') --addonloaded 时间取不到角色阵营
+        local faction = UnitFactionGroup('PLAYER') -- addonloaded 时间取不到角色阵营
+        if not faction then
+            faction = WBT_GetFactionByRace()
+        end
+        WBT_Player.faction = faction
     end,
     Set_CharacterConfig = function()
-        if not WBT_Config.concern then
-            WBT_Config.concern = WBT_Player.faction .. '_Onyxia' --默认设置当前阵营的黑龙MM头作为关注龙头
+        if not WBT_IsValidConcern(WBT_Config.concern) then
+            WBT_Config.concern = WBT_GetDefaultConcern() -- 默认优先使用当前阵营；GM 等无阵营角色回退到优先显示
         end
         --选中当前关注的龙头
         local check_btn = getglobal('WorldBuffsTrackerItemFrame_Check_' .. WBT_Config.concern)
-        if not check_btn:GetChecked() then
+        if check_btn and not check_btn:GetChecked() then
             check_btn:SetChecked(true);
         end
     end,
@@ -529,19 +624,15 @@ local WBT_Handler = {
 
         -- 获取同阵营剩余时间少的那个龙头
         if key == "Priority_display" then
-            local time1 = WBT_Timer_Output[WBT_Player.faction .. "_Onyxia"].remaining
-            local time2 = WBT_Timer_Output[WBT_Player.faction .. "_Nefarian"].remaining
-            if time1 == 0 and time2 == 0 then
-                key = WBT_Player.faction .. "_Onyxia"
-            else
-                if time1 < time2 then
-                    key = WBT_Player.faction .. "_Onyxia"
-                else
-                    key = WBT_Player.faction .. "_Nefarian"
-                end
-            end
+            key = WBT_GetPriorityConcernKey()
         end
         -- **************新增 ↑ ↑ ↑ ***************
+        if not WBT_IsValidConcern(key) then
+            key = WBT_GetDefaultConcern()
+            if key == "Priority_display" then
+                key = WBT_GetPriorityConcernKey()
+            end
+        end
         WorldBuffsTrackerMainFrame_Timer_StatusBar:SetValue(WBT_Timer_Output[key].remaining)
         WorldBuffsTrackerMainFrame_Timer_StatusBar_Title:SetText(WBT_Timer_Output[key].title)
         WorldBuffsTrackerMainFrame_Timer_StatusBar_Text:SetText(WBT_Timer_Output[key].remaining_text)

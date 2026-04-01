@@ -1,4 +1,3 @@
-
 BrainwasherPro = {}
 
 local L = {
@@ -185,7 +184,6 @@ local function CheckAndSwitchActionBar()
 
             loadAttempts = 1
              ABP_LoadProfile(currentLoadingSpec)
--- ==== ABP 完成后，立即清理 Flyout 图标缓存 ====
 	        if Flyout_UpdateBars and Flyout_GetActionButton then
 			for i = 1, 120 do
 				local b = Flyout_GetActionButton(i)
@@ -197,7 +195,6 @@ local function CheckAndSwitchActionBar()
         		end
         		Flyout_UpdateBars()
     		end
--- ==== 结束 ====
             DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00已自动切换动作条配置: " .. currentLoadingSpec .. " (" .. loadAttempts .. "/" .. maxAttempts .. ")|r")
         else
             lastLoadedSpecName = currentSpecName

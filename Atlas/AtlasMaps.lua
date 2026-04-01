@@ -126,6 +126,72 @@ AtlasMaps = {
 		{ "" };
 		{ GREY..INDENT..AL["Trash Mobs"] };
 	};
+	--FrostmaneHollow TurtleWOW 1.18.1
+	FrostmaneHollow = {
+		ZoneName = { AL["Frostmane Hollow"],  };
+		Acronym = "FMH";
+		Location = { AL["Dun Morogh"], 1 };
+		LevelRange = "13-20";
+		MinLevel = "8";
+		PlayerLimit = "5";
+		Continent = AL["Eastern Kingdoms"];
+		{ BLUE.."A) "..AL["Entrance"] };
+		{ GREY.."1) "..AL["Nimble Tansha"], NPC, -1 };
+		{ GREY.."2) "..AL["Ubbukaz Battlefield Overlord"], NPC, -1 };
+		{ GREY.."3) "..AL["Prophet Kanza"], NPC, -1 };
+		{ GREY.."4) "..AL["Cold Haile"], NPC, -1 };
+		{ GREY.."5) "..AL["Trash Mobs"], NPC, -1 };
+	};
+	--TimbermawHold TurtleWOW 1.18.1
+	TimbermawHold = {
+		ZoneName = { AL["Timbermaw Hold"],  };
+		Acronym = "TMH";
+		Location = { AL["Felwood"], 361 };
+		LevelRange = "60";
+		MinLevel = "60";
+		PlayerLimit = "20";
+		Continent = AL["Kalimdor"];
+		{ BLUE.."A) "..AL["Entrance"] };
+		{ GREY.."1) "..AL["Karrsh the Sentinel"], NPC, -1 };
+		{ GREY.."2) "..AL["Rotgrowl"], NPC, -1 };
+		{ GREY.."3) "..AL["Trioch the Devourer"], NPC, -1 };
+		{ GREY.."4) "..AL["Ormanos the Cracked"], NPC, -1 };
+		{ GREY.."5) "..AL["Loktanag the Vile"], NPC, -1 };
+		{ GREY.."6) "..AL["Chieftain Partath"], NPC, -1 };
+		{ GREY.."7) "..AL["Selenaxx Foulheart"], NPC, -1 };
+		{ GREY.."8) "..AL["Archdruid Kronn"], NPC, -1 };
+		{ GREY.."9) "..AL["Ursol"], NPC, -1 };
+		{ GREY..INDENT..AL["Trash Mobs"] };
+		{ BLUE.."B) "..AL["Entrance"] };
+	};
+	-- WindhornCanyon TurtleWOW 1.18.1
+    WindhornCanyon = {
+        -- ZoneID 如果你没有（私服自定义副本常没有），这里可以像其它 TurtleWOW 副本那样留空
+        ZoneName = { AL["Windhorn Canyon"],  };
+        Acronym = "WSC";
+        -- 地点：需要你确定入口在哪个大地图（例如 The Barrens / Stonetalon / Desolace 等）
+        -- 下面先按 The Barrens 示例，你可以改
+        Location = { AL["Thousand Needles"], 400 };
+        LevelRange = "26-30";
+        MinLevel = "26";
+        PlayerLimit = "5";
+        Continent = AL["Kalimdor"];
+
+        { BLUE.."A) "..AL["Entrance"] };
+
+        -- 下面这些按你 Instances.lua/AtlasLoot 的boss列表先占位
+        -- 你如果有准确 NPCID，可以把 NPC, -1 改成真实ID
+        { GREY.."1) "..AL["Pathun Buskhide"], NPC, -1 };
+        { GREY.."2) "..AL["Ahgk'tos the Pure"], NPC, -1 };
+        { GREY.."3) "..AL["Ambassador Vortalus"], NPC, -1 };
+        { GREY.."4) "..AL["Walgan Bloodcaller"], NPC, -1 };
+        { GREY.."5) "..AL["Bonespeaker Narlgom"], NPC, -1 };
+        { GREY.."6) "..AL["Prophet Stormhoof"], NPC, -1 };
+        { GREY.."7) "..AL["Chieftain Shalk Blackwind"], NPC, -1 };
+
+        { "" };
+        { GREY..INDENT..AL["Trash Mobs"] };
+    };
 	-- TheCrescentGrove TurtleWOW
 	TheCrescentGrove = {
 		ZoneName = { AL["The Crescent Grove"],  };

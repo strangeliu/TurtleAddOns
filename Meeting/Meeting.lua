@@ -121,10 +121,8 @@ f:SetScript("OnEvent", function()
                 Meeting.Message.OnRecv(arg2, arg1)
             else
                 local lowname = string.lower(name)
-                if lowname == "world" or lowname == "china" or lowname == "世界频道" or lowname == "寻求组队" then
-                    if lowname == "世界频道" or lowname == "寻求组队" then
-                        lowname = "world"
-                    end
+                if lowname == "world" or lowname == "china" or lowname == "世界频道" or lowname == "寻求组队" or lowname == "世界" then
+                    lowname = "world"
                     Meeting.Message.OnRecvFormChat(lowname, arg2, arg1)
                 end
             end

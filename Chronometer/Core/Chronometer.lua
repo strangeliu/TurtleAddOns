@@ -166,13 +166,13 @@ local function printTable(table,rowname,level,spacer)
 end
 LPrintTable = printTable
 
-local function convertcolor(color, ...)
+local function convertcolor(color, c2, c3)
 	if type(color) == "string" then
 		return paint:GetRGBPercent(color)
 	elseif type(color) == "table" then
 		return color
 	else
-		return {color,arg1,arg2}
+		return {color, c2, c3}
 	end
 end
 
@@ -383,7 +383,7 @@ function Chronometer:OnInitialize()
 	}
 	local _, playerClass = UnitClass("player")
 	local color = classColors[playerClass] or { r = 0.96, g = 0.55, b = 0.25 }
-	waterfall:Register('Chronometer', 'aceOptions', options, 'title','法术计时条Chronometer-修复版','colorR', color.r, 'colorG', color.g, 'colorB', color.b, 'treeLevels', 3)
+	waterfall:Register('Chronometer', 'aceOptions', options, 'title', L["Chronometer"], 'colorR', color.r, 'colorG', color.g, 'colorB', color.b, 'treeLevels', 3)
 
 	Chronometer:RegisterChatCommand({'/chron', '/chronometer'}, function()
 		waterfall:Open('Chronometer')
@@ -576,14 +576,17 @@ function Chronometer:RunTest()
 		end
 		for i = 1, 20 do if not self.bars[i].id then slot = i; break end end
 
+		local duration = math.random() * 8.0 + 2.0
+		local timer = { d = duration, k = {}, x = {} }
 		self.bars[slot].id     = id
 		self.bars[slot].timer  = timer
 		self.bars[slot].name   = name
 		self.bars[slot].rank   = rank
 		self.bars[slot].target = target
 		self.bars[slot].group  = nil
+		self.bars[slot].starttime = GetTime()
+		self.bars[slot].endtime = self.bars[slot].starttime + duration
 
-		local duration = math.random() * 8.0 + 2.0
 		local text = target == "none" and name or self.db.profile.text
 		text = gsub(text, "$t", target)
 		text = gsub(text, "$s", name)
@@ -721,14 +724,21 @@ function Chronometer:GetDuration(duration, record, rank, cp)
 
 	if record.tn then
 		local tr = 0
+		local talentCap = record.tp or record.tl
 		if type(record.tn) == "string" then record.tn = self:GetTalentPosition(record.tn) end
 		if record.tn and type(record.tn) == "table" then
 			local _, _, _, _, _, talentRank = pcall(GetTalentInfo, unpack(record.tn))
 			tr = tonumber(talentRank) or 0
 		end
-		tr = (record.tp and type(record.tp) == "number") and math.min(tr, record.tp) or tr
+		tr = (talentCap and type(talentCap) == "number") and math.min(tr, talentCap) or tr
 		if tr > 0 then
-			if record.ta then
+			if record.tt then
+				if type(record.tt) == "table" then
+					duration = duration + (tonumber(record.tt[tr]) or 0)
+				else
+					duration = duration + (tonumber(record.tt) or 0)
+				end
+			elseif record.ta then
 				duration = duration + tr * record.ta
 			elseif record.tb then
 				duration = duration * (1 + (tr * record.tb) / 100)
@@ -792,6 +802,20 @@ function Chronometer:KillBar(name, unit)
 				end
 			end
 		end
+	end
+end
+
+function Chronometer:RefreshBarsBySpell(spellName, unit)
+	if not spellName or not unit then return end
+	local refresh = {}
+	for i = 1, 20 do
+		local bar = self.bars[i]
+		if bar.id and bar.target == unit and bar.timer and bar.timer.x and bar.timer.x.refreshBy and bar.timer.x.refreshBy[spellName] then
+			table.insert(refresh, { timer = bar.timer, name = bar.name, target = bar.target, rank = bar.rank })
+		end
+	end
+	for _, bar in ipairs(refresh) do
+		self:StartTimer(bar.timer, bar.name, bar.target, bar.rank)
 	end
 end
 
@@ -1029,8 +1053,8 @@ end
 function Chronometer:UseAction(slot, clicked, onself)
 	if not GetActionText(slot) and HasAction(slot) then
 		self.gratuity:SetAction(slot)
-		spellName = self.gratuity:GetLine(1)
-		spellRank = self.gratuity:GetLine(1, true)
+		local spellName = self.gratuity:GetLine(1)
+		local spellRank = self.gratuity:GetLine(1, true)
 		local name, _, _, _, rank = self.spellcache:GetSpellData(spellName, spellRank)
 		checkRecall(self, name)
 		local timer = self.timers[Chronometer.SPELL][name]
@@ -1205,6 +1229,7 @@ function Chronometer:SELF_DAMAGE(event, info)
 				end
 			end
 		end
+		self:RefreshBarsBySpell(info.skill, info.victim)
 	end
 end
 

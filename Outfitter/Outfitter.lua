@@ -542,8 +542,6 @@ local gOutfitter_EquippedNeedsUpdate = false;
 local gOutfitter_WeaponsNeedUpdate = false;
 local gOutfitter_LastEquipmentUpdateTime = 0;
 local Outfitter_cMinEquipmentUpdateInterval = 1.5;
-local gOutfitter_LastCombatWeaponSwapTime = 0;
-local Outfitter_cCombatWeaponSwapInterval = 1.1;
 
 local gOutfitter_CurrentOutfit = nil;
 local gOutfitter_ExpectedOutfit = nil;
@@ -3356,17 +3354,6 @@ function Outfitter_UpdateEquippedItems()
         if vWeaponsNeedUpdate
                 and Outfitter_OutfitHasCombatEquipmentSlots(vCompiledOutfit) then
 
-            -- Check if we're within the combat weapon swap cooldown.
-            -- TurtleWoW enforces a ~2s cooldown between weapon swaps in combat,
-            -- so we must process weapon slots one at a time with a delay.
-
-            if gOutfitter_LastCombatWeaponSwapTime > 0
-                    and vCurrentTime - gOutfitter_LastCombatWeaponSwapTime < Outfitter_cCombatWeaponSwapInterval then
-                gOutfitter_WeaponsNeedUpdate = true;
-                OutfitterTimer_AdjustTimer();
-                return ;
-            end
-
             -- Allow the weapon change to proceed but defer the rest
             -- until they're out of combat
 
@@ -3401,23 +3388,7 @@ function Outfitter_UpdateEquippedItems()
     if vEquipmentChangeList then
         -- local    vExpectedEquippableItems = OutfitterItemList_New();
 
-        local vEmptyBagSlots = Outfitter_GetEmptyBagSlotList();
-
-        if gOutfitter_InCombat and table.getn(vEquipmentChangeList) > 1 then
-            -- In combat with multiple weapon changes, only execute the first one.
-            -- The weapon swap cooldown (~2s) prevents equipping two weapons in the
-            -- same frame. Set WeaponsNeedUpdate so the next timer tick retries.
-            local vSingleChange = { vEquipmentChangeList[1] };
-            Outfitter_ExecuteEquipmentChangeList(vSingleChange, vEmptyBagSlots, nil);
-            gOutfitter_LastCombatWeaponSwapTime = vCurrentTime;
-            gOutfitter_WeaponsNeedUpdate = true;
-            OutfitterTimer_AdjustTimer();
-        else
-            if gOutfitter_InCombat then
-                gOutfitter_LastCombatWeaponSwapTime = vCurrentTime;
-            end
-            Outfitter_ExecuteEquipmentChangeList(vEquipmentChangeList, vEmptyBagSlots, vExpectedEquippableItems);
-        end
+        Outfitter_ExecuteEquipmentChangeList(vEquipmentChangeList, Outfitter_GetEmptyBagSlotList(), vExpectedEquippableItems);
 
         -- Outfitter_DumpArray("ExpectedEquippableItems", vExpectedEquippableItems);
     end

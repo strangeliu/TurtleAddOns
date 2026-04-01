@@ -2245,11 +2245,13 @@ AL:RegisterTranslations("zhCN", function() return {
 	--2025/9/24吊儿啷当添加
 	--副本
 	["[13-18] Ragefire Chasm"] = WHITE.."[13-18]"..DEFAULT.."  怒焰裂谷",
+	["[13-20] Frostmane Hollow"] = WHITE.."[13-20]"..DEFAULT.."  霜鬃谷",
     ["[17-24] The Deadmines"] = WHITE.."[17-24]"..DEFAULT.."  死亡矿井",
     ["[17-24] Wailing Caverns"] = WHITE.."[17-24]"..DEFAULT.."  哀嚎洞穴",
     ["[22-30] Shadowfang Keep"] = WHITE.."[22-30]"..DEFAULT.."  影牙城堡",
     ["[22-30] The Stockade"] = WHITE.."[22-30]"..DEFAULT.."  监狱",
     ["[23-32] Blackfathom Deeps"] = WHITE.."[23-32]"..DEFAULT.."  黑暗深渊",
+	["[26-30] Windhorn Canyon"] = WHITE.."[26-30]"..DEFAULT.."  风角峡谷",--1.18.1新增
     ["[26-35] Dragonmaw Retreat"] = WHITE.."[26-35]"..DEFAULT.."  龙喉居所",
     ["[27-36] Scarlet Monastery (Graveyard)"] = WHITE.."[27-36]"..DEFAULT.."  血色修道院（墓地）",
     ["[27-45] Scarlet Monastery"] = WHITE.."[27-45]"..DEFAULT.."  血色修道院",
@@ -2289,6 +2291,7 @@ AL:RegisterTranslations("zhCN", function() return {
     ["[RAID] Temple of Ahn'Qiraj"] = RED.."[团本]"..DEFAULT.."  安其拉神殿",
     ["[RAID] Upper Karazhan Halls"] = RED.."[团本]"..DEFAULT.."  卡拉赞之塔",
     ["[RAID] Zul'Gurub"] = RED.."[团本]"..DEFAULT.."  祖尔格拉布",
+	["[RAID] Timbermaw Hold"] = RED.."[团本]"..DEFAULT.."  木喉要塞",--1.18.1新增
 
     ["Ragefire Chasm"] = "怒焰裂谷",
     ["The Deadmines"] = "死亡矿井",
@@ -2296,6 +2299,8 @@ AL:RegisterTranslations("zhCN", function() return {
     ["Shadowfang Keep"] = "影牙城堡",
     ["The Stockade"] = "监狱",
     ["Blackfathom Deeps"] = "黑暗深渊",
+	["Frostmane Hollow"] = "霜鬃谷",--1.18.1新增
+	["Windhorn Canyon"] = "风角峡谷",--1.18.1新增
     ["Dragonmaw Retreat"] = "龙喉居所",
     ["Scarlet Monastery (Graveyard)"] = "血色修道院（墓地）",
     ["Scarlet Monastery"] = "血色修道院",
@@ -2334,6 +2339,7 @@ AL:RegisterTranslations("zhCN", function() return {
     ["Ruins of Ahn'Qiraj"] = "安其拉废墟",
     ["Temple of Ahn'Qiraj"] = "安其拉神殿",
     ["Naxxramas"] = "纳克萨玛斯",
+	-- ["Timbermaw Hold"] = "木喉要塞",--1.18.1新增
 
 	["default"] = "默认",
     ["has been reset!"] = "已重置！",
@@ -2378,6 +2384,7 @@ AL:RegisterTranslations("zhCN", function() return {
 	["Stormwind"] = "|cff2773ff暴风城",
 	["Wetlands"] = "湿地",
 	["Tirisfal Glades"] = "提瑞斯法林地",
+	["Thousand Needles"] = "千针石林",
 	["Balor"] = "巴洛",
 	["Badlands"] = "荒芜之地",
 	["Gilneas"] = "吉尔尼斯",
@@ -2658,6 +2665,11 @@ AL:RegisterTranslations("zhCN", function() return {
 	["Cookie"] = "曲奇",
     ["Captain Greenskin"] = "绿皮队长",
     ["Edwin VanCleef"] = "艾德温·范克里夫",
+	--霜鬃谷
+	["Nimble Tansha"] = "灵动的坦莎",
+	["Ubbukaz Battlefield Overlord"] = "战场主宰乌布卡兹",
+	["Prophet Kanza"] = "先知坎扎",
+	["Cold Haile"] = "冰冷的海乐",
 	--影牙城堡
 	["Fel Steed"] = "地狱战马",
     ["Razorclaw the Butcher"] = "屠夫拉佐克劳",
@@ -2686,6 +2698,14 @@ AL:RegisterTranslations("zhCN", function() return {
     ["Dextren Ward"] = "迪克斯特·瓦德",
     ["Bazil Thredd"] = "巴基尔·斯瑞德",
     ["Bruegal Ironknuckle"] = "布鲁高·铁拳",
+	--风角峡谷
+	["Pathun Buskhide"] = "帕斯恩·暮皮",
+    ["Ahgk'tos the Pure"] = "纯洁者阿格图斯",
+    ["Ambassador Vortalus"] = "沃尔塔卢斯大使",
+    ["Walgan Bloodcaller"] = "瓦尔根·唤血者",
+    ["Bonespeaker Narlgom"] = "骨语者纳尔格姆",
+    ["Prophet Stormhoof"] = "雷角",
+    ["Chieftain Shalk Blackwind"] = "酋长沙尔克·黑风",
 	--龙吼居所
     ["Gowlfang"] = "孤峰",
 	["Cavernweb Broodmother"] = "穴织女王",
@@ -3068,6 +3088,16 @@ AL:RegisterTranslations("zhCN", function() return {
 	["Keeper Gnarlmoon"] = "守护者纳尔穆恩", 
 	["Mephistroth"] = "孟菲斯托斯", 
 	["Rupturan the Broken"] = "破碎的鲁普图兰",
+	-- 木喉要塞
+	["Karrsh the Sentinel"] = "哨兵卡什",
+	["Rotgrowl"] = "腐嚎",
+	["Trioch the Devourer"] = "吞噬者提里奥克",
+	["Loktanag the Vile"] = "落潭",
+	["Archdruid Kronn"] = "大德鲁伊科罗恩",
+	["Ormanos the Cracked"] = "裂地者欧曼诺斯",
+	["Chieftain Partath"] = "大酋长帕萨斯",
+	["Selenaxx Foulheart"] = "塞雷纳克斯·腐心",
+	["Ursol"] = "乌索尔",
 	--杂项
     ["Cloth"] = "布甲",
     ["Ring"] = "戒指",

@@ -975,7 +975,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="25" y="-43"/>
+							<AbsDimension x="25" y="-30"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -1024,15 +1024,16 @@
 			</Button>
 			<Button name="AtlasLootItem_16" inherits="AtlasLootItem_Template" id="16">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AtlasLootItem_1" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="AtlasLootItem_15" relativePoint="BOTTOMLEFT">
+						</Anchor>
 				</Anchors>
 			</Button>
 			<Button name="AtlasLootItem_17" inherits="AtlasLootItem_Template" id="17">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_16" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_1" relativePoint="TOPRIGHT"/>
+				<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+				</Anchors>
 			</Button>
 			<Button name="AtlasLootItem_18" inherits="AtlasLootItem_Template" id="18">
 				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_17" relativePoint="BOTTOMLEFT"/></Anchors>
@@ -1073,6 +1074,12 @@
 			<Button name="AtlasLootItem_30" inherits="AtlasLootItem_Template" id="30">
 				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_29" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
+			<Button name="AtlasLootItem_31" inherits="AtlasLootItem_Template" id="31">
+                <Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_30" relativePoint="BOTTOMLEFT"/></Anchors>
+            </Button>
+            <Button name="AtlasLootItem_32" inherits="AtlasLootItem_Template" id="32">
+                <Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_31" relativePoint="BOTTOMLEFT"/></Anchors>
+            </Button>
 			<Button name="AtlasLootMenuItem_1" inherits="AtlasLootMenuItem_Template" id="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
@@ -1083,50 +1090,50 @@
 				</Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_2" inherits="AtlasLootMenuItem_Template" id="2">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_1" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_1" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_3" inherits="AtlasLootMenuItem_Template" id="3">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_2" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_2" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_4" inherits="AtlasLootMenuItem_Template" id="4">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_3" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_3" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_5" inherits="AtlasLootMenuItem_Template" id="5">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_4" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_4" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_6" inherits="AtlasLootMenuItem_Template" id="6">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_5" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_5" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_7" inherits="AtlasLootMenuItem_Template" id="7">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_6" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_6" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_8" inherits="AtlasLootMenuItem_Template" id="8">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_7" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_7" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_9" inherits="AtlasLootMenuItem_Template" id="9">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_8" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_8" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_10" inherits="AtlasLootMenuItem_Template" id="10">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_9" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_9" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_11" inherits="AtlasLootMenuItem_Template" id="11">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_10" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_10" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_12" inherits="AtlasLootMenuItem_Template" id="12">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_11" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_11" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_13" inherits="AtlasLootMenuItem_Template" id="13">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_12" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_12" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_14" inherits="AtlasLootMenuItem_Template" id="14">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_13" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_13" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_15" inherits="AtlasLootMenuItem_Template" id="15">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_14" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_14" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_16" inherits="AtlasLootMenuItem_Template" id="16">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="AtlasLootItem_1" relativePoint="TOPRIGHT">
+					<Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_1" relativePoint="TOPRIGHT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -1134,46 +1141,46 @@
 				</Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_17" inherits="AtlasLootMenuItem_Template" id="17">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_16" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_16" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_18" inherits="AtlasLootMenuItem_Template" id="18">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_17" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_17" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_19" inherits="AtlasLootMenuItem_Template" id="19">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_18" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_18" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_20" inherits="AtlasLootMenuItem_Template" id="20">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_19" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_19" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_21" inherits="AtlasLootMenuItem_Template" id="21">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_20" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_20" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_22" inherits="AtlasLootMenuItem_Template" id="22">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_21" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_21" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_23" inherits="AtlasLootMenuItem_Template" id="23">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_22" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_22" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_24" inherits="AtlasLootMenuItem_Template" id="24">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_23" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_23" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_25" inherits="AtlasLootMenuItem_Template" id="25">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_24" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_24" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_26" inherits="AtlasLootMenuItem_Template" id="26">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_25" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_25" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_27" inherits="AtlasLootMenuItem_Template" id="27">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_26" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_26" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_28" inherits="AtlasLootMenuItem_Template" id="28">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_27" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_27" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_29" inherits="AtlasLootMenuItem_Template" id="29">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_28" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_28" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="AtlasLootMenuItem_30" inherits="AtlasLootMenuItem_Template" id="30">
-				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootItem_29" relativePoint="BOTTOMLEFT"/></Anchors>
+				<Anchors><Anchor point="TOPLEFT" relativeTo="AtlasLootMenuItem_29" relativePoint="BOTTOMLEFT"/></Anchors>
 			</Button>
 			<Button name="$parent_BACK" inherits="AtlasLootClassButtonTemplate" hidden="true">
 				<Anchors>

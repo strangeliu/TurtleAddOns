@@ -1,22 +1,22 @@
 ---------------------------------------------------------------
 -- DoiteExport.lua
--- Import/Export UI for DoiteAuras
--- Please respect license note: Ask permission
+-- 导入/导出 DoiteAuras 的 UI
+-- 请尊重许可说明：使用前请询问
 -- WoW 1.12 | Lua 5.0
 ---------------------------------------------------------------
 
 DoiteExport = DoiteExport or {}
 
--- Local string/math helpers for compression/encoding
+-- 用于压缩/编码的本地字符串/数学辅助函数
 local strsub = string.sub
 local strlen = string.len
 local strchar = string.char
 local gsub = string.gsub
 local mod = math.mod or math.fmod
 
--- ========= LZW compression / decompression (pfUI-style) =========
+-- ========= LZW 压缩 / 解压（pfUI风格） =========
 local function DE_Compress(input)
-  -- based on Rochet2's lzw compression
+  -- 基于 Rochet2 的 lzw 压缩
   if type(input) ~= "string" then
     return nil
   end
@@ -51,7 +51,7 @@ local function DE_Compress(input)
       resultlen = resultlen + strlen(write)
       n = n + 1
 
-      -- if compressed data is not getting smaller, bail out
+      -- 如果压缩数据没有变小，则放弃
       if len <= resultlen then
         return "u" .. input
       end
@@ -84,7 +84,7 @@ local function DE_Compress(input)
 end
 
 local function DE_Decompress(input)
-  -- based on Rochet2's lzw compression
+  -- 基于 Rochet2 的 lzw 压缩
   if type(input) ~= "string" or strlen(input) < 1 then
     return nil
   end
@@ -159,7 +159,7 @@ local function DE_Decompress(input)
   return table.concat(result)
 end
 
--- ========= Base64 encode / decode (pfUI-style) =========
+-- ========= Base64 编码 / 解码（pfUI风格） =========
 
 local function DE_Encode(to_encode)
   local index_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
@@ -250,7 +250,7 @@ local function DE_Decode(to_decode)
   return decoded
 end
 
--- Wrap/unwrap helper for export bodies
+-- 包装/解包导出体的辅助函数
 local function DE_EncodeCompressed(body)
   local c = DE_Compress(body)
   if not c then
@@ -273,7 +273,7 @@ local importEditBox, importScrollFrame
 local exportRows = {}
 local allRow = nil
 
--- ========= Helpers over DoiteAurasDB =========
+-- ========= 在 DoiteAurasDB 上的辅助函数 =========
 
 local function DE_GetSpells()
   DoiteAurasDB = DoiteAurasDB or {}
@@ -314,8 +314,8 @@ local function DE_HasGroupOrCategory()
   return false
 end
 
--- ========= Export/Import Data Helpers =========
--- Deep copy of a table
+-- ========= 导出/导入数据辅助函数 =========
+-- 表的深拷贝
 local function DE_DeepCopy(src, seen)
   if type(src) ~= "table" then
     return src
@@ -338,10 +338,10 @@ local function DE_DeepCopy(src, seen)
   return dst
 end
 
--- Find a free name by appending " (2)", " (3)", ...
+-- 通过追加“ (2)”、“ (3)”... 找到一个空闲名称
 local function DE_FindFreeName(base, existing)
   if not base or base == "" then
-    base = "Imported"
+    base = "已导入"
   end
   if not existing[base] then
     return base
@@ -356,13 +356,13 @@ local function DE_FindFreeName(base, existing)
   end
 end
 
--- Build a package table from a list of spell keys.
+-- 从法术键列表构建一个包表。
 local function DE_BuildExportPackage(keys, context)
   if not DoiteAurasDB or not DoiteAurasDB.spells or not keys then
     return nil
   end
 
-  -- Minimal structure: only what import actually uses.
+  -- 最小结构：只包含导入实际使用的。
   local pkg = {
     icons = {},
     groups = {},
@@ -387,7 +387,7 @@ local function DE_BuildExportPackage(keys, context)
     exportAll = context
   end
 
-  -- icons
+  -- 图标
   local i
   for i = 1, table.getn(keys) do
     local key = keys[i]
@@ -395,14 +395,14 @@ local function DE_BuildExportPackage(keys, context)
     if data then
       local copy = DE_DeepCopy(data)
 
-      -- ensure exported 'key' field reflects original DB key
+      -- 确保导出的 'key' 字段反映原始数据库键
       copy.key = key
 
-      -- Decide whether this icon should keep its group
+      -- 决定此图标是否应保留其组
       local grp = copy.group
       if not exportAll and grp and grp ~= "" and grp ~= "no" then
         if not (keepGroups and keepGroups[grp]) then
-          -- icon is being exported standalone: strip its group
+          -- 图标作为独立项导出：剥离其组
           copy.group = nil
           grp = nil
         end
@@ -423,7 +423,7 @@ local function DE_BuildExportPackage(keys, context)
     end
   end
 
-  -- groups meta (only for those actually used after group stripping)
+  -- 组元数据（仅针对组剥离后实际使用的那些）
   local g
   for g in pairs(usedGroups) do
     pkg.groups[g] = {
@@ -432,7 +432,7 @@ local function DE_BuildExportPackage(keys, context)
     }
   end
 
-  -- categories meta
+  -- 类别元数据
   local c
   for c in pairs(usedCats) do
     pkg.categories[c] = {
@@ -443,7 +443,7 @@ local function DE_BuildExportPackage(keys, context)
   return pkg
 end
 
--- Serialize a Lua value to a compact Lua literal.
+-- 将 Lua 值序列化为紧凑的 Lua 字面量。
 local function DE_SerializeValue(v, buf)
   local t = type(v)
   if t == "number" then
@@ -501,21 +501,21 @@ local function DE_SerializeExport(pkg)
   DE_SerializeValue(pkg, buf)
   local body = table.concat(buf, "")
 
-  -- Try compressed+base64 (DA2)
+  -- 尝试压缩+base64（DA2）
   local encoded = DE_EncodeCompressed(body)
   if encoded then
-    -- Use DA2 ONLY if it's actually shorter than DA1 overall
+    -- 仅当 DA2 整体比 DA1 短时才使用 DA2
     if strlen(encoded) + 4 < strlen(body) + 4 then
-      -- +4 for "DAx:"
+      -- +4 用于 "DAx:"
       return "DA2:" .. encoded
     end
   end
 
-  -- Otherwise stick to plain DA1
+  -- 否则坚持使用纯 DA1
   return "DA1:" .. body
 end
 
--- Parse a DA1 export string back into a package table.
+-- 将 DA1 导出字符串解析回包表。
 local function DE_ParseExportString(str)
   if not str or str == "" then
     return nil, "空"
@@ -527,7 +527,7 @@ local function DE_ParseExportString(str)
   local body
 
   if strsub(str, 1, strlen(prefix2)) == prefix2 then
-    -- compressed+encoded format
+    -- 压缩+编码格式
     local encoded = strsub(str, strlen(prefix2) + 1)
     local decoded = DE_DecodeCompressed(encoded)
     if not decoded then
@@ -535,7 +535,7 @@ local function DE_ParseExportString(str)
     end
     body = decoded
   elseif strsub(str, 1, strlen(prefix1)) == prefix1 then
-    -- Old plain-Lua format
+    -- 旧的纯 Lua 格式
     body = strsub(str, strlen(prefix1) + 1)
   else
     return nil, "无效前缀"
@@ -558,7 +558,7 @@ local function DE_ParseExportString(str)
   return pkg, nil
 end
 
--- Import a package table into DoiteAurasDB (groups, categories, spells).
+-- 将包表导入 DoiteAurasDB（组、类别、法术）。
 local function DE_ImportPackage(pkg)
   if not pkg or type(pkg) ~= "table" then
     return nil, "无有效包"
@@ -575,7 +575,7 @@ local function DE_ImportPackage(pkg)
   local groupSort = DoiteAurasDB.groupSort
   local bucketDisabled = DoiteAurasDB.bucketDisabled
 
-  -- existing category names
+  -- 现有类别名称
   local existingCats = {}
   local i
   for i = 1, table.getn(categoriesList) do
@@ -585,7 +585,7 @@ local function DE_ImportPackage(pkg)
     end
   end
 
-  -- existing group names
+  -- 现有组名称
   local existingGroups = {}
 
   local k, d
@@ -604,11 +604,11 @@ local function DE_ImportPackage(pkg)
     end
   end
 
-  -- Track which groups/categories are newly imported and how many icons in each
+  -- 跟踪哪些组/类别是新导入的以及每个组/类别中有多少个图标
   local createdGroups = {}
   local createdCategories = {}
 
-  -- category remap
+  -- 类别重映射
   local categoryMap = {}
   if pkg.categories then
     for name, info in pairs(pkg.categories) do
@@ -635,7 +635,7 @@ local function DE_ImportPackage(pkg)
     end
   end
 
-  -- group remap
+  -- 组重映射
   local groupMap = {}
   if pkg.groups then
     local g, info
@@ -660,10 +660,10 @@ local function DE_ImportPackage(pkg)
     end
   end
 
-  -- helper for new spell keys
+  -- 新法术键的辅助函数
   local function pickNewKey(base)
     if not base or base == "" then
-      base = "Imported"
+      base = "已导入"
     end
     local key = base
     local idx = 2
@@ -674,7 +674,7 @@ local function DE_ImportPackage(pkg)
     return key
   end
 
-  -- import icons
+  -- 导入图标
   local imported = {}
   local icons = pkg.icons or {}
   local nImported = 0
@@ -688,21 +688,21 @@ local function DE_ImportPackage(pkg)
     if rec and rec.data then
       local data = DE_DeepCopy(rec.data)
 
-      -- remap category
+      -- 重映射类别
       if data.category and data.category ~= "" and data.category ~= "no" then
         local oldCat = data.category
         local newCat = categoryMap[oldCat] or oldCat
         data.category = newCat
       end
 
-      -- remap group
+      -- 重映射组
       if data.group and data.group ~= "" and data.group ~= "no" then
         local oldGrp = data.group
         local newGrp = groupMap[oldGrp] or oldGrp
         data.group = newGrp
       end
 
-      -- count icons per newly created group/category
+      -- 计算每个新创建的组/类别中的图标数
       if data.group and data.group ~= "" and createdGroups[data.group] then
         groupCounts[data.group] = (groupCounts[data.group] or 0) + 1
       end
@@ -712,12 +712,12 @@ local function DE_ImportPackage(pkg)
 
       local baseKey = data.key or rec.key or data.baseKey
       if not baseKey or baseKey == "" then
-        baseKey = (data.displayName or data.name or "Imported")
+        baseKey = (data.displayName or data.name or "已导入")
       end
       local newKey = pickNewKey(baseKey)
 
       data.key = newKey
-      -- do not modify data.baseKey; keep whatever was exported
+      -- 不要修改 data.baseKey；保留导出的任何内容
 
       spells[newKey] = data
       table.insert(imported, newKey)
@@ -733,7 +733,7 @@ local function DE_ImportPackage(pkg)
   }, nil
 end
 
--- One-shot import from raw string.
+-- 从原始字符串一次性导入。
 local function DE_ImportFromString(str)
   local pkg, err = DE_ParseExportString(str)
   if not pkg then
@@ -742,7 +742,7 @@ local function DE_ImportFromString(str)
   return DE_ImportPackage(pkg)
 end
 
--- ========= Frame "top-most" helper =========
+-- ========= 框架“最上层”辅助函数 =========
 
 local function DE_MakeTopMost(frame)
   if not frame then
@@ -751,7 +751,7 @@ local function DE_MakeTopMost(frame)
   frame:SetFrameStrata("TOOLTIP")
 end
 
--- ========= Export list UI helpers =========
+-- ========= 导出列表 UI 辅助函数 =========
 
 local function DE_ClearRows()
   local _, row
@@ -764,7 +764,7 @@ local function DE_ClearRows()
   allRow = nil
 end
 
--- Will be set later when export frame exists
+-- 稍后当导出框架存在时将设置
 local function DE_UpdateCopyButton()
   if not exportFrame or not exportFrame.copyBtn or not exportEditBox then
     return
@@ -777,7 +777,7 @@ local function DE_UpdateCopyButton()
   end
 end
 
--- indent: pixels to indent the checkbox (0 for headers, >0 for child/icon rows)
+-- indent：缩进复选框的像素数（标题为 0，子/图标行 >0）
 local function DE_CreateRow(parent, y, labelText, kind, id, indent)
   local row = {}
 
@@ -801,26 +801,26 @@ local function DE_CreateRow(parent, y, labelText, kind, id, indent)
   row.text = txt
   row.kind = kind      -- "all", "group", "category", "ungrouped", "icon"
   row.id = id        -- groupName / categoryName / "Ungrouped" / icon key
-  row.children = nil    -- filled for group/category/ungrouped headers
-  row.parentRow = nil   -- filled for icon rows
+  row.children = nil    -- 为组/类别/未分组标题填充
+  row.parentRow = nil   -- 为图标行填充
 
   table.insert(exportRows, row)
   return row
 end
 
--- Enable/disable everything except the ALL row
+-- 启用/禁用除 ALL 行之外的所有行
 local function DE_SetRowsDisabledExceptAll(disabled)
   local _, row
   for _, row in ipairs(exportRows) do
     if row.kind ~= "all" and row.check then
       if disabled then
-        -- Auto-check, then disable, and grey out text
+        -- 自动选中，然后禁用，并将文本变灰
         row.check:SetChecked(true)
         row.check:Disable()
         if row.text and row.text.SetTextColor then
           row.text:SetTextColor(0.5, 0.5, 0.5)
         end
-        -- If this is a header with children, also tick + disable children
+        -- 如果这是带有子项的标题，也勾选+禁用子项
         if row.children then
           local _, child
           for _, child in ipairs(row.children) do
@@ -834,7 +834,7 @@ local function DE_SetRowsDisabledExceptAll(disabled)
           end
         end
       else
-        -- Re-enable; keep their checked state as-is
+        -- 重新启用；保持其选中状态不变
         row.check:Enable()
         if row.text and row.text.SetTextColor then
           row.text:SetTextColor(1, 1, 1)
@@ -870,7 +870,7 @@ local function DE_RebuildExportList()
 
   local ordered = DE_GetOrderedSpells()
 
-  -- Build groups, categories, and ungrouped icon lists
+  -- 构建组、类别和未分组图标列表
   local groupsByName = {}
   local groupOrder = {}
   local seenGroup = {}
@@ -913,7 +913,7 @@ local function DE_RebuildExportList()
     end
   end
 
-  -- "-- EVERYTHING --" row at the top
+  -- 顶部的“-- 全部 --”行
   local all = DE_CreateRow(content, y, "-- 全部 --", "all", nil, 0)
   y = y - 20
   allRow = all
@@ -926,7 +926,7 @@ local function DE_RebuildExportList()
     end
   end)
 
-  -- Separator line (visual only)
+  -- 分隔线（仅视觉）
   local sep = content:CreateTexture(nil, "ARTWORK")
   sep:SetHeight(1)
   sep:SetPoint("TOPLEFT", content, "TOPLEFT", 0, y - 4)
@@ -937,7 +937,7 @@ local function DE_RebuildExportList()
   end
   y = y - 10
 
-  -- Helper: attach header -> children relationship, and header checkbox behavior
+  -- 辅助函数：附加标题 -> 子项关系，以及标题复选框行为
   local function SetupHeaderBehavior(headerRow)
     headerRow.children = headerRow.children or {}
 
@@ -952,11 +952,11 @@ local function DE_RebuildExportList()
     end)
   end
 
-  -- Helper: icon behavior: children are independent; do NOT auto-toggle header.
+  -- 辅助函数：图标行为：子项独立；不要自动切换标题。
   local function SetupIconBehavior(iconRow)
   end
 
-  -- 1) Groups + their icons
+  -- 1) 组 + 它们的图标
   local i, gName
   for i, gName in ipairs(groupOrder) do
     local label = gName .. ":"
@@ -986,7 +986,7 @@ local function DE_RebuildExportList()
     end
   end
 
-  -- 2) Categories + their icons
+  -- 2) 类别 + 它们的图标
   local j, cName
   for j, cName in ipairs(catOrder) do
     local label = cName .. ":"
@@ -1016,7 +1016,7 @@ local function DE_RebuildExportList()
     end
   end
 
-  -- 3) Ungrouped / Uncategorized
+  -- 3) 未分组 / 未分类
   if hasUngrouped then
     local label = "未分组 / 未分类:"
     local unHeader = DE_CreateRow(content, y, label, "ungrouped", "Ungrouped", 0)
@@ -1044,7 +1044,7 @@ local function DE_RebuildExportList()
     end
   end
 
-  -- Adjust scroll height
+  -- 调整滚动高度
   local totalHeight = -y + 4
   if totalHeight < 40 then
     totalHeight = 40
@@ -1053,7 +1053,7 @@ local function DE_RebuildExportList()
   exportFrame.scrollFrame:SetScrollChild(content)
 end
 
--- ========= Export Frame =========
+-- ========= 导出框架 =========
 
 local function DE_CreateExportFrame()
   if exportFrame then
@@ -1104,7 +1104,7 @@ local function DE_CreateExportFrame()
     f:Hide()
   end)
 
-  -- Scrollable container for the tree (EVERYTHING / groups / categories / icons)
+  -- 树的可滚动容器（全部/组/类别/图标）
   local listContainer = CreateFrame("Frame", nil, f)
   listContainer:SetWidth(260)
   listContainer:SetHeight(275)
@@ -1129,7 +1129,7 @@ local function DE_CreateExportFrame()
   f.scrollFrame = scrollFrame
   f.listContent = content
 
-  -- "Create Export" button below the scroll container
+  -- 滚动容器下方的“生成导出”按钮
   local createBtn = CreateFrame("Button", "DoiteAurasCreateExportButton", f, "UIPanelButtonTemplate")
   createBtn:SetWidth(100)
   createBtn:SetHeight(22)
@@ -1143,7 +1143,7 @@ local function DE_CreateExportFrame()
     local keys = {}
     local exportAll = allRow and allRow.check and allRow.check:GetChecked()
 
-    -- Which groups are being exported as real groups (header checked)?
+    -- 哪些组作为真实组导出（标题选中）？
     local groupsToPreserve = {}
     if not exportAll then
       local _, row
@@ -1155,14 +1155,14 @@ local function DE_CreateExportFrame()
     end
 
     if exportAll then
-      -- Export all spells currently in the DB, in order
+      -- 按顺序导出数据库中当前的所有法术
       local ordered = DE_GetOrderedSpells()
       local _, entry
       for _, entry in ipairs(ordered) do
         table.insert(keys, entry.key)
       end
     else
-      -- Only export checked icon rows
+      -- 仅导出选中的图标行
       local _, row
       for _, row in ipairs(exportRows) do
         if row.kind == "icon" and row.check and row.check:GetChecked() and row.id then
@@ -1202,7 +1202,7 @@ local function DE_CreateExportFrame()
       return
     end
 
-    -- Put new export in the box (user can scroll as needed)
+    -- 将新导出放入框中（用户可根据需要滚动）
     exportEditBox:SetText(str)
     exportEditBox:HighlightText()
     exportEditBox:SetFocus()
@@ -1213,17 +1213,17 @@ local function DE_CreateExportFrame()
     end
   end)
 
-  -- Clear button: clears all selections + export text
+  -- 清除按钮：清除所有选择 + 导出文本
   local clearBtn = CreateFrame("Button", "DoiteAurasClearExportButton", f, "UIPanelButtonTemplate")
   clearBtn:SetWidth(50)
   clearBtn:SetHeight(22)
   clearBtn:SetPoint("LEFT", createBtn, "RIGHT", 4, 0)
   clearBtn:SetText("清除")
   clearBtn:SetScript("OnClick", function()
-    -- Re-enable everything in case -- EVERYTHING -- had disabled rows
+    -- 重新启用所有内容，以防 -- 全部 -- 禁用了行
     DE_SetRowsDisabledExceptAll(false)
 
-    -- Uncheck every checkbox
+    -- 取消选中每个复选框
     local _, row
     for _, row in ipairs(exportRows) do
       if row.check then
@@ -1235,7 +1235,7 @@ local function DE_CreateExportFrame()
       end
     end
 
-    -- Clear export text + scroll to top
+    -- 清除导出文本 + 滚动到顶部
     if exportEditBox then
       exportEditBox:SetText("")
       exportEditBox:ClearFocus()
@@ -1246,7 +1246,7 @@ local function DE_CreateExportFrame()
     DE_UpdateCopyButton()
   end)
 
-  -- Big export box on the RIGHT, non-scrollable edit box
+  -- 右侧的大导出框，不可滚动的编辑框
   local boxContainer = CreateFrame("Frame", nil, f)
   boxContainer:SetPoint("TOPLEFT", listContainer, "TOPRIGHT", 15, 0)
   boxContainer:SetWidth(300)
@@ -1277,11 +1277,11 @@ local function DE_CreateExportFrame()
     this:ClearFocus()
   end)
 
-  -- Inner text width; keep it a bit smaller than the box width
+  -- 内部文本宽度；保持比框宽稍小
   edit:ClearAllPoints()
   edit:SetPoint("TOPLEFT", textScroll, "TOPLEFT", 4, -4)
   edit:SetWidth(280)
-  -- Large height so long exports are scrollable within the clipped region
+  -- 大高度，以便长导出可在裁剪区域内滚动
   edit:SetHeight(10000)
 
   edit:SetScript("OnTextChanged", function()
@@ -1294,7 +1294,7 @@ local function DE_CreateExportFrame()
 
   textScroll:SetScrollChild(edit)
 
-  -- Hide the scrollbar and its buttons so the user doesn't see them
+  -- 隐藏滚动条及其按钮，使用户看不到它们
   local scrollBar = getglobal(textScroll:GetName() .. "ScrollBar")
   if scrollBar then
     scrollBar:Hide()
@@ -1320,7 +1320,7 @@ local function DE_CreateExportFrame()
   hint:SetJustifyH("LEFT")
   hint:SetText("导出的数据将显示在此框中。")
 
-  -- Step 1 label in DoiteAuras blue, then the Select button
+  -- 步骤 1 标签，使用 DoiteAuras 蓝色，然后是选择按钮
   local step1 = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   step1:SetPoint("TOPLEFT", hint, "BOTTOMLEFT", 0, -8)
   step1:SetWidth(300)
@@ -1342,7 +1342,7 @@ local function DE_CreateExportFrame()
       return
     end
 
-    -- Select all text and focus the box so the user can Ctrl-C it
+    -- 全选文本并聚焦框，以便用户可以 Ctrl-C 复制它
     exportEditBox:HighlightText()
     exportEditBox:SetFocus()
 
@@ -1354,7 +1354,7 @@ local function DE_CreateExportFrame()
 
   exportFrame.copyBtn = copyBtn
 
-  -- Step 2 and Step 3 instructions under the button
+  -- 按钮下方的步骤 2 和步骤 3 说明
   local step2 = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   step2:SetPoint("TOPLEFT", copyBtn, "BOTTOMLEFT", 0, -6)
   step2:SetWidth(360)
@@ -1367,7 +1367,7 @@ local function DE_CreateExportFrame()
   step3:SetJustifyH("LEFT")
   step3:SetText("|cff6FA8DC步骤3.|r 分享给你的朋友！")
 
-  -- OnShow: rebuild the full tree every time, clear text, ensure top-most, scroll to top
+  -- OnShow：每次重建完整的树，清除文本，确保在最上层，滚动到顶部
   f:SetScript("OnShow", function()
     DE_MakeTopMost(f)
     DE_RebuildExportList()
@@ -1381,7 +1381,7 @@ local function DE_CreateExportFrame()
     DE_UpdateCopyButton()
   end)
 
-  -- Make sure it's top-most right away
+  -- 确保它立即在最上层
   DE_MakeTopMost(f)
 end
 
@@ -1390,12 +1390,12 @@ function DoiteExport_ShowExportFrame()
     DE_CreateExportFrame()
   end
 
-  -- If the import frame is open, close it so only one is visible
+  -- 如果导入框架打开，关闭它，以便只有一个可见
   if importFrame and importFrame:IsShown() then
     importFrame:Hide()
   end
 
-  -- If Settings is open, close it so only one is visible
+  -- 如果设置打开，关闭它，以便只有一个可见
   local sf = _G["DoiteAurasSettingsFrame"]
   if sf and sf.IsShown and sf:IsShown() then
     sf:Hide()
@@ -1404,7 +1404,7 @@ function DoiteExport_ShowExportFrame()
   exportFrame:Show()
 end
 
--- ========= Import Frame =========
+-- ========= 导入框架 =========
 local function DE_CreateImportFrame()
   if importFrame then
     return
@@ -1412,7 +1412,7 @@ local function DE_CreateImportFrame()
 
   local f = CreateFrame("Frame", "DoiteAurasImportFrame", UIParent)
   importFrame = f
-  -- Slightly smaller frame so it visually matches the export textbox area
+  -- 稍小的框架，使其在视觉上与导出文本框区域匹配
   f:SetWidth(250)
   f:SetHeight(220)
   f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
@@ -1456,7 +1456,7 @@ local function DE_CreateImportFrame()
   end)
 
   local boxContainer = CreateFrame("Frame", nil, f)
-  -- Match the export box size so both sides feel consistent
+  -- 匹配导出框大小，使两边感觉一致
   boxContainer:SetWidth(210)
   boxContainer:SetHeight(120)
   boxContainer:SetPoint("TOP", f, "TOP", 0, -60)
@@ -1481,13 +1481,13 @@ local function DE_CreateImportFrame()
     this:ClearFocus()
   end)
 
-  -- Inner area; width a bit smaller than container width
+  -- 内部区域；宽度比容器宽度稍小
   edit:ClearAllPoints()
   edit:SetPoint("TOPLEFT", scroll, "TOPLEFT", 4, -4)
   edit:SetWidth(190)
   edit:SetHeight(10000)
 
-  -- Click anywhere inside the import box area to focus the editbox (not just the tiny clickable rect)
+  -- 点击导入框区域内的任何位置以聚焦编辑框（不仅仅是可点击的小矩形）
   if boxContainer.EnableMouse then
     boxContainer:EnableMouse(true)
     boxContainer:SetScript("OnMouseDown", function()
@@ -1502,7 +1502,7 @@ local function DE_CreateImportFrame()
     end)
   end
 
-  -- Still allow direct clicks on the editbox itself
+  -- 仍然允许直接点击编辑框本身
   edit:SetScript("OnMouseDown", function()
     this:SetFocus()
   end)
@@ -1516,7 +1516,7 @@ local function DE_CreateImportFrame()
 
   scroll:SetScrollChild(edit)
 
-  -- Hide scrollbar & buttons
+  -- 隐藏滚动条和按钮
   local scrollBar = getglobal(scroll:GetName() .. "ScrollBar")
   if scrollBar then
     scrollBar:Hide()
@@ -1536,13 +1536,13 @@ local function DE_CreateImportFrame()
   importEditBox = edit
   importScrollFrame = scroll
 
-  -- Import button (centered beneath the box)
+  -- 导入按钮（框下方居中）
   local importBtn = CreateFrame("Button", "DoiteAurasImportDoButton", f, "UIPanelButtonTemplate")
   importBtn:SetWidth(80)
   importBtn:SetHeight(24)
   importBtn:SetPoint("TOP", boxContainer, "BOTTOM", 0, -2)
   importBtn:SetText("导入")
-  -- Execute the actual import from a parsed package.
+  -- 从解析的包执行实际导入。
   local function DE_DoImport(pkg)
     local chat = DEFAULT_CHAT_FRAME or ChatFrame1
 
@@ -1615,7 +1615,7 @@ local function DE_CreateImportFrame()
     end
   end
 
-  -- Check whether a parsed package contains any custom function source.
+  -- 检查解析后的包是否包含任何自定义函数源码。
   local function DE_PackageHasCustomCode(pkg)
     if not pkg or not pkg.icons then
       return false
@@ -1795,9 +1795,9 @@ local function DE_CreateImportFrame()
     return pkg
   end
 
-  -- Custom-code import confirmation dialog (created once, reused).
+  -- 自定义代码导入确认对话框（创建一次，重用）。
   local importConfirmFrame
-  local importConfirmPkg  -- stashed package awaiting user decision
+  local importConfirmPkg  -- 等待用户决定的暂存包
   local duplicateFrame
   local duplicateState
 
@@ -2147,7 +2147,7 @@ local function DE_CreateImportFrame()
   end)
 
   local hint = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  -- Place the explanation above the input box, under the title/separator
+  -- 将说明放在输入框上方，标题/分隔线下方
   hint:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -40)
   hint:SetWidth(340)
   hint:SetJustifyH("LEFT")
@@ -2171,7 +2171,7 @@ local function DE_CreateImportFrame()
     end
   end)
 
-  -- Make sure it's top-most initially as well
+  -- 确保它最初也在最上层
   DE_MakeTopMost(f)
 end
 
@@ -2180,12 +2180,12 @@ function DoiteExport_ShowImportFrame()
     DE_CreateImportFrame()
   end
 
-  -- If the export frame is open, close it so only one is visible
+  -- 如果导出框架打开，关闭它，以便只有一个可见
   if exportFrame and exportFrame:IsShown() then
     exportFrame:Hide()
   end
 
-  -- If Settings is open, close it so only one is visible
+  -- 如果设置打开，关闭它，以便只有一个可见
   local sf = _G["DoiteAurasSettingsFrame"]
   if sf and sf.IsShown and sf:IsShown() then
     sf:Hide()

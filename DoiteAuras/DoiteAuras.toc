@@ -4,13 +4,14 @@
 ## Title-zhCN:|CFFEE7600[模组增强]|R |cff00ffffDoiteAuras|cffff1450[需Nampower、UnitXP_SP3]
 ## Notes-zhCN: Doite 制作的轻量级 WeakAuras 风格插件，适用于经典旧世。
 ## Author: Doite
-## Version: 1.6.2
+## Version: 1.7.4
 ## SavedVariablesPerCharacter: DoiteAurasDB
 
 DoiteAuras.lua
 
 Modules\DoiteBuffData.lua
 Modules\DoitePlayerAuras.lua
+Modules\DoitePetAuras.lua
 Modules\DoiteEdit.lua
 Modules\DoiteGlow.lua
 Modules\DoiteConditions.lua

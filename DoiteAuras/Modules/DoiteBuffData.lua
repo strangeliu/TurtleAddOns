@@ -1,119 +1,119 @@
 local DoiteBuffData = {
-  -- this uses spellId as key to avoid having to look up UNIT_CASTEVENT spell names
+  -- 使用 spellId 作为键，以避免必须查找 UNIT_CASTEVENT 法术名称
 
-  -- list spells here that modify OTHER buff stacks.  Gaining stacks for the same spell is already handled
-  -- Be sure to include a duration to use if the spell adds/creates/refreshes another buff
+  -- 列出修改其他 BUFF 层数的法术。同一法术的层数增加已处理。
+  -- 如果法术添加/创建/刷新另一个增益，请务必包含一个持续时间。
   stackModifiers = {
-    -- Mage --
-    [11366] = { -- Pyroblast rk 1
+    -- 法师 --
+    [11366] = { -- 炎爆术 rk 1
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12505] = {  -- Pyroblast rk 2
+    [12505] = {  -- 炎爆术 rk 2
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12522] = {  -- Pyroblast rk 3
+    [12522] = {  -- 炎爆术 rk 3
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12523] = {  -- Pyroblast rk 4
+    [12523] = {  -- 炎爆术 rk 4
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12524] = {  -- Pyroblast rk 5
+    [12524] = {  -- 炎爆术 rk 5
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12525] = {  -- Pyroblast rk 6
+    [12525] = {  -- 炎爆术 rk 6
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [12526] = {  -- Pyroblast rk 7
+    [12526] = {  -- 炎爆术 rk 7
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
-    [18809] = {  -- Pyroblast rk 8
+    [18809] = {  -- 炎爆术 rk 8
       modifiedBuffName = "法术连击",
       stackChange = -5
     },
 
-    -- Shaman --
-    [51387] = {  -- Lightning Strike rk 1
+    -- 萨满 --
+    [51387] = {  -- 闪电打击 rk 1
       modifiedBuffName = "闪电之盾",
       stackChange = -1
     },
-    [52420] = {  -- Lightning Strike rk 2
+    [52420] = {  -- 闪电打击 rk 2
       modifiedBuffName = "闪电之盾",
       stackChange = -1
     },
-    [52422] = {  -- Lightning Strike rk 3
+    [52422] = {  -- 闪电打击 rk 3
       modifiedBuffName = "闪电之盾",
       stackChange = -1
     },
 
-    -- Druid --
-    [5176] = {  -- Wrath rk 1
+    -- 德鲁伊 --
+    [5176] = {  -- 愤怒 rk 1
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [5177] = {  -- Wrath rk 2
+    [5177] = {  -- 愤怒 rk 2
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [5178] = {  -- Wrath rk 3
+    [5178] = {  -- 愤怒 rk 3
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [5179] = {  -- Wrath rk 4
+    [5179] = {  -- 愤怒 rk 4
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [5180] = {  -- Wrath rk 5
+    [5180] = {  -- 愤怒 rk 5
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [6780] = {  -- Wrath rk 6
+    [6780] = {  -- 愤怒 rk 6
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [8905] = {  -- Wrath rk 7
+    [8905] = {  -- 愤怒 rk 7
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [9912] = {  -- Wrath rk 8
+    [9912] = {  -- 愤怒 rk 8
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [45967] = {  -- Wrath rk 9
+    [45967] = {  -- 愤怒 rk 9
       modifiedBuffName = "自然恩赐",
       stackChange = -1
     },
-    [2912] = {  -- Starfire rk 1
+    [2912] = {  -- 星火术 rk 1
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [8949] = {  -- Starfire rk 2
+    [8949] = {  -- 星火术 rk 2
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [8950] = {  -- Starfire rk 3
+    [8950] = {  -- 星火术 rk 3
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [8951] = {  -- Starfire rk 4
+    [8951] = {  -- 星火术 rk 4
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [9875] = {  -- Starfire rk 5
+    [9875] = {  -- 星火术 rk 5
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [9876] = {  -- Starfire rk 6
+    [9876] = {  -- 星火术 rk 6
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },
-    [25298] = {  -- Starfire rk 7
+    [25298] = {  -- 星火术 rk 7
       modifiedBuffName = "星界恩赐",
       stackChange = -1
     },

@@ -78,7 +78,7 @@ function AtlasLoot_CraftingMenu()
 	AtlasLootMenuItem_13_Name:SetText(AL["Survival"]);
 	AtlasLootMenuItem_13_Extra:SetText("");
 	AtlasLootMenuItem_13_Icon:SetTexture("Interface\\Icons\\Trade_Survival");
-	AtlasLootMenuItem_13.lootpage="Survival1";
+	AtlasLootMenuItem_13.lootpage="SURVIVALMENU";
 	AtlasLootMenuItem_13:Show();
 	--Gardening
 	AtlasLootMenuItem_14_Name:SetText(AL["Gardening"]);
@@ -982,4 +982,32 @@ function AtlasLoot_JewelcraftingMenu()
 	AtlasLootMenuItem_18_Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Ring_03");
 	AtlasLootMenuItem_18.lootpage="JewelcraftingGoldsmithing1";
 	AtlasLootMenuItem_18:Show();
+end
+--生存技能
+function AtlasLoot_SurvivalMenu()
+	AtlasLoot_PrepMenu("CRAFTINGMENU", AL["Survival"])
+	--Apprentice
+	AtlasLootMenuItem_2_Name:SetText(AL["Survival"]..": "..AL["Apprentice"]);
+	AtlasLootMenuItem_2_Extra:SetText("");
+	AtlasLootMenuItem_2_Icon:SetTexture("Interface\\Icons\\Trade_Survival");
+	AtlasLootMenuItem_2.lootpage = "SurvivalApprentice1";
+	AtlasLootMenuItem_2:Show();
+	--Journeyman
+	AtlasLootMenuItem_3_Name:SetText(AL["Survival"]..": "..AL["Journeyman"]);
+	AtlasLootMenuItem_3_Extra:SetText("");
+	AtlasLootMenuItem_3_Icon:SetTexture("Interface\\Icons\\Trade_Survival");
+	AtlasLootMenuItem_3.lootpage = "SurvivalJourneyman1";
+	AtlasLootMenuItem_3:Show();
+	--Expert
+	AtlasLootMenuItem_4_Name:SetText(AL["Survival"]..": "..AL["Expert"]);
+	AtlasLootMenuItem_4_Extra:SetText("");
+	AtlasLootMenuItem_4_Icon:SetTexture("Interface\\Icons\\Trade_Survival");
+	AtlasLootMenuItem_4.lootpage="SurvivalExpert1";
+	AtlasLootMenuItem_4:Show();
+	--Artisan
+	AtlasLootMenuItem_5_Name:SetText(AL["Survival"]..": "..AL["Artisan"]);
+	AtlasLootMenuItem_5_Extra:SetText("");
+	AtlasLootMenuItem_5_Icon:SetTexture("Interface\\Icons\\Trade_Survival");
+	AtlasLootMenuItem_5.lootpage="SurvivalArtisan1";
+	AtlasLootMenuItem_5:Show();
 end

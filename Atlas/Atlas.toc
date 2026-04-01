@@ -1,6 +1,6 @@
 ## Interface: 11200
-## Title: |CFF33AAFF[辅助]|R副本地图 |cffff1450[1.14.0]|R
-## Title-zhCN: |CFF33AAFF[辅助]|R副本地图 |cffff1450[1.14.0]|R
+## Title: |CFF33AAFF[辅助]|R副本地图 |cffff1450[1.14.3]|R
+## Title-zhCN: |CFF33AAFF[辅助]|R副本地图 |cffff1450[1.14.3]|R
 ## Notes: |CFF33AAFFAtlas |R副本地图 
 ## Notes-zhCN: |CFF33AAFFAtlas |R副本地图
 ## Notes: Instance map browser.
@@ -10,7 +10,7 @@
 ## Notes-zhCN: 副本地图浏览器
 ## Notes-esES: Navegador de Mapas de Mazmorras.
 ## Notes-ruRU: Обозреватель подземелий.
-## Version: 1.14.0
+## Version: 1.14.3
 ## X-Date: 22.01.2024
 ## Author: Shahopriest, Sunelegy, 吊儿啷当
 ## X-Email: m4r3lk4@gmail.com

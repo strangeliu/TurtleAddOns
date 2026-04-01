@@ -466,7 +466,7 @@
                     </OnEnterPressed>
                 </Scripts>
             </EditBox>
-            <Button name="XyAddDkpFrameDone" inherits="OptionsButtonTemplate" text="确定">
+            <Button name="allDKPFrameDone" inherits="OptionsButtonTemplate" text="确定">
                 <Anchors>
                     <Anchor point="BOTTOM">
                         <Offset>
@@ -593,7 +593,7 @@
                         this:RegisterForDrag("LeftButton");
             </OnLoad>
             <OnShow>
-                        getglobal("XyAddDkpFramePoint"):SetFocus();
+                        getglobal("allDKPFrameTXT"):SetFocus();
             </OnShow>
             <OnDragStart>
                         this:StartMoving();

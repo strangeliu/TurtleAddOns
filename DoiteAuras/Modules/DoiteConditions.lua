@@ -1,7 +1,7 @@
 ---------------------------------------------------------------
 -- DoiteConditions.lua
--- Evaluates ability and aura conditions to show/hide/update icons
--- Please respect license note: Ask permission
+-- 评估技能和光环条件以显示/隐藏/更新图标
+-- 请尊重许可说明：使用前请询问
 -- WoW 1.12 | Lua 5.0
 ---------------------------------------------------------------
 
@@ -67,7 +67,7 @@ local function _DoiteHandleEdgeSound(key, stateKey, nowActive, enabledFlag, file
   end
 end
 
--- Nampower Returns: name, texturePath (either may be nil)
+-- Nampower 返回：name, texturePath（任一可能为 nil）
 local function _NP_SpellNameAndTexture(spellId)
   if not spellId or spellId <= 0 then
     return nil, nil
@@ -95,13 +95,13 @@ local function _NP_SpellNameAndTexture(spellId)
   return name, tex
 end
 
--- Fast frame getter for hot paths (ApplyVisuals / aura scans / time text)
+-- 热路径的快速框架获取器（ApplyVisuals / 光环扫描 / 时间文本）
 local function _GetIconFrame(k)
   if not k then
     return nil
   end
 
-  -- If an external getter exists, prefer it
+  -- 如果存在外部获取器，优先使用
   if DoiteAuras_GetIconFrame then
     local f = DoiteAuras_GetIconFrame(k)
     if f then
@@ -109,7 +109,7 @@ local function _GetIconFrame(k)
     end
   end
 
-  -- Cache tables live
+  -- 缓存表实时存在
   local byKey = DoiteConditions._iconFrameByKey
   if not byKey then
     byKey = {}
@@ -147,9 +147,10 @@ local function _Now()
   return (GetTime and GetTime()) or 0
 end
 
--- Spell index cache (must be defined before any usage)
+-- 法术索引缓存（必须在任何使用前定义）
 local SpellIndexCache = {}
 _G.DoiteConditions_SpellIndexCache = SpellIndexCache
+_G.DoiteConditions_SpellBookTypeCache = _G.DoiteConditions_SpellBookTypeCache or {}
 
 local _isWarrior = false
 
@@ -163,16 +164,17 @@ local function _GetSpellIndexByName(spellName)
     return (cached ~= false) and cached or nil
   end
 
-  -- Nampower fast path - GetSpellSlotTypeIdForName(spellName)
+  -- Nampower 快速路径 - GetSpellSlotTypeIdForName(spellName)
   if GetSpellSlotTypeIdForName then
     local slot, bookType = GetSpellSlotTypeIdForName(spellName)
-    if slot and slot > 0 and bookType == "spell" then
+    if slot and slot > 0 and (bookType == "spell" or bookType == "pet") then
       SpellIndexCache[spellName] = slot
+      _G.DoiteConditions_SpellBookTypeCache[spellName] = (bookType == "pet") and BOOKTYPE_PET or BOOKTYPE_SPELL
       return slot
     end
   end
 
-  -- Scan fallback
+  -- 扫描回退
   local i = 1
   while i <= 200 do
     local s = GetSpellName(i, BOOKTYPE_SPELL)
@@ -181,30 +183,47 @@ local function _GetSpellIndexByName(spellName)
     end
     if s == spellName then
       SpellIndexCache[spellName] = i
+      _G.DoiteConditions_SpellBookTypeCache[spellName] = BOOKTYPE_SPELL
+      return i
+    end
+    i = i + 1
+  end
+
+  -- 宠物法术书回退
+  i = 1
+  while i <= 200 do
+    local s = GetSpellName(i, BOOKTYPE_PET)
+    if not s then
+      break
+    end
+    if s == spellName then
+      SpellIndexCache[spellName] = i
+      _G.DoiteConditions_SpellBookTypeCache[spellName] = BOOKTYPE_PET
       return i
     end
     i = i + 1
   end
 
   SpellIndexCache[spellName] = false
+  _G.DoiteConditions_SpellBookTypeCache[spellName] = false
   return nil
 end
 
--- Dirty flags used by the central update loop
+-- 主更新循环使用的脏标志
 local dirty_ability = false
 local dirty_aura = false
 local dirty_target = false
 local dirty_power = false
 local dirty_ability_time = false
 
--- Coalesced aura scans (set in events; consumed in OnUpdate)
+-- 合并的光环扫描（在事件中设置；在 OnUpdate 中消费）
 DoiteConditions._pendingAuraScanTarget = false
 
 ----------------------------------------------------------------
--- One-shot repaint next frame (avoids re-entrancy inside events)
+-- 下一帧进行一次重绘（避免事件内部的重入）
 ----------------------------------------------------------------
 
--- Forward declare so functions defined above can capture it as an upvalue
+-- 前向声明，以便上面定义的函数可以将其捕获为上值
 local _RequestImmediateEval
 
 local _DoiteImmediateEval = CreateFrame("Frame", "DoiteImmediateEval")
@@ -275,12 +294,12 @@ local function _IsAnyKeyUnderEdit()
 end
 
 ----------------------------------------------------------------
--- Edit-mode heartbeat: force frequent refresh while editor is open (prevents 0.5s delay / "needs a target" when idle)
+-- 编辑模式心跳：编辑器打开时强制频繁刷新（防止 0.5 秒延迟/空闲时需要目标时）
 ----------------------------------------------------------------
 local _editTick = CreateFrame("Frame", "DoiteEditTick")
 local _editAccum = 0
 
--- Tuning: 0.10 feels instant but is still cheap.
+-- 调整：0.10 感觉即时但仍然廉价。
 local DOITE_EDIT_TICK = 0.10
 
 _editTick:SetScript("OnUpdate", function()
@@ -289,7 +308,7 @@ _editTick:SetScript("OnUpdate", function()
     return
   end
 
-  -- Skip refresh while user is dragging icons or frames (prevents update loop)
+  -- 用户拖动图标或框架时跳过刷新（防止更新循环）
   if _G["DoiteUI_Dragging"] then
     return
   end
@@ -300,14 +319,14 @@ _editTick:SetScript("OnUpdate", function()
   end
   _editAccum = 0
 
-  -- skip if editor hidden or zero visible icons
+  -- 如果编辑器隐藏或零可见图标，则跳过
   local f = _G["DoiteEdit_Frame"]
   if not (f and f:IsShown()) then
     return
   end
   _editAccum = 0
 
-  -- Force the normal pipeline to run even when the player is idle.
+  -- 强制正常流水线即使在玩家空闲时也运行。
   dirty_ability = true
   dirty_aura = true
   dirty_target = true
@@ -320,7 +339,7 @@ local function _MaybeResolveSpellIdForEntry(key, data)
     return
   end
 
-  -- Only touch entries that look like the temporary "Spell ID: ###" displayName
+  -- 仅触碰看起来像临时 "Spell ID: ###" displayName 的条目
   local dn = data.displayName
   if not dn or dn == "" then
     return
@@ -340,16 +359,16 @@ local function _MaybeResolveSpellIdForEntry(key, data)
 
   local name, tex
 
-  -- Nampower: resolve spellId -> name + texture
+  -- Nampower：将 spellId -> name + texture 解析
   name, tex = _NP_SpellNameAndTexture(sid)
 
-  -- If still don’t have a real name, bail out without changing anything
+  -- 如果仍然没有真实名称，则不做任何更改
   if not name or name == "" then
     return
   end
 
   ------------------------------------------------------------
-  -- Commit to DB: real name + optional texture
+  -- 提交到数据库：真实名称 + 可选纹理
   ------------------------------------------------------------
   data.displayName = name
   if not data.name or data.name == "" then
@@ -366,7 +385,7 @@ local function _MaybeResolveSpellIdForEntry(key, data)
       DoiteAurasDB.cache[name] = tex
     end
 
-    -- Update live icon frame if it exists
+    -- 如果存在，更新实时图标框架
     if key then
       local f = _GetIconFrame(key)
       if f and f.icon and f.icon.SetTexture then
@@ -381,7 +400,7 @@ end
 
 local _trackedByName, _trackedBuiltAt = nil, 0
 
--- Pool list tables to avoid repeated allocations during frequent rebuilds (esp. in editor TTL=0.25)
+-- 池列表表，以避免在频繁重建期间重复分配（特别是在编辑器 TTL=0.25 时）
 local _trackedListPool = {}
 local _trackedListPoolN = 0
 
@@ -410,7 +429,7 @@ end
 local function _GetTrackedByName()
   local now = GetTime()
 
-  -- While editing, rebuild more aggressively.
+  -- 编辑时，更积极地重建。
   local ttl = _IsAnyKeyUnderEdit() and 0.25 or 5.0
 
   local dbSize = 0
@@ -444,7 +463,7 @@ local function _GetTrackedByName()
     local key, data
     for key, data in pairs(DoiteAurasDB.spells) do
       if data and (data.type == "Buff" or data.type == "Debuff") then
-        -- If this aura was added via spellid with a temporary "Spell ID: ###" name, resolve it once here using Nampower.
+        -- 如果此光环是通过 spellid 添加的，具有临时的 "Spell ID: ###" 名称，则使用 Nampower 解析一次。
         _MaybeResolveSpellIdForEntry(key, data)
 
         local nm = data.displayName or data.name
@@ -465,14 +484,14 @@ local function _GetTrackedByName()
   return t
 end
 
--- === Aura snapshot & single tooltip ===
+-- === 光环快照和单个工具提示 ===
 local DoiteConditionsTooltip = _G["DoiteConditionsTooltip"]
 if not DoiteConditionsTooltip then
   DoiteConditionsTooltip = CreateFrame("GameTooltip", "DoiteConditionsTooltip", nil, "GameTooltipTemplate")
   DoiteConditionsTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 end
 
--- Cache tooltip fontstrings once
+-- 缓存工具提示字体字符串一次
 local _CondTipLeft = {}
 do
   local i = 1
@@ -482,22 +501,22 @@ do
   end
 end
 
--- Cache Left1 FS once for aura-name/time reads
+-- 缓存 Left1 FS 一次，用于光环名称/时间读取
 local _DoiteCondTipLeft1FS = _G["DoiteConditionsTooltipTextLeft1"]
 
 local auraSnapshot = {
-  -- TODO improve
+  -- TODO 改进
   target = { buffs = {}, debuffs = {}, buffIds = {}, debuffIds = {} },
 }
 
 _G.DoiteConditions_AuraSnapshot = auraSnapshot
 
--- Create hidden tooltip once; don't re-SetOwner every scan
+-- 创建隐藏的工具提示一次；不要每次扫描都重新 SetOwner
 local function _EnsureTooltip()
   if not DoiteConditionsTooltip then
     DoiteConditionsTooltip = CreateFrame("GameTooltip", "DoiteConditionsTooltip", UIParent, "GameTooltipTemplate")
     DoiteConditionsTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-    DoiteConditionsTooltip:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 0, 0) -- offscreen
+    DoiteConditionsTooltip:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", 0, 0) -- 屏幕外
     if DoiteConditionsTooltip.SetScript then
       DoiteConditionsTooltip:SetScript("OnTooltipCleared", nil)
       DoiteConditionsTooltip:SetScript("OnHide", nil)
@@ -505,7 +524,7 @@ local function _EnsureTooltip()
   end
 end
 
---UnitBuff/UnitDebuff return auraId, Nampower gives name/texture.
+--UnitBuff/UnitDebuff 返回 auraId，Nampower 给出名称/纹理。
 local _AuraNameTipLeft1FS = nil
 local function _GetAuraName(unit, index, isDebuff)
   if not unit or not index or index < 1 then
@@ -514,20 +533,20 @@ local function _GetAuraName(unit, index, isDebuff)
 
   local tex, auraId
   if isDebuff then
-    -- Nampower: texture, stacks, dtype, spellID
+    -- Nampower：纹理，层数，类型，法术 ID
     tex, _, _, auraId = UnitDebuff(unit, index)
   else
-    -- Nampower: texture, stacks, spellID
+    -- Nampower：纹理，层数，法术 ID
     tex, _, auraId = UnitBuff(unit, index)
   end
   if not tex then
-    -- No aura at this index: real end-of-list marker
+    -- 此索引处无光环：真正的列表结束标记
     return nil
   end
 
   local name
 
-  -- Nampower: auraId (spellId) -> name
+  -- Nampower：auraId (spellId) -> name
   if auraId then
     local n = _NP_SpellNameAndTexture(auraId)
     if type(n) == "string" and n ~= "" then
@@ -535,7 +554,7 @@ local function _GetAuraName(unit, index, isDebuff)
     end
   end
 
-  -- Fallback: tooltip name (vanilla / weird auras / bad IDs)
+  -- 备选：工具提示名称（原始版本/奇怪的光环/错误的 ID）
   if not name then
     _EnsureTooltip()
     DoiteConditionsTooltip:ClearLines()
@@ -564,7 +583,7 @@ local function _GetAuraName(unit, index, isDebuff)
     end
   end
 
-  -- return a non-nil sentinel so callers don't think the list ended.
+  -- 返回一个非 nil 的哨兵，以便调用者不会认为列表结束。
   if not name then
     return ""
   end
@@ -572,7 +591,7 @@ local function _GetAuraName(unit, index, isDebuff)
   return name
 end
 
--- Tooltip-only fallback used by _ScanUnitAuras() - already have tex/auraId.
+-- 仅工具提示的回退，由 _ScanUnitAuras() 使用 - 已经具有 tex/auraId。
 local _DoiteCondTipLeft1FS = nil
 local function _GetAuraName_TooltipOnly(unit, index, isDebuff)
   if not unit or not index or index < 1 then
@@ -606,14 +625,14 @@ local function _GetAuraName_TooltipOnly(unit, index, isDebuff)
     end
   end
 
-  -- Non-nil sentinel (matches _GetAuraName() behavior for “couldn’t resolve name”)
+  -- 非 nil 哨兵（匹配 _GetAuraName() 对于“无法解析名称”的行为）
   return ""
 end
 
 local function _ScanTargetUnitAuras()
   local unit = "target"
 
-  -- Use cached lookup: auraName -> { list of keys that track this name }
+  -- 使用缓存查找：auraName -> { 跟踪此名称的键列表 }
   local trackedByName = _GetTrackedByName()
 
   local snap = auraSnapshot[unit]
@@ -623,11 +642,11 @@ local function _ScanTargetUnitAuras()
 
   local prevBuffs, prevDebuffs = snap.buffCount or 0, snap.debuffCount or 0
 
-  -- UnitBuff/UnitDebuff: grabbing only first return (texture) is intentional here.
+  -- UnitBuff/UnitDebuff：此处仅抓取第一个返回（纹理）是有意的。
   local curBuffTex = UnitBuff(unit, 1)
   local curDebuffTex = UnitDebuff(unit, 1)
 
-  -- If previously there were no auras and there still are none, skip the scan.
+  -- 如果以前没有光环，现在仍然没有，则跳过扫描。
   if (not curBuffTex and prevBuffs == 0) and (not curDebuffTex and prevDebuffs == 0) then
     return
   end
@@ -639,11 +658,11 @@ local function _ScanTargetUnitAuras()
   end
 
 
-  -- Track how many slots are actually occupied
+  -- 跟踪实际占用的槽位数
   local buffCount = 0
   local debuffCount = 0
 
-  -- Clear previous snapshot
+  -- 清除以前的快照
   for k in pairs(buffs) do
     buffs[k] = nil
   end
@@ -664,18 +683,18 @@ local function _ScanTargetUnitAuras()
   local cache = IconCache
 
   ----------------------------------------------------------------
-  -- BUFFS
+  -- 增益
   ----------------------------------------------------------------
   local i = 1
   while true do
-    -- Nampower: texture, stacks, spellID
+    -- Nampower：纹理，层数，法术 ID
     local tex, _, auraId = UnitBuff(unit, i)
     if not tex then
       break
     end
     buffCount = buffCount + 1
 
-    -- Resolve name once: Nampower id->name fast path, tooltip-only fallback if needed
+    -- 解析名称一次：Nampower id->name 快速路径，如果需要则仅工具提示回退
     local name = nil
     if auraId then
       name = _NP_SpellNameAndTexture(auraId)
@@ -696,7 +715,7 @@ local function _ScanTargetUnitAuras()
 
       local list = trackedByName and trackedByName[name]
       if list and type(list) == "table" then
-        -- Cache sync (but never gate live updates on cache)
+        -- 缓存同步（但永远不要用缓存阻塞实时更新）
         if tex and cache[name] ~= tex then
           cache[name] = tex
           if DoiteAurasDB and DoiteAurasDB.cache then
@@ -709,7 +728,7 @@ local function _ScanTargetUnitAuras()
         for j = 1, count do
           local key = list[j]
 
-          -- 1) Update DB icon always
+          -- 1) 始终更新数据库图标
           if key and DoiteAurasDB and DoiteAurasDB.spells then
             local s = DoiteAurasDB.spells[key]
             if s then
@@ -728,7 +747,7 @@ local function _ScanTargetUnitAuras()
             end
           end
 
-          -- 2) Update live icon frame even if cache already had it
+          -- 2) 即使缓存已有，也更新实时图标框架
           local f = _GetIconFrame(key)
           if f and f.icon and tex and f.icon.GetTexture and f.icon.SetTexture then
             if f.icon:GetTexture() ~= tex then
@@ -743,11 +762,11 @@ local function _ScanTargetUnitAuras()
   end
 
   ----------------------------------------------------------------
-  -- DEBUFFS
+  -- 减益
   ----------------------------------------------------------------
   i = 1
   while true do
-    -- Nampower: texture, stacks, dtype, spellID
+    -- Nampower：纹理，层数，类型，法术 ID
     local tex, _, _, auraId = UnitDebuff(unit, i)
     if not tex then
       break
@@ -813,16 +832,16 @@ local function _ScanTargetUnitAuras()
     i = i + 1
   end
 
-  -- Remember how many buff/debuff slots were actually used
+  -- 记住实际使用了多少个增益/减益槽位
   snap.buffCount = buffCount
   snap.debuffCount = debuffCount
 end
 
 ---------------------------------------------------------------
--- Local helpers
+-- 本地辅助函数
 ---------------------------------------------------------------
 
--- Global alias so update loop can call it without capturing the loc
+-- 全局别名，以便更新循环可以调用它而无需捕获局部
 _G.DoiteConditions_ScanUnitAuras = _ScanTargetUnitAuras
 
 local function InCombat()
@@ -834,7 +853,7 @@ local function InRaid()
 end
 
 local function InPartyOnly()
-  -- party, but not raid
+  -- 队伍，但不是团队
   return (GetNumPartyMembers() or 0) > 0 and not InRaid()
 end
 
@@ -842,7 +861,7 @@ local function InGroup()
   return InRaid() or (GetNumPartyMembers() or 0) > 0
 end
 
--- Power percent (0..100)
+-- 能量百分比 (0..100)
 local function GetPowerPercent()
   local max = UnitManaMax("player")
   if not max or max <= 0 then
@@ -852,9 +871,9 @@ local function GetPowerPercent()
   return (cur * 100) / max
 end
 
--- === Remaining-time helpers ===
+-- === 剩余时间辅助函数 ===
 
--- Compare helper: returns true if rem (seconds) passes comp vs target (seconds)
+-- 比较辅助函数：如果 rem（秒）通过 comp 与 target（秒）的比较，则返回 true
 local function _RemainingPasses(rem, comp, target)
   if not rem or not comp or target == nil then
     return true
@@ -869,7 +888,7 @@ local function _RemainingPasses(rem, comp, target)
   return true
 end
 
--- Ability cooldown remaining (in seconds) for a spellbook index; nil if not on CD
+-- 技能冷却剩余时间（秒），通过法术书索引；如果不在冷却中则返回 nil
 local function _AbilityRemainingSeconds(spellIndex, bookType)
   if not spellIndex then
     return nil
@@ -884,26 +903,28 @@ local function _AbilityRemainingSeconds(spellIndex, bookType)
   return nil
 end
 
--- Remaining time by spell *name* (searches spellbook, then calls _AbilityRemainingSeconds)
+-- 通过法术*名称*剩余时间（搜索法术书，然后调用 _AbilityRemainingSeconds）
 local function _AbilityRemainingByName(spellName)
   if not spellName then
     return nil
   end
   local idx = _GetSpellIndexByName(spellName)
-  return _AbilityRemainingSeconds(idx, BOOKTYPE_SPELL)
+  local bt = _G.DoiteConditions_SpellBookTypeCache[spellName]
+  return _AbilityRemainingSeconds(idx, bt or BOOKTYPE_SPELL)
 end
 
--- Cooldown (remaining, totalDuration) by spell name; nil,nil if not in book
+-- 冷却时间（剩余，总持续时间）通过法术名称；如果不在法术书中，则返回 nil,nil
 local function _AbilityCooldownByName(spellName)
   if not spellName then
     return nil, nil
   end
   local idx = _GetSpellIndexByName(spellName)
+  local bt = _G.DoiteConditions_SpellBookTypeCache[spellName]
   if not idx then
     return nil, nil
   end
 
-  local start, dur = GetSpellCooldown(idx, BOOKTYPE_SPELL)
+  local start, dur = GetSpellCooldown(idx, bt or BOOKTYPE_SPELL)
   if start and dur and start > 0 and dur > 0 then
     local rem = (start + dur) - GetTime()
     if rem < 0 then
@@ -915,7 +936,7 @@ local function _AbilityCooldownByName(spellName)
   end
 end
 
--- Spell cooldown check (treats GCD-only as "not on cooldown")
+-- 法术冷却检查（将仅公共冷却视为“不在冷却中”）
 local function _IsSpellOnCooldown(spellIndex, bookType)
   if not spellIndex then
     return false
@@ -924,17 +945,17 @@ local function _IsSpellOnCooldown(spellIndex, bookType)
   return (start and start > 0 and dur and dur > 1.5) and true or false
 end
 
--- Nampower-accelerated cache: spellName -> spellId (max rank)
+-- Nampower 加速缓存：spellName -> spellId（最高等级）
 local SpellUsableIdCache = {}
 
--- NamPower-safe wrapper around IsSpellUsable.
+-- NamPower 安全的 IsSpellUsable 包装器。
 local function _SafeSpellUsable(spellNameBase, spellIndex, bookType)
   if not IsSpellUsable or not spellNameBase then
     return 1, 0
   end
 
   ----------------------------------------------------------------
-  -- 1) Fast path: Nampower present -> spellId + IsSpellUsable(id)
+  -- 1) 快速路径：Nampower 存在 -> spellId + IsSpellUsable(id)
   ----------------------------------------------------------------
   if GetSpellIdForName then
     local sid = SpellUsableIdCache[spellNameBase]
@@ -950,11 +971,11 @@ local function _SafeSpellUsable(spellNameBase, spellIndex, bookType)
         return u, noMana
       end
     end
-    -- fall through to legacy if no valid id / pcall fail
+    -- 如果没有有效 id / pcall 失败，则回退到旧版
   end
 
   ----------------------------------------------------------------
-  -- 2) Legacy fallback: old string-based behaviour (rarely used)
+  -- 2) 旧版回退：旧的基于字符串的行为（很少使用）
   ----------------------------------------------------------------
   local bt = bookType or BOOKTYPE_SPELL
   local arg = spellNameBase
@@ -986,28 +1007,29 @@ local function _SafeSpellUsable(spellNameBase, spellIndex, bookType)
     end
   end
 
-  -- 2a) Preferred legacy call
+  -- 2a) 首选旧版调用
   local ok, u, noMana = pcall(IsSpellUsable, arg)
   if ok and u ~= nil then
     return u, noMana
   end
 
-  -- 2b) Last resort: plain name (old behaviour)
+  -- 2b) 最后的手段：纯名称（旧行为）
   ok, u, noMana = pcall(IsSpellUsable, spellNameBase)
   if ok and u ~= nil then
     return u, noMana
   end
 
-  -- 3) Ultimate fallback: treat as usable so icon doesn’t die forever
+  -- 3) 最终回退：视为可用，以便图标不会永远消失
   return 1, 0
 end
 
--- === Item helpers (inventory / bag lookup & cooldown) =======================
+-- === 物品辅助函数（装备栏/背包查找和冷却）=======================
 local INV_SLOT_TRINKET1 = 13
 local INV_SLOT_TRINKET2 = 14
 local INV_SLOT_MAINHAND = 16
 local INV_SLOT_OFFHAND = 17
 local INV_SLOT_RANGED = 18
+local INV_SLOT_AMMO = (GetInventorySlotInfo and GetInventorySlotInfo("AmmoSlot")) or 0
 
 local DOITE_ITEM_CD_IGNORE = 5.0
 
@@ -1027,10 +1049,13 @@ local function _SlotIndexForName(name)
   if name == "RANGED" then
     return INV_SLOT_RANGED
   end
+  if name == "AMMO" then
+    return INV_SLOT_AMMO
+  end
   return nil
 end
 
--- Per-key memory for TRINKET_FIRST: "first ready wins" and stays the winner
+-- 每个键的内存，用于 TRINKET_FIRST：“最先就绪者胜出”并保持胜者
 local _TrinketFirstMemory = {}
 
 local function _ClearTrinketFirstMemory()
@@ -1040,7 +1065,7 @@ local function _ClearTrinketFirstMemory()
 end
 _G.DoiteConditions_ClearTrinketFirstMemory = _ClearTrinketFirstMemory
 
--- Parse itemID and [Name] out of a WoW item link
+-- 从 WoW 物品链接中解析 itemID 和 [Name]
 local function _ParseItemLink(link)
   if not link then
     return nil, nil
@@ -1061,19 +1086,22 @@ local function _ParseItemLink(link)
   return itemId, name
 end
 
--- Scan player inventory + bags for the configured item
+-- 扫描玩家装备栏 + 背包以查找配置的物品
 local _ItemScanCache = {}
 local _ItemScanGen = 0
-local _ItemScanTTL = 0.50
 
 local function _InvalidateItemScanCache()
   _ItemScanGen = _ItemScanGen + 1
-  -- Keep gen bounded (paranoid)
+  -- 保持缓存有界：来自已删除/重命名的编辑器图标的键
+  -- 否则可能在整个会话期间保留。扫描是事件驱动的，因此
+  -- 在此处清除是安全的，并防止长时间会话增长。
+  for k in pairs(_ItemScanCache) do
+    _ItemScanCache[k] = nil
+  end
+
+  -- 保持 gen 有界（偏执）
   if _ItemScanGen > 1000000 then
     _ItemScanGen = 1
-    for k in pairs(_ItemScanCache) do
-      _ItemScanCache[k] = nil
-    end
   end
 end
 
@@ -1088,19 +1116,44 @@ local function _ScanPlayerItemInstances(data)
   end
   local expectedName = data.itemName or data.displayName or data.name
 
-  -- Cache key
+  -- 缓存键
   local cacheKey = nil
   if expectedId then
-    cacheKey = "id:" .. expectedId
+    if data._daItemScanCacheKeyType ~= "id" or data._daItemScanCacheKeyId ~= expectedId then
+      if data._daItemScanCacheKey then
+        _ItemScanCache[data._daItemScanCacheKey] = nil
+      end
+      data._daItemScanCacheKey = "id:" .. expectedId
+      data._daItemScanCacheKeyType = "id"
+      data._daItemScanCacheKeyId = expectedId
+      data._daItemScanCacheKeyName = nil
+    end
+    cacheKey = data._daItemScanCacheKey
   elseif expectedName and expectedName ~= "" then
-    cacheKey = "name:" .. expectedName
+    if data._daItemScanCacheKeyType ~= "name" or data._daItemScanCacheKeyName ~= expectedName then
+      if data._daItemScanCacheKey then
+        _ItemScanCache[data._daItemScanCacheKey] = nil
+      end
+      data._daItemScanCacheKey = "name:" .. expectedName
+      data._daItemScanCacheKeyType = "name"
+      data._daItemScanCacheKeyName = expectedName
+      data._daItemScanCacheKeyId = nil
+    end
+    cacheKey = data._daItemScanCacheKey
+  else
+    if data._daItemScanCacheKey then
+      _ItemScanCache[data._daItemScanCacheKey] = nil
+    end
+    data._daItemScanCacheKey = nil
+    data._daItemScanCacheKeyType = nil
+    data._daItemScanCacheKeyId = nil
+    data._daItemScanCacheKeyName = nil
   end
 
   if cacheKey then
     local c = _ItemScanCache[cacheKey]
     if c then
-      local now = GetTime()
-      if (c.gen == _ItemScanGen) and c.t and ((now - c.t) < _ItemScanTTL) then
+      if (c.gen == _ItemScanGen) then
         return c.hasEquipped, c.hasBag, c.eqSlot, c.bagLoc, c.eqCount, c.bagCount
       end
     end
@@ -1112,17 +1165,23 @@ local function _ScanPlayerItemInstances(data)
   local firstBagSlot = nil
   local eqCount, bagCount = 0, 0
 
-  -- Equipped slots (1..19 is enough; trinkets/weapons are in here)
+  -- 已装备的槽位（1..19 足够；饰品/武器都在其中）
   local slot = 1
   while slot <= 19 do
     local link = GetInventoryItemLink("player", slot)
     if link then
-      local id, name = _ParseItemLink(link)
+      local id, name = nil, nil
       local match = false
-      if expectedId and id then
-        match = (id == expectedId)
-      elseif expectedName and name then
-        match = (name == expectedName)
+      if expectedId then
+        _, _, id = str_find(link, "item:(%d+)")
+        if id then
+          match = (tonumber(id) == expectedId)
+        end
+      else
+        id, name = _ParseItemLink(link)
+        if expectedName and name then
+          match = (name == expectedName)
+        end
       end
       if match then
         hasEquipped = true
@@ -1130,7 +1189,7 @@ local function _ScanPlayerItemInstances(data)
           firstEquippedSlot = slot
         end
 
-        -- count stack size / charges for this equipped item
+        -- 为此已装备物品计数堆叠大小/充能
         local ccount = 1
         if GetInventoryItemCount then
           local n = GetInventoryItemCount("player", slot)
@@ -1144,7 +1203,7 @@ local function _ScanPlayerItemInstances(data)
     slot = slot + 1
   end
 
-  -- Bags 0..4
+  -- 背包 0..4
   local bag = 0
   while bag <= 4 do
     local numSlots = GetContainerNumSlots and GetContainerNumSlots(bag)
@@ -1153,12 +1212,18 @@ local function _ScanPlayerItemInstances(data)
       while bslot <= numSlots do
         local link = GetContainerItemLink(bag, bslot)
         if link then
-          local id, name = _ParseItemLink(link)
+          local id, name = nil, nil
           local match = false
-          if expectedId and id then
-            match = (id == expectedId)
-          elseif expectedName and name then
-            match = (name == expectedName)
+          if expectedId then
+            _, _, id = str_find(link, "item:(%d+)")
+            if id then
+              match = (tonumber(id) == expectedId)
+            end
+          else
+            id, name = _ParseItemLink(link)
+            if expectedName and name then
+              match = (name == expectedName)
+            end
           end
           if match then
             hasBag = true
@@ -1167,7 +1232,7 @@ local function _ScanPlayerItemInstances(data)
               firstBagSlot = bslot
             end
 
-            -- count items in this bag slot
+            -- 计数此背包槽位中的物品
             local ccount = 1
             if GetContainerItemInfo then
               local _, n = GetContainerItemInfo(bag, bslot)
@@ -1184,12 +1249,7 @@ local function _ScanPlayerItemInstances(data)
     bag = bag + 1
   end
 
-  local firstBagLoc = nil
-  if firstBagBag ~= nil then
-    firstBagLoc = { bag = firstBagBag, slot = firstBagSlot }
-  end
-
-  -- Store in cache (reusing bagLoc table)
+  -- 存储在缓存中（重用 bagLoc 表）
   if cacheKey then
     local c = _ItemScanCache[cacheKey]
     if not c then
@@ -1198,19 +1258,18 @@ local function _ScanPlayerItemInstances(data)
     end
 
     c.gen = _ItemScanGen
-    c.t = GetTime()
     c.hasEquipped = hasEquipped
     c.hasBag = hasBag
     c.eqSlot = firstEquippedSlot
     c.eqCount = eqCount
     c.bagCount = bagCount
 
-    if firstBagLoc then
+    if firstBagBag ~= nil then
       if not c.bagLoc then
         c.bagLoc = {}
       end
-      c.bagLoc.bag = firstBagLoc.bag
-      c.bagLoc.slot = firstBagLoc.slot
+      c.bagLoc.bag = firstBagBag
+      c.bagLoc.slot = firstBagSlot
     else
       c.bagLoc = nil
     end
@@ -1218,11 +1277,18 @@ local function _ScanPlayerItemInstances(data)
     return c.hasEquipped, c.hasBag, c.eqSlot, c.bagLoc, c.eqCount, c.bagCount
   end
 
-  return hasEquipped, hasBag, firstEquippedSlot, firstBagLoc, eqCount, bagCount
+  if firstBagBag ~= nil then
+    data._daItemScanBagLoc = data._daItemScanBagLoc or {}
+    data._daItemScanBagLoc.bag = firstBagBag
+    data._daItemScanBagLoc.slot = firstBagSlot
+    return hasEquipped, hasBag, firstEquippedSlot, data._daItemScanBagLoc, eqCount, bagCount
+  end
+
+  return hasEquipped, hasBag, firstEquippedSlot, nil, eqCount, bagCount
 end
 
--- Single inventory slot: does it have an item and is that item on cooldown?
--- Returns: hasItem, onCooldown, rem, dur, isUseItem
+-- 单个装备栏槽位：它是否有物品，该物品是否在冷却中？
+-- 返回：hasItem, onCooldown, rem, dur, isUseItem
 local function _GetInventorySlotState(slot)
   if not slot then
     return false, false, 0, 0, false
@@ -1245,14 +1311,24 @@ local function _GetInventorySlotState(slot)
     dur = dur or 0
   end
 
-  -- Detect usable / "Use:"-style items via tooltip text. Cache per exact item link to avoid repeated string.lower() allocations.
+  -- 通过工具提示文本检测可用/“使用：”风格的物品。
+  -- 按 itemId 缓存（稳定键，避免基于链接变体的键增长）。
   local useCache = DoiteConditions._itemUseCache
   if not useCache then
     useCache = {}
     DoiteConditions._itemUseCache = useCache
+    DoiteConditions._itemUseCacheN = 0
   end
 
-  local isUse = useCache[link]
+  local cacheKey = nil
+  local _, _, idStr = str_find(link, "item:(%d+)")
+  if idStr then
+    cacheKey = tonumber(idStr)
+  else
+    cacheKey = link
+  end
+
+  local isUse = useCache[cacheKey]
   if isUse == nil then
     _EnsureTooltip()
     DoiteConditionsTooltip:ClearLines()
@@ -1269,8 +1345,7 @@ local function _GetInventorySlotState(slot)
       if txt and txt ~= "" then
         local lower = string.lower(txt)
         if str_find(lower, "use:") or str_find(lower, "use ")
-            or str_find(lower, "consume")
-            or str_find(txt, "使用：") or str_find(txt, "消耗") then
+            or str_find(lower, "consume") then
           isUse = true
           break
         end
@@ -1278,13 +1353,21 @@ local function _GetInventorySlotState(slot)
       i = i + 1
     end
 
-    useCache[link] = isUse
+    useCache[cacheKey] = isUse
+
+    DoiteConditions._itemUseCacheN = (DoiteConditions._itemUseCacheN or 0) + 1
+    if DoiteConditions._itemUseCacheN > 256 then
+      for k in pairs(useCache) do
+        useCache[k] = nil
+      end
+      DoiteConditions._itemUseCacheN = 0
+    end
   end
 
   return true, onCd, rem, dur or 0, isUse
 end
 
--- Core item state used by both condition checks and text overlays
+-- 核心物品状态，由条件检查和文本覆盖使用
 local _ItemStateScratch = {
   hasItem = false,
   isMissing = false,
@@ -1293,17 +1376,17 @@ local _ItemStateScratch = {
   rem = nil,
   dur = nil,
 
-  -- temp enchant tracking (weapon slots)
-  teRem = nil,       -- seconds remaining (0 if expired)
-  teCharges = nil,   -- charges remaining (0 if none/expired)
-  teItemId = nil,    -- cached itemId of the enchanted weapon
-  teEnchantId = nil, -- cached tempEnchantId
+  -- 临时附魔追踪（武器槽位）
+  teRem = nil,       -- 剩余秒数（如果过期则为 0）
+  teCharges = nil,   -- 剩余充能（如果无/过期则为 0）
+  teItemId = nil,    -- 被附魔武器的缓存 itemId
+  teEnchantId = nil, -- 缓存临时附魔 ID
 
-  -- stack/amount tracking
-  eqCount = 0, -- total amount in equipped gear
-  bagCount = 0, -- total amount in bags (0..4)
+  -- 堆叠/数量跟踪
+  eqCount = 0, -- 已装备装备中的总量
+  bagCount = 0, -- 背包中的总量（0..4）
   totalCount = 0, -- eqCount + bagCount
-  effectiveCount = 0, -- count restricted by whereBag/whereEquipped
+  effectiveCount = 0, -- 受 whereBag/whereEquipped 限制的数量
 }
 
 local function _ResetItemState(state)
@@ -1314,13 +1397,13 @@ local function _ResetItemState(state)
   state.rem = nil
   state.dur = nil
 
-  -- reset temp enchant
+  -- 重置临时附魔
   state.teRem = nil
   state.teCharges = nil
   state.teItemId = nil
   state.teEnchantId = nil
 
-  -- reset counts
+  -- 重置计数
   state.eqCount = 0
   state.bagCount = 0
   state.totalCount = 0
@@ -1338,47 +1421,54 @@ local function _EvaluateItemCoreState(data, c)
   local invSlotName = c.inventorySlot
 
   -- --------------------------------------------------------------------
-  -- 1) Synthetic inventory-slot entries (equipped trinkets / weapons)
+  -- 1) 合成装备栏槽位条目（已装备的饰品/武器）
   -- --------------------------------------------------------------------
   if invSlotName and invSlotName ~= "" then
     local mode = c.mode or ""
     local key = data and data.key
 
-    -- Direct 1:1 slot bindings (TRINKET1 / TRINKET2 / MAINHAND / OFFHAND / RANGED)
+    -- 直接 1:1 槽位绑定（TRINKET1 / TRINKET2 / MAINHAND / OFFHAND / RANGED / AMMO）
     if invSlotName == "TRINKET1" or invSlotName == "TRINKET2"
         or invSlotName == "MAINHAND" or invSlotName == "OFFHAND"
-        or invSlotName == "RANGED" then
+        or invSlotName == "RANGED" or invSlotName == "AMMO" then
 
       local idx = _SlotIndexForName(invSlotName)
-      local hasItem, onCd, rem, dur = _GetInventorySlotState(idx)
+      local hasItem, onCd, rem, dur
+      if invSlotName == "AMMO" then
+        hasItem = (GetInventoryItemTexture("player", ((GetInventorySlotInfo and GetInventorySlotInfo("AmmoSlot")) or INV_SLOT_AMMO)) ~= nil)
+        onCd = false
+        rem = 0
+        dur = 0
+      else
+        hasItem, onCd, rem, dur = _GetInventorySlotState(idx)
+      end
       state.hasItem = hasItem
       state.isMissing = not hasItem
       state.rem = rem
       state.dur = dur
 
-	  if mode == "oncd" then
-	    state.modeMatches = (hasItem and onCd)
-	  elseif mode == "notcd" then
-	    state.modeMatches = (hasItem and (not onCd))
-	  elseif mode == "both" then
-	    state.modeMatches = hasItem
-	  else
-	    state.modeMatches = true
-	  end
+      if mode == "oncd" then
+        state.modeMatches = (hasItem and onCd)
+      elseif mode == "notcd" then
+        state.modeMatches = (hasItem and (not onCd))
+      elseif mode == "both" then
+        state.modeMatches = hasItem
+      else
+        state.modeMatches = true
+      end
 
       ----------------------------------------------------------------
-      -- Temp enchant tracking (Nampower GetEquippedItem) for weapon-slot synthetic entries
-      -- Guarded by displayName == "---EQUIPPED WEAPON SLOTS---"
+      -- 临时附魔跟踪（Nampower GetEquippedItem）用于武器槽位合成条目
+      -- 由 displayName == "---EQUIPPED WEAPON SLOTS---" 保护
       --
-      -- Special cases:
-      --  * mode == "notcd"/"both" + textTimeRemaining => show temp enchant remaining time
-      --  * textStackCounter / stacksEnabled    => use temp enchant charges as "count"
+      -- 特殊情况：
+      --  * mode == "notcd"/"both" + textTimeRemaining => 显示临时附魔剩余时间
+      --  * textStackCounter / stacksEnabled    => 使用临时附魔充能作为“计数”
       --
-      -- Cache persists across weapon swaps so countdown continues even
-      -- if the enchanted weapon is not currently equipped in that slot.
+      -- 即使被附魔的武器当前未装备在该槽位，缓存也会持续，因此倒计时继续。
       ----------------------------------------------------------------
-      if (invSlotName == "MAINHAND" or invSlotName == "OFFHAND" or invSlotName == "RANGED")
-          and data.displayName == "---已装备的武器栏位---" then
+      if (invSlotName == "MAINHAND" or invSlotName == "OFFHAND")
+          and data.displayName == "---EQUIPPED WEAPON SLOTS---" then
 
         local needTE = false
         if ((mode == "notcd" or mode == "both")
@@ -1403,15 +1493,15 @@ local function _EvaluateItemCoreState(data, c)
             te[idx] = slotC
           end
 
-          -- Expire cached enchant by time
+          -- 按时间使缓存的附魔过期
           if slotC.endTime and slotC.endTime <= now then
             slotC.endTime = nil
             slotC.tempEnchantId = nil
             slotC.charges = 0
           end
 
-          -- Rate-limited refresh from current equipped item in this slot
-          -- (UNIT_INVENTORY_CHANGED will also poke this)
+          -- 从当前装备在此槽位的物品进行速率限制刷新
+          -- （UNIT_INVENTORY_CHANGED 也会触发此操作）
           local lastT = slotC.t or 0
           if (now - lastT) > 0.15 then
             slotC.t = now
@@ -1419,7 +1509,7 @@ local function _EvaluateItemCoreState(data, c)
             if GetEquippedItem then
               local info = GetEquippedItem("player", idx)
 
-              -- Always track what's currently in the slot so stale itemId doesn't stick.
+              -- 始终跟踪槽位中的当前物品，以便陈旧的 itemId 不会粘住。
               if info and info.itemId then
                 slotC.itemId = info.itemId
               else
@@ -1430,7 +1520,7 @@ local function _EvaluateItemCoreState(data, c)
               local msLeft = info and info.tempEnchantmentTimeLeftMs or nil
 
               if info and teId and teId > 0 then
-                -- Optional per-slot memory (handles rare cases where timeLeft isn't returned)
+                -- 可选的每个槽位内存（处理时间左未返回的罕见情况）
                 local memE = slotC._e
                 if not memE then
                   memE = {}
@@ -1444,7 +1534,7 @@ local function _EvaluateItemCoreState(data, c)
 
                 local key = tostring(slotC.itemId or 0) .. ":" .. tostring(teId)
 
-                -- If enchant id changes, reset the absolute timer - don't keep stale timing.
+                -- 如果附魔 ID 更改，重置绝对计时器 - 不要保持陈旧时间。
                 local prevTeId = slotC.tempEnchantId
                 if prevTeId ~= teId then
                   slotC.endTime = nil
@@ -1455,20 +1545,20 @@ local function _EvaluateItemCoreState(data, c)
                 if msLeft and msLeft > 0 then
                   local prevMs = slotC._msLeft
 
-                  -- IMPORTANT:
-                  -- Some clients update tempEnchantmentTimeLeftMs in coarse steps (or it can stick).
-                  -- overwrite endTime every refresh with (now + msLeft), the countdown freezes.
+                  -- 重要：
+                  -- 某些客户端以粗略步长更新 tempEnchantmentTimeLeftMs（或者它可能卡住）。
+                  -- 每次刷新都用 (now + msLeft) 覆盖 endTime 会导致倒计时冻结。
                   if (not slotC.endTime) or (not prevMs) then
                     slotC.endTime = now + (msLeft / 1000)
                   else
                     if msLeft > (prevMs + 2000) then
-                      -- timeLeft increased noticeably => refresh/re-apply
+                      -- timeLeft 明显增加 => 刷新/重新应用
                       slotC.endTime = now + (msLeft / 1000)
                     elseif msLeft < (prevMs - 10000) then
-                      -- coarse big drop => correct our endTime so expiry isn't wildly wrong
+                      -- 粗略的大幅下降 => 纠正我们的 endTime，使过期不会严重错误
                       slotC.endTime = now + (msLeft / 1000)
                     end
-                    -- else: ignore (likely "stuck" msLeft) and let endTime tick naturally
+                    -- 否则：忽略（可能是“卡住的”msLeft），让 endTime 自然滴答
                   end
 
                   slotC._msLeft = msLeft
@@ -1476,7 +1566,7 @@ local function _EvaluateItemCoreState(data, c)
                 else
                   slotC._msLeft = nil
 
-                  -- Only fall back to memory - don't already have a valid running timer.
+                  -- 仅当还没有有效的运行计时器时才回退到内存。
                   if (not slotC.endTime) or (slotC.endTime <= now) then
                     local endT = memE[key]
                     if endT and endT > now then
@@ -1487,7 +1577,7 @@ local function _EvaluateItemCoreState(data, c)
                   end
                 end
 
-                -- Charges (stacks) follow the same "slot is currently enchanted" truth.
+                -- 充能（层数）遵循相同的“槽位当前已附魔”事实。
                 if info.tempEnchantmentCharges ~= nil then
                   local ch = tonumber(info.tempEnchantmentCharges) or 0
                   if ch < 0 then
@@ -1504,7 +1594,7 @@ local function _EvaluateItemCoreState(data, c)
                 end
 
               else
-                -- No temp enchant on the CURRENTLY equipped weapon in this slot => clear display.
+                -- 此槽位当前装备的武器上没有临时附魔 => 清除显示。
                 slotC.endTime = nil
                 slotC.tempEnchantId = nil
                 slotC.charges = 0
@@ -1520,7 +1610,7 @@ local function _EvaluateItemCoreState(data, c)
             end
           end
 
-          -- If timer expired, charges are treated as expired too
+          -- 如果计时器过期，充能也视为过期
           if remSec <= 0 then
             slotC.charges = 0
           end
@@ -1530,7 +1620,7 @@ local function _EvaluateItemCoreState(data, c)
           state.teItemId = slotC.itemId
           state.teEnchantId = slotC.tempEnchantId
 
-          -- When weapon slots are in notcd/both, "time remaining" refers to temp enchant uptime
+          -- 当武器槽位处于 notcd/both 时，“剩余时间”指的是临时附魔持续时间
           if (mode == "notcd" or mode == "both") then
             if c and (c.textTimeRemaining == true or c.remainingEnabled == true) then
               state.rem = remSec or 0
@@ -1540,7 +1630,7 @@ local function _EvaluateItemCoreState(data, c)
         end
       end
 
-      -- Composite “equipped trinkets” synthetic entries
+      -- 复合“已装备的饰品”合成条目
     elseif invSlotName == "TRINKET_FIRST" or invSlotName == "TRINKET_BOTH" then
       local has1, on1, rem1, dur1, isUse1 = _GetInventorySlotState(INV_SLOT_TRINKET1)
       local has2, on2, rem2, dur2, isUse2 = _GetInventorySlotState(INV_SLOT_TRINKET2)
@@ -1548,14 +1638,14 @@ local function _EvaluateItemCoreState(data, c)
       local use1 = has1 and isUse1
       local use2 = has2 and isUse2
 
-      -- If none are usable / have a use-effect, never show
+      -- 如果没有可用/有使用效果的物品，永远不显示
       if not use1 and not use2 then
         state.hasItem = false
         state.isMissing = true
         state.modeMatches = false
         state.passesWhere = true
 
-        -- counts for synthetic entries
+        -- 合成条目的计数
         state.eqCount = 0
         state.bagCount = 0
         state.totalCount = 0
@@ -1568,7 +1658,7 @@ local function _EvaluateItemCoreState(data, c)
       state.isMissing = not state.hasItem
 
       if invSlotName == "TRINKET_FIRST" then
-        -- “First ready” semantics with memory per key:
+        -- “最先就绪”语义，每个键有内存：
         local prevSlot = key
             and _TrinketFirstMemory[key]
             and _TrinketFirstMemory[key].slot
@@ -1576,12 +1666,12 @@ local function _EvaluateItemCoreState(data, c)
         local winner = prevSlot
 
         if mode == "notcd" then
-          -- A slot is “ready” if it is a usable trinket and not on cooldown.
+          -- 如果槽位是可用的饰品且不在冷却中，则视为“就绪”。
           local function slotReady(useFlag, onCdFlag)
             return useFlag and (not onCdFlag)
           end
 
-          -- Drop previous winner if it stopped being ready/usable.
+          -- 如果之前的胜者停止就绪/可用，则丢弃。
           if winner == INV_SLOT_TRINKET1
               and not slotReady(use1, on1) then
             winner = nil
@@ -1619,77 +1709,77 @@ local function _EvaluateItemCoreState(data, c)
             end
           end
 
-		elseif mode == "both" then
-		  -- Show whenever any usable trinket exists.
-		  state.modeMatches = (use1 or use2)
+        elseif mode == "both" then
+          -- 只要存在任何可用饰品就显示。
+          state.modeMatches = (use1 or use2)
 
-		  -- Prefer to display an on-cooldown trinket if any are on cooldown (like oncd),
-		  -- otherwise fall back to the notcd "first ready" semantics.
-		  local found, bestRem, bestDur = false, nil, nil
+          -- 如果任何饰品在冷却中，优先显示一个在冷却中的饰品（类似于 oncd），
+          -- 否则回退到 notcd 的“最先就绪”语义。
+          local found, bestRem, bestDur = false, nil, nil
 
-		  if use1 and on1 then
-			found = true
-			bestRem = rem1
-			bestDur = dur1
-			winner = INV_SLOT_TRINKET1
-		  end
-		  if use2 and on2 then
-			if (not found) or (rem2 < bestRem) then
-			  found = true
-			  bestRem = rem2
-			  bestDur = dur2
-			  winner = INV_SLOT_TRINKET2
-			end
-		  end
+          if use1 and on1 then
+            found = true
+            bestRem = rem1
+            bestDur = dur1
+            winner = INV_SLOT_TRINKET1
+          end
+          if use2 and on2 then
+            if (not found) or (rem2 < bestRem) then
+              found = true
+              bestRem = rem2
+              bestDur = dur2
+              winner = INV_SLOT_TRINKET2
+            end
+          end
 
-		  if found then
-			state.rem = bestRem
-			state.dur = bestDur
-		  else
-			-- None on cooldown => use the existing "first ready" memory logic from notcd
-			local function slotReady(useFlag, onCdFlag)
-			  return useFlag and (not onCdFlag)
-			end
+          if found then
+            state.rem = bestRem
+            state.dur = bestDur
+          else
+            -- 没有在冷却中的 => 使用来自 notcd 的现有“最先就绪”内存逻辑
+            local function slotReady(useFlag, onCdFlag)
+              return useFlag and (not onCdFlag)
+            end
 
-			-- Drop previous winner if it stopped being ready/usable.
-			if winner == INV_SLOT_TRINKET1 and not slotReady(use1, on1) then
-			  winner = nil
-			elseif winner == INV_SLOT_TRINKET2 and not slotReady(use2, on2) then
-			  winner = nil
-			end
+            -- 如果之前的胜者停止就绪/可用，则丢弃。
+            if winner == INV_SLOT_TRINKET1 and not slotReady(use1, on1) then
+              winner = nil
+            elseif winner == INV_SLOT_TRINKET2 and not slotReady(use2, on2) then
+              winner = nil
+            end
 
-			if not winner then
-			  if slotReady(use1, on1) then
-				winner = INV_SLOT_TRINKET1
-			  elseif slotReady(use2, on2) then
-				winner = INV_SLOT_TRINKET2
-			  end
-			end
+            if not winner then
+              if slotReady(use1, on1) then
+                winner = INV_SLOT_TRINKET1
+              elseif slotReady(use2, on2) then
+                winner = INV_SLOT_TRINKET2
+              end
+            end
 
-			if winner == INV_SLOT_TRINKET1 then
-			  state.rem = rem1
-			  state.dur = dur1
-			elseif winner == INV_SLOT_TRINKET2 then
-			  state.rem = rem2
-			  state.dur = dur2
-			else
-			  -- still "modeMatches" true if any usable exists; no specific timer
-			  state.rem = 0
-			  state.dur = dur1 or dur2
-			end
-		  end
+            if winner == INV_SLOT_TRINKET1 then
+              state.rem = rem1
+              state.dur = dur1
+            elseif winner == INV_SLOT_TRINKET2 then
+              state.rem = rem2
+              state.dur = dur2
+            else
+              -- 仍然“modeMatches”为真，如果存在任何可用饰品；没有特定计时器
+              state.rem = 0
+              state.dur = dur1 or dur2
+            end
+          end
 
-		  if key then
-			if winner then
-			  _TrinketFirstMemory[key] = _TrinketFirstMemory[key] or {}
-			  _TrinketFirstMemory[key].slot = winner
-			else
-			  _TrinketFirstMemory[key] = nil
-			end
-		  end
+          if key then
+            if winner then
+              _TrinketFirstMemory[key] = _TrinketFirstMemory[key] or {}
+              _TrinketFirstMemory[key].slot = winner
+            else
+              _TrinketFirstMemory[key] = nil
+            end
+          end
 
         elseif mode == "oncd" then
-          -- On-CD mode: any usable trinket on cooldown passes; pick the one
+          -- 在冷却中模式：任何在冷却中的可用饰品都通过；选择其中一个
           local found, bestRem, bestDur = false, nil, nil
 
           if use1 and on1 then
@@ -1719,16 +1809,16 @@ local function _EvaluateItemCoreState(data, c)
               _TrinketFirstMemory[key] = nil
             end
           end  
-		  
+
         else
-          -- No explicit mode: just report presence of any usable trinket.
+          -- 没有显式模式：仅报告任何可用饰品的存在。
           state.modeMatches = (use1 or use2)
           state.rem = nil
           state.dur = nil
         end
 
       else
-        -- TRINKET_BOTH: Require all equipped use-trinkets to be in the requested state.
+        -- TRINKET_BOTH：要求所有已装备的可用饰品处于请求状态。
         if mode == "oncd" then
           local ok = true
           if use1 and not on1 then
@@ -1744,19 +1834,19 @@ local function _EvaluateItemCoreState(data, c)
             state.rem = (r1 > r2) and r1 or r2
             state.dur = dur1 or dur2
           end
-		  
-		elseif mode == "both" then
-		  -- both => show as long as at least one usable trinket exists
-		  local any = (use1 or use2)
-		  state.modeMatches = any
-		  if any then
-			-- For display: show the max remaining among those on cooldown, else 0.
-			local r1 = (use1 and on1 and rem1) or 0
-			local r2 = (use2 and on2 and rem2) or 0
-			state.rem = (r1 > r2) and r1 or r2
-			state.dur = dur1 or dur2
-		  end
-		  
+          
+        elseif mode == "both" then
+          -- both => 只要至少有一个可用饰品就显示
+          local any = (use1 or use2)
+          state.modeMatches = any
+          if any then
+            -- 显示时：显示那些在冷却中的饰品中的最大剩余时间，否则 0。
+            local r1 = (use1 and on1 and rem1) or 0
+            local r2 = (use2 and on2 and rem2) or 0
+            state.rem = (r1 > r2) and r1 or r2
+            state.dur = dur1 or dur2
+          end
+          
         elseif mode == "notcd" then
           local ok = true
           if use1 and on1 then
@@ -1776,15 +1866,15 @@ local function _EvaluateItemCoreState(data, c)
       end
     end
 
-    -- No Whereabouts for synthetic entries; treat as pass
+    -- 合成条目没有 Whereabouts；视为通过
     state.passesWhere = true
 
-	-- for synthetic entries, treat "stack count" as 1 if an item exists
+    -- 对于合成条目，如果物品存在，将“堆叠计数”视为 1
     if state.hasItem then
-      -- Special case: equipped weapon slots can show temp enchant charges
-      if (invSlotName == "MAINHAND" or invSlotName == "OFFHAND" or invSlotName == "RANGED")
-          and data.displayName == "---已装备的武器栏位---"
-		  and (mode == "notcd" or mode == "both")
+      -- 特殊情况：已装备的武器槽位可以显示临时附魔充能
+      if (invSlotName == "MAINHAND" or invSlotName == "OFFHAND")
+          and data.displayName == "---EQUIPPED WEAPON SLOTS---"
+          and (mode == "notcd" or mode == "both")
           and (c.textStackCounter == true or c.stacksEnabled == true) then
 
         local ch = state.teCharges
@@ -1800,10 +1890,34 @@ local function _EvaluateItemCoreState(data, c)
         state.totalCount = ch
         state.effectiveCount = ch
       else
-        state.eqCount = 1
+        local slotCount
+        if invSlotName == "AMMO" then
+          local ammoSlot = (GetInventorySlotInfo and GetInventorySlotInfo("AmmoSlot")) or INV_SLOT_AMMO
+          local ok, cnt = pcall(GetInventoryItemCount, "player", ammoSlot)
+          if ok and cnt then
+            slotCount = cnt or 0
+          else
+            slotCount = 0
+          end
+          if slotCount < 0 then
+            slotCount = 0
+          end
+        else
+          slotCount = 0
+          if idx ~= nil then
+            local ok, cnt = pcall(GetInventoryItemCount, "player", idx)
+            if ok and cnt then
+              slotCount = cnt
+            end
+          end
+          if slotCount <= 0 then
+            slotCount = 1
+          end
+        end
+        state.eqCount = slotCount
         state.bagCount = 0
-        state.totalCount = 1
-        state.effectiveCount = 1
+        state.totalCount = slotCount
+        state.effectiveCount = slotCount
       end
     else
       state.eqCount = 0
@@ -1816,7 +1930,7 @@ local function _EvaluateItemCoreState(data, c)
   end
 
   -- --------------------------------------------------------------------
-  -- 2) Normal items (Whereabouts: equipped / bag / missing)
+  -- 2) 正常物品（Whereabouts：已装备 / 背包 / 缺失）
   -- --------------------------------------------------------------------
   local hasEquipped, hasBag, eqSlot, bagLoc, eqCount, bagCount = _ScanPlayerItemInstances(data)
   local missing = (not hasEquipped and not hasBag)
@@ -1824,7 +1938,7 @@ local function _EvaluateItemCoreState(data, c)
   state.hasItem = not missing
   state.isMissing = missing
 
-  -- raw counts
+  -- 原始计数
   state.eqCount = eqCount or 0
   state.bagCount = bagCount or 0
   state.totalCount = (state.eqCount or 0) + (state.bagCount or 0)
@@ -1841,7 +1955,7 @@ local function _EvaluateItemCoreState(data, c)
   end
   state.passesWhere = passWhere
 
-  -- effective count only from selected whereabouts
+  -- 仅从选定的 Whereabouts 计算有效计数
   local eff = 0
   if c.whereEquipped and state.eqCount and state.eqCount > 0 then
     eff = eff + state.eqCount
@@ -1849,14 +1963,14 @@ local function _EvaluateItemCoreState(data, c)
   if c.whereBag and state.bagCount and state.bagCount > 0 then
     eff = eff + state.bagCount
   end
-  -- If only whereMissing is set, eff stays 0; DoiteEdit hides stack UI there.
+  -- 如果仅设置了 whereMissing，eff 保持为 0；DoiteEdit 会在那里隐藏堆叠 UI。
   state.effectiveCount = eff
 
   if not passWhere then
     return state
   end
 
-  -- prefer equipped if present, otherwise first bag occurrence
+  -- 如果存在，优先使用已装备的，否则使用第一个背包出现
   local kind, loc = nil, nil
   if eqSlot then
     kind = "inv"
@@ -1913,17 +2027,17 @@ local function _EvaluateItemCoreState(data, c)
     state.dur = dur
 
     local mode = c.mode or ""
-	if mode == "oncd" then
-	  state.modeMatches = (hasItem and onCd)
-	elseif mode == "notcd" then
-	  state.modeMatches = (hasItem and (not onCd))
-	elseif mode == "both" then
-	  state.modeMatches = hasItem
-	else
-	  state.modeMatches = true
-	end
+    if mode == "oncd" then
+      state.modeMatches = (hasItem and onCd)
+    elseif mode == "notcd" then
+      state.modeMatches = (hasItem and (not onCd))
+    elseif mode == "both" then
+      state.modeMatches = hasItem
+    else
+      state.modeMatches = true
+    end
   else
-    -- No instance at all (no eqSlot/bagLoc)
+    -- 根本没有实例（无 eqSlot/bagLoc）
     if missing and c.whereMissing then
       state.modeMatches = true
       state.rem = 0
@@ -1940,10 +2054,10 @@ local function _EvaluateItemCoreState(data, c)
 end
 
 -- =================================================================
--- Slider check
+-- 滑块检查
 -- =================================================================
 
--- For slider gating: which spells have we actually seen cast?
+-- 对于滑块门控：哪些法术我们实际看到施放了？
 _G["Doite_SliderSeen"] = _G["Doite_SliderSeen"] or {}
 
 local function _MarkSliderSeen(spellName)
@@ -1954,19 +2068,19 @@ local function _MarkSliderSeen(spellName)
 end
 
 -- ============================================================
--- Proc-window timers (NOT cooldown timers)
+-- 触发窗口计时器（非冷却计时器）
 -- ============================================================
 _G.DoiteConditions_ProcWindowDurations = _G.DoiteConditions_ProcWindowDurations or {
-  ["Overpower"] = 4.0, ["制压"] = 4.0,
-  ["Revenge"] = 4.0, ["复仇"] = 4.0,
-  ["Surprise Attack"] = 4.0, ["突袭"] = 4.0,
-  ["Riposte"] = 4.0, ["还击"] = 4.0,
-  ["Arcane Surge"] = 4.0, ["奥术涌动"] = 4.0,
+  ["压制"] = 4.0,
+  ["复仇"] = 4.0,
+  ["偷袭"] = 4.0,
+  ["还击"] = 4.0,
+  ["奥术涌动"] = 4.0,
 }
 
--- SpellName -> absolute endTime (GetTime() + duration)
+-- SpellName -> 绝对结束时间 (GetTime() + duration)
 _G.DoiteConditions_ProcUntil = _G.DoiteConditions_ProcUntil or {}
--- Per-icon rising-edge detector for "usable proc" icons
+-- 每个图标的上升沿检测器，用于“可用触发”图标
 _G.DoiteConditions_ProcLastShowByKey = _G.DoiteConditions_ProcLastShowByKey or {}
 local function _ProcWindowDuration(spellName)
   if not spellName then
@@ -2005,15 +2119,15 @@ local function _ProcWindowRemaining(spellName)
   return nil
 end
 
--- Keep warrior-specific state for target-matching
+-- 保持战士特定的目标匹配状态
 local _WarriorProc = { OP_until = 0, OP_target = nil, REV_until = 0 }
--- Canonical ability name resolver (spellbook name preferred)
+-- 规范法术名称解析器（优先使用法术书名称）
 local function _GetCanonicalSpellNameFromData(data)
   if not data or type(data) ~= "table" then
     return nil
   end
   if data.name and data.name ~= "" then
-    -- This is the canonical spellbook name (what GetSpellName sees)
+    -- 这是规范的法术书名称（GetSpellName 看到的）
     return data.name
   end
   if data.displayName and data.displayName ~= "" then
@@ -2023,13 +2137,13 @@ local function _GetCanonicalSpellNameFromData(data)
 end
 
 -- =================================================================
--- Nampower: SPELL_GO_SELF -> cooldown ownership (PLAYER ONLY)
--- Only used to gate "soon off CD" sliders so shared-CD abilities
--- don't show sliders unless the player actually cast them.
+-- Nampower: SPELL_GO_SELF -> 冷却所有权（仅玩家）
+-- 仅用于门控“即将冷却结束”滑块，以便共享 CD 的技能
+-- 仅在玩家实际施放时才显示滑块。
 -- =================================================================
 
--- Nampower gates these events behind NP_EnableSpellGoEvents (default 0).
--- Enable if available; harmless if CVars are missing.
+-- Nampower 将这些事件隐藏在 NP_EnableSpellGoEvents 之后（默认 0）。
+-- 如果可用则启用；如果 CVar 缺失，则无害。
 do
   if GetCVar and SetCVar then
     local ok, v = pcall(GetCVar, "NP_EnableSpellGoEvents")
@@ -2042,13 +2156,13 @@ end
 local _daCast = CreateFrame("Frame", "DoiteCast")
 _daCast:RegisterEvent("SPELL_GO_SELF")
 _daCast:SetScript("OnEvent", function()
-  -- SPELL_GO_SELF params (Nampower):
-  -- arg1=itemId (0 if not item-triggered)
+  -- SPELL_GO_SELF 参数 (Nampower):
+  -- arg1=itemId (如果不是物品触发则为 0)
   -- arg2=spellId
   local itemId = arg1
   local spellId = arg2
 
-  -- Only track real spell casts for slider ownership (ignore item-triggered)
+  -- 仅跟踪真正的法术施放以用于滑块所有权（忽略物品触发）
   if itemId and itemId ~= 0 then
     return
   end
@@ -2056,7 +2170,7 @@ _daCast:SetScript("OnEvent", function()
     return
   end
 
-  -- Nampower id->name mapping
+  -- Nampower id->name 映射
   local name = nil
   if GetSpellNameAndRankForId then
     local n = GetSpellNameAndRankForId(spellId)
@@ -2069,14 +2183,14 @@ _daCast:SetScript("OnEvent", function()
     return
   end
 
-  -- debug: last GO_SELF seen
+  -- debug：上次看到的 GO_SELF
   Doite_LastGoSelfId = spellId
   Doite_LastGoSelfName = name
 
   _MarkSliderSeen(name)
 end)
 
--- Check class and register only the events player needs for reactive procs
+-- 检查职业并仅注册玩家需要的触发事件
 local _daClassCL = CreateFrame("Frame", "DoiteClassCL")
 local _daClassCL2 = CreateFrame("Frame", "DoiteClassCL2")
 
@@ -2085,9 +2199,9 @@ do
   cls = cls and string.upper(cls) or ""
 
   if cls == "WARRIOR" then
-    -- Overpower: needs dodge detection
+    -- 压制：需要闪避检测
     _daClassCL:RegisterEvent("CHAT_MSG_COMBAT_SELF_MISSES")
-	_daClassCL:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
+    _daClassCL:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
 
     _daClassCL:SetScript("OnEvent", function()
       local line = arg1
@@ -2095,22 +2209,13 @@ do
         return
       end
 
-      -- Overpower: target dodged you
+      -- 压制：目标闪避了你的攻击
       local tgt
       local _, _, t1 = str_find(line, "You attack%.%s+(.+)%s+dodges")
-      if not t1 then
-        -- CN: 你攻击了...但被闪开了
-        local _, _, tc = str_find(line, "你攻击了(.+)但被闪开了")
-        if tc then t1 = tc end
-      end
       if t1 then
         tgt = t1
       else
         local _, _, t2 = str_find(line, "Your%s+.+%s+was%s+dodged%s+by%s+(.+)")
-        if not t2 then
-          local _, _, tc2 = str_find(line, "你的.+被(.+)闪开了")
-          if tc2 then t2 = tc2 end
-        end
         tgt = t2
       end
 
@@ -2119,13 +2224,13 @@ do
         _WarriorProc.OP_target = tgt
 
         local now = _Now()
-        local dur = _ProcWindowDuration("Overpower") or 4.0
+        local dur = _ProcWindowDuration("压制") or 4.0
         _WarriorProc.OP_until = now + dur
-        _ProcWindowSet("Overpower", _WarriorProc.OP_until)
+        _ProcWindowSet("压制", _WarriorProc.OP_until)
       end
     end)
 
-    -- Revenge: needs incoming hits/blocks/parries/dodges
+    -- 复仇：需要受到攻击/格挡/招架/闪避
     _daClassCL2:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES")
     _daClassCL2:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS")
 
@@ -2135,7 +2240,7 @@ do
         return
       end
 
-      -- Revenge: you dodged/parried/blocked
+      -- 复仇：你闪避/招架/格挡了
       if str_find(line, "You dodge")
           or str_find(line, "You parry")
           or str_find(line, "You block")
@@ -2143,16 +2248,16 @@ do
           and str_find(line, " blocked)")) then
 
         local now = _Now()
-        local dur = _ProcWindowDuration("Revenge") or 4.0
+        local dur = _ProcWindowDuration("复仇") or 4.0
         _WarriorProc.REV_until = now + dur
-        _ProcWindowSet("Revenge", _WarriorProc.REV_until)
+        _ProcWindowSet("复仇", _WarriorProc.REV_until)
 
         dirty_ability = true
       end
     end)
 
   elseif cls == "ROGUE" then
-    -- Surprise Attack: needs dodge detection
+    -- 突袭：需要闪避检测
     _daClassCL:RegisterEvent("CHAT_MSG_COMBAT_SELF_MISSES")
     _daClassCL:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
 
@@ -2162,38 +2267,29 @@ do
         return
       end
 
-      -- Surprise Attack: target dodged you
+      -- 突袭：目标闪避了你的攻击
       local dodged = false
       local _, _, t1 = str_find(line, "You attack%.%s+(.+)%s+dodges")
-      if not t1 then
-        -- CN: 你攻击了...但被闪开了
-        local _, _, tc = str_find(line, "你攻击了(.+)但被闪开了")
-        if tc then t1 = tc end
-      end
       if t1 then
         dodged = true
       else
         local _, _, t2 = str_find(line, "Your%s+.+%s+was%s+dodged%s+by%s+(.+)")
-        if not t2 then
-          local _, _, tc2 = str_find(line, "你的.+被(.+)闪开了")
-          if tc2 then t2 = tc2 end
-        end
         if t2 then
           dodged = true
         end
       end
 
       if dodged then
-        local dur = _ProcWindowDuration("Surprise Attack")
+        local dur = _ProcWindowDuration("偷袭")
         if dur then
           local now = _Now()
-          _ProcWindowSet("Surprise Attack", now + dur)
+          _ProcWindowSet("偷袭", now + dur)
           dirty_ability = true
         end
       end
     end)
 
-    -- Riposte: procs on YOUR parry (not target-bound)
+    -- 还击：在你的招架时触发（不绑定目标）
     _daClassCL2:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES")
     _daClassCL2:RegisterEvent("CHAT_MSG_COMBAT_CREATURE_VS_SELF_HITS")
 
@@ -2203,8 +2299,8 @@ do
         return
       end
 
-      -- Riposte: you parried an attack
-      if str_find(line, "You parry") or str_find(line, "你招架了") then
+      -- 还击：你招架了攻击
+      if str_find(line, "You parry") then
         local dur = _ProcWindowDuration("Riposte") or 4.0
         local now = _Now()
         _ProcWindowSet("Riposte", now + dur)
@@ -2213,7 +2309,7 @@ do
     end)
 
   elseif cls == "MAGE" then
-    -- Arcane Surge: needs resist detection
+    -- 奥术涌动：需要抵抗检测
     _daClassCL:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
 
     _daClassCL:SetScript("OnEvent", function()
@@ -2222,16 +2318,16 @@ do
         return
       end
 
-      -- Arcane Surge: spell was resisted (fully or partially)
-      if str_find(line, " was resisted") or str_find(line, "被抵抗了")
-          or str_find(line, " resisted%)") or str_find(line, "（抵抗）")
-          or str_find(line, " resisted by") or str_find(line, "被.+抵抗")
-          or str_find(line, " resists your ") or str_find(line, "抵抗了你的") then
+      -- 奥术涌动：法术被抵抗（完全或部分）
+      if str_find(line, " was resisted")
+          or str_find(line, " resisted%)")
+          or str_find(line, " resisted by")
+          or str_find(line, " resists your ") then
 
-        local dur = _ProcWindowDuration("Arcane Surge")
+        local dur = _ProcWindowDuration("奥术涌动")
         if dur then
           local now = _Now()
-          _ProcWindowSet("Arcane Surge", now + dur)
+          _ProcWindowSet("奥术涌动", now + dur)
           dirty_ability = true
         end
       end
@@ -2239,7 +2335,7 @@ do
   end
 end
 
--- Helpers consumed by ability-usable override
+-- 由技能可用覆盖使用的辅助函数
 local function _Warrior_Overpower_OK()
   if (_Now() > _WarriorProc.OP_until) then
     return false
@@ -2255,15 +2351,15 @@ local function _Warrior_Revenge_OK()
   return _Now() <= _WarriorProc.REV_until
 end
 
--- Remaining proc-window time for Overpower / Revenge (seconds), or nil if no proc
+-- 压制/复仇的剩余触发窗口时间（秒），如果无触发则返回 nil
 local function _WarriorProcRemainingForSpell(spellName)
-  -- Back-compat name: now uses the shared proc-window store.
+  -- 向后兼容名称：现在使用共享的触发窗口存储。
   return _ProcWindowRemaining(spellName)
 end
 
 
 ----------------------------------------------------------------
--- DoiteAuras Slide Manager
+-- DoiteAuras 幻灯片管理器
 ----------------------------------------------------------------
 local SlideMgr = {
   active = {},
@@ -2284,7 +2380,7 @@ _slideTick:SetScript("OnUpdate", function()
     end
   end
 
-  -- While sliding, force abilities to re-paint frequently so positions update smoothly.
+  -- 滑动时，强制技能频繁重绘，以便位置平滑更新。
   if anyActive then
     dirty_ability = true
   else
@@ -2292,8 +2388,8 @@ _slideTick:SetScript("OnUpdate", function()
   end
 end)
 
--- Begin or refresh an animation for 'key'
--- endTime = GetTime() + remaining  (cap remaining inside caller)
+-- 开始或刷新 'key' 的动画
+-- endTime = GetTime() + remaining（在调用者内部限制剩余时间）
 function SlideMgr:StartOrUpdate(key, dir, baseX, baseY, endTime)
   local st = self.active[key]
   local now = GetTime()
@@ -2310,8 +2406,8 @@ function SlideMgr:StartOrUpdate(key, dir, baseX, baseY, endTime)
       endTime = endTime,
     }
 
-    -- Capture the length of this slide window once so that
-    -- t runs cleanly from 1 → 0 and center alpha from 0 → 1.
+    -- 捕获此幻灯片窗口的长度一次，以便
+    -- t 从 1 → 0 干净运行，中心 alpha 从 0 → 1。
     local total = st.endTime - now
     if not total or total <= 0 then
       total = 0.01
@@ -2336,19 +2432,19 @@ function SlideMgr:StartOrUpdate(key, dir, baseX, baseY, endTime)
       newRem = 0
     end
 
-    -- Anti-jitter:
+    -- 抗抖动：
     if (newRem > 0.10) and (newRem <= 1.60) and (curRem > 1.60) then
       newEnd = curEnd
       newRem = curRem
     else
-      -- Ignore tiny backwards jitter (micro refresh noise)
+      -- 忽略微小的向后抖动（微小刷新噪声）
       if (newEnd < curEnd) and ((curEnd - newEnd) < 0.20) then
         newEnd = curEnd
         newRem = curRem
       end
     end
 
-    -- Hard cap: while sliding, the caller should NOT extend the slide
+    -- 硬限制：滑动时，调用者不应延长幻灯片
     local total = st.total or 0
     if total and total > 0 then
       local maxEnd = now + total
@@ -2365,7 +2461,7 @@ function SlideMgr:StartOrUpdate(key, dir, baseX, baseY, endTime)
     end
 
     st.endTime = newEnd
-    -- NOTE: st.total is intentionally stable (except the small "grow" fix above)
+    -- 注意：st.total 有意保持稳定（除了上面的小“增长”修复）
   end
 
   _slideTick:Show()
@@ -2375,7 +2471,7 @@ function SlideMgr:Stop(key)
   self.active[key] = nil
 end
 
--- Query current offsets/alpha. Returns:
+-- 查询当前偏移/alpha。返回：
 -- active:boolean, dx:number, dy:number, alpha:number, suppressGlow:boolean, suppressGrey:boolean
 function SlideMgr:Get(key)
   local st = self.active[key]
@@ -2394,7 +2490,7 @@ function SlideMgr:Get(key)
     remaining = 0
   end
 
-  -- if endTime drifted beyond the slide window, pull it back.
+  -- 如果 endTime 漂移超过幻灯片窗口，将其拉回。
   if remaining > total then
     if remaining > (total + 0.25) then
       st.endTime = now + total
@@ -2402,7 +2498,7 @@ function SlideMgr:Get(key)
     remaining = total
   end
 
-  -- t goes from 1 → 0 over the slide window
+  -- t 在幻灯片窗口上从 1 → 0
   local t = remaining / total
   if t < 0 then
     t = 0
@@ -2441,7 +2537,7 @@ function SlideMgr:Get(key)
   return true, dx, dy, alpha, true, true
 end
 
--- For ApplyVisuals to get latest base anchoring while sliding
+-- 供 ApplyVisuals 在滑动时获取最新基础锚点
 function SlideMgr:UpdateBase(key, baseX, baseY)
   local st = self.active[key]
   if st then
@@ -2450,7 +2546,7 @@ function SlideMgr:UpdateBase(key, baseX, baseY)
   end
 end
 
--- For ApplyVisuals to read current base (even if not sliding)
+-- 供 ApplyVisuals 读取当前基础（即使不滑动）
 function SlideMgr:GetBase(key)
   local st = self.active[key]
   if st then
@@ -2459,19 +2555,19 @@ function SlideMgr:GetBase(key)
   return 0, 0
 end
 
--- Read the baseline (saved) XY for an icon (matches CreateOrUpdateIcon layout precedence)
+-- 读取图标的基础（保存的）XY（匹配 CreateOrUpdateIcon 布局优先级）
 local function _GetBaseXY(key, dataTbl)
-  -- defaults
+  -- 默认值
   local x, y = 0, 0
 
-  -- primary source: DoiteAurasDB.spells
+  -- 主要来源：DoiteAurasDB.spells
   if DoiteAurasDB and DoiteAurasDB.spells and key and DoiteAurasDB.spells[key] then
     local s = DoiteAurasDB.spells[key]
     x = s.offsetX or s.x or x
     y = s.offsetY or s.y or y
   end
 
-  -- optional override: legacy DoiteDB.icons layout (if present)
+  -- 可选覆盖：旧版 DoiteDB.icons 布局（如果存在）
   if DoiteDB and DoiteDB.icons and key and DoiteDB.icons[key] then
     local L = DoiteDB.icons[key]
     x = (L.posX or L.offsetX or x)
@@ -2481,7 +2577,7 @@ local function _GetBaseXY(key, dataTbl)
   return x, y
 end
 
--- Player-only aura remaining (seconds); nil if not timed / not found.
+-- 仅玩家光环剩余（秒）；如果未计时/未找到，返回 nil。
 local function _PlayerAuraRemainingSeconds(auraName, auraSpellId, addedViaSpellId)
   local useSpellIdOnly = (addedViaSpellId == true)
   local playerAuraSlot = nil
@@ -2543,7 +2639,7 @@ local function _DoiteTrackAuraOwnership(spellKey, unit, useSpellId)
     return nil, false, nil, false, false, false
   end
 
-  -- Hard dependency on the consolidated helper
+  -- 硬依赖合并的辅助函数
   local rem, recording, sid, isMine, isOther, ownerKnown
 
   if useSpellId == true then
@@ -2558,18 +2654,18 @@ local function _DoiteTrackAuraOwnership(spellKey, unit, useSpellId)
     rem, recording, sid, isMine, isOther, ownerKnown = DoiteTrack:GetAuraOwnershipByName(spellKey, unit)
   end
 
-  -- Normalize booleans
+  -- 规范化布尔值
   isMine = (isMine == true)
   isOther = (isOther == true)
 
   local known = (ownerKnown == true) or isMine or isOther
 
-  -- Normalise remaining time
+  -- 规范化剩余时间
   if rem ~= nil and rem <= 0 then
     rem = nil
   end
 
-  -- For non-player units, if ownership is known and it's NOT mine, don't expose remaining
+  -- 对于非玩家单位，如果所有权已知且不是我的，则不暴露剩余时间
   if known and unit ~= "player" and (not isMine) then
     rem = nil
     recording = false
@@ -2578,7 +2674,7 @@ local function _DoiteTrackAuraOwnership(spellKey, unit, useSpellId)
   return rem, recording, sid, isMine, isOther, known
 end
 
--- Unified remaining-time provider used by existing call sites (DoiteTrack only).
+-- 统一的剩余时间提供程序，由现有调用站点使用（仅 DoiteTrack）。
 local function _DoiteTrackAuraRemainingSeconds(spellKey, unit, useSpellId)
   if not DoiteTrack or not spellKey or not unit then
     return nil
@@ -2607,7 +2703,7 @@ local function _DoiteTrackAuraRemainingSeconds(spellKey, unit, useSpellId)
 end
 
 
--- Use DoiteTrack to evaluate a remaining-time comparison on a unit.
+-- 使用 DoiteTrack 对单位进行剩余时间比较。
 local function _DoiteTrackRemainingPass(spellKey, unit, comp, threshold, useSpellId)
   if not DoiteTrack or not spellKey or not unit or not comp or threshold == nil then
     return nil
@@ -2616,11 +2712,11 @@ local function _DoiteTrackRemainingPass(spellKey, unit, comp, threshold, useSpel
   if useSpellId == true and DoiteTrack.RemainingPassesBySpellId then
     return DoiteTrack:RemainingPassesBySpellId(spellKey, unit, comp, threshold)
   elseif DoiteTrack.RemainingPassesByName then
-    -- Add-on helper handles comparison internally
+    -- 插件辅助函数在内部处理比较
     return DoiteTrack:RemainingPassesByName(spellKey, unit, comp, threshold)
   end
 
-  -- Fallback within DoiteTrack: if no helper, compare using numeric remaining
+  -- DoiteTrack 内部回退：如果没有辅助函数，使用数值剩余比较
   local rem = _DoiteTrackAuraRemainingSeconds(spellKey, unit, useSpellId)
   if rem and rem > 0 then
     return _RemainingPasses(rem, comp, threshold)
@@ -2629,7 +2725,7 @@ local function _DoiteTrackRemainingPass(spellKey, unit, comp, threshold, useSpel
   return nil
 end
 
--- For debuff checks only: if all debuff slots are full and the name exists in buffs, treat it as a debuff hit
+-- 对于减益检查：如果所有减益槽位都已满，且名称存在于增益中，则将其视为减益命中
 local function _TargetHasOverflowDebuff(auraName)
   if not auraName then
     return false
@@ -2647,7 +2743,7 @@ local function _TargetHasOverflowDebuff(auraName)
 
   local count = snap.debuffCount or 0
   if count < 16 then
-    -- Debuff bar not "full", so don't risk treating a real buff as debuff.
+    -- 减益条未“满”，因此不要冒险将真正的增益视为减益。
     return false
   end
 
@@ -2672,7 +2768,7 @@ local function _TargetHasAura(auraName, wantDebuff)
   end
 
   if wantDebuff then
-    -- Debuff checks: first real debuffs, then overflow in buffs.
+    -- 减益检查：首先真实减益，然后溢出到增益。
     return _TargetHasOverflowDebuff(auraName)
   else
     local b = snap.buffs
@@ -2713,7 +2809,7 @@ local function _TargetHasAuraBySpellId(spellId, wantDebuff)
   return b and b[spellId] == true
 end
 
--- Talent helpers for auraConditions (Known / Not known)
+-- 天赋辅助函数，用于 auraConditions（已知 / 未知）
 local function _TalentIsKnownByName(talentName)
   if not talentName or talentName == "" then
     return false
@@ -2745,7 +2841,7 @@ local function _TalentIsKnownByName(talentName)
 end
 
 ---------------------------------------------------------------
--- Array compaction helpers (prevents auraConditions nil-holes)
+-- 数组压缩辅助函数（防止 auraConditions 出现 nil 空洞）
 ---------------------------------------------------------------
 local function _ArrayMaxIndex(t)
   if not t then
@@ -2784,7 +2880,7 @@ local function _CompactArrayInPlace(t)
     i = i + 1
   end
 
-  -- Ensure any trailing numeric slots are nil
+  -- 确保任何尾随的数字槽位为 nil
   i = write
   while i <= max do
     t[i] = nil
@@ -2801,16 +2897,16 @@ local function _AuraConditions_CheckEntry(entry)
     return true
   end
 
-  -- ABILITY branch: use cooldown by spell name
+  -- ABILITY 分支：通过法术名称使用冷却时间
   if entry.buffType == "ABILITY" then
     if entry.mode == "notcd" or entry.mode == "oncd" then
       local rem, dur = _AbilityCooldownByName(name)
       if rem == nil then
-        -- Ability not in spellbook => cannot satisfy this condition
+        -- 技能不在法术书中 => 无法满足此条件
         return false
       end
 
-      -- Treat pure global cooldown (very short duration) as "not really on cooldown"
+      -- 将仅公共冷却（非常短的持续时间）视为“不在真正冷却中”
       local onCd = false
       if rem and rem > 0 then
         if dur and dur > 1.5 then
@@ -2830,10 +2926,63 @@ local function _AuraConditions_CheckEntry(entry)
     end
   end
 
-  -- Cache TALENT mode normalization by raw string to avoid per-eval lower/gsub allocations
+  -- ITEM 条件分支（在背包/已装备 或 缺失 + 在/不在冷却 + 数量）
+  if entry.buffType == "ITEM" then
+    local dataTmp = DoiteConditions._auraCondItemDataTmp
+    if not dataTmp then
+      dataTmp = {}
+      DoiteConditions._auraCondItemDataTmp = dataTmp
+    end
+
+    dataTmp.name = name
+    dataTmp.displayName = name
+    dataTmp.itemName = name
+    dataTmp.itemId = entry.itemId or entry.itemID
+    dataTmp.itemID = entry.itemID or entry.itemId
+
+    local cTmp = DoiteConditions._auraCondItemCondTmp
+    if not cTmp then
+      cTmp = {}
+      DoiteConditions._auraCondItemCondTmp = cTmp
+    end
+
+    cTmp.whereEquipped = (entry.mode ~= "missing") and true or nil
+    cTmp.whereBag = (entry.mode ~= "missing") and true or nil
+    cTmp.whereMissing = (entry.mode == "missing") and true or nil
+    cTmp.inventorySlot = nil
+    cTmp.mode = (entry.unit == "oncd") and "oncd" or "notcd"
+
+    local stacksEnabled = (entry.stacksEnabled == true) and (entry.mode ~= "missing")
+    cTmp.stacksEnabled = stacksEnabled and true or nil
+    cTmp.stacksComp = entry.stacksComp
+    cTmp.stacksVal = entry.stacksVal
+
+    local state = _EvaluateItemCoreState(dataTmp, cTmp)
+
+    if entry.mode == "missing" then
+      return state and state.isMissing and true or false
+    end
+
+    if not (state and state.hasItem and state.passesWhere and state.modeMatches) then
+      return false
+    end
+
+    if stacksEnabled then
+      local comp = cTmp.stacksComp
+      local thr = tonumber(cTmp.stacksVal)
+      if comp and thr then
+        local cnt = state.effectiveCount or 0
+        return _StacksPasses(cnt, comp, thr)
+      end
+    end
+
+    return true
+  end
+
+  -- 缓存 TALENT 模式规范化，按原始字符串以避免每次评估进行 lower/gsub 分配
   local _DA_TalentModeKeyByRaw = _DA_TalentModeKeyByRaw or {}
 
-  -- TALENT CONDITION BRANCH (Known / Not known)
+  -- TALENT 条件分支（已知 / 未知）
   if entry.buffType == "TALENT" then
     local modeRaw = entry.mode or ""
     local modeKey = _DA_TalentModeKeyByRaw[modeRaw]
@@ -2853,10 +3002,10 @@ local function _AuraConditions_CheckEntry(entry)
       return true
     end
   end
-  -- === END TALENT CONDITION BRANCH ===
+  -- === 结束 TALENT 条件分支 ===
 
   ----------------------------------------------------------------
-  -- BUFF / DEBUFF branch: check unit auras (+ optional stacks)
+  -- 增益 / 减益分支：检查单位光环（+ 可选层数）
   ----------------------------------------------------------------
   local wantDebuff = (entry.buffType == "DEBUFF")
 
@@ -2865,15 +3014,15 @@ local function _AuraConditions_CheckEntry(entry)
     unit = "player"
   end
 
-  -- If explicitly target "target" but have no target, do not pass
+  -- 如果显式目标是“target”但没有目标，则不通过
   if unit == "target" and (not UnitExists("target")) then
     return false
   end
 
   ----------------------------------------------------------------
-  -- Stacks config (AURA ONLY)
-  -- If stacksEnabled but missing comp/val => treat as disabled.
-  -- Cache parsed numeric threshold per-entry (no allocations).
+  -- 层数配置（仅光环）
+  -- 如果 stacksEnabled 但缺少 comp/val，则视为禁用。
+  -- 在条目上缓存解析的数值阈值（无分配）。
   ----------------------------------------------------------------
   local stacksEnabled = (entry.stacksEnabled == true) and (entry.mode == "found")
   local stacksComp = nil
@@ -2888,7 +3037,7 @@ local function _AuraConditions_CheckEntry(entry)
       if raw == nil or raw == "" then
         stacksEnabled = false
       else
-        -- cache tonumber(raw) on the entry (runtime-only)
+        -- 在条目上缓存 tonumber(raw)（仅运行时）
         if entry._daStacksValRaw ~= raw then
           entry._daStacksValRaw = raw
           local n = tonumber(raw)
@@ -2907,7 +3056,7 @@ local function _AuraConditions_CheckEntry(entry)
   end
 
   ----------------------------------------------------------------
-  -- Has aura?
+  -- 是否有光环？
   ----------------------------------------------------------------
   local hasAura = false
   local useSpellIdOnly = (entry.Addedviaspellid == true)
@@ -2937,7 +3086,7 @@ local function _AuraConditions_CheckEntry(entry)
   end
 
   ----------------------------------------------------------------
-  -- If stacks enabled and aura exists, compute stacks and compare.
+  -- 如果启用了层数并且光环存在，计算层数并进行比较。
   ----------------------------------------------------------------
   if stacksEnabled and hasAura then
     local cnt = _GetAuraStacksOnUnit(unit, name, wantDebuff, auraSpellId, useSpellIdOnly)
@@ -2945,15 +3094,15 @@ local function _AuraConditions_CheckEntry(entry)
       cnt = 1
     end
     entry._daStacksLast = cnt
-  
+
     local pass = _StacksPasses(cnt, stacksComp, stacksThr)
-  
-    -- stacksEnabled implies entry.mode == "found" (see gate above)
+
+    -- stacksEnabled 意味着 entry.mode == "found"（参见上面的门控）
     return pass
   end
 
   ----------------------------------------------------------------
-  -- No stacks logic (or aura not present): original semantics
+  -- 无层数逻辑（或光环不存在）：原始语义
   ----------------------------------------------------------------
   if entry.mode == "found" then
     return hasAura
@@ -2969,7 +3118,7 @@ local function _EvaluateAuraConditionsList(list)
     return true
   end
 
-  -- Critical: remove nil holes so neither table.getn() nor DoiteLogic._len() truncates the list.
+  -- 关键：移除 nil 空洞，以便 table.getn() 或 DoiteLogic._len() 都不会截断列表。
   _CompactArrayInPlace(list)
 
   local n = table.getn(list)
@@ -2982,7 +3131,7 @@ local function _EvaluateAuraConditionsList(list)
     return DL.EvaluateAuraList(list, _AuraConditions_CheckEntry)
   end
 
-  -- Fallback: original strict AND semantics
+  -- 回退：原始严格 AND 语义
   local i = 1
   while i <= n do
     if not _AuraConditions_CheckEntry(list[i]) then
@@ -2993,14 +3142,14 @@ local function _EvaluateAuraConditionsList(list)
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_EvaluateAuraConditionsList(list)
   return _EvaluateAuraConditionsList(list)
 end
 
--- === Stacks helpers ===
+-- === 层数辅助函数 ===
 
--- Compare: returns true if 'cnt' satisfies 'comp' vs 'target'
+-- 比较：如果 'cnt' 满足 'comp' 与 'target' 的比较，则返回 true
 _StacksPasses = function(cnt, comp, target)
   if not cnt or not comp or target == nil then
     return true
@@ -3015,13 +3164,13 @@ _StacksPasses = function(cnt, comp, target)
   return true
 end
 
--- Get stack count for a named aura on target (or player). Uses DoitePlayerAuras for player checks.
+-- 获取目标（或玩家）上命名光环的层数。对于玩家检查使用 DoitePlayerAuras。
 _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedViaSpellId)
   if not unit or not auraName then
     return nil
   end
 
-  -- Use DoitePlayerAuras for player checks
+  -- 对于玩家检查使用 DoitePlayerAuras
   if unit == "player" then
     if addedViaSpellId == true then
       local sid = tonumber(auraSpellId) or 0
@@ -3042,18 +3191,18 @@ _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedVi
     end
   end
 
-  -- TODO improve logic for other units
+  -- TODO 改进其他单位的逻辑
   ----------------------------------------------------------------
-  -- Primary scan: normal BUFF / DEBUFF list for non-player units
+  -- 主要扫描：非玩家单位的正常 增益/减益 列表
   ----------------------------------------------------------------
   local i = 1
   while i <= 32 do
     local tex, applications, auraId
     if wantDebuff then
-      -- texture, stacks, dtype, spellID
+      -- 纹理，层数，类型，法术 ID
       tex, applications, _, auraId = UnitDebuff(unit, i)
     else
-      -- texture, stacks, spellID
+      -- 纹理，层数，法术 ID
       tex, applications, auraId = UnitBuff(unit, i)
     end
     if not tex then
@@ -3077,7 +3226,7 @@ _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedVi
   end
 
 
-  -- If debuff bar is "full" (>=16) and the aura name is present in the BUFF snapshot, treat it as an overflowed debuff and read stacks from UnitBuff.
+  -- 如果减益条已“满”（>=16）且光环名称存在于 增益 快照中，则将其视为溢出的减益并从 UnitBuff 读取层数。
   if wantDebuff then
     local snap = auraSnapshot[unit]
     if snap then
@@ -3085,7 +3234,7 @@ _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedVi
       local buffs = snap.buffs
 
       if debCount >= 16 and buffs and buffs[auraName] then
-        -- First try a nampower-based pass (mirrors main loop)
+        -- 首先尝试基于 nampower 的传递（镜像主循环）
         local j = 1
         while j <= 32 do
           local tex2, applications2, auraId2 = UnitBuff(unit, j)
@@ -3105,7 +3254,7 @@ _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedVi
           j = j + 1
         end
 
-        -- Fallback: tooltip-based name resolution via _GetAuraName, then a second UnitBuff call to read stacks.
+        -- 回退：通过 _GetAuraName 进行基于工具提示的名称解析，然后第二次调用 UnitBuff 以读取层数。
         j = 1
         while j <= 32 do
           local n = _GetAuraName(unit, j, false)
@@ -3125,7 +3274,7 @@ _GetAuraStacksOnUnit = function(unit, auraName, wantDebuff, auraSpellId, addedVi
   return nil
 end
 
--- Fast check: does unit have ANY of the named buffs?
+-- 快速检查：单位是否有任何指定的增益名称？
 local function _TargetHasAnyBuffName(names)
   local unit = "target"
   if not unit or not names then
@@ -3148,9 +3297,9 @@ local function _TargetHasAnyBuffName(names)
 end
 
 
--- === Health / Combo Points / Formatting helpers ===
+-- === 生命值 / 连击点数 / 格式化辅助函数 ===
 
--- Percent HP (0..100) for unit; returns nil if unit invalid or no maxhp
+-- 单位的 HP 百分比 (0..100)；如果单位无效或无最大生命值，返回 nil
 local function _HPPercent(unit)
   if not unit or not UnitExists(unit) then
     return nil
@@ -3163,7 +3312,7 @@ local function _HPPercent(unit)
   return (cur * 100) / max
 end
 
--- Compare helper: returns true if 'val' satisfies 'comp' vs 'target'
+-- 比较辅助函数：如果 'val' 满足 'comp' 与 'target' 的比较，则返回 true
 local function _ValuePasses(val, comp, target)
   if val == nil or comp == nil or target == nil then
     return true
@@ -3178,7 +3327,7 @@ local function _ValuePasses(val, comp, target)
   return true
 end
 
--- Combo points reader
+-- 连击点数读取器
 local function _GetComboPointsSafe()
   if not UnitExists("target") then
     return 0
@@ -3190,35 +3339,35 @@ local function _GetComboPointsSafe()
   return cp
 end
 
--- Class that uses combo points
+-- 使用连击点数的职业
 local function _PlayerUsesComboPoints()
   local _, cls = UnitClass("player")
   cls = cls and string.upper(cls) or ""
   return (cls == "ROGUE" or cls == "DRUID")
 end
 
--- === Target Distance / AoE / Unit Type helpers ==========================
--- Mapping used by the editor labels ("1. Humanoid", "Multi: 1+2", etc.)
+-- === 目标距离 / 范围 / 单位类型辅助函数 ==========================
+-- 编辑器标签使用的映射（“1. Humanoid”， “Multi: 1+2”等）
 local UNIT_TYPE_INDEX_MAP = {
-  [1] = "人型生物",
-  [2] = "野兽",
-  [3] = "龙类",
-  [4] = "亡灵",
-  [5] = "恶魔",
-  [6] = "巨人",
-  [7] = "机械",
-  [8] = "元素生物",
+  [1] = "Humanoid",
+  [2] = "Beast",
+  [3] = "Dragonkin",
+  [4] = "Undead",
+  [5] = "Demon",
+  [6] = "Giant",
+  [7] = "Mechanical",
+  [8] = "Elemental",
 }
 
--- Normalizes "Any"/nil/"" → nil (meaning "no restriction")
+-- 规范化 “Any”/nil/"" → nil（表示“无限制”）
 local function _NormalizeTargetField(val)
-  if not val or val == "" or val == "Any" or val == "任意" then
+  if not val or val == "" or val == "Any" then
     return nil
   end
   return val
 end
 
--- Optional: spell range in yards from DBC ("rangeMax" is yards * 10)
+-- 可选：来自 DBC 的法术范围（“rangeMax”是码数 * 10）
 local function _GetSpellMaxRangeYds(spellName)
   if not spellName or not GetSpellIdForName or not GetSpellRecField then
     return nil
@@ -3237,17 +3386,17 @@ local function _GetSpellMaxRangeYds(spellName)
 end
 
 ---------------------------------------------------------------
--- Spell range overrides and resurrection spell list
+-- 法术范围覆盖和复活法术列表
 ---------------------------------------------------------------
 
--- Spells whose IsSpellInRange return values are unreliable; treat them as explicit melee or ranged for distance checks instead of trusting API.
+-- IsSpellInRange 返回值不可靠的法术；对于距离检查，将其视为显式的近战或远程，而不是信任 API。
 local _SpellRangeOverrideByClass = {
   WARRIOR = {
     ["Heroic Strike"] = "melee",
     ["Cleave"] = "melee",
-    -- Add more warrior spells here if needed.
+    -- 如果需要，在此处添加更多战士法术。
   },
-  -- Add other classes here if I discover more broken spells.
+  -- 如果发现更多损坏的法术，在此处添加其他职业。
 }
 
 local _SpellRangeOverrideCache = {}
@@ -3292,16 +3441,12 @@ local function _GetSpellRangeOverrideMode(spellName)
   return nil
 end
 
--- Resurrection spells that are allowed to do distance checks on dead friendly targets.
+-- 允许对死亡的友善目标进行距离检查的复活法术。
 local _ResurrectionSpellByName = {
-  ["Rebirth"] = true, -- Druid (EN)
-  ["复生"] = true, -- Druid (CN)
-  ["Redemption"] = true, -- Paladin (EN)
-  ["救赎"] = true, -- Paladin (CN)
-  ["Resurrection"] = true, -- Priest (EN)
-  ["复活术"] = true, -- Priest (CN)
-  ["Ancestral Spirit"] = true, -- Shaman (EN)
-  ["先祖之魂"] = true, -- Shaman (CN)
+  ["Rebirth"] = true, -- 德鲁伊
+  ["Redemption"] = true, -- 圣骑士
+  ["Resurrection"] = true, -- 牧师
+  ["Ancestral Spirit"] = true, -- 萨满
 }
 
 local function _IsResurrectionSpell(spellName)
@@ -3311,13 +3456,13 @@ local function _IsResurrectionSpell(spellName)
   return _ResurrectionSpellByName[spellName] == true
 end
 
--- These are NOT yards, they are xp3's normalized melee meter.
+-- 这些不是码数，它们是 xp3 标准化的近战距离。
 _G.DoiteConditions_MeleeRangeByRace = _G.DoiteConditions_MeleeRangeByRace or {
-  -- Small hitbox races
+  -- 小体型种族
   GNOME = 0.20,
   GOBLIN = 0.20,
 
-  -- "Normal" body size races
+  -- “正常”体型种族
   HUMAN = 0.23,
   ORC = 0.23,
   TROLL = 0.23,
@@ -3326,7 +3471,7 @@ _G.DoiteConditions_MeleeRangeByRace = _G.DoiteConditions_MeleeRangeByRace or {
   BLOODELF = 0.23,
   SCOURGE = 0.23,
 
-  -- Big bois
+  -- 大体型
   TAUREN = 0.30,
 }
 
@@ -3348,10 +3493,10 @@ local function _GetPlayerMeleeThreshold()
 
   local key = nil
   if raceFile and raceFile ~= "" then
-    -- Stable, non-localized token: "Goblin","Tauren","NightElf","Scourge", etc.
+    -- 稳定的、非本地化的令牌：“Goblin”，“Tauren”，“NightElf”，“Scourge”等。
     key = string.upper(raceFile)
   elseif raceName and raceName ~= "" then
-    -- Fallback: strip spaces and upper-case
+    -- 回退：去除空格并大写
     key = string.upper(string.gsub(raceName, "%s+", ""))
   end
 
@@ -3369,7 +3514,7 @@ local function _RefreshPlayerMeleeThreshold()
   _GetPlayerMeleeThreshold()
 end
 
--- Generic distance in yards from player to unit; optional "mode" tuning for UnitXP
+-- 从玩家到单位的通用距离（码），UnitXP 的可选“模式”调整
 local function _GetUnitDistanceYds(unit, mode)
   if type(UnitXP) ~= "function" or not UnitExists then
     return nil
@@ -3394,7 +3539,7 @@ local function _GetUnitDistanceYds(unit, mode)
   return dist
 end
 
--- Nampower-safe IsSpellInRange wrapper; returns true/false or nil if unknown
+-- Nampower 安全的 IsSpellInRange 包装器；返回 true/false 或 nil（如果未知）
 local function _IsSpellInRangeSafe(spellName, unit)
   if not spellName or not unit or type(IsSpellInRange) ~= "function" then
     return nil
@@ -3423,13 +3568,13 @@ local function _IsSpellInRangeSafe(spellName, unit)
   return nil
 end
 
--- Generic "In range" threshold (non-spell icons) in default UnitXP distance units.
+-- 通用“在范围内”阈值（非法术图标），以默认 UnitXP 距离单位表示。
 _G.DoiteConditions_GenericInRangeThreshold = _G.DoiteConditions_GenericInRangeThreshold or 1.5
 
--- Ranged-override threshold (yards) when treating a spell as pure ranged.
+-- 将法术视为纯远程时的远程覆盖阈值（码）。
 _G.DoiteConditions_RangedOverrideThresholdYds = _G.DoiteConditions_RangedOverrideThresholdYds or 30
 
--- Main "targetDistance" eval
+-- 主要“targetDistance”评估
 local function _PassesTargetDistance(condTbl, unit, spellName)
   if not condTbl or not unit then
     return true
@@ -3448,8 +3593,8 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
   local canAttack = UnitCanAttack and UnitCanAttack("player", unit)
   local isHostile = canAttack and (not isFriend)
 
-  -- Combined positional+range modes
-  local wantPos = nil  -- "behind" / "front" / nil
+  -- 组合位置+范围模式
+  local wantPos = nil  -- “behind” / “front” / nil
   if val == "Behind & in range" then
     wantPos = "behind"
     val = "In range"
@@ -3458,7 +3603,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
     val = "In range"
   end
 
-  -- Positional checks first (also supports the combined modes above)
+  -- 首先进行位置检查（也支持上面的组合模式）
   local posOK = true
 
   if val == "Behind" or wantPos == "behind" then
@@ -3497,7 +3642,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
     end
   end
 
-  -- Dead-target guard for range-based checks
+  -- 对于基于范围的检查，死亡目标保护
   if val == "In range" or val == "Not in range" or val == "Melee range" then
     if isDead then
       local allowRes = false
@@ -3507,7 +3652,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
         end
       end
 
-      -- Harmful dead or friendly dead with non-res spell: distance condition should simply NOT pass
+      -- 有害的死亡或友善的死亡且非复活法术：距离条件应简单不通过
       if not allowRes then
         return false
       end
@@ -3515,7 +3660,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
   end
 
   ----------------------------------------------------------------
-  -- Range-based checks ("In range", "Not in range", "Melee range")
+  -- 基于范围的检查（“In range”，“Not in range”，“Melee range”）
   ----------------------------------------------------------------
   local inRange = nil
   local overrideMode = nil
@@ -3524,12 +3669,12 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
     overrideMode = _GetSpellRangeOverrideMode(spellName)
   end
 
-  -- Prefer IsSpellInRange when knowing which spell this icon represents
+  -- 当知道此图标代表哪个法术时，优先使用 IsSpellInRange
   if spellName and overrideMode == nil then
     inRange = _IsSpellInRangeSafe(spellName, unit)
   end
 
-  -- Fallback when IsSpellInRange isn't usable
+  -- 当 IsSpellInRange 不可用时回退
   if inRange == nil then
     if spellName then
       if overrideMode == "melee" then
@@ -3542,7 +3687,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
         end
 
       elseif overrideMode == "range" then
-        -- Broken spell flagged as ranged: use a fixed yard threshold.
+        -- 标记为损坏的法术被视为远程：使用固定的码数阈值。
         local dist = _GetUnitDistanceYds(unit, nil)
         if not dist then
           inRange = true
@@ -3552,10 +3697,10 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
         end
 
       else
-        -- No override: assume "melee-ish" ability when the addon can't do a proper range check
+        -- 无覆盖：当插件无法进行适当范围检查时，假设为“近战类”技能
         local dist = _GetUnitDistanceYds(unit, "melee") or _GetUnitDistanceYds(unit, nil)
         if not dist then
-          -- No distance info at all: don't kill the icon.
+          -- 根本没有距离信息：不要杀死图标。
           inRange = true
         else
           local thr = _GetPlayerMeleeThreshold()
@@ -3563,7 +3708,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
         end
       end
     else
-      -- Generic "In range" (e.g. items/auras) – tuneable threshold in xp3 units.
+      -- 通用“In range”（例如物品/光环）– 以 xp3 单位表示的可调阈值。
       local dist = _GetUnitDistanceYds(unit, nil)
       if not dist then
         inRange = true
@@ -3584,7 +3729,7 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
     return not inRange
 
   elseif val == "Melee range" then
-    -- already blocked dead targets above; this is only for living units.
+    -- 上面已经阻止了死亡目标；这仅适用于活着的单位。
     local dist = _GetUnitDistanceYds(unit, "melee") or _GetUnitDistanceYds(unit, nil)
     if not dist then
       return true
@@ -3596,12 +3741,12 @@ local function _PassesTargetDistance(condTbl, unit, spellName)
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_PassesTargetDistance(condTbl, unit, spellName)
   return _PassesTargetDistance(condTbl, unit, spellName)
 end
 
--- Simple "target alive / dead" helper
+-- 简单的“目标活着/死亡”辅助函数
 local function _PassesTargetStatus(condTbl, unit)
   if not condTbl or not unit then
     return true
@@ -3610,19 +3755,19 @@ local function _PassesTargetStatus(condTbl, unit)
   local wantAlive = (condTbl.targetAlive == true)
   local wantDead = (condTbl.targetDead == true)
 
-  -- If neither flag is set, do not gate.
+  -- 如果未设置任何一个标志，则不进行门控。
   if not wantAlive and not wantDead then
     return true
   end
 
   if not UnitExists or not UnitExists(unit) then
-    -- No real target: don't kill the icon purely on this.
+    -- 没有真实目标：不要仅仅因此杀死图标。
     return true
   end
 
   local isDead = (UnitIsDead and UnitIsDead(unit) == 1) and true or false
 
-  -- UI should keep these mutually exclusive, but be robust anyway.
+  -- UI 应使这些互斥，但无论如何都要健壮。
   if wantAlive and wantDead then
     return true
   elseif wantAlive then
@@ -3634,12 +3779,12 @@ local function _PassesTargetStatus(condTbl, unit)
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_PassesTargetStatus(condTbl, unit)
   return _PassesTargetStatus(condTbl, unit)
 end
 
--- Parse "Multi: 1+2+3" → { "Humanoid","Beast","Dragonkin" }
+-- 解析“Multi: 1+2+3” → { “Humanoid”，“Beast”，“Dragonkin” }
 local function _ParseMultiUnitTypes(val)
   local wanted, seen = {}, {}
   local d
@@ -3654,7 +3799,7 @@ local function _ParseMultiUnitTypes(val)
   return wanted
 end
 
--- Main "targetUnitType" eval
+-- 主要“targetUnitType”评估
 local function _PassesTargetUnitType(condTbl, unit)
   if not condTbl or not unit then
     return true
@@ -3668,29 +3813,29 @@ local function _PassesTargetUnitType(condTbl, unit)
     return true
   end
 
-  if val == "Players" or val == "玩家" then
+  if val == "Players" then
     if UnitIsPlayer and UnitIsPlayer(unit) then
       return true
     end
     return false
 
-  elseif val == "NPC" then  -- NPC is same in CN
+  elseif val == "NPC" then
     if UnitIsPlayer and UnitIsPlayer(unit) then
       return false
     end
     return true
 
-  elseif val == "Boss" or val == "首领" then
-    -- UnitClassification(unit) returns: "worldboss", "rareelite", "elite", "rare" or "normal"
+  elseif val == "Boss" then
+    -- UnitClassification(unit) 返回：“worldboss”，“rareelite”，“elite”，“rare”或“normal”
     local cls = UnitClassification and UnitClassification(unit) or nil
     if not cls or cls == "" then
-      -- No classification info; don't kill the icon
+      -- 没有分类信息；不要杀死图标
       return true
     end
     return (cls == "worldboss")
 
-  elseif val == "Not a boss" or val == "非首领" then
-    -- Opposite of Boss.
+  elseif val == "Not a boss" then
+    -- Boss 的反面。
     local cls = UnitClassification and UnitClassification(unit) or nil
     if not cls or cls == "" then
       return true
@@ -3700,18 +3845,18 @@ local function _PassesTargetUnitType(condTbl, unit)
 
   local creatureType = UnitCreatureType and UnitCreatureType(unit) or nil
   if not creatureType or creatureType == "" then
-    -- No type info; don't kill the icon
+    -- 没有类型信息；不要杀死图标
     return true
   end
 
-  -- Single type "1. Humanoid"
+  -- 单一类型 “1. Humanoid”
   local _, _, num, label = str_find(val, "^(%d+)%s*%.%s*(.+)$")
   if num and label and label ~= "" then
     return (creatureType == label)
   end
 
-  -- Multi: "Multi: 1+2+3"
-  if string.find(val, "Multi:") or string.find(val, "复合:") then
+  -- 多类型： “Multi: 1+2+3”
+  if string.find(val, "Multi:") then
     local wanted = _ParseMultiUnitTypes(val)
     if table.getn(wanted) == 0 then
       return true
@@ -3725,21 +3870,21 @@ local function _PassesTargetUnitType(condTbl, unit)
     return false
   end
 
-  -- Fallback: allow exact string match if someone typed the raw type
+  -- 回退：如果有人键入了原始类型，允许精确字符串匹配
   if creatureType == val then
     return true
   end
 
-  -- Default: don't fail on unknown label
+  -- 默认：在未知标签上不失败
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_PassesTargetUnitType(condTbl, unit)
   return _PassesTargetUnitType(condTbl, unit)
 end
 
--- === Weapon filter helpers (Two-Hand / Shield / Dual-Wield) =============
+-- === 武器过滤器辅助函数（双手/盾牌/双持）=============
 
 local function _ClassifyEquippedSlot(slot)
   if not slot or not GetInventoryItemLink or type(GetItemInfo) ~= "function" then
@@ -3751,7 +3896,7 @@ local function _ClassifyEquippedSlot(slot)
     return nil
   end
 
-  -- Use the same itemID
+  -- 使用相同的 itemID
   local itemId
   local _, _, idStr = str_find(link, "item:(%d+)")
   if idStr then
@@ -3761,10 +3906,10 @@ local function _ClassifyEquippedSlot(slot)
     return { hasItem = true }
   end
 
-  -- xp3-style GetItemInfo: name, link, quality, level, itemType, itemSubType, stack
+  -- xp3 风格的 GetItemInfo：name, link, quality, level, itemType, itemSubType, stack
   local _, _, _, _, itemType, itemSubType = GetItemInfo(itemId)
   if not itemType or itemType == "" then
-    -- ItemInfo not cached yet; treat as "unknown weapon state"
+    -- ItemInfo 尚未缓存；视为“未知武器状态”
     return { hasItem = true }
   end
 
@@ -3772,23 +3917,23 @@ local function _ClassifyEquippedSlot(slot)
   local isTwoHand = false
   local isWeapon = false
 
-  -- Shields are Armor / Shields
-  if (itemType == "Armor" or itemType == "护甲") and (itemSubType == "Shields" or itemSubType == "盾牌") then
+  -- 盾牌是护甲/盾牌
+  if itemType == "Armor" and itemSubType == "Shields" then
     isShield = true
   end
 
-  -- All actual weapons share itemType == "Weapon"
-  if itemType == "Weapon" or itemType == "武器" then
+  -- 所有真正的武器共享 itemType == “Weapon”
+  if itemType == "Weapon" then
     isWeapon = true
 
     if itemSubType then
-      -- “Two-Handed Maces”, “Two-Handed Swords”, etc.
-      if str_find(itemSubType, "Two%-Handed") or str_find(itemSubType, "双手") then
+      -- “Two-Handed Maces”，“Two-Handed Swords”等。
+      if str_find(itemSubType, "Two%-Handed") then
         isTwoHand = true
-        -- 2H melee families that don’t carry the “Two-Handed” prefix
-      elseif itemSubType == "Staves" or itemSubType == "法杖"
-          or itemSubType == "Polearms" or itemSubType == "长柄武器"
-          or itemSubType == "Fishing Poles" or itemSubType == "鱼竿" then
+        -- 没有“Two-Handed”前缀的 2H 近战家族
+      elseif itemSubType == "Staves"
+          or itemSubType == "Polearms"
+          or itemSubType == "Fishing Poles" then
         isTwoHand = true
       end
     end
@@ -3803,7 +3948,7 @@ local function _ClassifyEquippedSlot(slot)
 end
 
 local function _GetEquippedWeaponState()
-  -- Returns hasTwoHand, hasShieldOffhand, isDualWield; nil,nil,nil if cannot inspect inventory at all.
+  -- 返回 hasTwoHand, hasShieldOffhand, isDualWield；如果根本无法检查装备栏，则返回 nil,nil,nil
   if not GetInventoryItemLink or type(GetItemInfo) ~= "function" then
     return nil, nil, nil
   end
@@ -3827,7 +3972,7 @@ local function _GetEquippedWeaponState()
     hasShield = true
   end
 
-  -- Dual wield = both hands have real weapons, and offhand is not a shield
+  -- 双持 = 双手都有真正的武器，且副手不是盾牌
   if main and main.isWeapon and off and off.isWeapon and not off.isShield then
     isDual = true
   end
@@ -3835,7 +3980,7 @@ local function _GetEquippedWeaponState()
   return hasTwoHand, hasShield, isDual
 end
 
--- Cache weapon filter normalization by raw string to avoid repeated lower/gsub allocations
+-- 按原始字符串缓存武器过滤器规范化，以避免重复的 lower/gsub 分配
 local _DA_WeaponFilterNormByRaw = {}
 local function _NormalizeWeaponFilter(mode)
   if not mode or mode == "" then
@@ -3855,18 +4000,18 @@ local function _NormalizeWeaponFilter(mode)
   s = string.gsub(s, "%-", "")
 
   local out = nil
-  -- Accept "Two-Hand", "Two hand", "2 hand", "2H", etc.
+  -- 接受 “Two-Hand”，“Two hand”，“2 hand”，“2H”等。
   if s == "twohand" or s == "2hand" or s == "2h" then
     out = "2H"
-    -- Accept "Shield", "shield"
+    -- 接受 “Shield”，“shield”
   elseif s == "shield" or s == "sh" then
     out = "SH"
-    -- Accept "Dual-Wield", "Dual wield", "DW", etc.
+    -- 接受 “Dual-Wield”，“Dual wield”，“DW”等。
   elseif s == "dualwield" or s == "dual" or s == "dw" then
     out = "DW"
   end
 
-  -- Store false sentinel for nil results
+  -- 为 nil 结果存储 false 哨兵
   if out then
     _DA_WeaponFilterNormByRaw[mode] = out
     return out
@@ -3882,11 +4027,11 @@ local function _PassesWeaponFilter(condTbl)
 
   local norm = _NormalizeWeaponFilter(condTbl.weaponFilter)
   if not norm then
-    -- No filter configured or unknown label -> don't gate
+    -- 未配置过滤器或标签未知 -> 不进行门控
     return true
   end
 
-  -- Only meaningful for Warrior / Paladin / Shaman
+  -- 仅对战士/圣骑士/萨满有意义
   local _, cls = UnitClass("player")
   cls = cls and string.upper(cls) or ""
   if cls ~= "WARRIOR" and cls ~= "PALADIN" and cls ~= "SHAMAN" then
@@ -3895,7 +4040,7 @@ local function _PassesWeaponFilter(condTbl)
 
   local hasTwoHand, hasShield, isDual = _GetEquippedWeaponState()
   if hasTwoHand == nil and hasShield == nil and isDual == nil then
-    -- Inventory APIs unavailable; don't kill icons
+    -- 装备栏 API 不可用；不要杀死图标
     return true
   end
 
@@ -3910,32 +4055,32 @@ local function _PassesWeaponFilter(condTbl)
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_PassesWeaponFilter(condTbl)
   return _PassesWeaponFilter(condTbl)
 end
 
--- Time remaining formatter for overlay text:
+-- 覆盖文本的时间剩余格式化器：
 --  >= 3600s -> "#h"
 --  >=   60s -> "#m"
---  <    10s -> "#.#s" (tenths)
+--  <    10s -> "#.#s"（十分之一秒）
 local function _FmtRem(remSec)
   if not remSec or remSec <= 0 then
     return nil
   end
 
-  -- Unit selection MUST happen before rounding to avoid 60m <-> 1h flicker. Rule: anything above 59:00 stays in hours (prevents 3599s rounding to 60.0m).
+  -- 单位选择必须在舍入之前进行，以避免 60m <-> 1h 闪烁。规则：任何高于 59:00 的保持在小时（防止 3599s 舍入到 60.0m）。
   local MIN = 60
   local HOUR = 3600
   local HOUR_CUTOVER = HOUR - MIN -- 59:00
 
   if remSec >= HOUR_CUTOVER then
-    return (math.floor((remSec / HOUR) * 2 + 0.5) / 2) .. "h" -- nearest 0.5 hour
+    return (math.floor((remSec / HOUR) * 2 + 0.5) / 2) .. "h" -- 最接近的 0.5 小时
   elseif remSec >= MIN then
-    return (math.floor((remSec / MIN) * 2 + 0.5) / 2) .. "m" -- nearest 0.5 min
+    return (math.floor((remSec / MIN) * 2 + 0.5) / 2) .. "m" -- 最接近的 0.5 分钟
   elseif remSec < 1.6 then
-    -- only show tenths when under 1.6s left
-    -- Stabilize tenths by truncating, not rounding up (matches old behavior)
+    -- 仅在剩余少于 1.6 秒时显示十分之一秒
+    -- 通过截断稳定十分之一秒，而不是向上舍入（匹配旧行为）
     local t10 = math.floor(remSec * 10)
     local whole = math.floor(t10 / 10)
     local dec = t10 - (whole * 10)
@@ -3946,7 +4091,7 @@ local function _FmtRem(remSec)
 end
 
 
--- === Form / Stance evaluation (no fallbacks) ===
+-- === 形态/姿态评估（无回退）===
 local function _ActiveFormMap()
   local map = DoiteConditions._activeFormMap
   if not map then
@@ -3978,47 +4123,45 @@ local function _AnyActive(map, names)
 end
 
 local function _DruidNoForm(map)
-  -- No Bear/Cat/Aquatic/Travel/Swift Travel/Moonkin/Tree is active
+  -- 没有熊/猫/水栖/旅行/迅捷旅行/枭兽/树是活动的
   local any = _AnyActive(map, {
-    "Dire Bear Form", "巨熊形态", "Bear Form", "熊形态", "Cat Form", "猎豹形态",
-    "Aquatic Form", "水栖形态", "Travel Form", "旅行形态", "Swift Travel Form", "迅捷旅行形态",
-    "Moonkin Form", "枭兽形态", "Tree of Life Form", "生命之树形态"
+    "巨熊形态", "熊形态", "猎豹形态", "水栖形态",
+    "旅行形态", "迅捷旅行形态", "枭兽形态", "生命之树形态"
   })
   return not any
 end
 
 local function _DruidStealth()
-  return DoitePlayerAuras.HasBuff("Prowl") or DoitePlayerAuras.HasBuff("潜行")
+  return DoitePlayerAuras.HasBuff("Prowl")
 end
 
 local function _PriestShadowform()
-  return DoitePlayerAuras.HasBuff("Shadowform") or DoitePlayerAuras.HasBuff("暗影形态")
+  return DoitePlayerAuras.HasBuff("Shadowform")
 end
 
--- Normalize editor labels so logic is robust to wording differences
+-- 规范化编辑器标签，使逻辑对措辞差异具有鲁棒性
 local function _NormalizeFormLabel(s)
   if not s or s == "" then
     return "All"
   end
   s = str_gsub(s, "^%s+", "")
   s = str_gsub(s, "%s+$", "")
-  -- unify "All ..." variants (editor may say "All Auras", "All stances", etc.)
+  -- 统一“All ...”变体（编辑器可能说“All Auras”，“All stances”等）
   if s == "All" or s == "All forms" or s == "All stances" or s == "All Auras" then
     return "All"
   end
-  -- unify the druid "no form(s)" label
+  -- 统一德鲁伊“no form(s)”标签
   if s == "0. No form" or s == "0. No forms" then
     return "0. No form"
   end
   return s
 end
 
--- Paladin: no aura selected in the shapeshift bar
+-- 圣骑士：未选择光环（在姿态栏中）
 local function _PaladinNoAura(map)
   return not _AnyActive(map, {
-    "Devotion Aura", "虔诚光环", "Retribution Aura", "惩罚光环", "Concentration Aura", "专注光环",
-    "Shadow Resistance Aura", "暗影抗性光环", "Frost Resistance Aura", "冰霜抗性光环",
-    "Fire Resistance Aura", "火焰抗性光环", "Sanctity Aura", "圣洁光环"
+    "虔诚光环", "惩戒光环", "专注光环",
+    "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环", "圣洁光环"
   })
 end
 
@@ -4032,41 +4175,41 @@ local function _PassesFormRequirement(formStr)
   cls = cls and string.upper(cls) or ""
   local map = _ActiveFormMap()
 
-  -- WARRIOR
+  -- 战士
   if cls == "WARRIOR" then
     if formStr == "1. Battle" then
-      return map["战斗姿态"] or map["Battle Stance"] == true
+      return map["战斗姿态"] == true
     end
     if formStr == "2. Defensive" then
-      return map["防御姿态"] or map["Defensive Stance"] == true
+      return map["防御姿态"] == true
     end
     if formStr == "3. Berserker" then
-      return map["狂暴姿态"] or map["Berserker Stance"] == true
+      return map["狂暴姿态"] == true
     end
     if formStr == "Multi: 1+2" then
-      return (map["战斗姿态"] or map["Battle Stance"] == true) or (map["防御姿态"] or map["Defensive Stance"] == true)
+      return (map["战斗姿态"] == true) or (map["防御姿态"] == true)
     end
     if formStr == "Multi: 1+3" then
-      return (map["战斗姿态"] or map["Battle Stance"] == true) or (map["狂暴姿态"] or map["Berserker Stance"] == true)
+      return (map["战斗姿态"] == true) or (map["狂暴姿态"] == true)
     end
     if formStr == "Multi: 2+3" then
-      return (map["防御姿态"] or map["Defensive Stance"] == true) or (map["狂暴姿态"] or map["Berserker Stance"] == true)
+      return (map["防御姿态"] == true) or (map["狂暴姿态"] == true)
     end
     return true
   end
 
-  -- ROGUE
+  -- 潜行者
   if cls == "ROGUE" then
     if formStr == "1. Stealth" then
-      return (map["Stealth"] == true or map["潜行"] == true)
+      return map["潜行"] == true
     end
     if formStr == "0. No Stealth" then
-      return (map["Stealth"] ~= true and map["潜行"] ~= true)
+      return map["潜行"] ~= true
     end
     return true
   end
 
-  -- PRIEST
+  -- 牧师
   if cls == "PRIEST" then
     if formStr == "1. Shadowform" then
       return _PriestShadowform()
@@ -4077,131 +4220,131 @@ local function _PassesFormRequirement(formStr)
     return true
   end
 
-  -- DRUID  (accepts both "0. No form" and "0. No forms")
+  -- 德鲁伊（接受“0. No form”和“0. No forms”）
   if cls == "DRUID" then
     if formStr == "0. No form" then
       return _DruidNoForm(map)
     end
     if formStr == "1. Bear" then
-      return _AnyActive(map, { "Dire Bear Form", "巨熊形态", "Bear Form", "熊形态" })
+      return _AnyActive(map, { "巨熊形态", "熊形态" })
     end
     if formStr == "2. Aquatic" then
-      return (map["Aquatic Form"] or map["水栖形态"])
+      return map["水栖形态"] == true
     end
     if formStr == "3. Cat" then
-      return (map["Cat Form"] or map["猎豹形态"])
+      return map["猎豹形态"] == true
     end
     if formStr == "4. Travel" then
-      return _AnyActive(map, { "Travel Form", "旅行形态", "Swift Travel Form", "迅捷旅行形态" })
+      return _AnyActive(map, { "旅行形态", "迅捷旅行形态" })
     end
     if formStr == "5. Moonkin" then
-      return (map["Moonkin Form"] or map["枭兽形态"])
+      return map["枭兽形态"] == true
     end
     if formStr == "6. Tree" then
-      return (map["Tree of Life Form"] or map["生命之树形态"])
+      return map["生命之树形态"] == true
     end
-    -- stealth variants use aura state
+    -- 潜行变体使用光环状态
     if formStr == "7. Stealth" then
       return _DruidStealth()
     end
     if formStr == "8. No Stealth" then
       return not _DruidStealth()
     end
-    -- multis
+    -- 多选
     if formStr == "Multi: 0+5" then
-      return _DruidNoForm(map) or ((map["Moonkin Form"] or map["枭兽形态"]))
+      return _DruidNoForm(map) or (map["枭兽形态"] == true)
     end
     if formStr == "Multi: 0+6" then
-      return _DruidNoForm(map) or ((map["Tree of Life Form"] or map["生命之树形态"]))
+      return _DruidNoForm(map) or (map["生命之树形态"] == true)
     end
     if formStr == "Multi: 1+3" then
-      return _AnyActive(map, { "Dire Bear Form", "巨熊形态", "Bear Form", "熊形态", "Cat Form", "猎豹形态" })
+      return _AnyActive(map, { "巨熊形态", "熊形态", "猎豹形态" })
     end
     if formStr == "Multi: 3+7" then
-      return ((map["Cat Form"] or map["猎豹形态"])) or _DruidStealth()
+      return (map["猎豹形态"] == true) or _DruidStealth()
     end
     if formStr == "Multi: 3+8" then
-      return ((map["Cat Form"] or map["猎豹形态"])) and (not _DruidStealth())
+      return (map["猎豹形态"] == true) and (not _DruidStealth())
     end
     if formStr == "Multi: 5+6" then
-      return _AnyActive(map, { "Moonkin Form", "枭兽形态", "Tree of Life Form", "生命之树形态" })
+      return _AnyActive(map, { "枭兽形态", "生命之树形态" })
     end
     if formStr == "Multi: 0+5+6" then
-      return _DruidNoForm(map) or _AnyActive(map, { "Moonkin Form", "枭兽形态", "Tree of Life Form", "生命之树形态" })
+      return _DruidNoForm(map) or _AnyActive(map, { "枭兽形态", "生命之树形态" })
     end
     if formStr == "Multi: 1+3+8" then
-      return _AnyActive(map, { "Dire Bear Form", "巨熊形态", "Bear Form", "熊形态", "Cat Form", "猎豹形态" }) and (not _DruidStealth())
+      return _AnyActive(map, { "巨熊形态", "熊形态", "猎豹形态" }) and (not _DruidStealth())
     end
     return true
   end
 
-  -- PALADIN (treat auras as shapeshift forms via GetShapeshiftFormInfo)
+  -- 圣骑士（通过 GetShapeshiftFormInfo 将光环视为形态）
   if cls == "PALADIN" then
-    -- Editor options: "All Auras", "No Aura", "1. Devotion" .. "7. Sanctity" + multis
+    -- 编辑器选项：“All Auras”，“No Aura”，“1. Devotion” .. “7. Sanctity” + 多选
     if formStr == "No Aura" then
       return _PaladinNoAura(map)
     end
     if formStr == "1. Devotion" then
-      return (map["Devotion Aura"] or map["虔诚光环"])
+      return map["虔诚光环"] == true
     end
     if formStr == "2. Retribution" then
-      return map["Retribution Aura"] == true
+      return map["惩戒光环"] == true
     end
     if formStr == "3. Concentration" then
-      return map["Concentration Aura"] == true
+      return map["专注光环"] == true
     end
     if formStr == "4. Shadow Resistance" then
-      return map["Shadow Resistance Aura"] == true
+      return map["暗影抗性光环"] == true
     end
     if formStr == "5. Frost Resistance" then
-      return map["Frost Resistance Aura"] == true
+      return map["冰霜抗性光环"] == true
     end
     if formStr == "6. Fire Resistance" then
-      return map["Fire Resistance Aura"] == true
+      return map["火焰抗性光环"] == true
     end
     if formStr == "7. Sanctity" then
-      return map["Sanctity Aura"] == true
+      return map["圣洁光环"] == true
     end
 
-    -- multis (logical OR among the listed auras)
+    -- 多选（列出的光环的逻辑 OR）
     if formStr == "Multi: 1+2" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Retribution Aura", "惩罚光环" })
+      return _AnyActive(map, { "虔诚光环", "惩戒光环" })
     end
     if formStr == "Multi: 1+3" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Concentration Aura", "专注光环" })
+      return _AnyActive(map, { "虔诚光环", "专注光环" })
     end
     if formStr == "Multi: 1+4+5+6" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Shadow Resistance Aura", "暗影抗性光环", "Frost Resistance Aura", "冰霜抗性光环", "Fire Resistance Aura", "火焰抗性光环" })
+      return _AnyActive(map, { "虔诚光环", "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环" })
     end
     if formStr == "Multi: 1+7" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Sanctity Aura", "圣洁光环" })
+      return _AnyActive(map, { "虔诚光环", "圣洁光环" })
     end
     if formStr == "Multi: 1+2+3" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Retribution Aura", "惩罚光环", "Concentration Aura", "专注光环" })
+      return _AnyActive(map, { "虔诚光环", "惩戒光环", "专注光环" })
     end
     if formStr == "Multi: 1+2+3+4+5+6" then
-      return _AnyActive(map, { "Devotion Aura", "虔诚光环", "Retribution Aura", "惩罚光环", "Concentration Aura", "专注光环", "Shadow Resistance Aura", "暗影抗性光环", "Frost Resistance Aura", "冰霜抗性光环", "Fire Resistance Aura", "火焰抗性光环" })
+      return _AnyActive(map, { "虔诚光环", "惩戒光环", "专注光环", "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环" })
     end
     if formStr == "Multi: 2+3" then
-      return _AnyActive(map, { "Retribution Aura", "Concentration Aura" })
+      return _AnyActive(map, { "惩戒光环", "专注光环" })
     end
     if formStr == "Multi: 2+4+5+6" then
-      return _AnyActive(map, { "Retribution Aura", "Shadow Resistance Aura", "Frost Resistance Aura", "Fire Resistance Aura" })
+      return _AnyActive(map, { "惩戒光环", "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环" })
     end
     if formStr == "Multi: 2+7" then
-      return _AnyActive(map, { "Retribution Aura", "Sanctity Aura" })
+      return _AnyActive(map, { "惩戒光环", "圣洁光环" })
     end
     if formStr == "Multi: 2+3+4+5+6" then
-      return _AnyActive(map, { "Retribution Aura", "Concentration Aura", "Shadow Resistance Aura", "Frost Resistance Aura", "Fire Resistance Aura" })
+      return _AnyActive(map, { "惩戒光环", "专注光环", "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环" })
     end
     if formStr == "Multi: 3+4+5+6" then
-      return _AnyActive(map, { "Concentration Aura", "Shadow Resistance Aura", "Frost Resistance Aura", "Fire Resistance Aura" })
+      return _AnyActive(map, { "专注光环", "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环" })
     end
     if formStr == "Multi: 3+7" then
-      return _AnyActive(map, { "Concentration Aura", "Sanctity Aura" })
+      return _AnyActive(map, { "专注光环", "圣洁光环" })
     end
     if formStr == "Multi: 4+5+6+7" then
-      return _AnyActive(map, { "Shadow Resistance Aura", "Frost Resistance Aura", "Fire Resistance Aura", "Sanctity Aura" })
+      return _AnyActive(map, { "暗影抗性光环", "冰霜抗性光环", "火焰抗性光环", "圣洁光环" })
     end
 
     return true
@@ -4210,7 +4353,7 @@ local function _PassesFormRequirement(formStr)
   return true
 end
 
--- Global wrapper to reduce upvalues in big condition functions
+-- 全局包装器，以减少大型条件函数中的上值
 function DoiteConditions_PassesFormRequirement(formStr)
   return _PassesFormRequirement(formStr)
 end
@@ -4229,19 +4372,20 @@ local function _EnsureAbilityTexture(frame, data)
   end
 
   local idx = _GetSpellIndexByName(spellName)
+  local bt = _G.DoiteConditions_SpellBookTypeCache[spellName]
   if idx then
-    local tex = GetSpellTexture(idx, BOOKTYPE_SPELL)
+    local tex = GetSpellTexture(idx, bt or BOOKTYPE_SPELL)
     if tex then
       frame.icon:SetTexture(tex)
-      IconCache[spellName] = tex -- persist
+      IconCache[spellName] = tex -- 持久化
     end
   end
 end
 
 
--- Ensure a Buff/Debuff icon has a texture (player/target, then fallback via spellbook)
+-- 确保增益/减益图标具有纹理（玩家/目标，然后通过法术书回退）
 local function _EnsureAuraTexture(frame, data)
-  -- Hard guards: must have a real frame, real icon, real data
+  -- 硬性保护：必须有真实的框架、真实的图标、真实的数据
   if not frame then
     return
   end
@@ -4259,7 +4403,7 @@ local function _EnsureAuraTexture(frame, data)
     return
   end
 
-  -- 0) If this entry already has a stored iconTexture, use it immediately.
+  -- 0) 如果此条目已经有存储的 iconTexture，立即使用。
   if data.iconTexture and data.iconTexture ~= "" then
     local cur = icon:GetTexture()
     if cur ~= data.iconTexture then
@@ -4273,7 +4417,7 @@ local function _EnsureAuraTexture(frame, data)
     return
   end
 
-  -- 0a) If config already has a spellid, resolve texture via Nampower.
+  -- 0a) 如果配置已经有 spellid，通过 Nampower 解析纹理。
   if data.spellid then
     local sid = tonumber(data.spellid)
     if sid and sid > 0 then
@@ -4296,7 +4440,7 @@ local function _EnsureAuraTexture(frame, data)
     end
   end
 
-  -- 0b) If Nampower spellbook lookup exists, resolve name -> spellId -> texture even if no one has the aura up.
+  -- 0b) 如果 Nampower 法术书查找存在，即使没有人拥有该光环，也解析名称 -> spellId -> 纹理。
   if GetSpellIdForName then
     local sid = GetSpellIdForName(name)
     if sid and sid > 0 then
@@ -4323,31 +4467,31 @@ local function _EnsureAuraTexture(frame, data)
     end
   end
 
-  -- 1) Existing cache / placeholder logic (unchanged)
+  -- 1) 现有缓存/占位符逻辑（不变）
   local curTex = icon:GetTexture()
   local cached = IconCache and IconCache[name] or nil
   local isPlaceholder = (curTex == nil)
       or (type(curTex) == "string" and str_find(curTex, "INV_Misc_QuestionMark"))
 
-  -- If already have a cached real texture for this aura name, just use it.
+  -- 如果已经有一个缓存的真实纹理用于此光环名称，直接使用。
   if cached and (not curTex or curTex ~= cached) then
     icon:SetTexture(cached)
     return
   end
 
-  -- If the icon already has a non-placeholder texture and nothing cached,
+  -- 如果图标已经有非占位符纹理且没有缓存，
   if (not isPlaceholder) and curTex then
     return
   end
 
-  -- 2) Decide which unit(s) to scan for live aura textures. Use the SAME flags the rest of this file uses: targetSelf/targetHelp/targetHarm.
+  -- 2) 决定扫描哪些单位以获取实时光环纹理。使用与此文件其余部分相同的标志：targetSelf/targetHelp/targetHarm。
   local checkSelf, checkTarget = false, false
 
   local flagSelf = (c.targetSelf == true)
   local flagHelp = (c.targetHelp == true)
   local flagHarm = (c.targetHarm == true)
 
-  -- If none selected, default to self (matches CheckAuraConditions / overlay logic)
+  -- 如果未选择任何标志，默认为自身（匹配 CheckAuraConditions / 覆盖逻辑）
   if (not flagSelf) and (not flagHelp) and (not flagHarm) then
     flagSelf = true
   end
@@ -4359,7 +4503,7 @@ local function _EnsureAuraTexture(frame, data)
     checkTarget = true
   end
 
-  -- Back-compat: if legacy c.target exists ("self"/"target"/"both"), let it override.
+  -- 向后兼容：如果遗留的 c.target 存在（“self”/“target”/“both”），让它覆盖。
   if c.target and type(c.target) == "string" then
     if c.target == "self" then
       checkSelf = true
@@ -4374,7 +4518,7 @@ local function _EnsureAuraTexture(frame, data)
   end
 
   local function tryUnit(unit)
-    -- 1) BUFFS: confirm NAME via Nampower, then take TEXTURE from UnitBuff
+    -- 1) 增益：通过 Nampower 确认名称，然后从 UnitBuff 获取纹理
     local i = 1
     while i <= 40 do
       local n = _GetAuraName(unit, i, false)
@@ -4395,7 +4539,7 @@ local function _EnsureAuraTexture(frame, data)
       i = i + 1
     end
 
-    -- 2) DEBUFFS: confirm NAME, then take TEXTURE from UnitDebuff
+    -- 2) 减益：确认名称，然后从 UnitDebuff 获取纹理
     i = 1
     while i <= 40 do
       local n = _GetAuraName(unit, i, true)
@@ -4427,7 +4571,7 @@ local function _EnsureAuraTexture(frame, data)
     got = tryUnit("target")
   end
 
-  -- Fallback to spellbook texture
+  -- 回退到法术书纹理
   if not got then
     local i = 1
     while i <= 200 do
@@ -4448,13 +4592,13 @@ local function _EnsureAuraTexture(frame, data)
       end
       i = i + 1
     end
-    -- Nudge the next regular update, but don't re-enter recursively
+    -- 推动下一次常规更新，但不要递归地重新进入
     dirty_aura = true
     return
   end
 end
 
--- Ensure a synthetic Item slot icon (equipped trinkets / weapons) has a real texture
+-- 确保合成的物品槽位图标（已装备的饰品/武器）有真实纹理
 local function _EnsureItemTexture(frame, data)
   if not frame or not frame.icon or not data then
     return
@@ -4478,17 +4622,17 @@ local function _EnsureItemTexture(frame, data)
 
   if invSlotName == "TRINKET1" or invSlotName == "TRINKET2"
       or invSlotName == "MAINHAND" or invSlotName == "OFFHAND"
-      or invSlotName == "RANGED" then
+      or invSlotName == "RANGED" or invSlotName == "AMMO" then
 
     slot = _SlotIndexForName(invSlotName)
 
   elseif invSlotName == "TRINKET_FIRST" then
-    -- Prefer the remembered winner for this key if exist
+    -- 如果存在，优先使用此键的记住的胜者
     if data.key and _TrinketFirstMemory[data.key]
         and _TrinketFirstMemory[data.key].slot then
       slot = _TrinketFirstMemory[data.key].slot
     else
-      -- Fallback: whichever trinket slot currently has an item (1, then 2)
+      -- 回退：当前有物品的饰品槽位（1，然后 2）
       local has1 = GetInventoryItemLink("player", INV_SLOT_TRINKET1) ~= nil
       local has2 = GetInventoryItemLink("player", INV_SLOT_TRINKET2) ~= nil
       if has1 then
@@ -4499,9 +4643,9 @@ local function _EnsureItemTexture(frame, data)
     end
 
   elseif invSlotName == "TRINKET_BOTH" then
-    -- Prefer the usable trinket's texture.
-    -- If BOTH are usable, prefer slot 1.
-    -- If neither is usable (no "Use:" effect), fall back cosmetically: slot 1 if present else slot 2.
+    -- 优先使用可用饰品的纹理。
+    -- 如果两者都可用，优先选择槽位 1。
+    -- 如果两者都不可用（没有“使用：”效果），外观上回退：槽位 1（如果存在）否则槽位 2。
     local has1, on1, rem1, dur1, isUse1 = _GetInventorySlotState(INV_SLOT_TRINKET1)
     local has2, on2, rem2, dur2, isUse2 = _GetInventorySlotState(INV_SLOT_TRINKET2)
 
@@ -4546,16 +4690,16 @@ local function _EnsureItemTexture(frame, data)
   end
 end
 
--- === Time-logic helpers (for heartbeat pruning) =================
+-- === 时间逻辑辅助函数（用于心跳修剪）=================
 
--- Does an Ability icon use any time-based features?
+-- 技能图标是否使用任何基于时间的特性？
 local function _IconHasTimeLogic_Ability(data)
   if not data or not data.conditions or not data.conditions.ability then
     return false
   end
   local c = data.conditions.ability
 
-  -- Existing reasons
+  -- 现有原因
   if c.textTimeRemaining == true then
     return true
   end
@@ -4563,7 +4707,7 @@ local function _IconHasTimeLogic_Ability(data)
     return true
   end
 
-  -- proc-window spells should tick (ONLY when mode == "usable")
+  -- 触发窗口法术应在 mode == “usable” 时滴答
   if c.mode == "usable" then
     local spellName = _GetCanonicalSpellNameFromData(data)
     if spellName and _ProcWindowDuration(spellName) then
@@ -4575,7 +4719,7 @@ local function _IconHasTimeLogic_Ability(data)
 end
 
 
--- Does an Item icon use any time-based features?
+-- 物品图标是否使用任何基于时间的特性？
 local function _IconHasTimeLogic_Item(data)
   if not data or not data.conditions or not data.conditions.item then
     return false
@@ -4595,7 +4739,7 @@ local function _IconHasTimeLogic_Item(data)
   return false
 end
 
--- Does a Buff/Debuff icon use any time-based features?
+-- 增益/减益图标是否使用任何基于时间的特性？
 local function _IconHasTimeLogic_Aura(data)
   if not data or not data.conditions or not data.conditions.aura then
     return false
@@ -4610,16 +4754,16 @@ local function _IconHasTimeLogic_Aura(data)
   return false
 end
 
--- Global flag: have ANY ability/item icons that need the 0.5s heartbeat?
+-- 全局标志：是否有任何技能/物品图标需要 0.5 秒心跳？
 local _hasAnyAbilityTimeLogic = false
--- Global flag: have ANY aura icons that need the 0.5s heartbeat?
+-- 全局标志：是否有任何光环图标需要 0.5 秒心跳？
 local _hasAnyAuraTimeLogic = false
--- Global flag: do we have ANY reason to track target auras at all?
+-- 全局标志：我们是否有任何理由跟踪目标光环？
 local _hasAnyTargetAuraUsage = true
 
 -- ------------------------------------------------------------
--- Coalesced aura scan + timer rebuild (reduces UNIT_AURA bursts)
--- Stored as DoiteConditions methods to avoid adding more file-scope locals.
+-- 合并的光环扫描 + 计时器重建（减少 UNIT_AURA 突发）
+-- 存储为 DoiteConditions 方法，以避免添加更多文件作用域局部变量。
 -- ------------------------------------------------------------
 
 function DoiteConditions:_ClearTargetAuraSnapshot()
@@ -4639,12 +4783,12 @@ function DoiteConditions:_ClearTargetAuraSnapshot()
   end
 end
 
--- _RebuildPlayerAuraTimers removed - now using DoitePlayerAuras for on-demand time calculation
+-- _RebuildPlayerAuraTimers 已移除 - 现在使用 DoitePlayerAuras 进行按需时间计算
 
 function DoiteConditions:ProcessPendingAuraScans()
-  -- Player aura scanning removed - now handled by DoitePlayerAuras event-driven tracking
+  -- 玩家光环扫描已移除 - 现在由 DoitePlayerAuras 事件驱动跟踪处理
 
-  -- Target: scan if (and only if) target aura tracking is in use; else keep snapshot empty.
+  -- 目标：仅在使用了目标光环跟踪时才扫描；否则保持快照为空。
   if self._pendingAuraScanTarget then
     self._pendingAuraScanTarget = false
 
@@ -4656,7 +4800,7 @@ function DoiteConditions:ProcessPendingAuraScans()
   end
 end
 
--- Target facts cache
+-- 目标事实缓存
 local _DA_TargetFacts = { exists = false, isSelf = false, isFriend = false, canAttack = false }
 
 local function _DA_GetTargetFacts()
@@ -4675,9 +4819,9 @@ local function _DA_GetTargetFacts()
   return tf
 end
 
--- Cached key lists (rebuilt via *_Rebuild*HeartbeatFlag / DoiteConditions_RequestEvaluate).
--- Purpose: avoid scanning every icon table on the 0.5s heartbeat and avoid per-call closure allocations.
--- NOTE: These are runtime-only caches (not saved vars).
+-- 缓存的键列表（通过 *_Rebuild*HeartbeatFlag / DoiteConditions_RequestEvaluate 重建）。
+-- 目的：避免在 0.5 秒心跳时扫描每个图标表，并避免每次调用闭包分配。
+-- 注意：这些是仅运行时缓存（不是保存的变量）。
 local _timeKeysAbilityItem_live = {}
 local _timeKeysAbilityItem_edit = {}
 local _timeKeysAura_live = {}
@@ -4694,11 +4838,11 @@ end
 local function _RebuildAbilityTimeHeartbeatFlag()
   _hasAnyAbilityTimeLogic = false
 
-  -- Rebuild runtime-only key lists so 0.5s heartbeat passes don't scan every icon.
+  -- 重建仅运行时键列表，以便 0.5 秒心跳传递不会扫描每个图标。
   _WipeArray(_timeKeysAbilityItem_live)
   _WipeArray(_timeKeysAbilityItem_edit)
 
-  -- 1) Runtime icons
+  -- 1) 运行时图标
   if DoiteAurasDB and DoiteAurasDB.spells then
     local key, data
     for key, data in pairs(DoiteAurasDB.spells) do
@@ -4718,7 +4862,7 @@ local function _RebuildAbilityTimeHeartbeatFlag()
     end
   end
 
-  -- 2) Editor icons (may overlap live keys; evaluation loops will skip live keys when needed)
+  -- 2) 编辑器图标（可能与活动键重叠；评估循环将在需要时跳过活动键）
   if DoiteDB and DoiteDB.icons then
     local key, data
     for key, data in pairs(DoiteDB.icons) do
@@ -4742,11 +4886,11 @@ end
 local function _RebuildAuraTimeHeartbeatFlag()
   _hasAnyAuraTimeLogic = false
 
-  -- Rebuild runtime-only key lists so 0.5s text/remaining updates don't scan every icon.
+  -- 重建仅运行时键列表，以便 0.5 秒文本/剩余更新不会扫描每个图标。
   _WipeArray(_timeKeysAura_live)
   _WipeArray(_timeKeysAura_edit)
 
-  -- 1) Runtime icons
+  -- 1) 运行时图标
   if DoiteAurasDB and DoiteAurasDB.spells then
     local key, data
     for key, data in pairs(DoiteAurasDB.spells) do
@@ -4759,7 +4903,7 @@ local function _RebuildAuraTimeHeartbeatFlag()
     end
   end
 
-  -- 2) Editor icons (may overlap live keys; UpdateTimeText already skips live keys for editor set)
+  -- 2) 编辑器图标（可能与活动键重叠；UpdateTimeText 已经为编辑器集跳过活动键）
   if DoiteDB and DoiteDB.icons then
     local key, data
     for key, data in pairs(DoiteDB.icons) do
@@ -4776,12 +4920,12 @@ end
 local function _RebuildAuraUsageFlags()
   _hasAnyTargetAuraUsage = false
 
-  -- 1) Live icons
+  -- 1) 活动图标
   if DoiteAurasDB and DoiteAurasDB.spells then
     local key, data
     for key, data in pairs(DoiteAurasDB.spells) do
       if type(data) == "table" then
-        -- Any explicit Buff/Debuff icon that can ever point at target?
+        -- 任何显式的增益/减益图标，可能指向目标？
         if data.type == "Buff" or data.type == "Debuff" then
           local c = data.conditions and data.conditions.aura
           if c and (c.targetHarm or c.targetHelp) then
@@ -4790,14 +4934,14 @@ local function _RebuildAuraUsageFlags()
           end
         end
 
-        -- Any ability auraConditions that can check target?
+        -- 任何技能的 auraConditions 可以检查目标？
         local ca = data.conditions and data.conditions.ability
         if ca and ca.auraConditions and (ca.targetHarm or ca.targetHelp) then
           _hasAnyTargetAuraUsage = true
           return
         end
 
-        -- Any item auraConditions that can check target?
+        -- 任何物品的 auraConditions 可以检查目标？
         local ci = data.conditions and data.conditions.item
         if ci and ci.auraConditions and (ci.targetHarm or ci.targetHelp) then
           _hasAnyTargetAuraUsage = true
@@ -4807,7 +4951,7 @@ local function _RebuildAuraUsageFlags()
     end
   end
 
-  -- 2) Editor-only icons
+  -- 2) 仅编辑器图标
   if DoiteDB and DoiteDB.icons then
     local key, data
     for key, data in pairs(DoiteDB.icons) do
@@ -4836,7 +4980,7 @@ local function _RebuildAuraUsageFlags()
   end
 end
 
--- Global flags: do we have ANY icons that use targetDistance / targetUnitType?
+-- 全局标志：我们是否有任何图标使用 targetDistance / targetUnitType？
 local _hasAnyTargetMods_Ability = false
 local _hasAnyTargetMods_Aura = false
 
@@ -4870,11 +5014,60 @@ end
 local function _RebuildTargetModsFlags()
   _hasAnyTargetMods_Ability = false
   _hasAnyTargetMods_Aura = false
+  if DoiteConditions then
+    DoiteConditions._hasAnyItemLogic = false
+  end
 
-  -- 1) Live icons
+  -- 1) 活动图标
   if DoiteAurasDB and DoiteAurasDB.spells then
     for key, data in pairs(DoiteAurasDB.spells) do
       if type(data) == "table" and data.type then
+        local hasItemLogic = false
+
+        if data.type == "Item" then
+          hasItemLogic = true
+        else
+          local bucketNames = { "ability", "aura", "item" }
+          local b = 1
+          while b <= table.getn(bucketNames) do
+            local bucket = data.conditions and data.conditions[bucketNames[b]]
+            if bucket then
+              local auraList = bucket.auraConditions
+              local vfxList = bucket.vfxConditions
+              local i, entry
+
+              if auraList and table.getn(auraList) > 0 then
+                for i = 1, table.getn(auraList) do
+                  entry = auraList[i]
+                  if entry and entry.buffType == "ITEM" then
+                    hasItemLogic = true
+                    break
+                  end
+                end
+              end
+
+              if (not hasItemLogic) and vfxList and table.getn(vfxList) > 0 then
+                for i = 1, table.getn(vfxList) do
+                  entry = vfxList[i]
+                  if entry and entry.buffType == "ITEM" then
+                    hasItemLogic = true
+                    break
+                  end
+                end
+              end
+            end
+
+            if hasItemLogic then
+              break
+            end
+            b = b + 1
+          end
+        end
+
+        if hasItemLogic and DoiteConditions then
+          DoiteConditions._hasAnyItemLogic = true
+        end
+
         if (data.type == "Ability" or data.type == "Item")
             and _IconHasTargetMods_AbilityOrItem(data) then
           _hasAnyTargetMods_Ability = true
@@ -4883,17 +5076,63 @@ local function _RebuildTargetModsFlags()
             and _IconHasTargetMods_Aura(data) then
           _hasAnyTargetMods_Aura = true
         end
-        if _hasAnyTargetMods_Ability and _hasAnyTargetMods_Aura then
+        if _hasAnyTargetMods_Ability and _hasAnyTargetMods_Aura and DoiteConditions and DoiteConditions._hasAnyItemLogic then
           return
         end
       end
     end
   end
 
-  -- 2) Editor-only icons
+  -- 2) 仅编辑器图标
   if DoiteDB and DoiteDB.icons then
     for key, data in pairs(DoiteDB.icons) do
       if type(data) == "table" and data.type then
+        local hasItemLogic = false
+
+        if data.type == "Item" then
+          hasItemLogic = true
+        else
+          local bucketNames = { "ability", "aura", "item" }
+          local b = 1
+          while b <= table.getn(bucketNames) do
+            local bucket = data.conditions and data.conditions[bucketNames[b]]
+            if bucket then
+              local auraList = bucket.auraConditions
+              local vfxList = bucket.vfxConditions
+              local i, entry
+
+              if auraList and table.getn(auraList) > 0 then
+                for i = 1, table.getn(auraList) do
+                  entry = auraList[i]
+                  if entry and entry.buffType == "ITEM" then
+                    hasItemLogic = true
+                    break
+                  end
+                end
+              end
+
+              if (not hasItemLogic) and vfxList and table.getn(vfxList) > 0 then
+                for i = 1, table.getn(vfxList) do
+                  entry = vfxList[i]
+                  if entry and entry.buffType == "ITEM" then
+                    hasItemLogic = true
+                    break
+                  end
+                end
+              end
+            end
+
+            if hasItemLogic then
+              break
+            end
+            b = b + 1
+          end
+        end
+
+        if hasItemLogic and DoiteConditions then
+          DoiteConditions._hasAnyItemLogic = true
+        end
+
         if (data.type == "Ability" or data.type == "Item")
             and _IconHasTargetMods_AbilityOrItem(data) then
           _hasAnyTargetMods_Ability = true
@@ -4902,7 +5141,7 @@ local function _RebuildTargetModsFlags()
             and _IconHasTargetMods_Aura(data) then
           _hasAnyTargetMods_Aura = true
         end
-        if _hasAnyTargetMods_Ability and _hasAnyTargetMods_Aura then
+        if _hasAnyTargetMods_Ability and _hasAnyTargetMods_Aura and DoiteConditions and DoiteConditions._hasAnyItemLogic then
           return
         end
       end
@@ -4910,43 +5149,73 @@ local function _RebuildTargetModsFlags()
   end
 end
 
-local _DA_SWIFTMEND_NEEDS = { "Rejuvenation", "Regrowth" }
+local _DA_SWIFTMEND_NEEDS = { "回春术", "愈合" }
+
+local function _ClampFadeAlpha(v)
+  local n = tonumber(v)
+  if not n then
+    return 0
+  end
+  if n < 0 then
+    return 0
+  end
+  if n > 1 then
+    return 1
+  end
+  return n
+end
 
 local function _EvaluateVfxConditions(data)
   if not data or not data.conditions then
-    return false, false
+    return false, false, false, 0
   end
 
   local glowOut, greyOut = false, false
+  local fadeOut, fadeAlphaOut = false, 0
 
-  local types = { "ability", "aura", "item" }
   local tIdx, typeKey
-  for tIdx, typeKey in ipairs(types) do
+  for tIdx = 1, 3 do
+    if tIdx == 1 then
+      typeKey = "ability"
+    elseif tIdx == 2 then
+      typeKey = "aura"
+    else
+      typeKey = "item"
+    end
+
     local bucket = data.conditions[typeKey]
     local list = bucket and bucket.vfxConditions
     if list and table.getn(list) > 0 then
       local i, entry
-      for i, entry in ipairs(list) do
+      for i = 1, table.getn(list) do
+        entry = list[i]
         if _AuraConditions_CheckEntry(entry) then
           if entry.glow then glowOut = true end
           if entry.grey then greyOut = true end
+          if entry.fade then
+            fadeOut = true
+            local entryFadeAlpha = _ClampFadeAlpha(entry.fadeAlpha)
+            if entryFadeAlpha > fadeAlphaOut then
+              fadeAlphaOut = entryFadeAlpha
+            end
+          end
         end
       end
     end
   end
 
-  return glowOut, greyOut
+  return glowOut, greyOut, fadeOut, fadeAlphaOut
 end
 
 -- ============================================================
--- Ability condition evaluation
+-- 技能条件评估
 -- ============================================================
 local function CheckAbilityConditions(data)
   if not data or not data.conditions or not data.conditions.ability then
-    return true -- if no conditions, always show
+    return true, false, false, false, 0 -- 如果无条件，始终显示
   end
   local c = data.conditions.ability
-  -- Consolidated context table: keeps local count lower while avoiding per-eval allocations.
+  -- 合并的上下文表：保持局部计数较低，同时避免每次评估分配。
   local ctx = data._daCtx
   if not ctx then
     ctx = {}
@@ -4957,24 +5226,27 @@ local function CheckAbilityConditions(data)
   ctx.allowSelf = (c.targetSelf == true)
   ctx.spellName = _GetCanonicalSpellNameFromData(data)
   ctx.spellIndex = _GetSpellIndexByName(ctx.spellName)
+  ctx.spellBookType = _G.DoiteConditions_SpellBookTypeCache[ctx.spellName]
   ctx.tf = nil
 
-  -- While editing this key, force conditions to pass (always show).
+  -- 编辑此键时，强制条件通过（始终显示）。
   if _IsKeyUnderEdit(data.key) then
     local glow = (c.glow and true) or false
     local grey = (c.greyscale and true) or false
-    return true, glow, grey
+    local fade = (c.fade and true) or false
+    local fadeAlpha = fade and _ClampFadeAlpha(c.fadeAlpha) or 0
+    return true, glow, grey, fade, fadeAlpha
   end
 
-  -- "show" now represents ALL NON-MODE conditions.
+  -- “show” 现在代表所有非模式条件。
   local show = true
   data._daModeOk = true
   data._daSoundGate = nil
 
-  -- === Slider guard for cooldown slider preview ========================
+  -- === 滑块门控用于冷却滑块预览 ========================
   data._daSliderGuard = nil
 
-  -- Reuse a per-icon temp table; cannot use _daSliderGuard since it's later set to boolean.
+  -- 重用每个图标的临时表；不能使用 _daSliderGuard，因为它稍后设置为布尔值。
   local _sg = data._daSliderGuardTmp
   if not _sg then
     _sg = {}
@@ -5009,14 +5281,14 @@ local function CheckAbilityConditions(data)
     data._daSliderGuard = okSlider and true or false
   end
 
-  -- === 1. Cooldown / usability (MODE-ONLY) ===
+  -- === 1. 冷却时间 / 可用性（仅模式） ===
   local spellName = ctx.spellName
   local spellIndex = ctx.spellIndex
-  local bookType = BOOKTYPE_SPELL
+  local bookType = ctx.spellBookType or BOOKTYPE_SPELL
   local onCdNow = false
 
   if not spellIndex then
-    -- Not in book: no icon, no sound.
+    -- 不在法术书中：无图标，无声音。
     data._daModeOk = false
     data._daSoundGate = false
     return false
@@ -5024,30 +5296,36 @@ local function CheckAbilityConditions(data)
 
   onCdNow = _IsSpellOnCooldown(spellIndex, bookType) and true or false
 
-  if c.mode == "usable" and spellIndex then
-    local _, cls = UnitClass("player");
+  local mode = c.mode or "notcd"
+  local usablePass = nil
+
+  if mode == "usable" or mode == "usableoncd" then
+    usablePass = true
+
+    local _, cls = UnitClass("player")
     cls = cls and string.upper(cls) or ""
-    if cls == "WARRIOR" and (spellName == "Overpower" or spellName == "制压" or spellName == "Revenge" or spellName == "复仇") then
+
+    if cls == "WARRIOR" and (spellName == "压制" or spellName == "复仇") then
       if onCdNow then
-        data._daModeOk = false
+        usablePass = false
       else
         local rage = UnitMana("player") or 0
         if rage < 5 then
-          data._daModeOk = false
+          usablePass = false
         else
-          if spellName == "Overpower" or spellName == "制压" then
-            data._daModeOk = _Warrior_Overpower_OK() and true or false
+          if spellName == "压制" then
+            usablePass = _Warrior_Overpower_OK() and true or false
           else
-            data._daModeOk = _Warrior_Revenge_OK() and true or false
+            usablePass = _Warrior_Revenge_OK() and true or false
           end
         end
       end
     else
       local usable, noMana = _SafeSpellUsable(spellName, spellIndex, bookType)
       if (usable ~= 1) or (noMana == 1) or onCdNow then
-        data._daModeOk = false
+        usablePass = false
       else
-        if cls == "DRUID" and spellName == "Swiftmend" then
+        if cls == "DRUID" and spellName == "迅捷治愈" then
           local needs = _DA_SWIFTMEND_NEEDS
           local ok = false
 
@@ -5089,24 +5367,27 @@ local function CheckAbilityConditions(data)
           end
 
           if not ok then
-            data._daModeOk = false
+            usablePass = false
           end
         end
       end
     end
-
-  elseif c.mode == "notcd" and spellIndex then
-    if onCdNow then
-      data._daModeOk = false
-    end
-
-  elseif c.mode == "oncd" and spellIndex then
-    if not onCdNow then
-      data._daModeOk = false
-    end
   end
 
-  -- === Combat state (NON-MODE) ===
+  if mode == "usable" then
+    data._daModeOk = usablePass and true or false
+  elseif mode == "notcd" then
+    data._daModeOk = (not onCdNow) and true or false
+  elseif mode == "oncd" then
+    data._daModeOk = onCdNow and true or false
+  elseif mode == "usableoncd" then
+    data._daModeOk = ((usablePass == true) or onCdNow) and true or false
+  elseif mode == "nocdoncd" then
+    -- NotCD 或 OnCD 一旦技能存在于法术书中就始终为真。
+    data._daModeOk = true
+  end
+
+  -- === 战斗状态（非模式） ===
   local inCombatFlag = (c.inCombat == true)
   local outCombatFlag = (c.outCombat == true)
 
@@ -5119,7 +5400,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- === Grouping mode (NON-MODE) ===
+  -- === 组队模式（非模式） ===
   local grouping = c.grouping
   if grouping ~= nil and grouping ~= "any" then
     local groupOk = true
@@ -5139,11 +5420,11 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Cache target facts once per evaluation
+  -- 缓存目标事实，每次评估一次
   ctx.tf = _DA_GetTargetFacts()
   local tf = ctx.tf
 
-  -- Target gating (NON-MODE)
+  -- 目标门控（非模式）
   local ok = true
   if ctx.allowHelp or ctx.allowHarm or ctx.allowSelf then
     ok = false
@@ -5161,7 +5442,7 @@ local function CheckAbilityConditions(data)
     show = false
   end
 
-  -- Target status / Distance / UnitType (NON-MODE)
+  -- 目标状态 / 距离 / 类型（非模式）
   if show and (c.targetDistance or c.targetUnitType or c.targetAlive or c.targetDead) then
     local unitForTarget = nil
     if tf.exists then
@@ -5178,7 +5459,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Form / stance (NON-MODE)
+  -- 形态/姿态（非模式）
   if show and c.form and c.form ~= "All" then
     if _sg.form ~= nil then
       if not _sg.form then
@@ -5191,7 +5472,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Weapon filter (NON-MODE)
+  -- 武器过滤器（非模式）
   if show and c.weaponFilter and c.weaponFilter ~= "" then
     if _sg.weapon ~= nil then
       if not _sg.weapon then
@@ -5204,7 +5485,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- HP (NON-MODE)
+  -- 生命值（非模式）
   if show and c.hpComp and c.hpVal and c.hpMode and c.hpMode ~= "" then
     local hpTarget = nil
     if c.hpMode == "my" then
@@ -5240,7 +5521,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Combo points (NON-MODE)
+  -- 连击点数（非模式）
   if show and c.cpEnabled == true and _PlayerUsesComboPoints() then
     local cp = _GetComboPointsSafe()
     local thr = tonumber(c.cpVal)
@@ -5251,7 +5532,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Power (NON-MODE)
+  -- 能量（非模式）
   if show and c.powerEnabled
       and c.powerComp ~= nil and c.powerComp ~= ""
       and c.powerVal ~= nil and c.powerVal ~= "" then
@@ -5274,7 +5555,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Remaining (NON-MODE)
+  -- 剩余（非模式）
   if show and c.remainingEnabled
       and c.remainingComp and c.remainingComp ~= ""
       and c.remainingVal ~= nil and c.remainingVal ~= "" then
@@ -5290,7 +5571,7 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Aura conditions (NON-MODE)
+  -- 光环条件（非模式）
   if show and c.auraConditions and table.getn(c.auraConditions) > 0 then
     if _sg.aura ~= nil then
       if not _sg.aura then
@@ -5303,10 +5584,10 @@ local function CheckAbilityConditions(data)
     end
   end
 
-  -- Sound gate = all NON-MODE conditions
+  -- 声音门控 = 所有非模式条件
   data._daSoundGate = (show == true) and true or false
 
-  -- Final visibility includes MODE
+  -- 最终可见性包括模式
   if data._daModeOk == false then
     show = false
   end
@@ -5324,31 +5605,43 @@ local function CheckAbilityConditions(data)
       (data._daSoundGate and c.soundOffCDEnabled == true),
       c.soundOffCD)
 
-  local vGlow, vGrey = _EvaluateVfxConditions(data)
+  local vGlow, vGrey, vFade, vFadeAlpha = _EvaluateVfxConditions(data)
   local glow = (c.glow or vGlow) and true or false
   local grey = (c.greyscale or vGrey) and true or false
+  local fade = (c.fade or vFade) and true or false
+  local fadeAlpha = 0
+  if c.fade then
+    fadeAlpha = _ClampFadeAlpha(c.fadeAlpha)
+  end
+  if vFade and vFadeAlpha > fadeAlpha then
+    fadeAlpha = vFadeAlpha
+  end
 
   if not show then
     glow = false
     grey = false
+    fade = false
+    fadeAlpha = 0
   end
 
-  return show, glow, grey
+  return show, glow, grey, fade, fadeAlpha
 end
 
 -- ============================================================
--- Item condition evaluation
+-- 物品条件评估
 -- ============================================================
 local function CheckItemConditions(data)
   if not data or not data.conditions or not data.conditions.item then
-    return true, false, false
+    return true, false, false, false, 0
   end
   local c = data.conditions.item
 
   if _IsKeyUnderEdit(data.key) then
     local glow = (c.glow and true) or false
     local grey = (c.greyscale and true) or false
-    return true, glow, grey
+    local fade = (c.fade and true) or false
+    local fadeAlpha = fade and _ClampFadeAlpha(c.fadeAlpha) or 0
+    return true, glow, grey, fade, fadeAlpha
   end
 
   local show = true
@@ -5369,7 +5662,9 @@ local function CheckItemConditions(data)
     data._daSoundGate = false
     local glow = c.glow and true or false
     local grey = c.greyscale and true or false
-    return false, glow, grey
+    local fade = c.fade and true or false
+    local fadeAlpha = fade and _ClampFadeAlpha(c.fadeAlpha) or 0
+    return false, glow, grey, fade, fadeAlpha
   end
 
   if state.modeMatches == false then
@@ -5378,7 +5673,7 @@ local function CheckItemConditions(data)
 
   if c.enchant ~= nil then
     local dn = data.displayName or data.name
-    if dn == "---已装备的武器栏位---" then
+    if dn == "---EQUIPPED WEAPON SLOTS---" then
       local hasEnchant = (state and state.teRem and state.teRem > 0) and true or false
       if c.enchant == true then
         if not hasEnchant then
@@ -5541,8 +5836,8 @@ local function CheckItemConditions(data)
     local threshold = tonumber(c.remainingVal)
     if threshold then
       if (c.mode == "notcd" or c.mode == "both")
-          and (data.displayName == "---已装备的武器栏位---")
-          and (c.inventorySlot == "MAINHAND" or c.inventorySlot == "OFFHAND" or c.inventorySlot == "RANGED") then
+          and (data.displayName == "---EQUIPPED WEAPON SLOTS---")
+          and (c.inventorySlot == "MAINHAND" or c.inventorySlot == "OFFHAND") then
         if (not state) or (not state.teRem) or state.teRem <= 0 then
           show = false
         else
@@ -5584,31 +5879,43 @@ local function CheckItemConditions(data)
       (data._daSoundGate and c.soundOffCDEnabled == true),
       c.soundOffCD)
 
-  local vGlow, vGrey = _EvaluateVfxConditions(data)
+  local vGlow, vGrey, vFade, vFadeAlpha = _EvaluateVfxConditions(data)
   local glow = (c.glow or vGlow) and true or false
   local grey = (c.greyscale or vGrey) and true or false
+  local fade = (c.fade or vFade) and true or false
+  local fadeAlpha = 0
+  if c.fade then
+    fadeAlpha = _ClampFadeAlpha(c.fadeAlpha)
+  end
+  if vFade and vFadeAlpha > fadeAlpha then
+    fadeAlpha = vFadeAlpha
+  end
 
   if not show then
     glow = false
     grey = false
+    fade = false
+    fadeAlpha = 0
   end
 
-  return show, glow, grey
+  return show, glow, grey, fade, fadeAlpha
 end
 
 -- ============================================================
--- Aura condition evaluation
+-- 光环条件评估
 -- ============================================================
 local function CheckAuraConditions(data)
   if not data or not data.conditions or not data.conditions.aura then
-    return true, false, false
+    return true, false, false, false, 0
   end
   local c = data.conditions.aura
 
   if _IsKeyUnderEdit(data.key) then
     local glow = (c.glow and true) or false
     local grey = (c.greyscale and true) or false
-    return true, glow, grey
+    local fade = (c.fade and true) or false
+    local fadeAlpha = fade and _ClampFadeAlpha(c.fadeAlpha) or 0
+    return true, glow, grey, fade, fadeAlpha
   end
 
   local name = data.displayName or data.name
@@ -5617,12 +5924,12 @@ local function CheckAuraConditions(data)
 
   if useSpellIdOnly and auraSpellId <= 0 then
     data._daSoundGate = false
-    return false, false, false
+    return false, false, false, false, 0
   end
 
   if (not useSpellIdOnly) and (not name) then
     data._daSoundGate = false
-    return false, false, false
+    return false, false, false, false, 0
   end
 
   local wantBuff = (data.type == "Buff")
@@ -5680,11 +5987,14 @@ local function CheckAuraConditions(data)
     end
   end
 
+
   local found = false
 
   if show and allowSelf then
     local hit = false
-    if useSpellIdOnly and auraSpellId > 0 then
+    if c.trackpet == true and DoitePetAuras and DoitePetAuras.HasAura then
+      hit = DoitePetAuras.HasAura(name, auraSpellId, useSpellIdOnly, wantBuff, wantDebuff)
+    elseif useSpellIdOnly and auraSpellId > 0 then
       if wantBuff then
         hit = DoitePlayerAuras.HasBuffSpellId(auraSpellId)
       end
@@ -5705,47 +6015,59 @@ local function CheckAuraConditions(data)
   end
 
   if show and (not found) and allowHelp then
-    local s = auraSnapshot.target
-    if s then
-      local hit = false
-      if useSpellIdOnly and auraSpellId > 0 then
-        if wantBuff and s.buffIds and s.buffIds[auraSpellId] then
-          hit = true
-        elseif wantDebuff and _TargetHasAuraBySpellId(auraSpellId, true) then
-          hit = true
-        end
-      else
-        if wantBuff and s.buffs[name] then
-          hit = true
-        elseif wantDebuff and _TargetHasOverflowDebuff(name) then
-          hit = true
-        end
-      end
-      if hit then
+    if c.trackpet == true and DoitePetAuras and DoitePetAuras.HasAura then
+      if DoitePetAuras.HasAura(name, auraSpellId, useSpellIdOnly, wantBuff, wantDebuff) then
         found = true
+      end
+    else
+      local s = auraSnapshot.target
+      if s then
+        local hit = false
+        if useSpellIdOnly and auraSpellId > 0 then
+          if wantBuff and s.buffIds and s.buffIds[auraSpellId] then
+            hit = true
+          elseif wantDebuff and _TargetHasAuraBySpellId(auraSpellId, true) then
+            hit = true
+          end
+        else
+          if wantBuff and s.buffs[name] then
+            hit = true
+          elseif wantDebuff and _TargetHasOverflowDebuff(name) then
+            hit = true
+          end
+        end
+        if hit then
+          found = true
+        end
       end
     end
   end
 
   if show and (not found) and allowHarm then
-    local s = auraSnapshot.target
-    if s then
-      local hit = false
-      if useSpellIdOnly and auraSpellId > 0 then
-        if wantBuff and s.buffIds and s.buffIds[auraSpellId] then
-          hit = true
-        elseif wantDebuff and _TargetHasAuraBySpellId(auraSpellId, true) then
-          hit = true
-        end
-      else
-        if wantBuff and s.buffs[name] then
-          hit = true
-        elseif wantDebuff and _TargetHasOverflowDebuff(name) then
-          hit = true
-        end
-      end
-      if hit then
+    if c.trackpet == true and DoitePetAuras and DoitePetAuras.HasAura then
+      if DoitePetAuras.HasAura(name, auraSpellId, useSpellIdOnly, wantBuff, wantDebuff) then
         found = true
+      end
+    else
+      local s = auraSnapshot.target
+      if s then
+        local hit = false
+        if useSpellIdOnly and auraSpellId > 0 then
+          if wantBuff and s.buffIds and s.buffIds[auraSpellId] then
+            hit = true
+          elseif wantDebuff and _TargetHasAuraBySpellId(auraSpellId, true) then
+            hit = true
+          end
+        else
+          if wantBuff and s.buffs[name] then
+            hit = true
+          elseif wantDebuff and _TargetHasOverflowDebuff(name) then
+            hit = true
+          end
+        end
+        if hit then
+          found = true
+        end
       end
     end
   end
@@ -5758,7 +6080,7 @@ local function CheckAuraConditions(data)
       ownerUnit = "target"
     end
     if ownerUnit then
-      local _, _, _, isMine, isOther, mineKnown = _DoiteTrackAuraOwnership(useSpellIdOnly and auraSpellId or name, ownerUnit, useSpellIdOnly)
+      local _, _, _, isMine, isOther, mineKnown = _DoiteTrackAuraOwnership(useSpellIdOnly and auraSpellId or name, (c.trackpet == true and "pet") or ownerUnit, useSpellIdOnly)
       if mineKnown then
         if ownerFilter == "mine" and not isMine then
           found = false
@@ -5769,9 +6091,11 @@ local function CheckAuraConditions(data)
     end
   end
 
-  -- MODE-ONLY visibility
+  -- 模式可见性
   if c.mode == "missing" then
     data._daModeOk = (not found) and true or false
+  elseif c.mode == "both" then
+    data._daModeOk = true
   else
     data._daModeOk = found and true or false
   end
@@ -5883,7 +6207,7 @@ local function CheckAuraConditions(data)
     end
   end
 
-  -- Keep these with existing guards (editor semantics)
+  -- 保持这些与现有门控（编辑器语义）一起
   if c.remainingEnabled
       and c.remainingComp and c.remainingComp ~= ""
       and c.remainingVal ~= nil and c.remainingVal ~= "" then
@@ -5904,7 +6228,12 @@ local function CheckAuraConditions(data)
         local comp = c.remainingComp
         local pass = true
         if targetSelf then
-          local rem = _PlayerAuraRemainingSeconds(name, auraSpellId, useSpellIdOnly)
+          local rem = nil
+          if c.trackpet == true and DoitePetAuras and DoitePetAuras.GetAuraRemainingSeconds then
+            rem = DoitePetAuras.GetAuraRemainingSeconds(name, auraSpellId, useSpellIdOnly)
+          else
+            rem = _PlayerAuraRemainingSeconds(name, auraSpellId, useSpellIdOnly)
+          end
           if rem and rem > 0 then
             pass = _RemainingPasses(rem, comp, threshold)
           else
@@ -5912,7 +6241,7 @@ local function CheckAuraConditions(data)
           end
         else
           if ownerFilter == "mine" and DoiteTrack then
-            local rpass = _DoiteTrackRemainingPass(useSpellIdOnly and auraSpellId or name, "target", comp, threshold, useSpellIdOnly)
+            local rpass = _DoiteTrackRemainingPass(useSpellIdOnly and auraSpellId or name, (c.trackpet == true and "pet") or "target", comp, threshold, useSpellIdOnly)
             if rpass == nil then
               pass = false
             else
@@ -5947,6 +6276,9 @@ local function CheckAuraConditions(data)
         elseif allowHarm and canAttack and (not isFriend) then
           unitToCheck = "target"
         end
+      end
+      if c.trackpet == true then
+        unitToCheck = "pet"
       end
       if unitToCheck then
         local cnt = _GetAuraStacksOnUnit(unitToCheck, name, wantDebuff, auraSpellId, useSpellIdOnly)
@@ -5987,33 +6319,33 @@ local function CheckAuraConditions(data)
   do
     local key = data.key
     local st = key and _SoundStateByKey[key]
-  
+
     local isTargetAura = ((allowHelp or allowHarm) and (not allowSelf)) and true or false
-  
+
     local curTargetName = nil
     if isTargetAura and tf and tf.exists then
       curTargetName = UnitName("target")
     end
-  
+
     if isTargetAura then
       if not st then
         st = {}
         _SoundStateByKey[key] = st
       end
-  
+
       local prevTargetName = st._daTargetName
 
-    -- If target identity changed, suppress sound edges this evaluation, and seed the edge states to the CURRENT values so we don't get a delayed false edge.
+    -- 如果目标身份更改，则在此评估中抑制声音边缘，并将边缘状态播种到当前真值，这样我们就不会得到延迟的错误边缘。
       if prevTargetName ~= curTargetName then
         st._daTargetName = curTargetName
-  
-        -- Seed both edge states to current truth (this is what _DoiteHandleEdgeSound would store)
+
+        -- 将两个边缘状态播种到当前真值（这是 _DoiteHandleEdgeSound 会存储的）
         st["auraFound"] = found and true or false
         st["auraMissing"] = (not found) and true or false
 
-        -- Do NOT play sounds on target change.
+        -- 在目标更改时不播放声音。
       else
-        -- Same target: normal edge sound behavior
+        -- 相同目标：正常边缘声音行为
         _DoiteHandleEdgeSound(
             key,
             "auraFound",
@@ -6027,9 +6359,9 @@ local function CheckAuraConditions(data)
             (data._daSoundGate and c.soundOnFadeEnabled == true),
             c.soundOnFade)
       end
-  
+
     else
-      -- Self-based aura icons: normal behavior (player aura tracking is stable)
+      -- 基于自身的光环图标：正常行为（玩家光环跟踪是稳定的）
       _DoiteHandleEdgeSound(
           key,
           "auraFound",
@@ -6045,20 +6377,30 @@ local function CheckAuraConditions(data)
     end
   end
 
-  local vGlow, vGrey = _EvaluateVfxConditions(data)
+  local vGlow, vGrey, vFade, vFadeAlpha = _EvaluateVfxConditions(data)
   local glow = (c.glow or vGlow) and true or false
   local grey = (c.greyscale or vGrey) and true or false
+  local fade = (c.fade or vFade) and true or false
+  local fadeAlpha = 0
+  if c.fade then
+    fadeAlpha = _ClampFadeAlpha(c.fadeAlpha)
+  end
+  if vFade and vFadeAlpha > fadeAlpha then
+    fadeAlpha = vFadeAlpha
+  end
 
   if not show then
     glow = false
     grey = false
+    fade = false
+    fadeAlpha = 0
   end
 
-  return show, glow, grey
+  return show, glow, grey, fade, fadeAlpha
 end
 
 ---------------------------------------------------------------
--- Main update
+-- 主更新
 ---------------------------------------------------------------
 function DoiteConditions:EvaluateAll()
   local editingAny = _IsAnyKeyUnderEdit()
@@ -6070,34 +6412,34 @@ function DoiteConditions:EvaluateAll()
 
   local key, data
 
-  -- 1) Live icons (runtime set)
+  -- 1) 活动图标（运行时集）
   if live then
     for key, data in pairs(live) do
-      -- Defensive: skip and clean up any corrupted entries so they
-      -- can't break the evaluation loop.
+      -- 防御性：跳过并清理任何损坏的条目，以便它们
+      -- 不会破坏评估循环。
       if type(data) ~= "table" then
         live[key] = nil
       elseif data.type then
         data.key = key
 
         if data.type == "Ability" or data.type == "Item" then
-          local show, glow, grey
+          local show, glow, grey, fade, fadeAlpha
           if data.type == "Ability" then
-            show, glow, grey = CheckAbilityConditions(data)
+            show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
           else
-            show, glow, grey = CheckItemConditions(data)
+            show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
           end
-          DoiteConditions:ApplyVisuals(key, show, glow, grey)
+          DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
 
         elseif data.type == "Buff" or data.type == "Debuff" then
-          local show, glow, grey = CheckAuraConditions(data)
-          DoiteConditions:ApplyVisuals(key, show, glow, grey)
+          local show, glow, grey, fade, fadeAlpha = CheckAuraConditions(data)
+          DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
         end
       end
     end
   end
 
-  -- 2) Any extra editor-only icons (keys not in live)
+  -- 2) 任何额外的仅编辑器图标（不在 live 中的键）
   if edit then
     for key, data in pairs(edit) do
       if (not live) or (not live[key]) then
@@ -6107,17 +6449,17 @@ function DoiteConditions:EvaluateAll()
           data.key = key
 
           if data.type == "Ability" or data.type == "Item" then
-            local show, glow, grey
+            local show, glow, grey, fade, fadeAlpha
             if data.type == "Ability" then
-              show, glow, grey = CheckAbilityConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
             else
-              show, glow, grey = CheckItemConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
             end
-            DoiteConditions:ApplyVisuals(key, show, glow, grey)
+            DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
 
           elseif data.type == "Buff" or data.type == "Debuff" then
-            local show, glow, grey = CheckAuraConditions(data)
-            DoiteConditions:ApplyVisuals(key, show, glow, grey)
+            local show, glow, grey, fade, fadeAlpha = CheckAuraConditions(data)
+            DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
           end
         end
       end
@@ -6125,9 +6467,9 @@ function DoiteConditions:EvaluateAll()
   end
 end
 
--- Centralized overlay updater: remaining-time text + stacks.
--- Used by both ApplyVisuals (logic passes) and the light timer ticker.
--- Cache small integer -> string to avoid repeated tostring() churn (stacks/items)
+-- 集中式覆盖更新器：剩余时间文本 + 层数。
+-- 由 ApplyVisuals（逻辑传递）和轻量计时器滴答器使用。
+-- 缓存小整数 -> 字符串以避免重复的 tostring() 搅动（层数/物品）
 local _DA_NumStrCache = {}
 local function _DA_NumToStr(n)
   if not n then
@@ -6141,26 +6483,73 @@ local function _DA_NumToStr(n)
   return s
 end
 
+
+local function _SetTextureVertexAlpha(tex, alpha)
+  if not tex or not tex.SetVertexColor then
+    return
+  end
+  local r, g, b = 1, 1, 1
+  if tex.GetVertexColor then
+    local tr, tg, tb = tex:GetVertexColor()
+    if tr then r = tr end
+    if tg then g = tg end
+    if tb then b = tb end
+  end
+  tex:SetVertexColor(r, g, b, alpha)
+end
+
+local function _ApplyFadeAlphaToBackdrop(frame, alpha)
+  if not frame or not frame.backdrop then
+    return
+  end
+
+  local bd = frame.backdrop
+
+  -- pfUI 背景通常是父级为 frame.backdrop 的纹理区域。
+  if bd.GetRegions then
+    local regions = { bd:GetRegions() }
+    local i, reg
+    for i, reg in ipairs(regions) do
+      if reg and reg.SetVertexColor then
+        _SetTextureVertexAlpha(reg, alpha)
+      end
+    end
+  end
+
+  -- 防御性：一些背景公开直接纹理句柄。
+  _SetTextureVertexAlpha(bd.bg, alpha)
+  _SetTextureVertexAlpha(bd.border, alpha)
+  _SetTextureVertexAlpha(bd.backdrop, alpha)
+  _SetTextureVertexAlpha(bd.Top, alpha)
+  _SetTextureVertexAlpha(bd.Bottom, alpha)
+  _SetTextureVertexAlpha(bd.Left, alpha)
+  _SetTextureVertexAlpha(bd.Right, alpha)
+  _SetTextureVertexAlpha(bd.top, alpha)
+  _SetTextureVertexAlpha(bd.bottom, alpha)
+  _SetTextureVertexAlpha(bd.left, alpha)
+  _SetTextureVertexAlpha(bd.right, alpha)
+end
+
 local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
   if not frame or not dataTbl then
     return
   end
 
-  -- Ensure a dedicated top layer so text always renders above any glow frames
+  -- 确保一个专用的顶层，以便文本始终在任何发光框架之上渲染
   if not frame._daTextLayer then
     local tl = CreateFrame("Frame", nil, frame)
     frame._daTextLayer = tl
     tl:SetAllPoints(frame)
   end
 
-  -- Keep this child well above siblings (incl. typical glow frames)
+  -- 保持此子框架远高于兄弟框架（包括典型的发光框架）
   do
     local baseLevel = frame:GetFrameLevel() or 0
     frame._daTextLayer:SetFrameStrata(frame:GetFrameStrata() or "MEDIUM")
     frame._daTextLayer:SetFrameLevel(baseLevel + 50)
   end
 
-  -- Lazy-create fontstrings parented to the text layer
+  -- 懒创建父级到文本层的字体字符串
   if not frame._daTextRem then
     local fs = frame._daTextLayer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     fs:SetJustifyH("CENTER")
@@ -6175,7 +6564,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
     frame._daLastTextSize = 0
   end
 
-  -- Only resize if changed
+  -- 仅在更改时调整大小
   local w = frame:GetWidth() or 36
   local last = frame._daLastTextSize or 0
   if math.abs(w - last) >= 1 then
@@ -6188,38 +6577,38 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
     frame._daTextStacks:SetFont(GameFontNormalSmall:GetFont(), stackSize, "OUTLINE")
   end
 
-  -- Anchor (relative to the icon frame; parented to _daTextLayer)
+  -- 锚点（相对于图标框架；父级为 _daTextLayer）
   frame._daTextRem:ClearAllPoints()
   frame._daTextRem:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
   frame._daTextStacks:ClearAllPoints()
   frame._daTextStacks:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2)
 
-  -- Defaults hidden (avoid redundant SetText allocations)
+  -- 默认隐藏（避免冗余的 SetText 分配）
   frame._daTextRem:Hide()
   frame._daTextStacks:Hide()
 
-  -- Reset per-evaluation sort remaining time (used by group "time" mode)
+  -- 重置每次评估的排序剩余时间（由组“时间”模式使用）
   frame._daSortRem = nil
 
-  -- ========== Remaining Time ==========
+  -- ========== 剩余时间 ==========
   local wantRem = false
   local remText = nil
   local itemState = nil
 
-  -- Decide if show time text for abilities
+  -- 决定是否显示技能的时间文本
   local function _ShowAbilityTime(ca, rem, dur, slide)
     if not rem or rem <= 0 then
       return false
     end
     dur = dur or 0
 
-    -- 1) ON COOLDOWN: always show for the entire real cooldown.
-    if ca.mode == "oncd" then
-      return (dur > 0)
+    -- 1) 在冷却中：仅显示真正的冷却（忽略纯公共冷却的短时闪烁）。
+    if ca.mode == "oncd" or ca.mode == "usableoncd" or ca.mode == "nocdoncd" then
+      return (dur > 1.6)
     end
 
-    -- 2) USABLE / NOTCD with slider: slide can override the 1.6s/GCD filter
+    -- 2) 可用 / 不在冷却中 带有滑块：幻灯片可以覆盖 1.6 秒/GCD 过滤器
     if (ca.mode == "usable" or ca.mode == "notcd") and ca.slider == true then
       if slide then
         return true
@@ -6228,14 +6617,14 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       return rem <= maxWindow and (dur > 1.6)
     end
 
-    -- Default (paranoid): late window + real cooldown
+    -- 默认（偏执）：延迟窗口 + 真正冷却
     local maxWindow = math.min(3.0, (dur or 0) * 0.6)
     return (dur > 1.6) and (rem <= maxWindow)
   end
 
     if dataTbl then
     ----------------------------------------------------------------
-    -- Ability remaining-time text
+    -- 技能剩余时间文本
     ----------------------------------------------------------------
     if dataTbl.type == "Ability"
         and dataTbl.conditions
@@ -6247,7 +6636,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       local remCD, durCD = _AbilityCooldownByName(spellName)
       local remShown, durShown = nil, nil
 
-      -- 1) Normal cooldown remaining text (ONLY when user enabled it)
+      -- 1) 正常冷却剩余文本（仅当用户启用时）
       if ca.textTimeRemaining == true then
         if remCD and remCD > 0 and _ShowAbilityTime(ca, remCD, durCD, slideActive) then
           remShown = remCD
@@ -6255,7 +6644,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
         end
       end
 
-      -- 2) Proc-window remaining text (ONLY for mode == "usable")
+      -- 2) 触发窗口剩余文本（仅用于 mode == “usable”）
       if (not remShown) and spellName and (ca.mode == "usable") then
         local procDur = _ProcWindowDuration(spellName)
         if procDur then
@@ -6281,7 +6670,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       end
 
       ----------------------------------------------------------------
-      -- Item remaining-time text
+      -- 物品剩余时间文本
       ----------------------------------------------------------------
     elseif (dataTbl.type == "Item")
         and dataTbl.conditions
@@ -6301,13 +6690,13 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
         end
 
         if not wantRem then
-        -- Reuse this later for stack counter too
+        -- 稍后为堆叠计数器重用此
         itemState = _EvaluateItemCoreState(dataTbl, ci)
 
-        -- Special case: equipped weapon slots + mode=notcd/both => show temp enchant remaining time
+        -- 特殊情况：已装备的武器槽位 + mode=notcd/both => 显示临时附魔剩余时间
         if (ci.mode == "notcd" or ci.mode == "both")
-            and (dataTbl.displayName == "---已装备的武器栏位---")
-            and (ci.inventorySlot == "MAINHAND" or ci.inventorySlot == "OFFHAND" or ci.inventorySlot == "RANGED") then
+            and (dataTbl.displayName == "---EQUIPPED WEAPON SLOTS---")
+            and (ci.inventorySlot == "MAINHAND" or ci.inventorySlot == "OFFHAND") then
 
           local remTE = itemState and itemState.teRem or 0
           if remTE and remTE > 0 then
@@ -6320,7 +6709,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
           local remItem = itemState and itemState.rem or nil
           local durItem = itemState and itemState.dur or 0
 
-          -- Ignore ultra-short junk cooldowns; only show real cooldowns
+          -- 忽略超短的垃圾冷却时间；仅显示真正的冷却时间
           if remItem and remItem > 0 and durItem and durItem > 1.5 then
             remText = _FmtRem(remItem)
             wantRem = (remText ~= nil)
@@ -6331,7 +6720,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       end
 
       ----------------------------------------------------------------
-      -- Aura remaining-time text
+      -- 光环剩余时间文本
       ----------------------------------------------------------------
     elseif (dataTbl.type == "Buff" or dataTbl.type == "Debuff")
         and dataTbl.conditions
@@ -6349,7 +6738,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
         local allowHarm = (ca.targetHarm == true)
         local allowSelf = (ca.targetSelf == true)
 
-        -- If none selected, default to Self (matches CheckAuraConditions)
+        -- 如果未选择任何标志，默认为自身（匹配 CheckAuraConditions）
         if (not allowHelp) and (not allowHarm) and (not allowSelf) then
           allowSelf = true
         end
@@ -6369,11 +6758,13 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
 
         local remAura = nil
 
-        if targetSelf then
-          -- PLAYER/SELF remaining-time text must reflect the actual visible aura time (vanilla/tooltip scan), never DoiteTrack. Ownership filtering (onlyMine/onlyOthers) belongs in the condition logic.
+        if ca.trackpet == true and DoitePetAuras and DoitePetAuras.GetAuraRemainingSeconds then
+          remAura = DoitePetAuras.GetAuraRemainingSeconds(auraName, auraSpellId, useSpellIdOnly)
+        elseif targetSelf then
+          -- 玩家/自身剩余时间文本必须反映实际可见的光环时间（原始/工具提示扫描），永远不要 DoiteTrack。所有权过滤（onlyMine/onlyOthers）属于条件逻辑。
           remAura = _PlayerAuraRemainingSeconds(auraName, auraSpellId, useSpellIdOnly)
         else
-          -- Target remaining time relies on DoiteTrack (vanilla target auras don't expose durations).
+          -- 目标剩余时间依赖于 DoiteTrack（原始目标光环不暴露持续时间）。
           remAura = _DoiteTrackAuraRemainingSeconds(useSpellIdOnly and auraSpellId or auraName, "target", useSpellIdOnly)
         end
 
@@ -6385,7 +6776,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       end
 
       ----------------------------------------------------------------
-      -- Custom remaining-time text
+      -- 自定义剩余时间文本
       ----------------------------------------------------------------
     elseif dataTbl.type == "Custom" then
       local remCustom = tonumber(dataTbl._daCustomRemaining)
@@ -6406,7 +6797,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
     frame._daTextRem:Show()
   end
 
-  -- ========== Stack Counter (auras only) ==========
+  -- ========== 堆叠计数器（仅光环） ==========
   if dataTbl
       and (dataTbl.type == "Buff" or dataTbl.type == "Debuff")
       and dataTbl.conditions
@@ -6420,13 +6811,13 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       local wantDebuff = (dataTbl.type == "Debuff")
       auraName, auraSpellId, useSpellIdOnly = _ResolvePlayerAuraTextOverride(ca.stackOverride, auraName, auraSpellId, useSpellIdOnly)
 
-      -- Resolve which unit to read stacks from (same semantics as CheckAuraConditions)
+      -- 解析从哪个单位读取层数（与 CheckAuraConditions 相同的语义）
       local unitToCheck = nil
       local allowHelp = (ca.targetHelp == true)
       local allowHarm = (ca.targetHarm == true)
       local allowSelf = (ca.targetSelf == true)
 
-      -- If nothing selected, default to Self
+      -- 如果未选择任何标志，默认为自身
       if (not allowHelp) and (not allowHarm) and (not allowSelf) then
         allowSelf = true
       end
@@ -6434,19 +6825,22 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       if allowSelf then
         unitToCheck = "player"
       elseif (allowHelp or allowHarm) then
-        -- Cache target facts once
+        -- 缓存目标事实一次
         local tf = _DA_GetTargetFacts()
         if tf.exists then
-          -- Help: friendly targets including self
+          -- 帮助：友善目标包括自身
           if allowHelp and tf.isFriend then
             unitToCheck = "target"
-            -- Harm: hostile, non-friendly targets
+            -- 伤害：敌对，非友善目标
           elseif allowHarm and tf.canAttack and (not tf.isFriend) then
             unitToCheck = "target"
           end
         end
       end
 
+      if ca.trackpet == true then
+        unitToCheck = "pet"
+      end
       if unitToCheck then
         local cnt = _GetAuraStacksOnUnit(unitToCheck, auraName, wantDebuff, auraSpellId, useSpellIdOnly)
         if cnt and cnt >= 1 then
@@ -6456,7 +6850,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
             frame._daTextStacks:SetText(s)
             frame._daTextStacks:SetTextColor(1, 1, 1, 1)
           end
-          -- Use larger size if showing stacks but not rem
+          -- 如果显示层数但不显示剩余，则使用更大的尺寸
           local sizeToUse = (not wantRem and frame._daRemSize) or frame._daStackSize
           if sizeToUse and sizeToUse ~= frame._daCurrentStackFontSize then
             frame._daCurrentStackFontSize = sizeToUse
@@ -6467,7 +6861,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
       end
     end
   end
-  -- ========== Stack Counter (custom) ==========
+  -- ========== 堆叠计数器（自定义） ==========
   if dataTbl and dataTbl.type == "Custom" then
     local cnt = tonumber(dataTbl._daCustomStacks)
     if cnt then
@@ -6487,7 +6881,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
     end
   end
 
-  -- ========== Stack Counter (items: total amount) ==========
+  -- ========== 堆叠计数器（物品：总量） ==========
   if dataTbl
       and dataTbl.type == "Item"
       and dataTbl.conditions
@@ -6495,7 +6889,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
 
     local ci = dataTbl.conditions.item
     if ci.textStackCounter == true then
-      -- Reuse any state already computed in the Item branch above
+      -- 重用上面物品分支中已计算的任何状态
       local state = itemState
       if not state then
         state = _EvaluateItemCoreState(dataTbl, ci)
@@ -6503,9 +6897,9 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
 
       local cnt = state and state.effectiveCount or nil
 
-      -- Special case: equipped weapon slots show temp enchant charges (including 0)
-      if (dataTbl.displayName == "---已装备的武器栏位---")
-          and (ci.inventorySlot == "MAINHAND" or ci.inventorySlot == "OFFHAND" or ci.inventorySlot == "RANGED") then
+      -- 特殊情况：已装备的武器槽位显示临时附魔充能（包括 0）
+      if (dataTbl.displayName == "---EQUIPPED WEAPON SLOTS---")
+          and (ci.inventorySlot == "MAINHAND" or ci.inventorySlot == "OFFHAND") then
 
         if not cnt then
           cnt = 0
@@ -6520,7 +6914,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
           frame._daTextStacks:SetText(s)
           frame._daTextStacks:SetTextColor(1, 1, 1, 1)
         end
-        -- Use larger size if showing stacks but not rem
+        -- 如果显示层数但不显示剩余，则使用更大的尺寸
         local sizeToUse = (not wantRem and frame._daRemSize) or frame._daStackSize
         if sizeToUse and sizeToUse ~= frame._daCurrentStackFontSize then
           frame._daCurrentStackFontSize = sizeToUse
@@ -6535,7 +6929,7 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
           frame._daTextStacks:SetText(s)
           frame._daTextStacks:SetTextColor(1, 1, 1, 1)
         end
-        -- Use larger size if showing stacks but not rem
+        -- 如果显示层数但不显示剩余，则使用更大的尺寸
         local sizeToUse = (not wantRem and frame._daRemSize) or frame._daStackSize
         if sizeToUse and sizeToUse ~= frame._daCurrentStackFontSize then
           frame._daCurrentStackFontSize = sizeToUse
@@ -6547,9 +6941,9 @@ local function _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
   end
 end
 
--- Ability cooldown slider helper (reduces upvalues in ApplyVisuals)
+-- 技能冷却滑块辅助函数（减少 ApplyVisuals 中的上值）
 local function _HandleAbilitySlider(key, ca, dataTbl, sliderGuardOk)
-  -- Only for Ability icons in usable/notcd mode with slider enabled
+  -- 仅适用于处于 usable/notcd 模式且启用了滑块的技能图标
   if not (key and ca and dataTbl) then
     if SlideMgr.active and SlideMgr.active[key] then
       SlideMgr:Stop(key)
@@ -6558,7 +6952,7 @@ local function _HandleAbilitySlider(key, ca, dataTbl, sliderGuardOk)
   end
 
   if not (ca.slider and (ca.mode == "usable" or ca.mode == "notcd")) then
-    -- Slider disabled for this icon: make sure it's stopped
+    -- 此图标禁用滑块：确保它已停止
     local had = SlideMgr.active and SlideMgr.active[key]
     if had then
       SlideMgr:Stop(key)
@@ -6568,7 +6962,7 @@ local function _HandleAbilitySlider(key, ca, dataTbl, sliderGuardOk)
     return false, false, false, 0, 0, 1
   end
 
-  -- Slider guard (form / weaponFilter / auraConditions) computed in CheckAbilityConditions
+  -- 滑块门控（形态/武器过滤器/光环条件）在 CheckAbilityConditions 中计算
   if sliderGuardOk == false then
     local had = SlideMgr.active and SlideMgr.active[key]
     if had then
@@ -6584,35 +6978,35 @@ local function _HandleAbilitySlider(key, ca, dataTbl, sliderGuardOk)
   local wasSliding = SlideMgr.active and SlideMgr.active[key]
   local maxWindow = math.min(3.0, (dur or 0) * 0.6)
 
-  -- Last time *this* spell was actually seen cast (SPELL_GO_SELF -> _MarkSliderSeen)
+  -- 上次看到 *此* 法术实际施放的时间（SPELL_GO_SELF -> _MarkSliderSeen）
   local lastSeen = spellName and Doite_SliderSeen and Doite_SliderSeen[spellName] or nil
 
   local hasSeenForThisCD = false
 
-  -- With SPELL_GO_SELF, only show sliders for cooldowns that began at (or immediately after) an observed cast of THIS spell.
+  -- 使用 SPELL_GO_SELF，仅对在观察到此法术的施放时开始的冷却显示滑块。
   if lastSeen and rem and dur and dur > 0 then
     local now = GetTime()
-    -- reconstruct approximate cooldown start from (now, rem, dur)
+    -- 根据 (now, rem, dur) 重建近似的冷却开始时间
     local start = now + rem - dur
-    -- allow a small epsilon for event timing / rounding
+    -- 为事件计时/舍入留出小 epsilon
     if lastSeen + 0.35 >= start then
       hasSeenForThisCD = true
     end
   end
 
 
-  -- Start only when this cooldown really belongs to this spell, but allow short CDs (GCD-only) as long as they're from this spell.
+  -- 仅当此冷却确实属于此法术时才启动，但允许短 CD（仅公共冷却）只要它们来自此法术。
   local shouldStart = hasSeenForThisCD and rem and dur and rem > 0 and rem <= maxWindow
 
-  -- Once sliding, ONLY keep the slide alive while within the slide window.
+  -- 一旦滑动，仅在幻灯片窗口内保持幻灯片活动。
   local contLimit = maxWindow
 
-  -- If maxWindow is very small (short CDs / GCD-ish), allow up to GCD range - don't kill the slide on tiny bumps.
+  -- 如果 maxWindow 非常小（短 CD / GCD 类似），允许高达 GCD 范围 - 不要在小跳动时杀死幻灯片。
   if contLimit < 1.60 then
     contLimit = 1.60
   end
 
-  -- Small sampling jitter allowance.
+  -- 小采样抖动余量。
   contLimit = contLimit + 0.15
 
   local shouldContinue = wasSliding and rem and rem > 0 and rem <= contLimit
@@ -6651,12 +7045,12 @@ local function _HandleAbilitySlider(key, ca, dataTbl, sliderGuardOk)
 end
 
 ---------------------------------------------------------------
--- Apply visuals to icons
+-- 对图标应用视觉效果
 ---------------------------------------------------------------
-function DoiteConditions:ApplyVisuals(key, show, glow, grey)
+function DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
   local frame = _GetIconFrame(key)
   if not frame then
-    -- If icons rebuilt, forget any stale cached ref for this key and retry.
+    -- 如果图标重建，忘记此键的任何陈旧缓存引用并重试。
     _ForgetIconFrame(key)
     if DoiteAuras_RefreshIcons then
       DoiteAuras_RefreshIcons()
@@ -6670,7 +7064,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
   local dataTbl = (DoiteDB and DoiteDB.icons and DoiteDB.icons[key])
       or (DoiteAurasDB and DoiteAurasDB.spells and DoiteAurasDB.spells[key])
 
-  -- Compute editing FIRST (needed by proc-window guard + texture preload)
+  -- 首先计算编辑状态（需要用于触发窗口保护 + 纹理预加载）
   local editing = _IsKeyUnderEdit(key)
 
   if (not editing) and dataTbl and dataTbl.type == "Ability"
@@ -6701,7 +7095,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
     if frame.icon and not frame.icon:GetTexture() and dataTbl and (dataTbl.displayName or dataTbl.name) then
       local nameKey = dataTbl.displayName or dataTbl.name
 
-      -- Prefer per-entry stored texture, then cache, then fallback.
+      -- 优先使用每个条目存储的纹理，然后缓存，然后回退。
       local tex = nil
       if dataTbl.iconTexture and dataTbl.iconTexture ~= "" then
         tex = dataTbl.iconTexture
@@ -6728,7 +7122,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
         if frame.icon then
           frame.icon:SetTexture(tex)
         end
-        -- Hide or restore the backdrop (pfUI border / background)
+        -- 隐藏或恢复背景（pfUI 边框/背景）
         local wantHideBG = (dataTbl._daCustomHideBG == true)
         if wantHideBG then
           if frame.backdrop and frame.backdrop.Hide then
@@ -6747,7 +7141,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
   end
 
   ------------------------------------------------------------
-  -- Slider (driven by SlideMgr; ignores GCD; super smooth)
+  -- 滑块（由 SlideMgr 驱动；忽略 GCD；超级平滑）
   ------------------------------------------------------------
   local slideActive, dx, dy, slideAlpha = false, 0, 0, 1
 
@@ -6758,10 +7152,10 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
     local ca = dataTbl.conditions.ability
     local startedSlide, stoppedSlide
 
-    -- Lightweight wrapper: heavy logic lives in _HandleAbilitySlider
+    -- 轻量级包装器：繁重逻辑位于 _HandleAbilitySlider
     startedSlide, stoppedSlide, slideActive, dx, dy, slideAlpha = _HandleAbilitySlider(key, ca, dataTbl, dataTbl._daSliderGuard)
 
-    -- === immediate group reflow on slide start/stop ===
+    -- === 滑块开始/停止时立即组重排 ===
     if (startedSlide or stoppedSlide) and DoiteGroup and DoiteGroup.ApplyGroupLayout then
       if type(DoiteAuras) == "table"
           and type(DoiteAuras.GetAllCandidates) == "function" then
@@ -6769,19 +7163,19 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
       end
     end
   else
-    -- Non-ability icons never slide
+    -- 非技能图标从不滑动
     if SlideMgr.active and SlideMgr.active[key] then
       SlideMgr:Stop(key)
     end
   end
 
-  -- Pull the current slide offset/alpha (if sliding)
+  -- 拉取当前幻灯片偏移/alpha（如果正在滑动）
   local allowSlideShow = false
   do
 
 
-    -- ==== Effective flags with OLD-behavior defaults ====
-    -- 1) Always allow showing during slide (preview), like OLD code.
+    -- ==== 具有旧行为默认值的有效标志 ====
+    -- 1) 与旧代码一样，始终允许在幻灯片期间显示（预览）。
     allowSlideShow = false
     if slideActive and dataTbl and dataTbl.conditions and dataTbl.conditions.ability then
       local ca = dataTbl.conditions.ability
@@ -6790,7 +7184,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
       end
     end
 
-    -- 2) Default suppression during slide UNLESS slider is explicitly enabled.
+    -- 2) 除非明确启用滑块，否则在幻灯片期间默认抑制。
     local isSliderEnabled = false
     local sliderGlowFlag = false
     local sliderGreyFlag = false
@@ -6818,23 +7212,25 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
       useGrey = (grey == true)
     end
 
-    -- Flags for other systems / change detector
+    -- 用于其他系统/更改检测器的标志
     frame._daSliding = slideActive and true or false
     frame._daShouldShow = ((show == true) or editing) and true or false
     frame._daUseGlow = useGlow and true or false
     frame._daUseGlow = useGlow and true or false
     frame._daUseGreyscale = useGrey and true or false
-    -- Sync with DoiteAuras.lua expectation
+    frame._daUseFade = (fade == true) and true or false
+    frame._daFadeAlpha = _ClampFadeAlpha(fadeAlpha)
+    -- 与 DoiteAuras.lua 期望同步
     frame._daGreyscale = frame._daUseGreyscale
   end
 
-  -- Determine baseline anchoring
+  -- 确定基线锚点
   local baseX, baseY = 0, 0
   if _GetBaseXY and dataTbl then
     baseX, baseY = _GetBaseXY(key, dataTbl)
   end
 
-  -- If this icon belongs to a group, prefer the latest computed position (for leaders AND followers)
+  -- 如果此图标属于一个组，则优先使用最新计算的位置（对于组长和追随者）
   local isGrouped = (dataTbl and dataTbl.group and dataTbl.group ~= "" and dataTbl.group ~= "no")
   local hasGroupPos = false
   if isGrouped and _G["DoiteGroup_Computed"] and _G["DoiteGroup_Computed"][dataTbl.group] then
@@ -6855,70 +7251,70 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
     SlideMgr:UpdateBase(key, baseX, baseY)
   end
 
-  -- Show during slide preview even if main conditions would hide
+  -- 即使在主要条件会隐藏的情况下，也在幻灯片预览期间显示
   local showForSlide = (show or allowSlideShow)
 
-  -- If this is the key currently being edited, force it visible regardless of conditions/group caps
+  -- 如果这是当前正在编辑的键，则无论条件/组限制如何，都强制其可见
   if editing then
     showForSlide = true
   end
 
-  -- Group capacity may block this icon unless editing this very key
+  -- 组容量可能阻止此图标，除非正在编辑此键
   if frame._daBlockedByGroup and (not editing) then
     showForSlide = false
   end
 
-  -- Apply position and alpha (no stutter: set exact coordinates each paint)
+  -- 应用位置和 alpha（无抖动：每次绘制设置确切坐标）
   do
     local isGrouped = (dataTbl and dataTbl.group and dataTbl.group ~= "" and dataTbl.group ~= "no")
     local isLeader = (dataTbl and dataTbl.isLeader == true)
 
-    -- Apply position and alpha (no stutter:set exact coordinates each paint)
+    -- 应用位置和 alpha（无抖动：每次绘制设置确切坐标）
     do
-      -- Do not force position if user is dragging this frame
+      -- 如果用户正在拖动此框架，则不强制位置
       if not frame._daDragging then
-          -- When sliding: apply transient movement to everyone (leaders + followers)
+          -- 滑动时：对所有人应用瞬态移动（组长 + 追随者）
           if slideActive then
             frame:ClearAllPoints()
             frame:SetPoint("CENTER", UIParent, "CENTER", baseX + dx, baseY + dy)
             frame:SetAlpha(slideAlpha)
           else
-            -- When not sliding: do NOT force followers' points here.
+            -- 不滑动时：不要在此处强制追随者的点。
             if not (isGrouped and not isLeader) then
               frame:ClearAllPoints()
               frame:SetPoint("CENTER", UIParent, "CENTER", baseX, baseY)
               frame:SetAlpha((dataTbl and dataTbl.alpha) or 1)
             else
-              -- Followers:
-              -- Only re-anchor having a computed group position for this key.
+              -- 追随者：
+              -- 仅当为此键计算了组位置时才重新锚定。
               if hasGroupPos then
                 frame:ClearAllPoints()
                 frame:SetPoint("CENTER", UIParent, "CENTER", baseX, baseY)
               end
-              -- If !hasGroupPos: do not touch points this tick; avoid snapping back to original x/y.
+              -- 如果 !hasGroupPos：此滴答不触摸点；避免回弹到原始 x/y。
               frame:SetAlpha((dataTbl and dataTbl.alpha) or 1)
             end
           end
       end
     end
-    -- === Overlay Text: cooldown remaining + stacks (forced above glow) ===
+    -- === 覆盖文本：冷却剩余 + 层数（强制在发光之上） ===
     _Doite_UpdateOverlayForFrame(frame, key, dataTbl, slideActive)
   end
 
-  -- === Apply EFFECTS with change detection (don’t restart animations every frame) ===
+  -- === 应用效果与更改检测（不要每帧重新启动动画） ===
   do
-    -- Decide final show flag (editing & group gating preserved)
+    -- 决定最终显示标志（编辑和组门控保留）
     local showForSlide = (show or allowSlideShow)
     if editing then
       showForSlide = true
     end
 
-    -- Never suppress the edited icon because of group capacity while editing
+    -- 编辑时永远不要因为组容量而抑制编辑的图标
     if frame._daBlockedByGroup and (not editing) then
       showForSlide = false
     end
 
-    -- Apply visibility only on change
+    -- 仅在更改时应用可见性
     if frame._daLastShown ~= showForSlide then
       frame._daLastShown = showForSlide
       if showForSlide then
@@ -6932,7 +7328,23 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
       end
     end
 
-    -- GREYSCALE — only flip when it changes
+    -- 淡出（通过 SetVertexColor alpha 路径用于图标 + 边框/背景）
+    do
+      local wantFade = (frame._daUseFade == true) and showForSlide
+      local wantedAlpha = 1
+      if wantFade then
+        wantedAlpha = 1 - (frame._daFadeAlpha or 0)
+        if wantedAlpha < 0 then wantedAlpha = 0 end
+        if wantedAlpha > 1 then wantedAlpha = 1 end
+      end
+      if frame._daLastFadeAlpha ~= wantedAlpha then
+        frame._daLastFadeAlpha = wantedAlpha
+        _SetTextureVertexAlpha(frame.icon, wantedAlpha)
+        _ApplyFadeAlphaToBackdrop(frame, wantedAlpha)
+      end
+    end
+
+    -- 灰度 — 仅在更改时翻转
     if frame.icon then
       local wantGrey = (frame._daGreyscale == true) and showForSlide
       if frame._daLastGrey ~= wantGrey then
@@ -6943,13 +7355,13 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
           frame.icon:SetDesaturated(nil)
         end
         
-        -- Fix: Update clickability for Items when grey state changes
-        -- REMOVED: DoiteAuras.lua handles all clickability/mouse-enable logic centrally now.
-        -- We no longer disable mouse just because an item is grey/cooldown.
+        -- 修复：当灰色状态更改时更新物品的可点击性
+        -- 已移除：DoiteAuras.lua 现在集中处理所有可点击性/鼠标启用逻辑。
+        -- 我们不再仅仅因为物品为灰色/冷却而禁用鼠标。
       end
     end
 
-    -- GLOW — only start/stop when it changes (preserve animation)
+    -- 发光 — 仅在更改时开始/停止（保留动画）
     if DG then
       local wantGlow = (frame._daUseGlow == true) and showForSlide
       if frame._daLastGlow ~= wantGlow then
@@ -6965,8 +7377,8 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
 
 
   ----------------------------------------------------------------
-  -- Reflow groups when this icon’s logical visibility flips.
-  -- This covers Buff/Debuff-only groups (no abilities involved).
+  -- 当此图标的逻辑可见性翻转时重排组。
+  -- 这涵盖了仅光环组（不涉及技能）。
   ----------------------------------------------------------------
   if DoiteGroup and DoiteGroup.ApplyGroupLayout then
     if frame._lastShowState ~= show then
@@ -6979,7 +7391,7 @@ function DoiteConditions:ApplyVisuals(key, show, glow, grey)
 end
 
 function DoiteConditions_RequestEvaluate()
-  -- Re-scan icons if anyone still needs the time heartbeat
+  -- 如果有人仍然需要时间心跳，重新扫描图标
   if _RebuildAbilityTimeHeartbeatFlag then
     _RebuildAbilityTimeHeartbeatFlag()
   end
@@ -6997,7 +7409,7 @@ end
 
 function DoiteConditions:EvaluateAbilities(doLogic, doTime)
   local editingAny = _IsAnyKeyUnderEdit()
-  -- Default behaviour (no args): full logic + time, as before.
+  -- 默认行为（无参数）：完整逻辑 + 时间，与之前一样。
   if doLogic == nil and doTime == nil then
     doLogic, doTime = true, true
   else
@@ -7017,9 +7429,9 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
 
   local key, data
 
-  -- Fast path: time-heartbeat only (avoid scanning every icon each 0.5s)
+  -- 快速路径：仅时间心跳（避免每 0.5 秒扫描每个图标）
   if doLogic == false and doTime == true then
-    -- 1) Live keys that actually have time logic
+    -- 1) 实际有时间逻辑的活动键
     if live then
       local keys = _timeKeysAbilityItem_live
       if keys then
@@ -7029,20 +7441,20 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
           data = key and live[key]
           if data and (data.type == "Ability" or data.type == "Item") then
             data.key = key
-            local show, glow, grey
+            local show, glow, grey, fade, fadeAlpha
             if data.type == "Ability" then
-              show, glow, grey = CheckAbilityConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
             else
-              show, glow, grey = CheckItemConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
             end
-            DoiteConditions:ApplyVisuals(key, show, glow, grey)
+            DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
           end
           i = i + 1
         end
       end
     end
 
-    -- 2) Editor keys (skip any that exist in live, same as original)
+    -- 2) 编辑器键（跳过任何存在于 live 中的键，与原始相同）
     if edit then
       local keys = _timeKeysAbilityItem_edit
       if keys then
@@ -7053,13 +7465,13 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
             data = edit[key]
             if data and (data.type == "Ability" or data.type == "Item") then
               data.key = key
-              local show, glow, grey
+              local show, glow, grey, fade, fadeAlpha
               if data.type == "Ability" then
-                show, glow, grey = CheckAbilityConditions(data)
+                show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
               else
-                show, glow, grey = CheckItemConditions(data)
+                show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
               end
-              DoiteConditions:ApplyVisuals(key, show, glow, grey)
+              DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
             end
           end
           i = i + 1
@@ -7070,11 +7482,11 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
     return
   end
 
-  -- 1) Live icons (runtime set)
+  -- 1) 活动图标（运行时集）
   if live then
     for key, data in pairs(live) do
       if data and (data.type == "Ability" or data.type == "Item") then
-        -- Decide whether this icon should be touched in this pass
+        -- 决定此图标在此传递中是否应被触及
         local wantsTime = false
         if doTime then
           if data.type == "Ability" then
@@ -7089,19 +7501,19 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
 
         if wantsLogic or wantsTime then
           data.key = key
-          local show, glow, grey
+          local show, glow, grey, fade, fadeAlpha
           if data.type == "Ability" then
-            show, glow, grey = CheckAbilityConditions(data)
+            show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
           else
-            show, glow, grey = CheckItemConditions(data)
+            show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
           end
-          DoiteConditions:ApplyVisuals(key, show, glow, grey)
+          DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
         end
       end
     end
   end
 
-  -- 2) Any extra editor-only icons (keys not in live)
+  -- 2) 任何额外的仅编辑器图标（不在 live 中的键）
   if edit then
     for key, data in pairs(edit) do
       if (not live) or (not live[key]) then
@@ -7119,13 +7531,13 @@ function DoiteConditions:EvaluateAbilities(doLogic, doTime)
 
           if wantsLogic or wantsTime then
             data.key = key
-            local show, glow, grey
+            local show, glow, grey, fade, fadeAlpha
             if data.type == "Ability" then
-              show, glow, grey = CheckAbilityConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckAbilityConditions(data)
             else
-              show, glow, grey = CheckItemConditions(data)
+              show, glow, grey, fade, fadeAlpha = CheckItemConditions(data)
             end
-            DoiteConditions:ApplyVisuals(key, show, glow, grey)
+            DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
           end
         end
       end
@@ -7135,7 +7547,7 @@ end
 
 local function _DoiteCustomCompileForData(key, data)
   if type(data) ~= "table" then
-    return nil, "Invalid custom data entry."
+    return nil, "无效的自定义数据条目。"
   end
 
   local src = data.customFunctionSource
@@ -7159,7 +7571,7 @@ local function _DoiteCustomCompileForData(key, data)
     return nil, fn
   end
   if type(fn) ~= "function" then
-    return nil, "Compiled custom source is not callable."
+    return nil, "编译的自定义源不可调用。"
   end
 
   data._daCustomCompiled = fn
@@ -7180,7 +7592,7 @@ local function _DoiteCustomPrintOnce(data, key, prefix, msg)
 
   local cf = DEFAULT_CHAT_FRAME or ChatFrame1
   if cf and cf.AddMessage then
-    cf:AddMessage("|cffff4040DoiteAuras 自定义 [" .. tostring(key or "?") .. "] " .. tostring(prefix or "error") .. ":|r " .. tostring(msg))
+    cf:AddMessage("|cffff4040DoiteAuras 自定义 [" .. tostring(key or "?") .. "] " .. tostring(prefix or "错误") .. ":|r " .. tostring(msg))
   end
 end
 
@@ -7197,13 +7609,13 @@ local function _DoiteCustomEvaluateOne(key, data)
 
   local fn, compileErr = _DoiteCustomCompileForData(key, data)
   if not fn then
-    _DoiteCustomPrintOnce(data, key, "compile error", compileErr)
+    _DoiteCustomPrintOnce(data, key, "编译错误", compileErr)
     data._daCustomShow = false
     data._daCustomTexture = nil
     data._daCustomHideBG = false
     data._daCustomRemaining = nil
     data._daCustomStacks = nil
-    DoiteConditions:ApplyVisuals(key, false, false, false)
+    DoiteConditions:ApplyVisuals(key, false, false, false, false, 0)
     return true
   end
 
@@ -7215,13 +7627,13 @@ local function _DoiteCustomEvaluateOne(key, data)
 
   local ok, show, texture, hideBackground, remaining, stacks = pcall(fn, state)
   if not ok then
-    _DoiteCustomPrintOnce(data, key, "runtime error", show)
+    _DoiteCustomPrintOnce(data, key, "运行时错误", show)
     data._daCustomShow = false
     data._daCustomTexture = nil
     data._daCustomHideBG = false
     data._daCustomRemaining = nil
     data._daCustomStacks = nil
-    DoiteConditions:ApplyVisuals(key, false, false, false)
+    DoiteConditions:ApplyVisuals(key, false, false, false, false, 0)
     return true
   end
 
@@ -7232,7 +7644,7 @@ local function _DoiteCustomEvaluateOne(key, data)
   data._daCustomRemaining = (type(remaining) == "number") and remaining or nil
   data._daCustomStacks = (type(stacks) == "number") and stacks or nil
 
-  DoiteConditions:ApplyVisuals(key, data._daCustomShow, false, false)
+  DoiteConditions:ApplyVisuals(key, data._daCustomShow, false, false, false, 0)
   return true
 end
 
@@ -7283,7 +7695,7 @@ function DoiteConditions:EvaluateAuras()
 
   local key, data
 
-  -- 1) Live icons (runtime set)
+  -- 1) 活动图标（运行时集）
   if live then
     for key, data in pairs(live) do
       if type(data) ~= "table" then
@@ -7291,14 +7703,14 @@ function DoiteConditions:EvaluateAuras()
       elseif data.type == "Buff" or data.type == "Debuff" then
         data.key = key
 
-        local show, glow, grey = CheckAuraConditions(data)
-        DoiteConditions:ApplyVisuals(key, show, glow, grey)
+        local show, glow, grey, fade, fadeAlpha = CheckAuraConditions(data)
+        DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
       end
     end
   end
 
-  -- 2) Any extra editor-only icons (keys not in live)
-  --    Only bother when at least one key is under edit, same as before.
+  -- 2) 任何额外的仅编辑器图标（不在 live 中的键）
+  --    仅当至少有一个键正在编辑时才考虑，与之前相同。
   if edit and editingAny then
     for key, data in pairs(edit) do
       if (not live) or (not live[key]) then
@@ -7307,8 +7719,8 @@ function DoiteConditions:EvaluateAuras()
         elseif data.type == "Buff" or data.type == "Debuff" then
           data.key = key
 
-          local show, glow, grey = CheckAuraConditions(data)
-          DoiteConditions:ApplyVisuals(key, show, glow, grey)
+          local show, glow, grey, fade, fadeAlpha = CheckAuraConditions(data)
+          DoiteConditions:ApplyVisuals(key, show, glow, grey, fade, fadeAlpha)
         end
       end
     end
@@ -7316,7 +7728,7 @@ function DoiteConditions:EvaluateAuras()
 end
 
 
--- Small helper: keep warrior Overpower/Revenge proc windows in sync
+-- 小辅助函数：保持战士压制/复仇触发窗口同步
 local function _WarriorProcTick()
   if not _isWarrior then
     return
@@ -7340,8 +7752,8 @@ end
 
 _G.DoiteConditions_WarriorProcTick = _WarriorProcTick
 
--- Lightweight pass that ONLY refreshes remaining-time text / stacks.
--- No condition logic, no aura scanning – uses existing cached data.
+-- 轻量级传递，仅刷新剩余时间文本/层数。
+-- 无条件逻辑，无光环扫描 – 使用现有的缓存数据。
 function DoiteConditions_UpdateTimeText()
   local live = DoiteAurasDB and DoiteAurasDB.spells
   local edit = DoiteDB and DoiteDB.icons
@@ -7349,9 +7761,9 @@ function DoiteConditions_UpdateTimeText()
     return
   end
 
-  -- Runtime icons (live set)
+  -- 运行时图标（活动集）
   if live then
-    -- Ability/Item keys with time logic
+    -- 有时间逻辑的技能/物品键
     do
       local keys = _timeKeysAbilityItem_live
       local i, n = 1, table.getn(keys)
@@ -7373,7 +7785,7 @@ function DoiteConditions_UpdateTimeText()
       end
     end
 
-    -- Aura keys with time logic
+    -- 有时间逻辑的光环键
     do
       local keys = _timeKeysAura_live
       local i, n = 1, table.getn(keys)
@@ -7396,11 +7808,11 @@ function DoiteConditions_UpdateTimeText()
     end
   end
 
-  -- Editor-only icons (keys not in live)
+  -- 仅编辑器图标（不在 live 中的键）
   if edit then
     local skipKeys = live or {}
 
-    -- Ability/Item keys with time logic
+    -- 有时间逻辑的技能/物品键
     do
       local keys = _timeKeysAbilityItem_edit
       local i, n = 1, table.getn(keys)
@@ -7424,7 +7836,7 @@ function DoiteConditions_UpdateTimeText()
       end
     end
 
-    -- Aura keys with time logic
+    -- 有时间逻辑的光环键
     do
       local keys = _timeKeysAura_edit
       local i, n = 1, table.getn(keys)
@@ -7452,36 +7864,41 @@ end
 
 local _tick = CreateFrame("Frame", "DoiteConditionsTick")
 
--- Keep these as globals so the OnUpdate script doesn't capture them as upvalues
+-- 将这些保留为全局变量，以便 OnUpdate 脚本不会将它们捕获为上值
 _acc = 0
 _textAccum = 0
 _distAccum = 0
 _timeEvalAccum = 0
 
--- Weapon temp-enchant: start ticking ONLY when remaining <= 60s
+-- 武器临时附魔：仅在剩余时间 <= 60 秒时开始滴答
 _teFastAccum = 0
 _teProbeAccum = 0
 _teFastActive = false
 
--- Lift the body into a real function
+-- 将主体提升为真正的函数
 function DoiteConditions_OnUpdate(dt)
   _acc = _acc + dt
   _textAccum = _textAccum + dt
 
-  -- 0.5s heartbeat for ability/item time-based logic (cooldown end needs reevaluation).
-  -- Heartbeat for ability/item time-based logic (cooldown end needs reevaluation). When a temp weapon enchant is in its last 60s, refresh more frequently so enchant-based remaining/show/hide reacts on a tighter cadence. When a temp weapon enchant is in its last 60s, refresh more frequently so enchant-based remaining/show/hide reacts on a tighter cadence.
-  -- 0.5s heartbeat for ability/item time-based logic (cooldown end needs reevaluation).
+  -- 0.5 秒心跳用于技能/物品基于时间的逻辑（冷却结束需要重新评估）。
+  -- 心跳用于技能/物品基于时间的逻辑（冷却结束需要重新评估）。当武器临时附魔进入最后 60 秒时，更频繁地刷新，以便基于附魔的剩余/显示/隐藏响应更紧密的节奏。
+  -- 0.5 秒心跳用于技能/物品基于时间的逻辑（冷却结束需要重新评估）。
   _timeEvalAccum = _timeEvalAccum + dt
   if _timeEvalAccum >= 0.5 then
     _timeEvalAccum = 0
+
     if _hasAnyAbilityTimeLogic then
       dirty_ability_time = true
     end
+
+    if DoiteConditions and DoiteConditions._hasAnyItemLogic then
+      dirty_aura = true
+    end
   end
 
-  -- Weapon temp-enchant fast tick:
-  -- Above 60s: event-driven only (no ticking).
-  -- <=60s: tick at 0.10s to keep hide/show + remaining accurate near expiry.
+  -- 武器临时附魔快速滴答：
+  -- 高于 60 秒：仅事件驱动（无滴答）。
+  -- <=60 秒：以 0.10 秒滴答，以便在接近过期时保持显示/隐藏 + 剩余准确。
   do
     local dc = _G.DoiteConditions
     local te = dc and dc._daTempEnchantCache
@@ -7518,13 +7935,13 @@ function DoiteConditions_OnUpdate(dt)
     end
   end
 
-  -- Keep warrior Overpower/Revenge procs in sync even if no other events fire
+  -- 即使没有其他事件触发，也保持战士压制/复仇触发同步
   DoiteConditions_WarriorProcTick()
 
-  -- Coalesce aura events: scan/rebuild at most once per frame, before any rendering/eval.
+  -- 合并光环事件：在渲染/评估之前，每帧最多扫描/重建一次。
   DoiteConditions:ProcessPendingAuraScans()
 
-  -- Smooth remaining-time text (abilities/items/auras) on a cheap path
+  -- 平滑剩余时间文本（技能/物品/光环）在廉价路径上
   if _textAccum >= 0.1 then
     _textAccum = 0
 
@@ -7533,13 +7950,13 @@ function DoiteConditions_OnUpdate(dt)
     end
   end
 
-  -- Lightweight distance heartbeat: keep "In range" / "Melee range" /
+  -- 轻量级距离心跳：保持“在范围内”/“近战范围”/
   _distAccum = _distAccum + dt
   if _distAccum >= 0.15 then
     _distAccum = 0
 
     if UnitExists and UnitExists("target") then
-      -- Only mark dirty if configs actually use these options
+      -- 仅当配置实际使用这些选项时才标记脏
       if _hasAnyTargetMods_Ability then
         dirty_ability = true
       end
@@ -7549,7 +7966,7 @@ function DoiteConditions_OnUpdate(dt)
     end
   end
 
-  -- Render faster while sliding; else ~30fps
+  -- 滑动时渲染更快；否则约 30fps
   local thresh = (next(DoiteConditions_SlideMgr.active) ~= nil) and 0.03 or 0.10
   if _acc < thresh then
     return
@@ -7568,18 +7985,18 @@ function DoiteConditions_OnUpdate(dt)
     _G.DoiteConditions:EvaluateAuras()
   end
 
-  -- Custom functions run here near the end of OnUpdate.
+  -- 自定义函数在 OnUpdate 末尾附近运行。
   didCustom = _G.DoiteConditions:EvaluateCustom() and true or false
 
   if needAbilityLogic or needAbilityTime or needAura or didCustom then
     dirty_aura, dirty_target, dirty_power = false, false, false
     dirty_ability_time = false
-    -- While sliding, ability icons updating each frame
+    -- 滑动时，技能图标每帧更新
     dirty_ability = next(DoiteConditions_SlideMgr.active) and true or false
   end
 end
 
--- Avoid per-frame pcall (allocation/overhead). Enable it only when debugging.
+-- 避免每帧 pcall（分配/开销）。仅在调试时启用。
 local function _DoiteConditions_OnUpdateWrapper()
   local dt = arg1 or 0
   if _G["DoiteAuras_DebugPcallOnUpdate"] == true then
@@ -7596,14 +8013,14 @@ end
 
 _tick:SetScript("OnUpdate", _DoiteConditions_OnUpdateWrapper)
 
--- Prime aura snapshot and trigger initial evaluation
+-- 预先加载光环快照并触发初始评估
 if _G.UnitExists and _G.UnitExists("target") then
   DoiteConditions_ScanUnitAuras("target")
 end
 dirty_ability, dirty_aura, dirty_target, dirty_power = true, true, true, true
 
 ---------------------------------------------------------------
--- Event handling + smoother updates
+-- 事件处理 + 更平滑的更新
 ---------------------------------------------------------------
 local eventFrame = CreateFrame("Frame", "DoiteConditionsEventFrame")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -7628,19 +8045,19 @@ eventFrame:RegisterEvent("RAID_ROSTER_UPDATE")
 
 eventFrame:SetScript("OnEvent", function()
   if event == "PLAYER_ENTERING_WORLD" then
-    -- Initial aura scan
+    -- 初始光环扫描
     if _G.UnitExists and _G.UnitExists("target") then
       DoiteConditions_ScanUnitAuras("target")
     end
     dirty_ability, dirty_aura, dirty_target, dirty_power = true, true, true, true
 
-    -- Cache player class for lightweight warrior-specific logic + range overrides
+    -- 缓存玩家职业以用于轻量级战士特定逻辑 + 范围覆盖
     local _, cls = UnitClass("player")
     cls = cls and string.upper(cls) or ""
     _isWarrior = (cls == "WARRIOR")
     _playerClass = cls
 
-    -- Prime time-heartbeat flags
+    -- 预先加载时间心跳标志
     if _RebuildAbilityTimeHeartbeatFlag then
       _RebuildAbilityTimeHeartbeatFlag()
     end
@@ -7663,9 +8080,9 @@ eventFrame:SetScript("OnEvent", function()
       dirty_ability = true
 
     elseif arg1 == "target" then
-      -- Only bother if *any* config ever looks at target auras.
+      -- 仅当 *任何* 配置曾经查看目标光环时才关心。
       if _hasAnyTargetAuraUsage then
-        -- Coalesce scan/clear into OnUpdate (once per frame)
+        -- 合并扫描/清除到 OnUpdate（每帧一次）
         DoiteConditions._pendingAuraScanTarget = true
         dirty_aura = true
         dirty_ability = true
@@ -7673,16 +8090,23 @@ eventFrame:SetScript("OnEvent", function()
     end
 
   elseif event == "SPELLS_CHANGED" then
+    -- 清除法术索引缓存和法术书类型缓存
     local cache = _G.DoiteConditions_SpellIndexCache
     if cache then
       for k in pairs(cache) do
         cache[k] = nil
       end
     end
+    local btCache = _G.DoiteConditions_SpellBookTypeCache
+    if btCache then
+      for k in pairs(btCache) do
+        btCache[k] = nil
+      end
+    end
     dirty_ability = true
 
   elseif event == "PLAYER_TARGET_CHANGED" then
-    -- If target aura tracking is used anywhere, scan/clear once in OnUpdate. Otherwise, keep snapshot empty so no stale target aura data can ever match.
+    -- 如果在任何地方使用了目标光环跟踪，则在 OnUpdate 中扫描/清除一次。否则，保持快照为空，以便没有陈旧的目标光环数据能够匹配。
     if _hasAnyTargetAuraUsage then
       DoiteConditions._pendingAuraScanTarget = true
     else
@@ -7705,6 +8129,9 @@ eventFrame:SetScript("OnEvent", function()
       or event == "UPDATE_SHAPESHIFT_FORM" then
 
     dirty_ability = true
+    if DoiteConditions and DoiteConditions._hasAnyItemLogic then
+      dirty_aura = true
+    end
 
   elseif event == "UNIT_HEALTH" then
     if arg1 == "player" or arg1 == "target" then
@@ -7725,31 +8152,43 @@ eventFrame:SetScript("OnEvent", function()
     dirty_ability, dirty_aura = true, true
 
   elseif event == "PLAYER_EQUIPMENT_CHANGED" then
-    if _G.DoiteConditions_ClearTrinketFirstMemory then
-      _G.DoiteConditions_ClearTrinketFirstMemory()
+    if DoiteConditions and DoiteConditions._hasAnyItemLogic then
+      if _G.DoiteConditions_ClearTrinketFirstMemory then
+        _G.DoiteConditions_ClearTrinketFirstMemory()
+      end
+      if _InvalidateItemScanCache then
+        _InvalidateItemScanCache()
+      end
+      dirty_ability = true
+      dirty_aura = true
     end
-    if _InvalidateItemScanCache then
-      _InvalidateItemScanCache()
-    end
-    dirty_ability = true
-    dirty_aura = true
 
   elseif event == "BAG_UPDATE_COOLDOWN" then
-    dirty_ability = true
+    if DoiteConditions and DoiteConditions._hasAnyItemLogic then
+      if GetTime() >= (DoiteConditions._daLastBagCooldownDirtyAt or 0) then
+        dirty_ability = true
+        dirty_aura = true
+        DoiteConditions._daLastBagCooldownDirtyAt = GetTime() + 0.10
+      end
+    end
 
   elseif event == "BAG_UPDATE" then
-    if _InvalidateItemScanCache then
-      _InvalidateItemScanCache()
+    if DoiteConditions and DoiteConditions._hasAnyItemLogic then
+      -- 当物品堆叠分割/合并或最后一个物品离开背包槽位时，保持物品位置/计数的精确性。
+      -- 对此进行节流可能会错过最终状态翻转（背包 -> 缺失）并短暂显示/隐藏错误的图标状态。
+      if _InvalidateItemScanCache then
+        _InvalidateItemScanCache()
+      end
+      dirty_ability = true
     end
-    dirty_ability = true
 
   elseif event == "UNIT_INVENTORY_CHANGED" then
-    if arg1 == "player" then
+    if arg1 == "player" and DoiteConditions and DoiteConditions._hasAnyItemLogic then
       if _InvalidateItemScanCache then
         _InvalidateItemScanCache()
       end
 
-      -- Temp enchant tracking: force a refresh on next evaluation
+      -- 临时附魔跟踪：强制在下一次评估时刷新
       local te = DoiteConditions._daTempEnchantCache
       if te then
         if te[INV_SLOT_MAINHAND] then
@@ -7767,7 +8206,7 @@ eventFrame:SetScript("OnEvent", function()
     end
 
   elseif event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" then
-    -- Re-evaluate all conditions when party/raid membership changes
+    -- 当队伍/团队成员变更时，重新评估所有条件
     dirty_ability, dirty_aura = true, true
   end
 end)

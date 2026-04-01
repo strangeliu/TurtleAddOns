@@ -22,6 +22,17 @@ UnitPopupMenus["PLAYER"] = {"WHISPER", "INVITE", "PROMOTE",  "LOOT_PROMOTE", "RP
                             "TRADE", "FOLLOW", "DUEL", "ADD_FRIEND", "ADD_IGNORE", "WHO", "ADD_GUILD", "GET_NAME",
                             "RAID_TARGET_ICON", "CANCEL"};
 
+-- 辅助函数：安全获取下拉菜单框架对象
+local function GetDropdownMenu()
+    local menu = UIDROPDOWNMENU_INIT_MENU
+    if type(menu) == "string" then
+        -- 旧版客户端：UIDROPDOWNMENU_INIT_MENU 是字符串（框架名称）
+        return _G[menu] or getglobal(menu)
+    else
+        -- 新版客户端：UIDROPDOWNMENU_INIT_MENU 已经是框架对象
+        return menu
+    end
+end
 
 function PlayerLinkEnhance_OnLoad()
     ori_unitpopup = UnitPopup_OnClick;
@@ -111,7 +122,8 @@ local function ple_Disband()
 end
 
 hooksecurefunc("UnitPopup_HideButtons", function()
-    local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
+    -- 修改：使用安全函数获取下拉菜单框架
+    local dropdownMenu = GetDropdownMenu();
 
     local isLeader = 0;
     if IsPartyLeader() or IsRaidLeader() then
@@ -240,12 +252,16 @@ hooksecurefunc("UnitPopup_HideButtons", function()
             else
                 UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 0;
             end
+        -- 强制显示团队标记图标
+        elseif value == "RAID_TARGET_ICON" then
+            UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] = 1;
         end
     end
 end)
 
 function ple_unitpopup()
-    local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
+    -- 修改：使用安全函数获取下拉菜单框架
+    local dropdownFrame = GetDropdownMenu();
     local button = this.value;
     local unit = dropdownFrame.unit;
     local name = dropdownFrame.name;

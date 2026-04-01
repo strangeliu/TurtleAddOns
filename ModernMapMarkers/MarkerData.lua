@@ -9,10 +9,11 @@ ModernMapMarkers_Points = {
             { x=0.51,  y=0.78,  name="Crescent Grove",                  type="dungeon",   info="32-38", atlas=3   },
             { x=0.937, y=0.355, name="Emerald Dragon - Spawn Point 1 of 4", type="worldboss", info="60",   atlas=nil },
         },
-        ["Azshara"] = {
+       ["Azshara"] = {
             { x=0.535, y=0.816, name="Azuregos",  type="worldboss", info="60", atlas=nil },
             { x=0.69,  y=0.094, name="Cla'ckora", type="worldboss", info="60", atlas=nil },
-        },
+            { x=0.38,  y=0.33,  name="Timbermaw Hold", type="raid", info="60", atlas="TimbermawHoldEnt" },  
+       },
         ["Darkshore"] = {
             { x=0.324, y=0.44,  name="Boat to Stormwind",        type="boat", info="Alliance", atlas=nil },
             { x=0.304, y=0.41,  name="Boat to Alah'Thalas",      type="boat", info="Alliance", atlas=nil },
@@ -67,6 +68,9 @@ ModernMapMarkers_Points = {
         ["Thunder Bluff"] = {
             { x=0.165, y=0.230, name="Zeppelin to Orgrimmar", type="zepp", info="Horde", atlas=nil },
         },
+        ["Thousand Needles"] = {
+            { x=0.63, y=0.46, name="Windhorn Canyon", type="dungeon", info="26-33", atlas=29 },
+        },
     },
     [2] = { -- Eastern Kingdoms
         ["Alah'Thalas"] = {
@@ -100,6 +104,7 @@ ModernMapMarkers_Points = {
         },
         ["Dun Morogh"] = {
             { x=0.248, y=0.337, name="Gnomeregan", type="dungeon", info="29-38", atlas=7 },
+            { x=0.66, y=0.35, name="Frostmane Hollow", type="dungeon", info="13-20",  atlas=26  },
         },
         ["Duskwood"] = {
             { x=0.465, y=0.357, name="Emerald Dragon - Spawn Point 3 of 4", type="worldboss", info="60", atlas=nil },

@@ -7,8 +7,24 @@ local hooksecurefunc = ShaguTweaks.hooksecurefunc
 local strsplit = ShaguTweaks.strsplit
 local cmatch = ShaguTweaks.cmatch
 
+-- Predeclare for Lua 5.0/1.12 so early local functions capture the frame object.
+local libpredict
 local senttarget
 local heals, ress, events = {}, {}, {}
+
+local function ProcessEvents()
+  local now = GetTime()
+
+  for timestamp in pairs(events) do
+    if now >= timestamp then
+      events[timestamp] = nil
+    end
+  end
+
+  if not next(events) then
+    libpredict:SetScript("OnUpdate", nil)
+  end
+end
 
 local PRAYER_OF_HEALING
 do -- Prayer of Healing
@@ -25,7 +41,7 @@ do -- Prayer of Healing
   PRAYER_OF_HEALING = locales[GetLocale()] or locales["enUS"]
 end
 
-local libpredict = CreateFrame("Frame")
+libpredict = CreateFrame("Frame")
 libpredict:RegisterEvent("UNIT_HEALTH")
 libpredict:RegisterEvent("CHAT_MSG_ADDON")
 libpredict:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -36,15 +52,6 @@ libpredict:SetScript("OnEvent", function()
     local name = UnitName(arg1)
     if ress[name] and not UnitIsDeadOrGhost(arg1) then
       ress[UnitName(arg1)] = nil
-    end
-  end
-end)
-
-libpredict:SetScript("OnUpdate", function()
-  -- update on timeout events
-  for timestamp, targets in pairs(events) do
-    if GetTime() >= timestamp then
-      events[timestamp] = nil
     end
   end
 end)
@@ -147,6 +154,9 @@ end
 function libpredict:AddEvent(time, target)
   events[time] = events[time] or {}
   table.insert(events[time], target)
+  if not libpredict:GetScript("OnUpdate") then
+    libpredict:SetScript("OnUpdate", ProcessEvents)
+  end
 end
 
 function libpredict:Heal(sender, target, amount, duration)

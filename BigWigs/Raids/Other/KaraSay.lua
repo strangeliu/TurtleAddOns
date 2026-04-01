@@ -16,6 +16,14 @@ notificationFrame.str:SetJustifyH("CENTER")
 notificationFrame.str:SetPoint("CENTER",notificationFrame,"CENTER", 0, 50)
 -- notificationFrame:SetHeight(200)
 
+local function UpdateNotificationFrame()
+    if notificationFrame.str.hideTime and GetTime() > notificationFrame.str.hideTime then
+        notificationFrame.str:SetText("")
+        notificationFrame.str.hideTime = nil
+        notificationFrame:SetScript("OnUpdate", nil)
+    end
+end
+
 function SaySapped_OnLoad()
     this:RegisterEvent("PLAYER_AURAS_CHANGED");
     this:RegisterEvent('PLAYER_ENTER_COMBAT')
@@ -24,23 +32,21 @@ function SaySapped_OnLoad()
     this.lastSpeakTime = {}
 end
 
-notificationFrame:SetScript("OnUpdate", function()
-    if notificationFrame.str.hideTime and GetTime() > notificationFrame.str.hideTime then
-        notificationFrame.str:SetText("")
-        notificationFrame.str.hideTime = nil
-    end
-end)
-
 notificationFrame.showmsg = function(msg, duration)
     PlaySoundFile("Interface\\AddOns\\BigWigs\\Sounds\\RunAway.ogg")
     notificationFrame.str:SetText(msg)
     if duration then
         notificationFrame.str.hideTime = GetTime() + duration
+        notificationFrame:SetScript("OnUpdate", UpdateNotificationFrame)
+    else
+        notificationFrame.str.hideTime = nil
+        notificationFrame:SetScript("OnUpdate", nil)
     end
 end
 notificationFrame.hidemsg = function()
     notificationFrame.str:SetText("")
     notificationFrame.str.hideTime = nil
+    notificationFrame:SetScript("OnUpdate", nil)
 end
 
 local tooltipMap = {

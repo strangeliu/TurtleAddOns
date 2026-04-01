@@ -4,6 +4,7 @@
 ## Author: Mythblack
 ## Notes: Monitor some combat buff（特效触发）
 ## Notes-zhCN: 显示战斗中触发的特效
+## SavedVariablesPerCharacter:BuffToolConfig
 ## Version: 0.0002
 
 BuffTool.lua

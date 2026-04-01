@@ -10,6 +10,141 @@ AtlasLoot_ButtonRegistry = {
 		Title = AL["Dungeons & Raids"];
 		Prev_Page = "DUNGEONSMENU1";
 	};
+	--Timbermaw Hold 木侯要塞
+	["TMHKarrshtheSentinel"] = {
+		Title = AL["Karrsh the Sentinel"];
+		Next_Page = "TMHRotgrowl";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHRotgrowl"] = {
+		Title = AL["Rotgrowl"];
+		Next_Page = "TMHTriochtheDevourer";
+		Prev_Page = "TMHKarrshtheSentinel";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHTriochtheDevourer"] = {
+		Title = AL["Trioch the Devourer"];
+		Next_Page = "TMHOrmanostheCracked";
+		Prev_Page = "TMHRotgrowl";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHOrmanostheCracked"] = {
+		Title = AL["Ormanos the Cracked"];
+		Next_Page = "TMHLoktanagtheVile";
+		Prev_Page = "TMHTriochtheDevourer";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHLoktanagtheVile"] = {
+		Title = AL["Loktanag the Vile"];
+		Next_Page = "TMHChieftainPartath";
+		Prev_Page = "TMHOrmanostheCracked";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHChieftainPartath"] = {
+		Title = AL["Chieftain Partath"];
+		Next_Page = "TMHSelenaxxFoulheart";
+		Prev_Page = "TMHLoktanagtheVile";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHSelenaxxFoulheart"] = {
+		Title = AL["Selenaxx Foulheart"];
+		Next_Page = "TMHArchdruidKronn";
+		Prev_Page = "TMHChieftainPartath";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHArchdruidKronn"] = {
+		Title = AL["Archdruid Kronn"];
+		Next_Page = "TMHUrsol";
+		Prev_Page = "TMHSelenaxxFoulheart";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHUrsol"] = {
+		Title = AL["Ursol"];
+		Next_Page = "TMHTrash";
+		Prev_Page = "TMHArchdruidKronn";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHTrash"] = {
+		Title = AL["Trash Mobs"];
+		Prev_Page = "TMHUrsol";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	-- Frostmane Hollow	霜鬃洞穴
+	["FMHNimbleTansha"] = {
+		Title = AL["Nimble Tansha"];
+		Next_Page = "FMHUbbukazBattlefieldOverlord";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["FMHUbbukazBattlefieldOverlord"] = {
+		Title = AL["Ubbukaz Battlefield Overlord"];
+		Next_Page = "FMHProphetKanza";
+		Prev_Page = "FMHNimbleTansha";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["FMHProphetKanza"] = {
+		Title = AL["Prophet Kanza"];
+		Next_Page = "FMHColdHaile";
+		Prev_Page = "FMHUbbukazBattlefieldOverlord";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["FMHColdHaile"] = {
+		Title = AL["Cold Haile"];
+		Next_Page = "FMHTrash";
+		Prev_Page = "FMHProphetKanza";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["FMHTrash"] = {
+		Title = AL["Trash Mobs"];
+		Prev_Page = "FMHColdHaile";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	-- Windhorn Canyon（风角峡谷）
+    ["WSCPathunBuskhide"] = {
+        Title = AL["Pathun Buskhide"];
+        Next_Page = "WSCAhgktosThePure";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCAhgktosThePure"] = {
+        Title = AL["Ahgk'tos the Pure"];
+        Prev_Page = "WSCPathunBuskhide";
+        Next_Page = "WSCAmbassadorVortalus";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCAmbassadorVortalus"] = {
+        Title = AL["Ambassador Vortalus"];
+        Prev_Page = "WSCAhgktosThePure";
+        Next_Page = "WSCWalganBloodcaller";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCWalganBloodcaller"] = {
+        Title = AL["Walgan Bloodcaller"];
+        Prev_Page = "WSCAmbassadorVortalus";
+        Next_Page = "WSCBonespeakerNarlgom";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCBonespeakerNarlgom"] = {
+        Title = AL["Bonespeaker Narlgom"];
+        Prev_Page = "WSCWalganBloodcaller";
+        Next_Page = "WSCProphetStormhoof";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCProphetStormhoof"] = {
+        Title = AL["Prophet Stormhoof"];
+        Prev_Page = "WSCBonespeakerNarlgom";
+        Next_Page = "WSCChieftainShalkBlackwind";
+        Back_Page = "DUNGEONSMENU1";
+    };
+    ["WSCChieftainShalkBlackwind"] = {
+        Title = AL["Chieftain Shalk Blackwind"];
+        Prev_Page = "WSCProphetStormhoof";
+		Next_Page = "WSCTrash";
+        Back_Page = "DUNGEONSMENU1";
+    };
+	["WSCTrash"] = {
+		Title = AL["Trash Mobs"];
+		Prev_Page = "WSCChieftainShalkBlackwind";
+		Back_Page = "DUNGEONSMENU1";
+	};	
 	-- Dragonmaw Retreat
 	["DMRGowlfang"] = {
 		Title = AL["Gowlfang"],
@@ -4720,18 +4855,18 @@ AtlasLoot_ButtonRegistry = {
 	["TailoringApprentice1"] = {
 		Title = AL["Tailoring"] .. ": " .. AL["Apprentice"];
 		Back_Page = "TAILORINGMENU";
-		Next_Page = "TailoringApprentice2";
-	};
-	["TailoringApprentice2"] = {
-		Title = AL["Tailoring"] .. ": " .. AL["Apprentice"];
-		Back_Page = "TAILORINGMENU";
-		Prev_Page = "TailoringApprentice1";
 		Next_Page = "TailoringJourneyman1";
 	};
+	-- ["TailoringApprentice2"] = {
+	-- 	Title = AL["Tailoring"] .. ": " .. AL["Apprentice"];
+	-- 	Back_Page = "TAILORINGMENU";
+	-- 	Prev_Page = "TailoringApprentice1";
+	-- 	Next_Page = "TailoringJourneyman1";
+	-- };
 	["TailoringJourneyman1"] = {
 		Title = AL["Tailoring"] .. ": " .. AL["Journeyman"];
 		Back_Page = "TAILORINGMENU";
-		Prev_Page = "TailoringApprentice2";
+		Prev_Page = "TailoringApprentice1";
 		Next_Page = "TailoringJourneyman2";
 	};
 	["TailoringJourneyman2"] = {
@@ -4750,18 +4885,18 @@ AtlasLoot_ButtonRegistry = {
 		Title = AL["Tailoring"] .. ": " .. AL["Expert"];
 		Back_Page = "TAILORINGMENU";
 		Prev_Page = "TailoringExpert1";
-		Next_Page = "TailoringExpert3";
-	};
-	["TailoringExpert3"] = {
-		Title = AL["Tailoring"] .. ": " .. AL["Expert"];
-		Back_Page = "TAILORINGMENU";
-		Prev_Page = "TailoringExpert2";
 		Next_Page = "TailoringArtisan1";
 	};
+	-- ["TailoringExpert3"] = {
+	-- 	Title = AL["Tailoring"] .. ": " .. AL["Expert"];
+	-- 	Back_Page = "TAILORINGMENU";
+	-- 	Prev_Page = "TailoringExpert2";
+	-- 	Next_Page = "TailoringArtisan1";
+	-- };
 	["TailoringArtisan1"] = {
 		Title = AL["Tailoring"] .. ": " .. AL["Artisan"];
 		Back_Page = "TAILORINGMENU";
-		Prev_Page = "TailoringExpert3";
+		Prev_Page = "TailoringExpert2";
 		Next_Page = "TailoringArtisan2";
 	};
 	["TailoringArtisan2"] = {
@@ -4897,9 +5032,27 @@ AtlasLoot_ButtonRegistry = {
 		Title = AL["First Aid"];
 		Back_Page = "CRAFTINGMENU";
 	};
-	["Survival1"] = {
-		Title = AL["Survival"];
+	["SurvivalApprentice1"] = {
+		Title = AL["Survival"] .. ": " .. AL["Apprentice"];
 		Back_Page = "CRAFTINGMENU";
+		Next_Page = "SurvivalJourneyman1";
+	};
+	["SurvivalJourneyman1"] = {
+		Title = AL["Survival"] .. ": " .. AL["Journeyman"];
+		Back_Page = "CRAFTINGMENU";
+		Next_Page = "SurvivalExpert1";
+		Prev_Page = "SurvivalApprentice1";
+	};
+	["SurvivalExpert1"] = {
+		Title = AL["Survival"] .. ": " .. AL["Expert"];
+		Back_Page = "CRAFTINGMENU";
+		Next_Page = "SurvivalArtisan1";
+		Prev_Page = "SurvivalJourneyman1";
+	};
+	["SurvivalArtisan1"] = {
+		Title = AL["Survival"] .. ": " .. AL["Artisan"];
+		Back_Page = "CRAFTINGMENU";
+		Prev_Page = "SurvivalExpert1";
 	};
 	["Survival2"] = {
 		Title = AL["Gardening"];

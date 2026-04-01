@@ -7,7 +7,6 @@
 	<Script file="SM_ItemLink.lua"/>
 	<Script file="SM_Slash.lua"/>
 	<Script file="SM_Tooltip.lua"/>
-	<Script file="SM_Extend.lua"/>
 	<Script file="localization.lua"/>
 	<FontString name="SuperMacroButtonFont" virtual="true" inherits="GameFontNormalLarge">
 		<Shadow>
@@ -211,7 +210,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString name="SuperMacroFrameSelectedMacroName" inherits="SuperMacroButtonFont">
+				<FontString name="SuperMacroFrameSelectedMacroIndex" inherits="SuperMacroButtonFont">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeTo="SuperMacroFrameSelectedMacroBackground" relativePoint="TOPRIGHT">
 							<Offset>
@@ -2006,15 +2005,6 @@ ScrollFrameTemplate_OnMouseWheel(arg1);
 			<CheckButton name="SuperMacroPopupButton19" inherits="SuperMacroPopupButtonTemplate" id="19">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="SuperMacroPopupButton18" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="10" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="SuperMacroPopupButton20" inherits="SuperMacroPopupButtonTemplate" id="20">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="SuperMacroPopupButton19" relativePoint="RIGHT">
 						<Offset>
 							<AbsDimension x="10" y="0"/>
 						</Offset>

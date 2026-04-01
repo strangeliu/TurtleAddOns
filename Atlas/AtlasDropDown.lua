@@ -98,6 +98,7 @@ Atlas_DropDownLayouts = {
 			"TheSunkenTemple",
 			"Uldaman",
 			"ZulGurub",
+			"FrostmaneHollow", -- 新增：霜鬃谷（地下城） TurtleWOW 1.18.1
 		},
 		[ATLAS_DDL_CONTINENT_KALIMDOR] = {
 			"BlackfathomDeeps",
@@ -116,6 +117,8 @@ Atlas_DropDownLayouts = {
 			"TheTempleofAhnQiraj",
 			"WailingCaverns",
 			"ZulFarrak",
+			"WindhornCanyon", -- TurtleWOW 1.18.1 风角峡谷
+			"TimbermawHold", -- TurtleWOW 1.18.1 木喉要塞	
 		},
 		[ATLAS_DDL_WORLDBOSSES] = {
 			"Azuregos",
@@ -291,6 +294,9 @@ Atlas_DropDownLayouts = {
 			"Uldaman",
 			"WailingCaverns",
 			"ZulFarrak",
+			"WindhornCanyon", -- 新增：风角峡谷（地下城） TurtleWOW 1.18.1
+			"FrostmaneHollow", -- 新增：霜鬃谷（地下城） TurtleWOW 1.18.1
+
 		},
 		[ATLAS_DDL_TYPE_RAIDS] = {
 			"BlackwingLair",
@@ -303,6 +309,7 @@ Atlas_DropDownLayouts = {
 			"TheRuinsofAhnQiraj",
 			"TheTempleofAhnQiraj",
 			"ZulGurub",
+			"TimbermawHold", -- TurtleWOW 1.18.1 木喉要塞
 		},
 		[ATLAS_DDL_WORLDBOSSES] = {
 			"Azuregos",

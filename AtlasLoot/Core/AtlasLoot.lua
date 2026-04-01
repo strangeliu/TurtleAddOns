@@ -109,6 +109,7 @@ AtlasLoot_MenuList = {
 	"TAILORINGMENU",
 	"CRAFTSET",
 	"COOKINGMENU",
+	"SURVIVALMENU",
 	"WORLDBOSSMENU",
 	"JEWELCRAFTMENU"
 };
@@ -1036,6 +1037,18 @@ function AtlasLoot_ShowItemsFrame(dataID, dataSource, boss, pFrame)
 	for i = 1, 30, 1 do
 		_G["AtlasLootMenuItem_"..i]:Hide();
 	end
+	-- 关键：进入菜单页/任意页面前先清掉所有物品按钮，避免从 LootTable 返回菜单时残影
+    for i = 1, 32, 1 do
+        local btn = _G["AtlasLootItem_"..i]
+        if ( btn ) then
+            btn:Hide()
+            -- 可选：清掉旧数据，防止某些点击/tooltip读到旧 itemID
+            btn.itemID = nil
+            btn.dressingroomID = nil
+            btn.container = nil
+            btn.droprate = nil
+        end
+    end
 	-- Store data about the state of the items frame to allow minor tweaks or a recall of the current loot page
 	AtlasLootItemsFrame.refresh = { dataID, dataSource_backup, boss, pFrame };
 	-- Escape out of this function if creating a menu, this function only handles loot tables.
@@ -1094,6 +1107,8 @@ function AtlasLoot_ShowItemsFrame(dataID, dataSource, boss, pFrame)
 		AtlasLoot_TailoringMenu();
 	elseif ( dataID == "COOKINGMENU" ) then
 		AtlasLoot_CookingMenu();
+	elseif ( dataID == "SURVIVALMENU" ) then
+		AtlasLoot_SurvivalMenu();
 	elseif ( dataID == "WORLDBOSSMENU" ) then
 		AtlasLoot_WorldBossMenu();
 	elseif ( dataID == "DUNGEONSMENU1" ) then
@@ -1105,7 +1120,7 @@ function AtlasLoot_ShowItemsFrame(dataID, dataSource, boss, pFrame)
 	else
 		-- AtlasLoot_QueryLootPage()
 		-- Iterate through each item object and set its properties
-		for i = 1, 30, 1 do
+		for i = 1, 32, 1 do
 			-- Check for a valid object (that it exists, and that it has a name)
 			if ( dataSource[dataID][i] and dataSource[dataID][i][3] ~= "" ) then
 				if ( string.sub(dataSource[dataID][i][1], 1, 1) == "s" ) then
@@ -2145,12 +2160,14 @@ end
 AtlasLoot_HewdropDown = {
 	{[AL["Dungeons & Raids"]] = {
 			{{ AL["[13-18] Ragefire Chasm"], "RagefireChasm", "Submenu" },},
+			{{ AL["[13-20] Frostmane Hollow"], "FrostmaneHollow", "Submenu" },},
 			{{ AL["[17-24] Wailing Caverns"], "WailingCaverns", "Submenu" },},
 			{{ AL["[17-24] The Deadmines"], "Deadmines", "Submenu" },},
 			{{ AL["[22-30] Shadowfang Keep"], "ShadowfangKeep", "Submenu" },},
 			{{ AL["[23-32] Blackfathom Deeps"], "BlackfathomDeeps", "Submenu" },},
 			{{ AL["[22-30] The Stockade"], "TheStockade", "Submenu" },},
-			{{ AL["[26-35] Dragonmaw Retreat"], "DragonmawRetreat", "Submenu" },},
+			{{ AL["[26-30] Windhorn Canyon"], "WindhornCanyon", "Submenu" },},	
+			{{ AL["[26-35] Dragonmaw Retreat"], "DragonmawRetreat", "Submenu" },},	
 			{{ AL["[29-38] Gnomeregan"], "Gnomeregan", "Submenu" },},
 			{{ AL["[29-38] Razorfen Kraul"], "RazorfenKraul", "Submenu" },},
 			{{ AL["[32-38] The Crescent Grove"], "TheCrescentGrove", "Submenu" },},
@@ -2191,6 +2208,7 @@ AtlasLoot_HewdropDown = {
 			{{ AL["[RAID] Temple of Ahn'Qiraj"], "TempleofAQ", "Submenu" },},
 			{{ AL["[RAID] Naxxramas"], "Naxxramas", "Submenu" },},
             {{ AL["[RAID] Upper Karazhan Halls"], "UpperKara", "Submenu" },},
+			{{ AL["[RAID] Timbermaw Hold"], "TimbermawHold", "Submenu" },}
 		},
 	},
 	{[AL["World Bosses"]] = {
@@ -2285,7 +2303,7 @@ AtlasLoot_HewdropDown = {
 			},
 		},
 	{[AL["Crafting"]] = {
-			{ { AL["Alchemy"], "ALCHEMYMENU", "Table" }, },
+			{ { (AL["Alchemy"]), "ALCHEMYMENU", "Table" }, },
 			{ { (AL["Blacksmithing"]), "SMITHINGMENU", "Table" }, },
 			{ { (AL["Enchanting"]), "ENCHANTINGMENU", "Table" }, },
 			{ { (AL["Engineering"]), "ENGINEERINGMENU", "Table" }, },
@@ -2296,11 +2314,11 @@ AtlasLoot_HewdropDown = {
 			{ { (AL["Tailoring"]), "TAILORINGMENU", "Table" }, },
 			{ { (AL["Cooking"]), "COOKINGMENU", "Table" }, },
 			{ { (AL["First Aid"]), "FirstAid1", "Table" }, },
-			{ { (AL["Survival"]), "Survival1", "Table" }, },
+			{ { (AL["Survival"]), "SURVIVALMENU", "Table" }, },
 			{ { (AL["Gardening"]), "Survival2", "Table" }, },
 			{ { (AL["Poisons"]), "Poisons1", "Table" }, },
-			{ { AL["Crafted Sets"], "CRAFTSET", "Table" },},
-			{ { AL["Crafted Epic Weapons"], "CraftedWeapons1", "Table" }, },
+			{ { (AL["Crafted Sets"]), "CRAFTSET", "Table" }, },
+			{ { (AL["Crafted Epic Weapons"]), "CraftedWeapons1", "Table" }, },
 		},
 	},
 	{{ AL["Rare Spawns"], "RareSpawns", "Submenu" },},
@@ -2419,7 +2437,7 @@ AtlasLoot_HewdropDown_SubTables = {
 		{ AL["Flamegor"], "BWLFlamegor" },
 		{ AL["Chromaggus"], "BWLChromaggus" },
 		{ AL["Nefarian"], "BWLNefarian" },
-		{ AL["Ezzel Darkbrewer"], "BWLEzzelDarkbrewer" },
+		{ AL["Ezzel Darkbrewer"], "BWLEzzelDarkbrewer" },--1.18.1新增Boss
 		{ AL["Trash Mobs"], "BWLTrashMobs" },
 	},
 	["Deadmines"] = {
@@ -2703,7 +2721,7 @@ AtlasLoot_HewdropDown_SubTables = {
 	},
 	["Onyxia"] = {
 		{ AL["Onyxia"], "Onyxia" },
-		{ AL["Broodcommander Axelus"], "BroodcommanderAxelus" }, -- 新增Boss
+		{ AL["Broodcommander Axelus"], "BroodcommanderAxelus" }, -- 1.18.1新增Boss
 	},
 	["RagefireChasm"] = {
 		{ AL["Taragaman the Hungerer"], "RFCTaragaman" },
@@ -2897,6 +2915,35 @@ AtlasLoot_HewdropDown_SubTables = {
 		{ AL["Mergothid"], "SWRMergothid" },
 		{ AL["Trash Mobs"], "SWRTrash" },
 	},
+	["WindhornCanyon"] = {--1.18.1新增副本 风角峡谷
+        { AL["Pathun Buskhide"], "WSCPathunBuskhide" },
+        { AL["Ahgk'tos the Pure"], "WSCAhgktosThePure" },
+        { AL["Ambassador Vortalus"], "WSCAmbassadorVortalus" },
+        { AL["Walgan Bloodcaller"], "WSCWalganBloodcaller" },
+        { AL["Bonespeaker Narlgom"], "WSCBonespeakerNarlgom" },
+        { AL["Prophet Stormhoof"], "WSCProphetStormhoof" },
+        { AL["Chieftain Shalk Blackwind"], "WSCChieftainShalkBlackwind" },
+		{ AL["Trash Mobs"], "WSCTrash" },
+    },
+	["TimbermawHold"] = {--1.18.1新增副本 木喉要塞
+		{ AL["Karrsh the Sentinel"], "TMHKarrshtheSentinel" },
+		{ AL["Rotgrowl"], "TMHRotgrowl" },
+		{ AL["Trioch the Devourer"], "TMHTriochtheDevourer" },
+		{ AL["Loktanag the Vile"], "TMHLoktanagtheVile" },
+		{ AL["Archdruid Kronn"], "TMHArchdruidKronn" },
+		{ AL["Ormanos the Cracked"], "TMHOrmanostheCracked" },
+		{ AL["Chieftain Partath"], "TMHChieftainPartath" },
+		{ AL["Selenaxx Foulheart"], "TMHSelenaxxFoulheart" },
+		{ AL["Ursol"], "TMHUrsol" },
+		{ AL["Trash Mobs"], "TMHTrash" },
+	},
+	["FrostmaneHollow"] = {--1.18.1新增副本 霜鬃谷
+		{ AL["Nimble Tansha"], "FMHNimbleTansha" },
+		{ AL["Ubbukaz Battlefield Overlord"], "FMHUbbukazBattlefieldOverlord" },
+		{ AL["Prophet Kanza"], "FMHProphetKanza" },
+		{ AL["Cold Haile"], "FMHColdHaile" },
+		{ AL["Trash Mobs"], "FMHTrash" },
+	},
 };
 
 --------------------------------------------------------------------------------
@@ -2909,7 +2956,7 @@ function AtlasLootItem_OnEnter()
 	local isItem, isEnchant, isSpell;
 	local buttonID = this:GetID()
 	AtlasLootTooltip:ClearLines();
-	for i = 1, 30, 1 do
+	for i = 1, 32, 1 do
 		if ( _G["AtlasLootTooltipTextRight"..i] ) then
 			_G["AtlasLootTooltipTextRight"..i]:SetText("");
 		end
@@ -3194,12 +3241,20 @@ end
 -- Called when a loot item is clicked on
 --------------------------------------------------------------------------------
 function AtlasLootItem_OnClick(arg1)
-	local isItem, isEnchant, isSpell;
-	local _, _, color = strfind(_G["AtlasLootItem_"..this:GetID().."_Name"]:GetText(), "(|cff%x%x%x%x%x%x)");
-	color = color or NORMAL_FONT_COLOR_CODE
-	local id = this:GetID();
-	local name = strsub(getglobal("AtlasLootItem_"..this:GetID().."_Name"):GetText(), 11);
-	local _, _, texture = strfind(_G["AtlasLootItem_"..this:GetID().."_Icon"]:GetTexture() or "", ".+\\(.+)$")
+    local isItem, isEnchant, isSpell;
+
+    -- 兼容新增按钮：_Name 可能还没按模板生成/或文本为空，避免 strfind(nil, ...)
+    local nameObj = _G["AtlasLootItem_"..this:GetID().."_Name"]
+    local nameText = (nameObj and nameObj.GetText and nameObj:GetText()) or ""
+    local _, _, color = strfind(nameText, "(|cff%x%x%x%x%x%x)")
+    color = color or NORMAL_FONT_COLOR_CODE
+
+    local id = this:GetID();
+    local name = strsub(nameText or "", 11);
+
+    local iconObj = _G["AtlasLootItem_"..this:GetID().."_Icon"]
+    local iconTex = (iconObj and iconObj.GetTexture and iconObj:GetTexture()) or ""
+    local _, _, texture = strfind(iconTex, ".+\\(.+)$")
     texture = texture or "INV_Misc_QuestionMark"
 	local dataID = AtlasLootItemsFrame.refresh[1]
 	local dataSource = AtlasLootItemsFrame.refresh[2]
@@ -3507,7 +3562,7 @@ AtlasLoot_QueryLootPage()
 Querys all valid items on the current loot page.
 ]]
 function AtlasLoot_QueryLootPage()
-	for i = 1, 30 do
+	for i = 1, 32 do
 		local button = _G["AtlasLootItem_"..i];
 		local queryitem = button.itemID;
 		if ( (queryitem) and (queryitem ~= "") and (queryitem ~= 0) and
