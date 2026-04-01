@@ -1,0 +1,469 @@
+IJDB = IJDB or {}
+
+local IS = IJLib.ItemSlot
+local IT = IJLib.ItemType
+local IQ = IJLib.Quality
+local IMP = IJLib.MediaPath
+local IMPR = IJLib.MediaPathRaids
+local IMPP = IJLib.MediaPathPortrait
+local IMPF = IJLib.MediaPathFrame
+local IMAF = IJLib.AbilityFlags
+local IMCL = IJLib.Classes
+local IMI = IJLib.MapId
+local IZI = IJLib.ZoneId
+
+local instanceMediaAcronym = "ony\\"
+
+local ONY = {}
+
+ONY.Name = IJ_DB_RAID_ONY_NAME
+ONY.Story = IJ_DB_RAID_ONY_STORY
+ONY.Type = IJLib.InstanceType.Raid
+ONY.Background = IMP .. IMPR .. instanceMediaAcronym .. "background"
+ONY.GridBackground = IMP .. IMPR .. instanceMediaAcronym .. "grid-background"
+ONY.MapId = IMI.OnyxiasLair
+ONY.IconScale = 1.2
+ONY.MinLevel = 60
+ONY.MaxLevel = 60
+ONY.Entrances = {
+    [1] = {
+        MapContinentId = IMI.Kalimdor,
+        MapZoneId = IZI.DustwallowMarsh,
+        MapCoordinateX = 53.4,
+        MapCoordinateY = 77.0,
+    },
+}
+ONY.Bosses = {
+    [1] = { -- NOTE: Missing abilities
+        Id = "axelus",
+        Portrait = IMP .. IMPR .. instanceMediaAcronym .. "axelus" .. IMPP,
+        Frame = IMP .. IMPR .. instanceMediaAcronym .. "axelus" .. IMPF,
+        Name = IJ_DB_RAID_ONY_BOSS_NAME_axelus,
+        Story = IJ_DB_RAID_ONY_BOSS_STORY_axelus,
+        MapCoordinateX = 46.6,
+        MapCoordinateY = 76.6,
+        Loot = {
+            [1] = {
+                Id = "33151",
+                Icon = "onyxia_brood_egg_1",
+                Name = IJ_LOOT_NAME_33151,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Trinket,
+                DropChance = 12,
+                LevelRequirement = 60,
+            },
+            [2] = {
+                Id = "33150",
+                Icon = "yoxtez_black_breath_of_the_dragonflight_2",
+                Name = IJ_LOOT_NAME_33150,
+                Quality = IQ.Epic,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Polearm,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [3] = {
+                Id = "33152",
+                Icon = "prestors_rod_of_command_2",
+                Name = IJ_LOOT_NAME_33152,
+                Quality = IQ.Epic,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Staff,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [4] = {
+                Id = "33153",
+                Icon = "ignited_obsidian_scale_1",
+                Name = IJ_LOOT_NAME_33153,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Trinket,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [5] = {
+                Id = "33157",
+                Icon = "INV_Sword_01",
+                Name = IJ_LOOT_NAME_33157,
+                Quality = IQ.Epic,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Sword,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [6] = {
+                Id = "33156",
+                Icon = "INV_Spear_08",
+                Name = IJ_LOOT_NAME_33156,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Ranged,
+                ItemType = IT.ThrownWeapon,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [7] = {
+                Id = "33155",
+                Icon = "INV_Shield_23",
+                Name = IJ_LOOT_NAME_33155,
+                Quality = IQ.Epic,
+                ItemSlot = IS.OffHand,
+                ItemType = IT.Shield,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [8] = {
+                Id = "33154",
+                Icon = "ring_of_burning_talons_2",
+                Name = IJ_LOOT_NAME_33154,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Finger,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+            [9] = {
+                Id = "33149",
+                Icon = "battle_standard_of_the_broodcommander_2",
+                Name = IJ_LOOT_NAME_33149,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Trinket,
+                DropChance = 11,
+                LevelRequirement = 60,
+            },
+        },
+    },
+    [2] = {
+        Id = "10184",
+        Portrait = IMP .. IMPR .. instanceMediaAcronym .. "onyxia" .. IMPP,
+        Frame = IMP .. IMPR .. instanceMediaAcronym .. "onyxia" .. IMPF,
+        Name = IJ_DB_RAID_ONY_BOSS_NAME_10184,
+        Story = IJ_DB_RAID_ONY_BOSS_STORY_10184,
+        MapCoordinateX = 70.8,
+        MapCoordinateY = 25.0,
+        Abilities = {
+            [1] = {
+                Id = "11262",
+                Icon = "INV_Misc_Head_Dragon_Black",
+                Name = IJ_DB_RAID_ONY_BOSS_10184_NAME_11262,
+                Effect = IJ_DB_RAID_ONY_BOSS_10184_DESCRIPTION_11262,
+            },
+            [2] = {
+                Id = "onyxiastage1",
+                Name = IJ_DB_RAID_ONY_BOSS_10184_NAME_onyxiastage1,
+                Effect = IJ_DB_RAID_ONY_BOSS_10184_DESCRIPTION_onyxiastage1,
+                SubAbilities = {
+                    [1] = {
+                        Id = "15847",
+                        Icon = "INV_Misc_MonsterScales_05",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_15847,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_15847,
+                        Flags = { IMAF.Tank, IMAF.Important, },
+                    },
+                    [2] = {
+                        Id = "18500",
+                        Icon = "INV_Misc_MonsterScales_14",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18500,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18500,
+                        Flags = { IMAF.Tank, },
+                    },
+                    [3] = {
+                        Id = "18435",
+                        Icon = "Spell_Fire_Fire",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18435,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18435,
+                    },
+                }
+            },
+            [3] = {
+                Id = "onyxiastage2",
+                Name = IJ_DB_RAID_ONY_BOSS_10184_NAME_onyxiastage2,
+                Effect = IJ_DB_RAID_ONY_BOSS_10184_DESCRIPTION_onyxiastage2,
+                SubAbilities = {
+                    [1] = {
+                        Id = "18392",
+                        Icon = "Spell_Fire_FlameBolt",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18392,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18392,
+                        Flags = { IMAF.Important, },
+                    },
+                    [2] = {
+                        Id = "17086",
+                        Icon = "Spell_Fire_Fire",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_17086,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_17086,
+                        Flags = { IMAF.Deadly, IMAF.Important, },
+                    },
+                    [3] = {
+                        Id = "cindarion",
+                        Icon = "INV_Misc_Head_Dragon_Black",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_cindarion,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_cindarion,
+                        Flags = { IMAF.Tank, IMAF.Important, },
+                        SubAbilities = {
+                            [1] = {
+                                Id = "cindarionflamebreath",
+                                Icon = "Spell_Fire_Fire",
+                                Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_cindarionflamebreath,
+                                Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_cindarionflamebreath,
+                                Flags = { IMAF.Deadly, },
+                            },
+                        },
+                    },
+                }
+            },
+            [4] = {
+                Id = "onyxiastage3",
+                Name = IJ_DB_RAID_ONY_BOSS_10184_NAME_onyxiastage3,
+                Effect = IJ_DB_RAID_ONY_BOSS_10184_DESCRIPTION_onyxiastage3,
+                SubAbilities = {
+                    [1] = {
+                        Id = "15847",
+                        Icon = "INV_Misc_MonsterScales_05",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_15847,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_15847,
+                        Flags = { IMAF.Tank, IMAF.Important, },
+                    },
+                    [2] = {
+                        Id = "18500",
+                        Icon = "INV_Misc_MonsterScales_14",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18500,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18500,
+                        Flags = { IMAF.Tank, },
+                    },
+                    [3] = {
+                        Id = "18435",
+                        Icon = "Spell_Fire_Fire",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18435,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18435,
+                    },
+                    [4] = {
+                        Id = "18431",
+                        Icon = "spell_shadow_charm",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_18431,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_18431,
+                        Flags = { IMAF.Important, },
+                    },
+                    [5] = {
+                        Id = "onyxianhatcher",
+                        Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_onyxianhatcher,
+                        Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_onyxianhatcher,
+                        Flags = { IMAF.Tank, IMAF.Important, },
+                        SubAbilities = {
+                            [1] = {
+                                Id = "rainoffire",
+                                Icon = "spell_shadow_rainoffire",
+                                Name = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_NAME_rainoffire,
+                                Effect = IJ_DB_RAID_ONY_BOSS_10184_ABILITY_EFFECT_rainoffire,
+                                Flags = { IMAF.Deadly, IMAF.Important, },
+                            },
+                        },
+                    },
+                }
+            },
+        },
+        Loot = {
+            [1] = {
+                Id = "17966",
+                Icon = "INV_Misc_Bag_22",
+                Name = IJ_LOOT_NAME_17966,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Bag,
+                DropChance = 100,
+            },
+            [2] = {
+                Id = "18423",
+                Icon = "INV_Misc_Head_Dragon_01",
+                Name = IJ_LOOT_NAME_18423,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Quest,
+                DropChance = 100,
+                LevelRequirement = 60,
+            },
+            [3] = {
+                Id = "18705",
+                Icon = "Spell_Holy_DispelMagic",
+                Name = IJ_LOOT_NAME_18705,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Quest,
+                DropChance = 40,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Hunter, },
+            },
+            [4] = {
+                Id = "18813",
+                Icon = "INV_Jewelry_Ring_13",
+                Name = IJ_LOOT_NAME_18813,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Finger,
+                DropChance = 25,
+                LevelRequirement = 60,
+            },
+            [5] = {
+                Id = "16900",
+                Icon = "INV_Helmet_09",
+                Name = IJ_LOOT_NAME_16900,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Leather,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Druid, },
+            },
+            [6] = {
+                Id = "16908",
+                Icon = "INV_Helmet_41",
+                Name = IJ_LOOT_NAME_16908,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Leather,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Rogue, },
+            },
+            [7] = {
+                Id = "16914",
+                Icon = "INV_Helmet_70",
+                Name = IJ_LOOT_NAME_16914,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Cloth,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Mage, },
+            },
+            [8] = {
+                Id = "16921",
+                Icon = "INV_Helmet_24",
+                Name = IJ_LOOT_NAME_16921,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Cloth,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Priest, },
+            },
+            [9] = {
+                Id = "16929",
+                Icon = "INV_Helmet_08",
+                Name = IJ_LOOT_NAME_16929,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Cloth,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Warlock, },
+            },
+            [10] = {
+                Id = "16939",
+                Icon = "INV_Helmet_05",
+                Name = IJ_LOOT_NAME_16939,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Mail,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Hunter, },
+            },
+            [11] = {
+                Id = "16947",
+                Icon = "INV_Helmet_69",
+                Name = IJ_LOOT_NAME_16947,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Mail,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Shaman, },
+            },
+            [12] = {
+                Id = "16955",
+                Icon = "INV_Helmet_74",
+                Name = IJ_LOOT_NAME_16955,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Plate,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Paladin, },
+            },
+            [13] = {
+                Id = "16963",
+                Icon = "INV_Helmet_71",
+                Name = IJ_LOOT_NAME_16963,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Head,
+                ItemType = IT.Plate,
+                DropChance = 11,
+                LevelRequirement = 60,
+                ClassRestriction = { IMCL.Warrior, },
+            },
+            [14] = {
+                Id = "30017",
+                Icon = "INV_Misc_Head_Dragon_01",
+                Name = IJ_LOOT_NAME_30017,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Mount,
+                DropChance = 2,
+                LevelRequirement = 60,
+            },
+            [15] = {
+                Id = "17064",
+                Icon = "INV_Misc_MonsterScales_15",
+                Name = IJ_LOOT_NAME_17064,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Trinket,
+                DropChance = 8,
+                LevelRequirement = 60,
+            },
+            [16] = {
+                Id = "17068",
+                Icon = "INV_Axe_09",
+                Name = IJ_LOOT_NAME_17068,
+                Quality = IQ.Epic,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Axe,
+                DropChance = 8,
+                LevelRequirement = 60,
+            },
+            [17] = {
+                Id = "17075",
+                Icon = "INV_Sword_18",
+                Name = IJ_LOOT_NAME_17075,
+                Quality = IQ.Epic,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Sword,
+                DropChance = 8,
+                LevelRequirement = 60,
+            },
+            [18] = {
+                Id = "17067",
+                Icon = "INV_Misc_Book_07",
+                Name = IJ_LOOT_NAME_17067,
+                Quality = IQ.Epic,
+                ItemSlot = IS.HeldInOffHand,
+                DropChance = 25,
+                LevelRequirement = 60,
+            },
+            [19] = {
+                Id = "17078",
+                Icon = "INV_Misc_Cape_16",
+                Name = IJ_LOOT_NAME_17078,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Back,
+                ItemType = IT.Cloth,
+                DropChance = 25,
+                LevelRequirement = 60,
+            },
+            [20] = {
+                Id = "18205",
+                Icon = "INV_Belt_12",
+                Name = IJ_LOOT_NAME_18205,
+                Quality = IQ.Epic,
+                ItemSlot = IS.Neck,
+                DropChance = 25,
+                LevelRequirement = 60,
+            },
+        },
+    },
+}
+
+IJDB.R.ONY = ONY

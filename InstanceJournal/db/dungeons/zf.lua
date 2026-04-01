@@ -1,0 +1,492 @@
+IJDB = IJDB or {}
+
+local IS = IJLib.ItemSlot
+local IT = IJLib.ItemType
+local IQ = IJLib.Quality
+local IMP = IJLib.MediaPath
+local IMPD = IJLib.MediaPathDungeons
+local IMPP = IJLib.MediaPathPortrait
+local IMPF = IJLib.MediaPathFrame
+local IMAF = IJLib.AbilityFlags
+local IMCL = IJLib.Classes
+local IMI = IJLib.MapId
+local IZI = IJLib.ZoneId
+
+local instanceMediaAcronym = "zf\\"
+
+local ZF = {}
+
+ZF.Name = IJ_DB_DUNGEON_ZF_NAME
+ZF.Story = IJ_DB_DUNGEON_ZF_STORY
+ZF.Type = IJLib.InstanceType.Dungeon
+ZF.Background = IMP .. IMPD .. instanceMediaAcronym .. "background"
+ZF.GridBackground = IMP .. IMPD .. instanceMediaAcronym .. "grid-background"
+ZF.MapId = IMI.ZulFarrak
+ZF.IconScale = 0.8
+ZF.MinLevel = 42
+ZF.MaxLevel = 51
+ZF.Entrances = {
+    [1] = {
+        MapContinentId = IMI.Kalimdor,
+        MapZoneId = IZI.Tanaris,
+        MapCoordinateX = 39.2,
+        MapCoordinateY = 20.1,
+    },
+}
+ZF.Bosses = {
+    [1] = { -- NOTE: Missing abilities
+        Id = "10082",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "zerillis" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "zerillis" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_10082,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_10082,
+        MapCoordinateX = 52.4,
+        MapCoordinateY = 41.6,
+        IsRare = true,
+        Loot = {
+            [1] = {
+                Id = "12470",
+                Icon = "inv_bracer_04",
+                Name = IJ_LOOT_NAME_12470,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Feet,
+                ItemType = IT.Leather,
+                DropChance = 19,
+                LevelRequirement = 42,
+            },
+        }
+    },
+    [2] = { -- NOTE: Missing abilities
+        Id = "7272",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "theka" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "theka" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_7272,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_7272,
+        MapCoordinateX = 52.9,
+        MapCoordinateY = 26.2,
+        -- NOTE: No unique loot?
+    },
+    [3] = { -- NOTE: Missing abilities
+        Id = "8127",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "antusul" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "antusul" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_8127,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_8127,
+        MapCoordinateX = 64.4,
+        MapCoordinateY = 27.6,
+        Loot = {
+            [1] = {
+                Id = "9379",
+                Icon = "inv_sword_45",
+                Name = IJ_LOOT_NAME_9379,
+                Quality = IQ.Rare,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Sword,
+                DropChance = 25,
+                LevelRequirement = 44,
+            },
+            [2] = {
+                Id = "9639",
+                Icon = "inv_mace_11",
+                Name = IJ_LOOT_NAME_9639,
+                Quality = IQ.Rare,
+                ItemSlot = IS.MainHand,
+                ItemType = IT.Mace,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [3] = {
+                Id = "9640",
+                Icon = "inv_gauntlets_26",
+                Name = IJ_LOOT_NAME_9640,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Hands,
+                ItemType = IT.Plate,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [4] = {
+                Id = "9641",
+                Icon = "inv_jewelry_necklace_02",
+                Name = IJ_LOOT_NAME_9641,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Neck,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [5] = {
+                Id = "51217",
+                Icon = "inv_misc_ribbon_01",
+                Name = IJ_LOOT_NAME_51217,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Transmog,
+                DropChance = 1,
+            },
+            [6] = {
+                Id = "9243",
+                Icon = "inv_misc_organ_01",
+                Name = IJ_LOOT_NAME_9243,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Neck,
+                DropChance = 2,
+                LevelRequirement = 40,
+            },
+        }
+    },
+    [4] = { -- NOTE: Missing abilities
+        Id = "7271",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "zumrah" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "zumrah" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_7271,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_7271,
+        MapCoordinateX = 44.2,
+        MapCoordinateY = 17.5,
+        Loot = {
+            [1] = {
+                Id = "18082",
+                Icon = "inv_staff_10",
+                Name = IJ_LOOT_NAME_18082,
+                Quality = IQ.Rare,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Staff,
+                DropChance = 50,
+                LevelRequirement = 42,
+            },
+            [2] = {
+                Id = "18083",
+                Icon = "inv_gauntlets_09",
+                Name = IJ_LOOT_NAME_18083,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Hands,
+                ItemType = IT.Cloth,
+                DropChance = 50,
+                LevelRequirement = 42,
+            },
+            [3] = {
+                Id = "51803",
+                Icon = "spell_fire_fire",
+                Name = IJ_LOOT_NAME_51803,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Relic,
+                ItemType = IT.Totem,
+                DropChance = 8,
+                LevelRequirement = 42,
+            },
+            [4] = {
+                Id = "9243",
+                Icon = "inv_misc_organ_01",
+                Name = IJ_LOOT_NAME_9243,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Neck,
+                DropChance = 2,
+                LevelRequirement = 40,
+            },
+            [5] = {
+                Id = "51217",
+                Icon = "inv_misc_ribbon_01",
+                Name = IJ_LOOT_NAME_51217,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Transmog,
+                DropChance = 1,
+            },
+        }
+    },
+    [5] = { -- NOTE: Missing abilities
+        Id = "7275",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "sezzziz" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "sezzziz" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_7275,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_7275,
+        MapCoordinateX = 29.4,
+        MapCoordinateY = 16.8,
+        Loot = {
+            [1] = {
+                Id = "9470",
+                Icon = "inv_banner_01",
+                Name = IJ_LOOT_NAME_9470,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Head,
+                ItemType = IT.Cloth,
+                DropChance = 25,
+                LevelRequirement = 44,
+            },
+            [2] = {
+                Id = "9473",
+                Icon = "inv_chest_leather_05",
+                Name = IJ_LOOT_NAME_9473,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Chest,
+                ItemType = IT.Leather,
+                DropChance = 25,
+                LevelRequirement = 44,
+            },
+            [3] = {
+                Id = "9474",
+                Icon = "inv_pants_05",
+                Name = IJ_LOOT_NAME_9474,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Legs,
+                ItemType = IT.Leather,
+                DropChance = 25,
+                LevelRequirement = 44,
+            },
+            [4] = {
+                Id = "9475",
+                Icon = "inv_spear_01",
+                Name = IJ_LOOT_NAME_9475,
+                Quality = IQ.Rare,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Polearm,
+                DropChance = 25,
+                LevelRequirement = 44,
+            },
+            [5] = {
+                Id = "9243",
+                Icon = "inv_misc_organ_01",
+                Name = IJ_LOOT_NAME_9243,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Neck,
+                DropChance = 2,
+                LevelRequirement = 40,
+            },
+            [6] = {
+                Id = "51217",
+                Icon = "inv_misc_ribbon_01",
+                Name = IJ_LOOT_NAME_51217,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Transmog,
+                DropChance = 1,
+            },
+        }
+    },
+    [6] = { -- NOTE: Missing abilities
+        Id = "7267",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "ukorz" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "ukorz" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_7267,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_7267,
+        MapCoordinateX = 42.3,
+        MapCoordinateY = 33.7,
+        Loot = {
+            [1] = {
+                Id = "9476",
+                Icon = "inv_shoulder_01",
+                Name = IJ_LOOT_NAME_9476,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Shoulder,
+                ItemType = IT.Plate,
+                DropChance = 20,
+                LevelRequirement = 45,
+            },
+            [2] = {
+                Id = "9477",
+                Icon = "inv_staff_goldfeathered_01",
+                Name = IJ_LOOT_NAME_9477,
+                Quality = IQ.Rare,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Staff,
+                DropChance = 20,
+                LevelRequirement = 45,
+            },
+            [3] = {
+                Id = "9478",
+                Icon = "inv_axe_07",
+                Name = IJ_LOOT_NAME_9478,
+                Quality = IQ.Rare,
+                ItemSlot = IS.MainHand,
+                ItemType = IT.Axe,
+                DropChance = 20,
+                LevelRequirement = 45,
+            },
+            [4] = {
+                Id = "9479",
+                Icon = "ability_mount_whitedirewolf",
+                Name = IJ_LOOT_NAME_9479,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Head,
+                ItemType = IT.Leather,
+                DropChance = 20,
+                LevelRequirement = 45,
+            },
+            [5] = {
+                Id = "11086",
+                Icon = "inv_sword_43",
+                Name = IJ_LOOT_NAME_11086,
+                Quality = IQ.Rare,
+                ItemSlot = IS.MainHand,
+                ItemType = IT.Sword,
+                DropChance = 20,
+                LevelRequirement = 45,
+            },
+            [6] = {
+                Id = "9243",
+                Icon = "inv_misc_organ_01",
+                Name = IJ_LOOT_NAME_9243,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Neck,
+                DropChance = 2,
+                LevelRequirement = 40,
+            },
+            [7] = {
+                Id = "51217",
+                Icon = "inv_misc_ribbon_01",
+                Name = IJ_LOOT_NAME_51217,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Transmog,
+                DropChance = 5,
+            },
+        }
+    },
+    [7] = { -- NOTE: Missing abilities
+        Id = "7273",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "gahzrilla" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "gahzrilla" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_7273,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_7273,
+        MapCoordinateX = 31.5,
+        MapCoordinateY = 41.3,
+        Loot = {
+            [1] = {
+                Id = "9469",
+                Icon = "inv_chest_chain_06",
+                Name = IJ_LOOT_NAME_9469,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Chest,
+                ItemType = IT.Mail,
+                DropChance = 50,
+                LevelRequirement = 43,
+            },
+            [2] = {
+                Id = "9467",
+                Icon = "inv_misc_monsterfang_01",
+                Name = IJ_LOOT_NAME_9467,
+                Quality = IQ.Rare,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Dagger,
+                DropChance = 30,
+                LevelRequirement = 42,
+            },
+            [3] = {
+                Id = "80747",
+                Icon = "inv_gauntlets_30",
+                Name = IJ_LOOT_NAME_80747,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Hands,
+                ItemType = IT.Leather,
+                DropChance = 20,
+                LevelRequirement = 43,
+            },
+            [4] = {
+                Id = "51217",
+                Icon = "inv_misc_ribbon_01",
+                Name = IJ_LOOT_NAME_51217,
+                Quality = IQ.Uncommon,
+                ItemSlot = IS.Transmog,
+                DropChance = 1,
+            },
+        }
+    },
+    [8] = { -- NOTE: Missing abilities
+        Id = "62495",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "zeljeb" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "zeljeb" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_62495,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_62495,
+        MapCoordinateX = 14.1,
+        MapCoordinateY = 32.0,
+        Loot = {
+            [1] = {
+                Id = "58116",
+                Icon = "inv_weapon_shortblade_24",
+                Name = IJ_LOOT_NAME_58116,
+                Quality = IQ.Rare,
+                ItemSlot = IS.OneHand,
+                ItemType = IT.Dagger,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [2] = {
+                Id = "58117",
+                Icon = "inv_staff_25",
+                Name = IJ_LOOT_NAME_58117,
+                Quality = IQ.Rare,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.Staff,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [3] = {
+                Id = "58118",
+                Icon = "inv_belt_15",
+                Name = IJ_LOOT_NAME_58118,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Waist,
+                ItemType = IT.Leather,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [4] = {
+                Id = "58119",
+                Icon = "inv_bracer_02",
+                Name = IJ_LOOT_NAME_58119,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Wrist,
+                ItemType = IT.Mail,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+        }
+    },
+    [9] = { -- NOTE: Missing abilities
+        Id = "62498",
+        Portrait = IMP .. IMPD .. instanceMediaAcronym .. "arena" .. IMPP,
+        Frame = IMP .. IMPD .. instanceMediaAcronym .. "arena" .. IMPF,
+        Name = IJ_DB_DUNGEON_ZF_BOSS_NAME_62498,
+        Story = IJ_DB_DUNGEON_ZF_BOSS_STORY_62498,
+        MapCoordinateX = 43.8,
+        MapCoordinateY = 58.3,
+        Loot = {
+            [1] = {
+                Id = "58092",
+                Icon = "inv_helmet_22",
+                Name = IJ_LOOT_NAME_58092,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Head,
+                ItemType = IT.Plate,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [2] = {
+                Id = "58093",
+                Icon = "inv_relics_libramoftruth",
+                Name = IJ_LOOT_NAME_58093,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Relic,
+                ItemType = IT.Libram,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [3] = {
+                Id = "58094",
+                Icon = "inv_sword_39",
+                Name = IJ_LOOT_NAME_58094,
+                Quality = IQ.Rare,
+                ItemSlot = IS.TwoHand,
+                ItemType = IT.TwoHandedSword,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+            [4] = {
+                Id = "58095",
+                Icon = "inv_jewelry_necklace_01",
+                Name = IJ_LOOT_NAME_58095,
+                Quality = IQ.Rare,
+                ItemSlot = IS.Neck,
+                DropChance = 25,
+                LevelRequirement = 43,
+            },
+        }
+    },
+}
+
+IJDB.DG.ZF = ZF
