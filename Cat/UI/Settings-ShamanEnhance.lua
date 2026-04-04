@@ -23,7 +23,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -74,7 +74,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPShamanEnhanceSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPShamanEnhanceSaved.TUBoss = 1
@@ -133,7 +133,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
     end
 end)
 
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPShamanEnhanceSaved.TBBoss = 1
@@ -710,7 +710,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-120
@@ -891,6 +891,59 @@ checkButton_StormstrikeTotem:SetScript("OnClick", function(self)
 end)
 
 
+
+-- 创建单选框 - 自动 水之护盾 蓝量<x
+local checkButton_AutoWaterShield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_AutoWaterShield", CatUISettingsShamanEnhanceWindow, "UICheckButtonTemplate")
+checkButton_AutoWaterShield:SetPoint("TOPLEFT", CatUISettingsShamanEnhanceWindow, "TOPLEFT", 20, postion_y)
+checkButton_AutoWaterShield:SetScale(0.8)
+
+-- 添加文字标签
+local checkText_AutoWaterShield = checkButton_AutoWaterShield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+checkText_AutoWaterShield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
+checkText_AutoWaterShield:SetTextColor(1, 1, 1)
+checkText_AutoWaterShield:SetPoint("LEFT", checkButton_AutoWaterShield, "LEFT", 34, 1)
+checkText_AutoWaterShield:SetText("自动 水之护盾")
+
+
+local slider_AutoWaterShield = CreateFrame("Slider", ADDON_NAME.."Slider_AutoWaterShield", checkButton_AutoWaterShield, "OptionsSliderTemplate")
+slider_AutoWaterShield:SetPoint("RIGHT", checkButton_AutoWaterShield, "RIGHT", 260, -2)
+slider_AutoWaterShield:SetWidth(150) -- 拖动条长度
+slider_AutoWaterShield:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_AutoWaterShield:SetMinMaxValues(100, 3000)
+slider_AutoWaterShield:SetValueStep(100)
+slider_AutoWaterShield:SetValue(1000) -- 默认值
+MPCatUISliderRegionHide(slider_AutoWaterShield)
+
+local color_AutoWaterShield = "|cFFFFD100"
+
+_G[slider_AutoWaterShield:GetName().."Low"]:Hide()
+_G[slider_AutoWaterShield:GetName().."High"]:Hide()
+-- 值变化时的回调函数
+slider_AutoWaterShield:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPShamanEnhanceSaved.AutoWaterShield_Value = arg1
+    _G[slider_AutoWaterShield:GetName().."Text"]:SetText(color_AutoWaterShield.."蓝量 < ".. MPShamanEnhanceSaved.AutoWaterShield_Value .."|r")
+end)
+-- 设置点击事件
+checkButton_AutoWaterShield:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanEnhanceSaved.AutoWaterShield = 1
+        color_AutoWaterShield = "|cFFFFD100"
+        _G[slider_AutoWaterShield:GetName().."Text"]:SetText(color_AutoWaterShield.."蓝量 < ".. MPShamanEnhanceSaved.AutoWaterShield_Value .."|r")
+    else
+        MPShamanEnhanceSaved.AutoWaterShield = 0
+        color_AutoWaterShield = "|cFF888888"
+        _G[slider_AutoWaterShield:GetName().."Text"]:SetText(color_AutoWaterShield.."蓝量 < ".. MPShamanEnhanceSaved.AutoWaterShield_Value .."|r")
+    end
+end)
+
+
+
+
+
+
 -- 创建单选框 - 草药茶 蓝量
 local checkButton_HerbalTeaMana = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTeaMana", CatUISettingsShamanEnhanceWindow, "UICheckButtonTemplate")
 checkButton_HerbalTeaMana:SetPoint("TOPLEFT", CatUISettingsShamanEnhanceWindow, "TOPLEFT", 340, postion_y)
@@ -1019,7 +1072,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsShamanEnhanceWindow, "TOPLEFT", 120, -
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -1036,7 +1089,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsShamanEnhanceWindow)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPShamanEnhanceSaved.Power = 1
@@ -1045,14 +1098,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPShamanEnhanceSaved.Pick = 1
@@ -1061,7 +1114,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsShamanEnhanceWindow, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -1079,7 +1132,7 @@ TipText:SetText("宏命令 -  [ |cFF0070DE/swdps|r ]")
 
 
 -- 配置文件版本号
-local ShamanEnhanceSettingsUIVersion = 1
+local ShamanEnhanceSettingsUIVersion = 11
 
 function MPResetShamanEnhanceSettings()
 
@@ -1145,6 +1198,9 @@ function MPResetShamanEnhanceSettings()
     --MPShamanEnhanceSaved.SecondaryWave_Value = 99
     --MPShamanEnhanceSaved.Chain_Value = 3
     --MPShamanEnhanceSaved.WaterShieldLevel = 0
+
+    MPShamanEnhanceSaved.AutoWaterShield = 0
+    MPShamanEnhanceSaved.AutoWaterShield_Value = 1000
 
     -- 通用
     MPShamanEnhanceSaved.Power = 0
@@ -1218,6 +1274,15 @@ function MPInitShamanEnhanceSettings()
         color_HerbalTeaMana = "|cFF888888"
     end
     _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanEnhanceSaved.HerbalTeaMana_Value .."%|r")
+
+    checkButton_AutoWaterShield:SetChecked(MPShamanEnhanceSaved.AutoWaterShield)
+    slider_AutoWaterShield:SetValue(MPShamanEnhanceSaved.AutoWaterShield_Value)
+    if MPShamanEnhanceSaved.AutoWaterShield==1 then
+        color_AutoWaterShield = "|cFFFFD100"
+    else
+        color_AutoWaterShield = "|cFF888888"
+    end
+    _G[slider_AutoWaterShield:GetName().."Text"]:SetText(color_AutoWaterShield.."蓝量 < ".. MPShamanEnhanceSaved.AutoWaterShield_Value .."|r")
 
 
 

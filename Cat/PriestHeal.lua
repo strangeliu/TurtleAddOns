@@ -49,6 +49,7 @@ MPPriestCastHeal = -5
 MPPriestCastHealTarget = nil
 local MPHealTargetDelay = {}
 local MPHealthUnit = nil
+local PriestHealLoopTimer = 0
 
 local DM
 
@@ -121,7 +122,7 @@ function MPPriestAutoHealth()
         end
     end
 
-    if MPPriestHealSaved.PrayerHealing==1 then
+    if MPPriestHealSaved.PrayerHealing==1 and (GetTime()-PriestHealLoopTimer>0) then
         -- 祷言 本队优先
         if MPPriestHealSaved.PrayerHealingPartyFirst==1 then
             MPPrayerHealthParty()
@@ -129,6 +130,8 @@ function MPPriestAutoHealth()
 
         -- 祷言 团队
         MPPrayerHealthRaid()
+
+        PriestHealLoopTimer = GetTime()+0.3
     end
 
     -- 自己

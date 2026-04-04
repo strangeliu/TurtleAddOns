@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 猫德一键宏
--- 更新日期：2026-03-24 （后面根据时间来判断版本）
+-- 更新日期：2026-04-03 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -85,6 +85,8 @@ MPDriudMaxRakeAP = 0
 
 -- 献祭之油时间
 MPSacrificialTimer = 0
+
+MPDriudCatPVP = 0
 
 -- 临时变量 -------------------------------------
 
@@ -323,6 +325,11 @@ function MPCat(type)
 
 	if MP_SuperWoW then
 
+		if MPDriudCatPVP==1 and UnitIsPlayer("target") then
+			MPCatPVP()
+			return
+		end
+
 		if type == 2 then
 			MPCatBackstabNew()
 		else
@@ -511,28 +518,6 @@ function MPFaerieFire()
 end
 
 
--- 参数，饰品位置：13 上，14 下，默认上
-function MPCastShortBlade(slot, trinket)
-
-	slot = slot or 13
-	trinket = trinket or "破盾护符"
-
-	local tex=GetInventoryItemTexture("player", slot)
-	if tex=="Interface\\Icons\\Inv_weapon_shortblade_23" then
-
-		local begin,dru = GetInventoryItemCooldown("player",slot)
-		-- 装备了镰刀
-		if begin==0 then
-			-- 已经冷却
-			UseInventoryItem(slot)
-		end
-
-		if (dru-(GetTime()-begin)) > 1 then
-			MPEquipItemByName(trinket, slot)
-		end
-	end
-
-end
 
 
 -- 爪击处理
@@ -555,17 +540,17 @@ local function MPCastClaw()
 end
 
 -- 猫德填充技能
-local function MPCatAttack()
+local function MPCatAttack(type)
 
 	-- 根据正反面撕碎/爪击填充空挡
 	-- 基础技能
-	if MPDriudCatSaved.Style==1 then
+	if type==1 then
 
 		-- 爪击流
 		MPCastWithNampower("爪击")
 		return
 
-	elseif MPDriudCatSaved.Style==2 then
+	elseif type==2 then
 
 		-- 均衡 朝向自动
 		if BEHIND then
@@ -576,7 +561,7 @@ local function MPCatAttack()
 			return
 		end
 
-	elseif MPDriudCatSaved.Style==3 then
+	elseif type==3 then
 
 		-- 均衡 偏向撕碎
 		if BEHIND then
@@ -660,13 +645,17 @@ function MPCatBackstab()
 
 	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
 	if JNSF then
-		if BEHIND then
-			MPCastWithNampower("撕碎")
+		if MPDriudCatSaved.Style==1 then
+			MPCastWithNampower("爪击")
 			return
 		else
-			MPCastWithNampower("爪击")
-			--MPCastClaw()
-			return
+			if BEHIND then
+				MPCastWithNampower("撕碎")
+				return
+			else
+				MPCastWithNampower("爪击")
+				return
+			end
 		end
 	end
 
@@ -732,7 +721,7 @@ function MPCatBackstab()
 		end
 	end
 
-	MPCatAttack()
+	MPCatAttack(MPDriudCatSaved.Style)
 
 end
 
@@ -789,9 +778,16 @@ function MPCatBleed()
 		return
 	end
 
-	if JNSF and BEHIND then
-		MPCastWithNampower("撕碎")
-		return
+	if JNSF then
+		if MPDriudCatSaved.Style==1 then
+			MPCastWithNampower("爪击")
+			return
+		else
+			if BEHIND then
+				MPCastWithNampower("撕碎")
+				return
+			end
+		end
 	end
 
 	-- 补扫击
@@ -873,7 +869,7 @@ function MPCatBleed()
 
 	end
 
-	MPCatAttack()
+	MPCatAttack(MPDriudCatSaved.Style)
 
 end
 
@@ -930,9 +926,16 @@ function MPCatBleedNew()
 
 	if MPDriudCatSaved.TigerFury==1 then
 
-		-- 变身猫的猛虎策略
-		if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-			MPCastWithNampower("猛虎之怒")
+		if MPDriudCatSaved.Shapeshift==1 then
+			-- 变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
+				MPCastWithNampower("猛虎之怒")
+			end
+		else
+			-- 不变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+				MPCastWithNampower("猛虎之怒")
+			end
 		end
 	end
 
@@ -963,9 +966,16 @@ function MPCatBleedNew()
 	end
 
 	--清晰预兆
-	if JNSF and BEHIND then
-		MPCastWithNampower("撕碎")
-		return
+	if JNSF then
+		if MPDriudCatSaved.Style==1 then
+			MPCastWithNampower("爪击")
+			return
+		else
+			if BEHIND then
+				MPCastWithNampower("撕碎")
+				return
+			end
+		end
 	end
 
 
@@ -1028,7 +1038,7 @@ function MPCatBleedNew()
 
 	end
 
-	MPCatAttack()
+	MPCatAttack(MPDriudCatSaved.Style)
 
 end
 
@@ -1064,9 +1074,16 @@ function MPCatBackstabNew()
 	end
 
 	if MPDriudCatSaved.TigerFury==1 then
-		-- 变身猫的猛虎策略
-		if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-			MPCastWithNampower("猛虎之怒")
+		if MPDriudCatSaved.Shapeshift==1 then
+			-- 变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
+				MPCastWithNampower("猛虎之怒")
+			end
+		else
+			-- 不变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+				MPCastWithNampower("猛虎之怒")
+			end
 		end
 	end
 
@@ -1076,9 +1093,16 @@ function MPCatBackstabNew()
 	end
 
 	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
-	if JNSF and BEHIND then
-		MPCastWithNampower("撕碎")
-		return
+	if JNSF then
+		if MPDriudCatSaved.Style==1 then
+			MPCastWithNampower("爪击")
+			return
+		else
+			if BEHIND then
+				MPCastWithNampower("撕碎")
+				return
+			end
+		end
 	end
 
 	-- 仇恨高的时候畏缩
@@ -1132,8 +1156,101 @@ function MPCatBackstabNew()
 
 	end
 
-	MPCatAttack()
+	MPCatAttack(MPDriudCatSaved.Style)
 
 end
 
+
+function MPCatPVP()
+
+	-- 不在近战范围
+	if not MPGetTargetDistance("target",8) then
+		CastSpellByName("精灵之火（野性）")
+	end
+
+
+	MPRake = MPGetRakeDot()
+	MPRip = MPGetRipDot()
+	MPRavage = MPGetRavageDot()
+	local _,guid = UnitExists("target")
+
+	-- 变身基本条件
+	if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then --
+
+		if Timer-MPMHTimer>17 and myPower<=30 then
+			MPCastWithoutNampower("重整")
+			MPMsg("猛虎即将结束")
+			return
+		end
+		
+		if not JNSF and not MPBuff("狂暴") then
+
+			if MPCheckShapeshift()>=7 and myPower<MPDriudCatSaved.BleedModeShapeshift then
+				MPCastWithoutNampower("重整")
+				return
+			end
+
+		end
+
+	end
+
+
+	if MPDriudCatSaved.TigerFury==1 then
+
+		if MPDriudCatSaved.Shapeshift==1 then
+			-- 变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
+				MPCastWithNampower("猛虎之怒")
+			end
+		else
+			-- 不变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+				MPCastWithNampower("猛虎之怒")
+			end
+		end
+	end
+
+	-- 补撕扯
+	if not MPRip and GCP>=1 and THP>2000 then
+		MPCastWithNampower("撕扯")
+		return
+	end
+
+
+	--清晰预兆
+	if JNSF and BEHIND then
+		MPCastWithNampower("撕碎")
+		return
+	end
+
+	-- 撕咬
+	if GCP>3 and myPower<MPDriudCatSaved.Ferocious_Value and MPRip and not JNSF and myPower>=35 then
+		MPCastWithoutNampower("凶猛撕咬")
+		return
+	else
+
+		-- 补扫击
+		if not MPRake then 
+			MPCastWithNampower("扫击")
+			return
+		end
+
+	end
+	
+
+
+	local bn = {}
+	bn["反击风暴"]=true
+	bn["闪避"]=true
+
+	if MPBuffList(bn, "target") then
+		MPCatAttack(4)
+		return
+	else
+		MPCatAttack(2)
+		return
+	end
+
+
+end
 

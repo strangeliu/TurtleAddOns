@@ -15,7 +15,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -71,7 +71,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     end
 end)
 
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.TUBoss = 1
@@ -128,7 +128,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
     end
 end)
 
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.TBBoss = 1
@@ -221,16 +221,46 @@ local checkText_NearbyEnemies = checkButton_NearbyEnemies:CreateFontString(nil, 
 checkText_NearbyEnemies:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_NearbyEnemies:SetTextColor(1, 1, 1)
 checkText_NearbyEnemies:SetPoint("LEFT", checkButton_NearbyEnemies, "LEFT", 34, 1)
-checkText_NearbyEnemies:SetText("自动判断 单体/群体 (SuperWoW)")
+checkText_NearbyEnemies:SetText("自动 单体/群体")
+
+
+local slider_NearbyEnemies_Value = CreateFrame("Slider", ADDON_NAME.."Slider_NearbyEnemies_Value", checkButton_NearbyEnemies, "OptionsSliderTemplate")
+slider_NearbyEnemies_Value:SetPoint("RIGHT", checkButton_NearbyEnemies, "RIGHT", 250, -2)
+slider_NearbyEnemies_Value:SetWidth(150) -- 拖动条长度
+slider_NearbyEnemies_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_NearbyEnemies_Value:SetMinMaxValues(5, 20)
+slider_NearbyEnemies_Value:SetValueStep(1)
+slider_NearbyEnemies_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_NearbyEnemies_Value)
+
+local color_NearbyEnemies = "|cFFFFD100"
+
+_G[slider_NearbyEnemies_Value:GetName().."Low"]:Hide()
+_G[slider_NearbyEnemies_Value:GetName().."High"]:Hide()
+
+-- 值变化时的回调函数
+slider_NearbyEnemies_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPWarriorFurySaved.NearbyEnemies_Value = arg1
+    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorFurySaved.NearbyEnemies_Value .."码|r")
+end)
 
 -- 设置点击事件
 checkButton_NearbyEnemies:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.NearbyEnemies = 1
+        color_NearbyEnemies = "|cFFFFD100"
+        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorFurySaved.NearbyEnemies_Value .."码|r")
     else
         MPWarriorFurySaved.NearbyEnemies = 0
+        color_NearbyEnemies = "|cFF888888"
+        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorFurySaved.NearbyEnemies_Value .."码|r")
     end
 end)
+
+
 
 
 postion_y = postion_y-30
@@ -295,7 +325,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-85
@@ -541,7 +571,7 @@ checkButton_SunderArmor:SetScript("OnClick", function(self)
     end
 end)
 
-local checkButton_SunderArmorBOSS = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 140, postion_y, "仅BOSS")
+local checkButton_SunderArmorBOSS = MPCreateCheckButtonSmall(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 140, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_SunderArmorBOSS:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.SunderArmorBOSS = 1
@@ -924,7 +954,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsWarriorFury, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -942,7 +972,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsWarriorFury)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.Power = 1
@@ -951,14 +981,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPWarriorFurySaved.Pick = 1
@@ -967,7 +997,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsWarriorFury, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -985,7 +1015,7 @@ TipText:SetText("宏命令 -  [ 全自动 |cFFC79C6E/fury|r ]  [ 纯单体(防AD
 
 
 -- 配置文件版本号
-local WarriorFurySettingsUIVersion = 0
+local WarriorFurySettingsUIVersion = 30
 
 function MPResetWarriorFurySettings()
 
@@ -1004,6 +1034,7 @@ function MPResetWarriorFurySettings()
     MPWarriorFurySaved.TBBoss = 0
     MPWarriorFurySaved.Target = 0
     MPWarriorFurySaved.NearbyEnemies = 1
+    MPWarriorFurySaved.NearbyEnemies_Value = 8
 
     -- 高级配置
     MPWarriorFurySaved.HeroicStrike = 0
@@ -1071,7 +1102,15 @@ local function InitWarriorFurySettingsPart1()
     checkButton_TBBoss:SetChecked(ToBoolean(MPWarriorFurySaved.TBBoss))
 
     checkButton_Target:SetChecked(ToBoolean(MPWarriorFurySaved.Target))
+
     checkButton_NearbyEnemies:SetChecked(ToBoolean(MPWarriorFurySaved.NearbyEnemies))
+    slider_NearbyEnemies_Value:SetValue(MPWarriorFurySaved.NearbyEnemies_Value)
+    if MPWarriorFurySaved.NearbyEnemies==1 then
+        color_NearbyEnemies = "|cFFFFD100"
+    else
+        color_NearbyEnemies = "|cFF888888"
+    end
+    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorFurySaved.NearbyEnemies_Value .."码|r")
 
 
     checkButton_HealthStone:SetChecked(ToBoolean(MPWarriorFurySaved.HealthStone))

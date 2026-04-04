@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 暗牧一键宏
--- 更新日期：2026-01-06 （后面根据时间来判断版本）
+-- 更新日期：2026-03-31 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -33,7 +33,7 @@ MPCastHolyFireTimer = 0
 
 -- -------------------------------------
 
-local MHP,DM,ZF
+local MHP,DM,ZF,QF
 
 
 -- 神圣之火
@@ -58,6 +58,7 @@ function MPPriestDiscipline()
 	local percentMana = UnitMana("player") / UnitManaMax("player") * 100
 
 	ZF = MPSpellReady("责罚")
+	QF = MPSpellReady("启发")
 
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPPriestDisciplineSaved.Target, 0)
@@ -153,6 +154,20 @@ function MPPriestDiscipline()
 		
 		if MP_SuperWoW and MPGetHolyFireCheck(guid)<2.5 then
 			MPCastHolyFire()
+			return
+		end
+	end
+
+	-- 暗言术：痛
+	if MPPriestDisciplineSaved.Pain==1 and not MPGetPainDot("target") then
+		MPCast("暗言术：痛")
+		return
+	end
+
+	-- 启发
+	if MPPriestDisciplineSaved.InspireMyself==1 and QF then
+		if not MPBuff("启发") then
+			MPCastSpellWithoutTarget("启发","player")
 			return
 		end
 	end

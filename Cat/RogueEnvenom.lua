@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 毒伤贼一键宏
--- 发布日期：2026-03-15 （后面根据时间来判断版本）
+-- 发布日期：2026-04-03 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -229,9 +229,9 @@ function MPRogueEnvenomDPS()
 
 	-- 剑刃乱舞
 	if MPRogueEnvenomSaved.BladeFlurry==1 and myPower>24 then
-		if MPScanNearbyEnemiesCount(12)>1 and not MPBuff("剑刃乱舞") then
+		if MPScanNearbyEnemiesCount(MPRogueEnvenomSaved.BladeFlurry_Value-4)>1 and not MPBuff("剑刃乱舞") then
 			MPCastWithoutNampower("剑刃乱舞")
-		elseif MPScanNearbyEnemiesCount(12)<=1 and MPBuff("剑刃乱舞") then
+		elseif MPScanNearbyEnemiesCount(MPRogueEnvenomSaved.BladeFlurry_Value-4)<=1 and MPBuff("剑刃乱舞") then
 			MPCastWithoutNampower("剑刃乱舞")
 		end
 	end

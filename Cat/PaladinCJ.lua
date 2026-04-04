@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 惩戒骑一键宏
--- 更新日期：2026-01-20 （后面根据时间来判断版本）
+-- 更新日期：2026-04-01 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -380,11 +380,13 @@ function MPPaladinCJSpell()
 		-- 圣契
 
 		if MPPaladinCJSaved.Relic==1 and GCD<0.3 then
-			local percentHealth = UnitHealth("target") / UnitHealthMax("target") * 100
-			if percentHealth < 35 then
-				MPEquipItemByName(MPPaladinCJSaved.Relic_Low, 9)
-			else
-				MPEquipItemByName(MPPaladinCJSaved.Relic_Normal, 9)
+			if MPPaladinCJSaved.RelicBoss==0 or (MPPaladinCJSaved.RelicBoss==1 and MPIsBossTarget()) then
+				local percentHealth = UnitHealth("target") / UnitHealthMax("target") * 100
+				if percentHealth < 35 then
+					MPEquipItemByName(MPPaladinCJSaved.Relic_Low, 9)
+				else
+					MPEquipItemByName(MPPaladinCJSaved.Relic_Normal, 9)
+				end
 			end
 		end
 
@@ -434,6 +436,22 @@ function MPPaladinCJSpell()
 
 			-- 保持十字军圣印
 			if not MPSeal("十字军圣印") then SealCrusader() return end
+
+		elseif MPPaladinSealSaved.Seal==4 then
+
+			-- 保持正义圣印
+			if not MPSeal("正义圣印") then SealJustice() return end
+			if SP and Mana>=76 and GCD>1.4 then
+				if (MPSeal("正义圣印") or MPSeal("命令圣印")) then CastSpellByName("审判") return end
+			end
+
+		elseif MPPaladinSealSaved.Seal==5 then
+
+			-- 保持命令圣印
+			if not MPSeal("命令圣印") then SealCommand() return end
+			if SP and Mana>=76 and GCD>1.4 then
+				if (MPSeal("正义圣印") or MPSeal("命令圣印")) then CastSpellByName("审判") return end
+			end
 
 		elseif MPPaladinSealSaved.Seal==0 then
 

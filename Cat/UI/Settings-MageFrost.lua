@@ -23,7 +23,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -74,7 +74,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPMageFrostSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPMageFrostSaved.TUBoss = 1
@@ -129,7 +129,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPMageFrostSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPMageFrostSaved.TBBoss = 1
@@ -304,7 +304,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-95
@@ -592,7 +592,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsMageFrost, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -609,7 +609,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsMageFrost)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPMageFrostSaved.Power = 1
@@ -618,14 +618,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPMageFrostSaved.Pick = 1
@@ -634,7 +634,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsMageFrost, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()

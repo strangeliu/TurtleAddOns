@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 战斗贼一键宏
--- 发布日期：2026-03-25 （后面根据时间来判断版本）
+-- 发布日期：2026-04-03 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -265,7 +265,7 @@ function MPRogueCombatDPS()
 
 	-- 剑刃乱舞
 	if MPRogueCombatSaved.BladeFlurry==1 and myPower>24 then
-		local aoe = MPScanNearbyEnemiesCount(12)
+		local aoe = MPScanNearbyEnemiesCount(MPRogueCombatSaved.BladeFlurry_Value-4)
 		if aoe>1 and not MPBuff("剑刃乱舞") then
 			MPCastWithoutNampower("剑刃乱舞")
 		elseif aoe<=1 and MPBuff("剑刃乱舞") and TargetDistance then

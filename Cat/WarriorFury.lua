@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 狂暴战DPS一键宏
--- 更新日期：2026-03-27（后面根据时间来判断版本）
+-- 更新日期：2026-04-01（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -58,7 +58,7 @@ function MPFuryDPS(o)
 
 	isAOE = false
 	if Once==0 then
-		if MPScanNearbyEnemiesCount(8) > 1 then
+		if MPScanNearbyEnemiesCount(MPWarriorFurySaved.NearbyEnemies_Value-4) > 1 then
 			isAOE = true
 		end
 	end

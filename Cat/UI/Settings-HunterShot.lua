@@ -23,7 +23,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -74,7 +74,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPHunterShotSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPHunterShotSaved.TUBoss = 1
@@ -129,7 +129,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPHunterShotSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPHunterShotSaved.TBBoss = 1
@@ -161,6 +161,15 @@ checkButton_Mark:SetScript("OnClick", function(self)
         MPHunterShotSaved.Mark = 1
     else
         MPHunterShotSaved.Mark = 0
+    end
+end)
+
+local checkButton_MarkBossOnly = MPCreateCheckButtonSmall(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_MarkBossOnly:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterShotSaved.MarkBossOnly = 1
+    else
+        MPHunterShotSaved.MarkBossOnly = 0
     end
 end)
 
@@ -446,7 +455,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-110
@@ -766,7 +775,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsHunterShot, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -784,7 +793,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsHunterShot)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPHunterShotSaved.Power = 1
@@ -793,14 +802,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPHunterShotSaved.Pick = 1
@@ -809,7 +818,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -827,7 +836,7 @@ TipText:SetText("宏命令 -  [ |cFFABD473/sjdps|r ]")
 
 
 -- 配置文件版本号
-local HunterShotSettingsUIVersion = 21
+local HunterShotSettingsUIVersion = 22
 
 function MPResetHunterShotSettings()
 
@@ -838,6 +847,7 @@ function MPResetHunterShotSettings()
     MPHunterShotSaved.Hawk = 1
     MPHunterShotSaved.Trueshot = 1
     MPHunterShotSaved.Mark = 0
+    MPHunterShotSaved.MarkBossOnly = 0
     MPHunterShotSaved.AimedShot = 1
     MPHunterShotSaved.MultiShot = 1
     MPHunterShotSaved.ArcaneShot = 1
@@ -890,6 +900,7 @@ local function MPInitHunterShotSettingsPart1()
     checkButton_Hawk:SetChecked(ToBoolean(MPHunterShotSaved.Hawk))
     checkButton_Trueshot:SetChecked( ToBoolean(MPHunterShotSaved.Trueshot) )
     checkButton_Mark:SetChecked( ToBoolean(MPHunterShotSaved.Mark) )
+    checkButton_MarkBossOnly:SetChecked( ToBoolean(MPHunterShotSaved.MarkBossOnly) )
     checkButton_AimedShot:SetChecked(ToBoolean(MPHunterShotSaved.AimedShot))
     checkButton_MultiShot:SetChecked(ToBoolean(MPHunterShotSaved.MultiShot))
     checkButton_ArcaneShot:SetChecked(ToBoolean(MPHunterShotSaved.ArcaneShot))

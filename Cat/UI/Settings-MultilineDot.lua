@@ -10,7 +10,7 @@ local function ToBoolean(value)
 end
 
 -- 创建主框架
-CatUISettingsMultilineDot = MPCreateFrame(ADDON_NAME.."Frame", 520, 510, "|cFFDD4080通用 - 多线DOT|r")
+CatUISettingsMultilineDot = MPCreateFrame(ADDON_NAME.."Frame", 520, 510, "|cFFDD4080"..MPLanguage.UI_Set_MultiDotTitle.."|r")
 
 local postion_y = -50
 
@@ -21,7 +21,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -38,7 +38,7 @@ local checkText_Moonfire = checkButton_Moonfire:CreateFontString(nil, "OVERLAY",
 checkText_Moonfire:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_Moonfire:SetTextColor(1, 1, 1)
 checkText_Moonfire:SetPoint("LEFT", checkButton_Moonfire, "LEFT", 34, 1)
-checkText_Moonfire:SetText("启用 |cFFFF7D0A德鲁伊 - 月火术|r")
+checkText_Moonfire:SetText(MPLanguage.UI_Set_DruidMoonfire)
 
 -- 设置点击事件
 checkButton_Moonfire:SetScript("OnClick", function(self)
@@ -59,7 +59,7 @@ local checkText_InsectSwarm = checkButton_InsectSwarm:CreateFontString(nil, "OVE
 checkText_InsectSwarm:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_InsectSwarm:SetTextColor(1, 1, 1)
 checkText_InsectSwarm:SetPoint("LEFT", checkButton_InsectSwarm, "LEFT", 34, 1)
-checkText_InsectSwarm:SetText("启用 |cFFFF7D0A德鲁伊 - 虫群|r")
+checkText_InsectSwarm:SetText(MPLanguage.UI_Set_DruidInsectSwarm)
 
 -- 设置点击事件
 checkButton_InsectSwarm:SetScript("OnClick", function(self)
@@ -88,7 +88,7 @@ local checkText_Pain = checkButton_Pain:CreateFontString(nil, "OVERLAY", "GameFo
 checkText_Pain:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_Pain:SetTextColor(1, 1, 1)
 checkText_Pain:SetPoint("LEFT", checkButton_Pain, "LEFT", 34, 1)
-checkText_Pain:SetText("启用 |cFFFFFFFF牧师 - 暗言术：痛|r")
+checkText_Pain:SetText(MPLanguage.UI_Set_PriestPain)
 
 -- 设置点击事件
 checkButton_Pain:SetScript("OnClick", function(self)
@@ -114,7 +114,7 @@ local checkText_CurseAgony = checkButton_CurseAgony:CreateFontString(nil, "OVERL
 checkText_CurseAgony:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_CurseAgony:SetTextColor(1, 1, 1)
 checkText_CurseAgony:SetPoint("LEFT", checkButton_CurseAgony, "LEFT", 34, 1)
-checkText_CurseAgony:SetText("启用 |cFF9482C9术士 - 痛苦诅咒|r")
+checkText_CurseAgony:SetText(MPLanguage.UI_Set_WarlockCurseAgony)
 
 
 
@@ -128,7 +128,7 @@ local checkText_Corruption = checkButton_Corruption:CreateFontString(nil, "OVERL
 checkText_Corruption:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_Corruption:SetTextColor(1, 1, 1)
 checkText_Corruption:SetPoint("LEFT", checkButton_Corruption, "LEFT", 34, 1)
-checkText_Corruption:SetText("启用 |cFF9482C9术士 - 腐蚀术|r")
+checkText_Corruption:SetText(MPLanguage.UI_Set_WarlockCorruption)
 
 -- 设置点击事件
 checkButton_Corruption:SetScript("OnClick", function(self)
@@ -154,7 +154,7 @@ local checkText_CurseDoom = checkButton_CurseDoom:CreateFontString(nil, "OVERLAY
 checkText_CurseDoom:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_CurseDoom:SetTextColor(1, 1, 1)
 checkText_CurseDoom:SetPoint("LEFT", checkButton_CurseDoom, "LEFT", 34, 1)
-checkText_CurseDoom:SetText("启用 |cFF9482C9术士 - 厄运诅咒|r")
+checkText_CurseDoom:SetText(MPLanguage.UI_Set_WarlockCurseDoom)
 
 
 
@@ -170,7 +170,7 @@ local checkText_SiphonLife = checkButton_SiphonLife:CreateFontString(nil, "OVERL
 checkText_SiphonLife:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_SiphonLife:SetTextColor(1, 1, 1)
 checkText_SiphonLife:SetPoint("LEFT", checkButton_SiphonLife, "LEFT", 34, 1)
-checkText_SiphonLife:SetText("启用 |cFF9482C9术士 - 生命虹吸|r")
+checkText_SiphonLife:SetText(MPLanguage.UI_Set_WarlockSiphonLife)
 
 -- 设置点击事件
 checkButton_SiphonLife:SetScript("OnClick", function(self)
@@ -197,7 +197,7 @@ local checkText_CurseRecklessness = checkButton_CurseRecklessness:CreateFontStri
 checkText_CurseRecklessness:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_CurseRecklessness:SetTextColor(1, 1, 1)
 checkText_CurseRecklessness:SetPoint("LEFT", checkButton_CurseRecklessness, "LEFT", 34, 1)
-checkText_CurseRecklessness:SetText("启用 |cFF9482C9术士 - 鲁莽诅咒|r (大诅咒)")
+checkText_CurseRecklessness:SetText(MPLanguage.UI_Set_WarlockCurseRecklessness)
 
 
 -- 创建单选框 - 术士 - 献祭
@@ -210,7 +210,7 @@ local checkText_Immolate = checkButton_Immolate:CreateFontString(nil, "OVERLAY",
 checkText_Immolate:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_Immolate:SetTextColor(1, 1, 1)
 checkText_Immolate:SetPoint("LEFT", checkButton_Immolate, "LEFT", 34, 1)
-checkText_Immolate:SetText("启用 |cFF9482C9术士 - 献祭|r")
+checkText_Immolate:SetText(MPLanguage.UI_Set_WarlockImmolate)
 
 -- 设置点击事件
 checkButton_Immolate:SetScript("OnClick", function(self)
@@ -235,7 +235,7 @@ local checkText_CurseElements = checkButton_CurseElements:CreateFontString(nil, 
 checkText_CurseElements:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_CurseElements:SetTextColor(1, 1, 1)
 checkText_CurseElements:SetPoint("LEFT", checkButton_CurseElements, "LEFT", 34, 1)
-checkText_CurseElements:SetText("启用 |cFF9482C9术士 - 元素诅咒|r (大诅咒)")
+checkText_CurseElements:SetText(MPLanguage.UI_Set_WarlockCurseElements)
 
 
 postion_y = postion_y-30
@@ -250,7 +250,7 @@ local checkText_CurseShadow = checkButton_CurseShadow:CreateFontString(nil, "OVE
 checkText_CurseShadow:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_CurseShadow:SetTextColor(1, 1, 1)
 checkText_CurseShadow:SetPoint("LEFT", checkButton_CurseShadow, "LEFT", 34, 1)
-checkText_CurseShadow:SetText("启用 |cFF9482C9术士 - 暗影诅咒|r (大诅咒)")
+checkText_CurseShadow:SetText(MPLanguage.UI_Set_WarlockCurseShadow)
 
 
 
@@ -361,7 +361,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("高级配置")
+TipText:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-105
@@ -377,7 +377,7 @@ local checkText_InFight = checkButton_InFight:CreateFontString(nil, "OVERLAY", "
 checkText_InFight:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_InFight:SetTextColor(1, 1, 1)
 checkText_InFight:SetPoint("LEFT", checkButton_InFight, "LEFT", 34, 1)
-checkText_InFight:SetText("战斗中才允许多线DOT")
+checkText_InFight:SetText(MPLanguage.UI_Set_InFightOnly)
 
 -- 设置点击事件
 checkButton_InFight:SetScript("OnClick", function(self)
@@ -398,7 +398,7 @@ local checkText_NoCC = checkButton_NoCC:CreateFontString(nil, "OVERLAY", "GameFo
 checkText_NoCC:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_NoCC:SetTextColor(1, 1, 1)
 checkText_NoCC:SetPoint("LEFT", checkButton_NoCC, "LEFT", 34, 1)
-checkText_NoCC:SetText("忽略目标 被硬控中")
+checkText_NoCC:SetText(MPLanguage.UI_Set_IgnoreCC)
 
 -- 设置点击事件
 checkButton_NoCC:SetScript("OnClick", function(self)
@@ -423,7 +423,7 @@ local checkText_ScanEnemy = checkButton_ScanEnemy:CreateFontString(nil, "OVERLAY
 checkText_ScanEnemy:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_ScanEnemy:SetTextColor(1, 1, 1)
 checkText_ScanEnemy:SetPoint("LEFT", checkButton_ScanEnemy, "LEFT", 34, 1)
-checkText_ScanEnemy:SetText("主动索敌 (若遇卡顿，可以尝试关闭)")
+checkText_ScanEnemy:SetText(MPLanguage.UI_Set_ScanEnemy)
 
 -- 设置点击事件
 checkButton_ScanEnemy:SetScript("OnClick", function(self)
@@ -446,7 +446,7 @@ local checkText_NoCombat = checkButton_NoCombat:CreateFontString(nil, "OVERLAY",
 checkText_NoCombat:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_NoCombat:SetTextColor(1, 1, 1)
 checkText_NoCombat:SetPoint("LEFT", checkButton_NoCombat, "LEFT", 34, 1)
-checkText_NoCombat:SetText("忽略目标 未进入战斗")
+checkText_NoCombat:SetText(MPLanguage.UI_Set_IgnoreNotInCombat)
 
 -- 设置点击事件
 checkButton_NoCombat:SetScript("OnClick", function(self)
@@ -471,7 +471,7 @@ local checkText_NOPlayer = checkButton_NOPlayer:CreateFontString(nil, "OVERLAY",
 checkText_NOPlayer:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_NOPlayer:SetTextColor(1, 1, 1)
 checkText_NOPlayer:SetPoint("LEFT", checkButton_NOPlayer, "LEFT", 34, 1)
-checkText_NOPlayer:SetText("忽略目标 玩家 (或被心控)")
+checkText_NOPlayer:SetText(MPLanguage.UI_Set_IgnorePlayer)
 
 -- 设置点击事件
 checkButton_NOPlayer:SetScript("OnClick", function(self)
@@ -501,7 +501,7 @@ _G[slider_BeginValue:GetName().."High"]:Hide()
 slider_BeginValue:SetScript("OnValueChanged", function()
     MPMultilineDotSaved.BeginValue = arg1
 
-    _G[slider_BeginValue:GetName().."Text"]:SetText("血量 > "..MPMultilineDotSaved.BeginValue)
+    _G[slider_BeginValue:GetName().."Text"]:SetText(MPLanguage.UI_Set_HPAbove..MPMultilineDotSaved.BeginValue)
 end)
 
 
@@ -515,7 +515,7 @@ local checkText_SuperWoW = CatUISettingsMultilineDot:CreateFontString(nil, "OVER
 checkText_SuperWoW:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
 checkText_SuperWoW:SetTextColor(1, 1, 1)
 checkText_SuperWoW:SetPoint("LEFT", CatUISettingsMultilineDot, "LEFT", 20, postion_y)
-checkText_SuperWoW:SetText("说明：自动扫描敌方目标并上DOT，必须SuperWoW模组支持。")
+checkText_SuperWoW:SetText(MPLanguage.UI_Set_MultiDotNote)
 
 
 
@@ -525,7 +525,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsMultilineDot, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -545,7 +545,7 @@ TipText:SetPoint("BOTTOM", CatUISettingsMultilineDot, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ |cFFDD4080/MDot|r ]")
+TipText:SetText(MPLanguage.UI_Set_MultiDotMacroTip)
 
 
 
@@ -619,7 +619,7 @@ function MPInitMultilineDotSettings()
     checkButton_NOPlayer:SetChecked(ToBoolean(MPMultilineDotSaved.NOPlayer))
 
     slider_BeginValue:SetValue(MPMultilineDotSaved.BeginValue)
-    _G[slider_BeginValue:GetName().."Text"]:SetText("血量 > "..MPMultilineDotSaved.BeginValue)
+    _G[slider_BeginValue:GetName().."Text"]:SetText(MPLanguage.UI_Set_HPAbove..MPMultilineDotSaved.BeginValue)
 
 end
 

@@ -3,7 +3,7 @@ local ADDON_NAME = "Settings-Power"
 
 
 -- 创建主框架
-CatUISettingsPower = MPCreateFrame(ADDON_NAME.."Frame", 520, 520, "|cFFDD4080通用 - 功能药水|r")
+CatUISettingsPower = MPCreateFrame(ADDON_NAME.."Frame", 520, 520, "|cFFDD4080"..MPLanguage.UI_Set_PowerTitle.."|r")
 
 
 local postion_y = -50
@@ -15,7 +15,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -31,7 +31,7 @@ end
 local postion_y = postion_y-40
 
 -- 创建单选框 - 使用
-local checkButton_Use = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "开启功能药水")
+local checkButton_Use = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_EnablePowerPotionShort)
 checkButton_Use:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Use = 1
@@ -41,7 +41,7 @@ checkButton_Use:SetScript("OnClick", function(self)
 end)
 
 -- 创建单选框 - 战斗中
-local checkButton_Combat = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "仅在战斗中生效")
+local checkButton_Combat = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_CombatOnly)
 checkButton_Combat:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Combat = 1
@@ -60,14 +60,14 @@ noCDTipText:SetWidth(250)
 noCDTipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 noCDTipText:SetTextColor(1, 0.8, 0)
 noCDTipText:SetJustifyH("LEFT")
-noCDTipText:SetText("防护配置")
+noCDTipText:SetText(MPLanguage.UI_Set_ProtectionConfig)
 
 
 postion_y = postion_y-55
 
 
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFF73B560草药茶|r")
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoHerbalTeaPower)
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -82,9 +82,9 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 slider_HerbalTea:SetScript("OnValueChanged", function()
     MPPowerSaved.HerbalTea_Value = arg1
     if MPPowerSaved.HerbalTea==1 then
-        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HerbalTea_Value .."%|r")
     else
-        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HerbalTea_Value .."%|r")
     end
 end)
 
@@ -92,16 +92,16 @@ end)
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.HerbalTea = 1
-        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HerbalTea_Value .."%|r")
     else
         MPPowerSaved.HerbalTea = 0
-        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HerbalTea_Value .."%|r")
     end
 end)
 
 
 -- 创建单选框 - 草药茶 蓝量
-local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFF73B560草药茶|r")
+local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoHerbalTeaPower)
 
 local slider_HerbalTeaMana = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTeaMana", checkButton_HerbalTeaMana, "OptionsSliderTemplate")
 slider_HerbalTeaMana:SetPoint("RIGHT", checkButton_HerbalTeaMana, "RIGHT", 250, -2)
@@ -116,9 +116,9 @@ MPCatUISliderRegionHide(slider_HerbalTeaMana)
 slider_HerbalTeaMana:SetScript("OnValueChanged", function()
     MPPowerSaved.HerbalTeaMana_Value = arg1
     if MPPowerSaved.HerbalTeaMana==1 then
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.HerbalTeaMana_Value .."%|r")
     else
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -126,10 +126,10 @@ end)
 checkButton_HerbalTeaMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.HerbalTeaMana = 1
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.HerbalTeaMana_Value .."%|r")
     else
         MPPowerSaved.HerbalTeaMana = 0
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -138,7 +138,7 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 活力
-local checkButton_Rejuven = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFFE777FF特效活力|r")
+local checkButton_Rejuven = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoRejuven)
 
 local slider_Rejuven = CreateFrame("Slider", ADDON_NAME.."Slider_Rejuven", checkButton_Rejuven, "OptionsSliderTemplate")
 slider_Rejuven:SetPoint("RIGHT", checkButton_Rejuven, "RIGHT", 250, -2)
@@ -153,9 +153,9 @@ MPCatUISliderRegionHide(slider_Rejuven)
 slider_Rejuven:SetScript("OnValueChanged", function()
     MPPowerSaved.Rejuven_Value = arg1
     if MPPowerSaved.Rejuven==1 then
-        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Rejuven_Value .."%|r")
+        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Rejuven_Value .."%|r")
     else
-        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Rejuven_Value .."%|r")
+        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Rejuven_Value .."%|r")
     end
 end)
 
@@ -163,16 +163,16 @@ end)
 checkButton_Rejuven:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Rejuven = 1
-        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Rejuven_Value .."%|r")
+        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Rejuven_Value .."%|r")
     else
         MPPowerSaved.Rejuven = 0
-        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Rejuven_Value .."%|r")
+        _G[slider_Rejuven:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Rejuven_Value .."%|r")
     end
 end)
 
 
 -- 创建单选框 - 活力
-local checkButton_RejuvenMana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFFE777FF特效活力|r")
+local checkButton_RejuvenMana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoRejuven)
 
 local slider_RejuvenMana = CreateFrame("Slider", ADDON_NAME.."Slider_RejuvenMana", checkButton_RejuvenMana, "OptionsSliderTemplate")
 slider_RejuvenMana:SetPoint("RIGHT", checkButton_RejuvenMana, "RIGHT", 250, -2)
@@ -187,9 +187,9 @@ MPCatUISliderRegionHide(slider_RejuvenMana)
 slider_RejuvenMana:SetScript("OnValueChanged", function()
     MPPowerSaved.RejuvenMana_Value = arg1
     if MPPowerSaved.RejuvenMana==1 then
-        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.RejuvenMana_Value .."%|r")
+        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.RejuvenMana_Value .."%|r")
     else
-        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.RejuvenMana_Value .."%|r")
+        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.RejuvenMana_Value .."%|r")
     end
 end)
 
@@ -197,10 +197,10 @@ end)
 checkButton_RejuvenMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.RejuvenMana = 1
-        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.RejuvenMana_Value .."%|r")
+        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.RejuvenMana_Value .."%|r")
     else
         MPPowerSaved.RejuvenMana = 0
-        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.RejuvenMana_Value .."%|r")
+        _G[slider_RejuvenMana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.RejuvenMana_Value .."%|r")
     end
 end)
 
@@ -213,7 +213,7 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 大红
-local checkButton_Healing = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFFD81811特效治疗|r")
+local checkButton_Healing = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoHealing)
 
 local slider_Healing = CreateFrame("Slider", ADDON_NAME.."Slider_Heal", checkButton_Healing, "OptionsSliderTemplate")
 slider_Healing:SetPoint("RIGHT", checkButton_Healing, "RIGHT", 250, -2)
@@ -228,9 +228,9 @@ MPCatUISliderRegionHide(slider_Healing)
 slider_Healing:SetScript("OnValueChanged", function()
     MPPowerSaved.Healing_Value = arg1
     if MPPowerSaved.Healing==1 then
-        _G[slider_Healing:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Healing_Value .."%|r")
+        _G[slider_Healing:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Healing_Value .."%|r")
     else
-        _G[slider_Healing:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Healing_Value .."%|r")
+        _G[slider_Healing:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Healing_Value .."%|r")
     end
 end)
 
@@ -238,16 +238,16 @@ end)
 checkButton_Healing:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Healing = 1
-        _G[slider_Healing:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Healing_Value .."%|r")
+        _G[slider_Healing:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Healing_Value .."%|r")
     else
         MPPowerSaved.Healing = 0
-        _G[slider_Healing:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Healing_Value .."%|r")
+        _G[slider_Healing:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Healing_Value .."%|r")
     end
 end)
 
 
 -- 创建单选框 - 法力药水
-local checkButton_Mana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFF3E97E7特效法力|r")
+local checkButton_Mana = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoMana)
 
 local slider_Mana = CreateFrame("Slider", ADDON_NAME.."Slider_Mana", checkButton_Mana, "OptionsSliderTemplate")
 slider_Mana:SetPoint("RIGHT", checkButton_Mana, "RIGHT", 250, -2)
@@ -262,9 +262,9 @@ MPCatUISliderRegionHide(slider_Mana)
 slider_Mana:SetScript("OnValueChanged", function()
     MPPowerSaved.Mana_Value = arg1
     if MPPowerSaved.Mana==1 then
-        _G[slider_Mana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.Mana_Value .."%|r")
+        _G[slider_Mana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.Mana_Value .."%|r")
     else
-        _G[slider_Mana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.Mana_Value .."%|r")
+        _G[slider_Mana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.Mana_Value .."%|r")
     end
 end)
 
@@ -272,10 +272,10 @@ end)
 checkButton_Mana:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Mana = 1
-        _G[slider_Mana:GetName().."Text"]:SetText("|cFFFFD100蓝量: ".. MPPowerSaved.Mana_Value .."%|r")
+        _G[slider_Mana:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.Mana_Value .."%|r")
     else
         MPPowerSaved.Mana = 0
-        _G[slider_Mana:GetName().."Text"]:SetText("|cFF888888蓝量: ".. MPPowerSaved.Mana_Value .."%|r")
+        _G[slider_Mana:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_ManaLine.. MPPowerSaved.Mana_Value .."%|r")
     end
 end)
 
@@ -283,7 +283,7 @@ end)
 postion_y = postion_y-40
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFF42DE1F治疗石|r")
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoHealthStonePower)
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -298,9 +298,9 @@ MPCatUISliderRegionHide(slider_HealthStone)
 slider_HealthStone:SetScript("OnValueChanged", function()
     MPPowerSaved.HealthStone_Value = arg1
     if MPPowerSaved.HealthStone==1 then
-        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HealthStone_Value .."%|r")
     else
-        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HealthStone_Value .."%|r")
     end
 end)
 
@@ -308,16 +308,16 @@ end)
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.HealthStone = 1
-        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HealthStone_Value .."%|r")
     else
         MPPowerSaved.HealthStone = 0
-        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.HealthStone_Value .."%|r")
     end
 end)
 
 
 -- 创建单选框 - 鞭根块茎
-local checkButton_Carrot = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFFCEBA6B鞭根块茎|r")
+local checkButton_Carrot = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoCarrotPower)
 
 local slider_Carrot = CreateFrame("Slider", ADDON_NAME.."Slider_Carrot", checkButton_Carrot, "OptionsSliderTemplate")
 slider_Carrot:SetPoint("RIGHT", checkButton_Carrot, "RIGHT", 250, -2)
@@ -332,9 +332,9 @@ MPCatUISliderRegionHide(slider_Carrot)
 slider_Carrot:SetScript("OnValueChanged", function()
     MPPowerSaved.Carrot_Value = arg1
     if MPPowerSaved.Carrot==1 then
-        _G[slider_Carrot:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Carrot_Value .."%|r")
     else
-        _G[slider_Carrot:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Carrot_Value .."%|r")
     end
 end)
 
@@ -342,10 +342,10 @@ end)
 checkButton_Carrot:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Carrot = 1
-        _G[slider_Carrot:GetName().."Text"]:SetText("|cFFFFD100血线: ".. MPPowerSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText("|cFFFFD100"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Carrot_Value .."%|r")
     else
         MPPowerSaved.Carrot = 0
-        _G[slider_Carrot:GetName().."Text"]:SetText("|cFF888888血线: ".. MPPowerSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText("|cFF888888"..MPLanguage.UI_Set_HealthLine.. MPPowerSaved.Carrot_Value .."%|r")
     end
 end)
 
@@ -360,7 +360,7 @@ end)
 postion_y = postion_y-40
 
 -- 创建单选框 - 无敌
-local checkButton_Invincible = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFFCBDB5F有限无敌|r")
+local checkButton_Invincible = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoInvincible)
 checkButton_Invincible:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Invincible = 1
@@ -368,7 +368,7 @@ checkButton_Invincible:SetScript("OnClick", function(self)
         MPPowerSaved.Invincible = 0
     end
 end)
-local checkButton_InvincibleBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, "仅BOSS")
+local checkButton_InvincibleBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_InvincibleBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.InvincibleBoss = 1
@@ -379,7 +379,7 @@ end)
 
 
 -- 创建单选框 - 解毒药剂
-local checkButton_Detoxify = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFF63840E解毒药水/抗毒药剂|r")
+local checkButton_Detoxify = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoDetoxify)
 checkButton_Detoxify:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Detoxify = 1
@@ -401,13 +401,13 @@ attackTipText:SetWidth(250)
 attackTipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 attackTipText:SetTextColor(1, 0.8, 0)
 attackTipText:SetJustifyH("LEFT")
-attackTipText:SetText("进攻配置")
+attackTipText:SetText(MPLanguage.UI_Set_OffenseConfig)
 
 
 postion_y = postion_y-105
 
 -- 创建单选框 - 上方饰品
-local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动爆发饰品(上)")
+local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoTrinketBurst)
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Trinket_Upper = 1
@@ -415,7 +415,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPPowerSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.TUBoss = 1
@@ -425,7 +425,7 @@ checkButton_TUBoss:SetScript("OnClick", function(self)
 end)
 
 -- 创建单选框 - 下方饰品
-local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动爆发饰品(下)")
+local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoTrinketBurstLower)
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Trinket_Below = 1
@@ -433,7 +433,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPPowerSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 510, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 510, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.TBBoss = 1
@@ -446,7 +446,7 @@ end)
 postion_y = postion_y-40
 
 -- 创建单选框 - 强怒
-local checkButton_Powerful = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFFC61000强效怒气|r")
+local checkButton_Powerful = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoPowerfulRage)
 checkButton_Powerful:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Powerful = 1
@@ -454,7 +454,7 @@ checkButton_Powerful:SetScript("OnClick", function(self)
         MPPowerSaved.Powerful = 0
     end
 end)
-local checkButton_PowerfulBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, "仅BOSS")
+local checkButton_PowerfulBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_PowerfulBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.PowerfulBoss = 1
@@ -464,7 +464,7 @@ checkButton_PowerfulBoss:SetScript("OnClick", function(self)
 end)
 
 -- 创建单选框 - 急速
-local checkButton_Swiftness = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFFC54018加速药水|r")
+local checkButton_Swiftness = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoSwiftness)
 checkButton_Swiftness:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Swiftness = 1
@@ -472,7 +472,7 @@ checkButton_Swiftness:SetScript("OnClick", function(self)
         MPPowerSaved.Swiftness = 0
     end
 end)
-local checkButton_SwiftnessBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 510, postion_y, "仅BOSS")
+local checkButton_SwiftnessBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 510, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_SwiftnessBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.SwiftnessBoss = 1
@@ -485,7 +485,7 @@ end)
 postion_y = postion_y-40
 
 -- 创建单选框 - 魂能之速
-local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 魂能之速")
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoSoulspeedPower)
 checkButton_Soulspeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Soulspeed = 1
@@ -493,7 +493,7 @@ checkButton_Soulspeed:SetScript("OnClick", function(self)
         MPPowerSaved.Soulspeed = 0
     end
 end)
-local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, "仅BOSS")
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.SoulspeedBoss = 1
@@ -503,7 +503,7 @@ checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
 end)
 
 -- 创建单选框 - 献祭之油
-local checkButton_Sacrificial = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, "自动 |cFFEB478D献祭之油|r (SW+UXP模组)")
+local checkButton_Sacrificial = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_AutoSacrificialPower)
 checkButton_Sacrificial:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Sacrificial = 1
@@ -523,13 +523,13 @@ gongnengTipText:SetWidth(250)
 gongnengTipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 gongnengTipText:SetTextColor(1, 0.8, 0)
 gongnengTipText:SetJustifyH("LEFT")
-gongnengTipText:SetText("特殊功能配置")
+gongnengTipText:SetText(MPLanguage.UI_Set_SpecialConfig)
 
 
 postion_y = postion_y-135
 
 -- 创建单选框 - 屠魔药剂
-local checkButton_Demon = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, "自动 |cFF6A1681屠魔药剂|r")
+local checkButton_Demon = MPCreateCheckButton(CatUISettingsPower, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_AutoDemonSlaying)
 checkButton_Demon:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.Demon = 1
@@ -537,7 +537,7 @@ checkButton_Demon:SetScript("OnClick", function(self)
         MPPowerSaved.Demon = 0
     end
 end)
-local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, "仅BOSS")
+local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsPower, ADDON_NAME.."CheckButton", 190, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_DemonBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPowerSaved.DemonBoss = 1
@@ -555,7 +555,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsPower, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -575,7 +575,7 @@ TipText:SetPoint("BOTTOM", CatUISettingsPower, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ 独立使用 |cFFDD4080/catp|r ]")
+TipText:SetText(MPLanguage.UI_Set_PowerMacroTip)
 
 
 

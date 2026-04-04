@@ -15,7 +15,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -66,7 +66,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPRogueEnvenomSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueEnvenomSaved.TUBoss = 1
@@ -121,7 +121,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPRogueEnvenomSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueEnvenomSaved.TBBoss = 1
@@ -520,7 +520,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-130
@@ -611,14 +611,41 @@ local checkText_BladeFlurry = checkButton_BladeFlurry:CreateFontString(nil, "OVE
 checkText_BladeFlurry:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 checkText_BladeFlurry:SetTextColor(1, 1, 1)
 checkText_BladeFlurry:SetPoint("LEFT", checkButton_BladeFlurry, "LEFT", 34, 1)
-checkText_BladeFlurry:SetText("自动 剑刃乱舞 (SuperWoW)")
+checkText_BladeFlurry:SetText("自动 剑刃乱舞")
+
+local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
+slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
+slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
+slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
+slider_BladeFlurry_Value:SetValueStep(1)
+slider_BladeFlurry_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+
+local color_BladeFlurry = "|cFFFFD100"
+
+_G[slider_BladeFlurry_Value:GetName().."Low"]:Hide()
+_G[slider_BladeFlurry_Value:GetName().."High"]:Hide()
+
+-- 值变化时的回调函数
+slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPRogueEnvenomSaved.BladeFlurry_Value = arg1
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved.BladeFlurry_Value .."码|r")
+end)
 
 -- 设置点击事件
 checkButton_BladeFlurry:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueEnvenomSaved.BladeFlurry = 1
+        color_BladeFlurry = "|cFFFFD100"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved.BladeFlurry_Value .."码|r")
     else
         MPRogueEnvenomSaved.BladeFlurry = 0
+        color_BladeFlurry = "|cFF888888"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved.BladeFlurry_Value .."码|r")
     end
 end)
 
@@ -820,7 +847,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsRogueEnvenom, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -837,7 +864,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsRogueEnvenom)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueEnvenomSaved.Power = 1
@@ -846,14 +873,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueEnvenomSaved.Pick = 1
@@ -862,7 +889,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -880,7 +907,7 @@ TipText:SetText("宏命令 -  [ 自动毒伤宏 |cFFFFF569/dsdps|r ]")
 
 
 -- 配置文件版本号
-local RogueEnvenomSettingsUIVersion = 6
+local RogueEnvenomSettingsUIVersion = 7
 
 function MPResetRogueEnvenomSettings()
 
@@ -946,7 +973,7 @@ function MPResetRogueEnvenomSettings()
     MPRogueEnvenomSaved.LeftTime_Value = 2
 
     MPRogueEnvenomSaved.BladeFlurry = 0
-    MPRogueEnvenomSaved.BladeFlurry_Value = 1
+    MPRogueEnvenomSaved.BladeFlurry_Value = 10
     MPRogueEnvenomSaved.Protect = 0
 
     -- 通用
@@ -986,7 +1013,6 @@ local function InitRogueEnvenomSettingsPart1()
     checkButton_RacialTraits:SetChecked(ToBoolean(MPRogueEnvenomSaved.RacialTraits))
     checkButton_Soulspeed:SetChecked(ToBoolean(MPRogueEnvenomSaved.Soulspeed))
 
-    checkButton_BladeFlurry:SetChecked(MPRogueEnvenomSaved.BladeFlurry)
     checkButton_Protect:SetChecked(MPRogueEnvenomSaved.Protect)
 
     checkButton_LeaveFight:SetChecked(ToBoolean(MPRogueEnvenomSaved.LeaveFight))
@@ -1039,6 +1065,16 @@ function MPInitRogueEnvenomSettings()
         color_Carrot = "|cFF888888"
     end
     _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPRogueEnvenomSaved.Carrot_Value .."%|r")
+
+
+    checkButton_BladeFlurry:SetChecked(MPRogueEnvenomSaved.BladeFlurry)
+    slider_BladeFlurry_Value:SetValue(MPRogueEnvenomSaved.BladeFlurry_Value)
+    if MPRogueEnvenomSaved.BladeFlurry==1 then
+        color_BladeFlurry = "|cFFFFD100"
+    else
+        color_BladeFlurry = "|cFF888888"
+    end
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved.BladeFlurry_Value .."码|r")
 
 
 

@@ -27,7 +27,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPDriudCatSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButton(frame, "CheckButton", 850, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButton(frame, "CheckButton", 850, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPDriudCatSaved.TUBoss = 1
@@ -47,7 +47,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPDriudCatSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButton(frame, "CheckButton", 850, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButton(frame, "CheckButton", 850, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPDriudCatSaved.TBBoss = 1

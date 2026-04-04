@@ -210,6 +210,8 @@ MPPosionBlcokList = {
     ["维克洛尔大帝"] = true,
     ["维克尼拉斯大帝"] = true,
 
+    -- 世界
+
 }
 
 -- 检测单位是否可以中毒
@@ -303,6 +305,36 @@ function MPIsHunterMark(unit)
 
 	return true
 end
+
+
+
+-- 奥术射击黑名单
+MPHunterArcaneShotBlcokList = {
+	-- TAQ
+    ["维克洛尔大帝"] = true,
+    ["维克尼拉斯大帝"] = true,
+}
+
+-- 检测单位是否吃奥术射击
+--- return boolean can 返回真，否则返回假
+function MPIsHunterArcaneShot(unit)
+	unit = unit or "target"
+	local name = UnitName(unit)
+
+	if not name then
+		return false
+	end
+
+	-- 判断奥术射击名单
+	if MPHunterArcaneShotBlcokList[name] == true then
+		return false
+	end
+
+	return true
+end
+
+
+
 
 
 

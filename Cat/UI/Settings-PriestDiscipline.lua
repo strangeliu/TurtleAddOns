@@ -5,7 +5,7 @@ local ADDON_NAME = "Settings-PriestDiscipline"
 
 
 -- 创建主框架
-CatUISettingsPriestDiscipline = MPCreateFrame(ADDON_NAME.."Frame", 520, 400, "|cFFFFFFFF设置 - 戒律牧|r")
+CatUISettingsPriestDiscipline = MPCreateFrame(ADDON_NAME.."Frame", 520, 440, "|cFFFFFFFF设置 - 戒律牧|r")
 
 local postion_y = -50
 
@@ -16,7 +16,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -46,7 +46,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPPriestDisciplineSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPriestDisciplineSaved.TUBoss = 1
@@ -80,7 +80,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPPriestDisciplineSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPriestDisciplineSaved.TBBoss = 1
@@ -93,15 +93,16 @@ end)
 
 postion_y = postion_y-30
 
--- 创建单选框 - 惩击
-local checkButton_Smite = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "开启 惩击")
-checkButton_Smite:SetScript("OnClick", function(self)
+-- 创建单选框 - 保持 痛
+local checkButton_Pain = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "保持 暗言术：痛")
+checkButton_Pain:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestDisciplineSaved.Smite = 1
+        MPPriestDisciplineSaved.Pain = 1
     else
-        MPPriestDisciplineSaved.Smite = 0
+        MPPriestDisciplineSaved.Pain = 0
     end
 end)
+
 
 
 
@@ -112,6 +113,21 @@ checkButton_Target:SetScript("OnClick", function(self)
         MPPriestDisciplineSaved.Target = 1
     else
         MPPriestDisciplineSaved.Target = 0
+    end
+end)
+
+
+
+postion_y = postion_y-30
+
+
+-- 创建单选框 - 惩击
+local checkButton_Smite = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "开启 惩击")
+checkButton_Smite:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPriestDisciplineSaved.Smite = 1
+    else
+        MPPriestDisciplineSaved.Smite = 0
     end
 end)
 
@@ -140,7 +156,7 @@ end)
 
 
 
-postion_y = postion_y
+postion_y = postion_y+5
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsPriestDiscipline:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -149,10 +165,10 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
-postion_y = postion_y-70
+postion_y = postion_y-80
 
 
 -- 创建单选框 - 种族天赋
@@ -220,13 +236,13 @@ end)
 postion_y = postion_y-40
 
 
--- 创建单选框 - 责罚对自己
-local checkButton_ChastiseMyself = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "责罚 对 自己使用")
-checkButton_ChastiseMyself:SetScript("OnClick", function(self)
+-- 创建单选框 - 启发对自己
+local checkButton_InspireMyself = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "启发 对 自己使用")
+checkButton_InspireMyself:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestDisciplineSaved.ChastiseMyself = 1
+        MPPriestDisciplineSaved.InspireMyself = 1
     else
-        MPPriestDisciplineSaved.ChastiseMyself = 0
+        MPPriestDisciplineSaved.InspireMyself = 0
     end
 end)
 
@@ -286,6 +302,15 @@ end)
 postion_y = postion_y - 40
 
 
+-- 创建单选框 - 责罚对自己
+local checkButton_ChastiseMyself = MPCreateCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, postion_y, "责罚 对 自己使用")
+checkButton_ChastiseMyself:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPriestDisciplineSaved.ChastiseMyself = 1
+    else
+        MPPriestDisciplineSaved.ChastiseMyself = 0
+    end
+end)
 
 
 
@@ -384,7 +409,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsPriestDiscipline, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -402,7 +427,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsPriestDiscipline)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPriestDisciplineSaved.Power = 1
@@ -411,14 +436,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPriestDisciplineSaved.Pick = 1
@@ -427,7 +452,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsPriestDiscipline, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -445,7 +470,7 @@ TipText:SetText("宏命令 -  [ |cFFFFFFFF/JLdps|r ]")
 
 
 -- 配置文件版本号
-local PriestDisciplineSettingsUIVersion = 6
+local PriestDisciplineSettingsUIVersion = 7
 
 function MPResetPriestDisciplineSettings()
 
@@ -455,6 +480,7 @@ function MPResetPriestDisciplineSettings()
 
     MPPriestDisciplineSaved.HolyFire = 1
     MPPriestDisciplineSaved.InnerFire = 1
+    MPPriestDisciplineSaved.Pain = 0
 
     MPPriestDisciplineSaved.Smite = 1
     MPPriestDisciplineSaved.Chastise = 0
@@ -468,6 +494,7 @@ function MPResetPriestDisciplineSettings()
 
 
     MPPriestDisciplineSaved.RacialTraits = 0
+    MPPriestDisciplineSaved.InspireMyself = 0
     MPPriestDisciplineSaved.ChastiseMyself = 0
 
 
@@ -515,6 +542,7 @@ function MPInitPriestDisciplineSettings()
 
     checkButton_HolyFire:SetChecked(ToBoolean(MPPriestDisciplineSaved.HolyFire))
     checkButton_InnerFire:SetChecked( ToBoolean(MPPriestDisciplineSaved.InnerFire) )
+    checkButton_Pain:SetChecked( ToBoolean(MPPriestDisciplineSaved.Pain) )
     checkButton_Smite:SetChecked(ToBoolean(MPPriestDisciplineSaved.Smite))
     checkButton_Chastise:SetChecked( ToBoolean(MPPriestDisciplineSaved.Chastise) )
 
@@ -526,6 +554,7 @@ function MPInitPriestDisciplineSettings()
 
     checkButton_RacialTraits:SetChecked(ToBoolean(MPPriestDisciplineSaved.RacialTraits))
     checkButton_ChastiseMyself:SetChecked(ToBoolean(MPPriestDisciplineSaved.ChastiseMyself))
+    checkButton_InspireMyself:SetChecked(ToBoolean(MPPriestDisciplineSaved.InspireMyself))
     checkButton_Soulspeed:SetChecked(ToBoolean(MPPriestDisciplineSaved.Soulspeed))
 
     checkButton_HealthStone:SetChecked(ToBoolean(MPPriestDisciplineSaved.HealthStone))

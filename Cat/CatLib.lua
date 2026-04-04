@@ -39,7 +39,7 @@ MPHasteRating = 0
 MPTipsColor = "|cFF9264cdCat|r |cFFc3a7e2"
 
 -- 版本
-MPCatAddonVer = "2026-03-29"
+MPCatAddonVer = "2026-04-03-2"
 
 -- 调试
 MPCatDebug = 1
@@ -229,14 +229,19 @@ function MPSwitchDistantTarget(value)
 		-- 距离41码内
 		if dist and dist<41 and dist > farway then
 
-			-- 目标 1可以攻击 2未死亡 3已进入战斗
-			if UnitCanAttack("player", key) and not UnitIsDeadOrGhost(key) and UnitAffectingCombat(key) then
+			-- 目标 1可以攻击 2未死亡 3已进入战斗 4排除小动物
+			if UnitCanAttack("player", key) and not UnitIsDeadOrGhost(key) and UnitAffectingCombat(key) and UnitCreatureType(key) ~= "小动物" then
 
-				-- 视野中
-				local inS = UnitXP("inSight", "player", key)
-				if inS then
-					farway = dist
-					target = key
+				-- 正面朝向
+				if not UnitXP("behind", key, "player") then
+
+					-- 视野中
+					local inS = UnitXP("inSight", "player", key)
+					if inS then
+						farway = dist
+						target = key
+					end
+
 				end
 			end
 
@@ -432,10 +437,12 @@ end
 -- @param unit: 目标单位（默认为 "player"）
 -- 支持SuperWoW
 function MPBuff(buffName, unit)
+
 	unit = unit or "player";  -- 默认检查玩家自己
 	local maxIndex = 32;
 
 	if unit == "player" then
+
 		-- 扫描buff位
 		local count = 0
 		for i = 0, maxIndex do
@@ -445,9 +452,7 @@ function MPBuff(buffName, unit)
 				break
 			end
 
-			--message(name)
 			count = count+1
-
 			-- 找到buff，并名称正确
 			if name==buffName then
 				return true, i
@@ -485,8 +490,97 @@ function MPBuff(buffName, unit)
 
 	end
 
+	if MP_Nampower4 then
+
+		if MPPlayerAurasSpellName[buffName] then
+			return true, MPPlayerAurasSpellSlot[buffName]
+		end
+
+	end
+
     return false, -1  -- 未找到
 end
+
+
+--[[
+-- 查找 Aura（BUFF 或 DEBUFF）并返回 true or false
+-- 队列查找，用于判断多个buff是否任意存在
+
+function MPTB()
+	local bn = {}
+	bn["野性赐福"]=true
+	bn["荆棘术"]=true
+	print(MPBuffList(bn))
+end
+]]
+function MPBuffList(buffNameList, unit)
+	unit = unit or "player";  -- 默认检查玩家自己
+	local maxIndex = 32;
+
+	if unit == "player" then
+		-- 扫描buff位
+		local count = 0
+		for i = 0, maxIndex do
+			-- 通过索引尝试访问buff
+			local found, name = MPPlayerBuffNameByIndex(i)
+			if not found then
+				break
+			end
+
+			--message(name)
+			count = count+1
+
+			-- 找到buff，并名称正确
+			if buffNameList[name] then
+				return true
+			end
+
+		end
+
+	else
+		-- 扫描debuff位
+		for i = 1, maxIndex do
+			-- 通过索引尝试访问buff
+			local found, name = MPGetDebuffNameByIndex(unit,i)
+			if not found then
+				break
+			end
+
+			-- 找到buff，并名称正确
+			for key, value in pairs(buffNameList) do
+
+				-- 找到buff，并名称正确
+				if buffNameList[name] then
+					return true
+				end
+
+			end
+		end
+
+		-- 扫描buff位
+		for i = 1, maxIndex do
+			-- 通过索引尝试访问buff
+			local found, name = MPGetBuffNameByIndex(unit,i)
+			if not found then
+				break
+			end
+
+			-- 找到buff，并名称正确
+			for key, value in pairs(buffNameList) do
+
+				-- 找到buff，并名称正确
+				if buffNameList[name] then
+					return true
+				end
+
+			end
+		end
+
+	end
+
+    return false  -- 未找到
+end
+
 
 -- 取消自己身上的buff
 -- @param buffName: 要取消的Buff名称（如 "野性印记"、"恢复"）
@@ -934,7 +1028,7 @@ end
 -- id顺序1-6
 -- return 获取到返回真
 function MPGetShape(id)
-	if not id then
+	if not id or id<=0 then
 		return false
 	end
 
@@ -1272,6 +1366,7 @@ function MPCheckTrinket(slot)
 	-- ZG
 	if MPCheckInventoryItemName(slot,"赞达拉英雄勋章") then return 1 end
 	if MPCheckInventoryItemName(slot,"赞达拉英雄护符") then return 1 end
+	if MPCheckInventoryItemName(slot,"哈扎拉尔的魔法护符") then return 1 end
 
 	-- Other
 	if MPCheckInventoryItemName(slot,"大地之击") then return 1 end
@@ -1784,5 +1879,250 @@ function MPGetHighestRankOfSpell(spellName)
     end
     
     return highestRank, highestSpellIndex
+end
+
+
+-- 判断是否在战场中
+function MPIsInBG()
+    -- 首先检查是否在副本中
+    if IsInInstance() then
+        -- 获取当前区域信息
+        local zone = GetZoneText()
+        local subzone = GetSubZoneText()
+        
+        -- 战场地图列表
+        local battlegrounds = {
+            "竞技场",
+            "战歌峡谷",      -- Warsong Gulch
+            "阿拉希盆地",    -- Arathi Basin
+            "奥特兰克山谷",  -- Alterac Valley
+            "荆棘峡谷", 
+        }
+        
+        -- 检查当前区域是否是战场
+        for _, bg in ipairs(battlegrounds) do
+            if zone == bg or subzone == bg then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
+
+
+
+
+
+
+-- ========== 调试用 =============
+
+-- 框体检查函数
+function InspectPfNamePlate(frameName)
+    local frame = _G[frameName]
+    if not frame then
+        print("框体不存在: " .. frameName)
+        return
+    end
+    
+    print("=== 详细检查框体: " .. frameName .. " ===")
+    
+    -- 1. 基本信息
+    print("1. 基本信息:")
+    if frame.GetObjectType then
+        print("   类型: " .. frame:GetObjectType())
+    end
+    
+    if frame.GetName then
+        print("   名称: " .. (frame:GetName() or "匿名"))
+    end
+    
+    -- 2. 尺寸和位置
+    print("2. 尺寸和位置:")
+    if frame.GetWidth and frame.GetHeight then
+        print(string.format("   宽度: %.0f, 高度: %.0f", 
+              frame:GetWidth() or 0, frame:GetHeight() or 0))
+    end
+    
+    -- 3. 遍历frame的所有成员
+    print("3. 框体内部变量和方法:")
+    
+    local funcCount = 0
+    local tableCount = 0
+    local numberCount = 0
+    local stringCount = 0
+    local booleanCount = 0
+    local otherCount = 0
+    
+    -- 先收集所有成员键名
+    local memberKeys = {}
+    for key, value in pairs(frame) do
+        if type(key) == "string" then
+            -- 添加到键名表
+            local found = false
+            for k, v in pairs(memberKeys) do
+                if v == key then
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                table.insert(memberKeys, key)
+            end
+            
+            -- 统计类型
+            local valueType = type(value)
+            if valueType == "function" then
+                funcCount = funcCount + 1
+            elseif valueType == "table" then
+                tableCount = tableCount + 1
+            elseif valueType == "number" then
+                numberCount = numberCount + 1
+            elseif valueType == "string" then
+                stringCount = stringCount + 1
+            elseif valueType == "boolean" then
+                booleanCount = booleanCount + 1
+            else
+                otherCount = otherCount + 1
+            end
+        end
+    end
+    
+    -- 统计总数
+    local totalCount = 0
+    for k, v in pairs({funcCount, tableCount, numberCount, stringCount, booleanCount, otherCount}) do
+        totalCount = totalCount + v
+    end
+    
+    -- 显示统计
+    print("   类型统计:")
+    print(string.format("     函数: %d, 表: %d, 数字: %d", funcCount, tableCount, numberCount))
+    print(string.format("     字符串: %d, 布尔值: %d, 其他: %d", stringCount, booleanCount, otherCount))
+    print(string.format("     总计: %d 个成员", totalCount))
+    
+    -- 显示成员详情
+    print("   成员详情:")
+    local displayCount = 0
+    local maxDisplay = 50
+    
+    for index, key in ipairs(memberKeys) do
+        local value = frame[key]
+        local valueType = type(value)
+        local displayValue = ""
+        
+        if valueType == "function" then
+            displayValue = "[函数]"
+        elseif valueType == "table" then
+            displayValue = "[表]"
+        elseif valueType == "number" then
+            displayValue = tostring(value)
+        elseif valueType == "string" then
+            if string.len(value) > 30 then
+                displayValue = string.sub(value, 1, 27) .. "..."
+            else
+                displayValue = '"' .. value .. '"'
+            end
+        elseif valueType == "boolean" then
+            displayValue = value and "true" or "false"
+        else
+            displayValue = "[" .. valueType .. "]"
+        end
+        
+        print(string.format("     %s = %s", key, displayValue))
+        displayCount = displayCount + 1
+        
+        -- 限制显示数量
+        if displayCount >= maxDisplay then
+            local remaining = 0
+            for k, v in pairs(memberKeys) do
+                if k > maxDisplay then
+                    remaining = remaining + 1
+                end
+            end
+            print(string.format("     ... 还有 %d 个成员未显示", remaining))
+            break
+        end
+    end
+    
+    -- 4. 检查特定属性
+    print("4. 常见nameplate属性检查:")
+    
+    local commonProps = {
+        "healthBar", "HealthBar", "healthbar",
+        "nameText", "NameText", "nametext",
+        "levelText", "LevelText", "leveltext",
+        "icon", "Icon", 
+        "threat", "Threat",
+        "castBar", "CastBar", "castbar"
+    }
+    
+    for index, prop in ipairs(commonProps) do
+        if frame[prop] then
+            print("   发现属性: " .. prop)
+        end
+    end
+    
+    print("=== 检查完成 ===")
+end
+
+
+function ListAllFrames(filter)
+    local list = {}
+    local count = 0
+    local filterLower = ""
+    
+    -- 如果有筛选条件，转换为小写
+    if filter and filter ~= "" then
+        filterLower = string.lower(filter)
+    end
+
+    -- 遍历全局表，筛选出Frame对象
+    for k, v in pairs(_G) do
+        if type(v) == "table" and v.GetObjectType and type(v.GetObjectType) == "function" then
+            local frameName = k
+            local frameType = v:GetObjectType()
+            
+            -- 应用筛选条件
+            if filter == "" or filter == nil then
+                -- 无筛选条件，全部显示
+                count = count + 1
+                list[count] = {name = frameName, type = frameType}
+            else
+                -- 筛选名称是否包含关键词（不区分大小写）
+                local nameLower = string.lower(frameName)
+                if string.find(nameLower, filterLower) then
+                    count = count + 1
+                    list[count] = {name = frameName, type = frameType}
+                end
+            end
+        end
+    end
+
+    -- 输出结果
+    if filter and filter ~= "" then
+        print("=== Frame 筛选结果（" .. filter .. "） (" .. count .. " 个) ===")
+    else
+        print("=== Frame 列表 (" .. count .. " 个) ===")
+    end
+    
+    for i = 1, count do
+        local item = list[i]
+		if item.type == "Frame" then
+			print(string.format("%-40s [%s]", item.name, item.type))
+		end
+    end
+end
+
+function MPGetWorldChildren()
+
+    parentcount = WorldFrame:GetNumChildren()
+    childs = { WorldFrame:GetChildren() }
+	for i=1, parentcount do
+		plate = childs[i]
+		if plate:GetObjectType() ~= NAMEPLATE_FRAMETYPE then 
+			print(i, plate, plate:GetName(1))
+		end
+	end
 end
 

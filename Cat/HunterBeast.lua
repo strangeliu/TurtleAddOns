@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 兽王猎一键宏
--- 发布日期：2026-03-22 （后面根据时间来判断版本）
+-- 发布日期：2026-04-02 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -181,6 +181,11 @@ function MPHunterBeastDPS()
 				CastSpellByName("雄鹰守护")
 				return
 			end
+		else
+			if MPHunterBeastSaved.Hawk==1 and not MPBuff("雄鹰守护") and not MPBuff("蝰蛇守护") then
+				CastSpellByName("雄鹰守护")
+				return
+			end
 		end
 	else
 		if MPHunterBeastSaved.Hawk==1 and not MPBuff("雄鹰守护") then
@@ -193,7 +198,7 @@ function MPHunterBeastDPS()
 		CastSpellByName("强击光环")
 	end
 
-	if MPHunterBeastSaved.Mark==1 and not MPBuff("猎人印记","target") then
+	if MPHunterBeastSaved.Mark==1 and not MPBuff("猎人印记","target") and MPIsHunterMark() then
 		CastSpellByName("猎人印记")
 	end
 
@@ -231,7 +236,7 @@ function MPHunterBeastDPS()
 
 		-- 瞄准射击->奥术弹药
 		if MPHunterBeastSaved.ArcaneShot==1 then
-			if MPBuff("魔力弹药") and ASSJ then
+			if MPBuff("魔力弹药") and ASSJ and MPIsHunterArcaneShot() then
 				CastSpellByName("奥术射击")
 				return
 			end
@@ -256,7 +261,7 @@ function MPHunterBeastDPS()
 		end
 
 		-- 瞄准射击->奥术弹药
-		if MPHunterBeastSaved.ArcaneShot==1 and ASSJ then
+		if MPHunterBeastSaved.ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
 			CastSpellByName("奥术射击")
 			return
 		end

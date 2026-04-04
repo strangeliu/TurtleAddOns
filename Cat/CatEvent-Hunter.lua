@@ -94,7 +94,34 @@ local function OnEvent()
         
         if string.find( arg1, ".*致命一击.*" ) then
             MPHunterGoreTimer = GetTime()+4
+
+        -- 奥术射击 - 异常免疫目标记录
+        elseif string.find( arg1, ".*奥术射击.*免疫.*" ) then
+
+            local targetName = UnitName("target")
+            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫奥术射击。")
+            -- 将该目标加入表（临时，重登后丢失）
+            MPHunterArcaneShotBlcokList[targetName] = true
+
+        -- 猎人印记 - 异常免疫目标记录
+        elseif string.find( arg1, ".*猎人印记.*免疫.*" ) then
+
+            local targetName = UnitName("target")
+            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫猎人印记。")
+            -- 将该目标加入表（临时，重登后丢失）
+            MPHunterMarkBlcokList[targetName] = true
+
+        -- 毒蛇钉刺 - 异常免疫目标记录
+        elseif string.find( arg1, ".*毒蛇钉刺.*免疫.*" ) then
+
+            local targetName = UnitName("target")
+            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫毒蛇钉刺。")
+            -- 将该目标加入表（临时，重登后丢失）
+            MPPosionBlcokList[targetName] = true
+
         end
+
+        --print(arg1)
 
     elseif event == "CHAT_MSG_COMBAT_SELF_HITS" then
 

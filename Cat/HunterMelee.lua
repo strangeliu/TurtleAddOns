@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 生存猎一键宏
--- 发布日期：2026-03-24 （后面根据时间来判断版本）
+-- 发布日期：2026-04-02 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -158,6 +158,11 @@ function MPHunterMeleeDPS()
 				CastSpellByName("孤狼守护")
 				return
 			end
+		else
+			if MPHunterMeleeSaved.LoneWolf==1 and not MPBuff("孤狼守护") and not MPBuff("蝰蛇守护") then
+				CastSpellByName("孤狼守护")
+				return
+			end
 		end
 	else
 		if MPHunterMeleeSaved.LoneWolf==1 and not MPBuff("孤狼守护") then
@@ -227,9 +232,11 @@ function MPHunterMeleeDPS()
 		return
 	end
 
-	if MPHunterMeleeSaved.Rake==1 and MPHunterRake==1 and QS and MPGetTargetDistance("target", 9) then
-		CastSpellByName("切碎")
-		return
+	if MPHunterMeleeSaved.Rake==1 and MPHunterRake==1 and QS then
+		if UnitExists("target") and not UnitIsDeadOrGhost("target") and MPGetTargetDistance("target", 9) then
+			CastSpellByName("切碎")
+			return
+		end
 	end
 
 

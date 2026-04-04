@@ -34,7 +34,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 local postion_y = postion_y-40
 
@@ -73,11 +73,11 @@ MPCatUISliderRegionHide(slider_LeftTime)
 -- 值变化时的回调函数
 slider_LeftTime:SetScript("OnValueChanged", function()
     MPElixirSaved.LeftTime = arg1
-    _G[slider_LeftTime:GetName().."Text"]:SetText("剩余 "..MPElixirSaved.LeftTime.." 分钟补药剂")
+    _G[slider_LeftTime:GetName().."Text"]:SetText(MPLanguage.UI_Set_RemainingMinutes..MPElixirSaved.LeftTime..MPLanguage.UI_Set_MinutesRefill)
 end)
 
 -- 创建按钮 提示信息
-local checkButton_Msg = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "提示信息")
+local checkButton_Msg = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, MPLanguage.UI_Set_MsgNotify)
 checkButton_Msg:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPElixirSaved.Msg = 1
@@ -93,7 +93,7 @@ ShowButton:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 530, postion_y+15
 ShowButton:SetWidth(120)
 ShowButton:SetHeight(22)
 ShowButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-ShowButton:SetText("动态状态窗")
+ShowButton:SetText(MPLanguage.UI_Set_DynamicWindow)
 
 -- 调整按钮纹理
 ShowButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -121,7 +121,7 @@ MPCatUISliderRegionHide(slider_WindowSize)
 slider_WindowSize:SetScript("OnValueChanged", function()
     MPElixirSaved.WindowSize = arg1
     _G[slider_WindowSize:GetName().."Text"]:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
-    _G[slider_WindowSize:GetName().."Text"]:SetText("窗口大小: "..string.format("%.1f", MPElixirSaved.WindowSize))
+    _G[slider_WindowSize:GetName().."Text"]:SetText(MPLanguage.UI_Set_WindowSize..string.format("%.1f", MPElixirSaved.WindowSize))
     CatElixir:SetScale(MPElixirSaved.WindowSize)
 end)
 
@@ -170,14 +170,14 @@ end)
 
 postion_y = postion_y+5
 
--- 添加提示内容区域
+-- 生存药剂
 local noCDTipText = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 noCDTipText:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 noCDTipText:SetWidth(250)
 noCDTipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 noCDTipText:SetTextColor(1, 0.8, 0)
 noCDTipText:SetJustifyH("LEFT")
-noCDTipText:SetText("生存药剂")
+noCDTipText:SetText(MPLanguage.UI_Set_SurvivalElixir)
 
 
 postion_y = postion_y-60
@@ -271,14 +271,14 @@ end)
 
 postion_y = postion_y+20
 
--- 添加提示内容区域
+-- 物理药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 Text:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 Text:SetWidth(250)
 Text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 Text:SetTextColor(1, 0.8, 0)
 Text:SetJustifyH("LEFT")
-Text:SetText("物理药剂")
+Text:SetText(MPLanguage.UI_Set_PhysicalElixir)
 
 
 postion_y = postion_y-78
@@ -304,7 +304,7 @@ checkButton_Demon:SetScript("OnClick", function(self)
     end
     MPCatElixirReset()
 end)
-local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsElixir, ADDON_NAME.."CheckButton", 510, postion_y, "仅恶魔BOSS")
+local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsElixir, ADDON_NAME.."CheckButton", 510, postion_y, MPLanguage.UI_Set_BossOnlyDemon)
 checkButton_DemonBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPElixirSaved.DemonBoss = 1
@@ -312,6 +312,21 @@ checkButton_DemonBoss:SetScript("OnClick", function(self)
         MPElixirSaved.DemonBoss = 0
     end
 end)
+
+-- 创建单选框 - 厚甲蝎药粉
+local checkButton_Encrusted = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 660, postion_y, "厚甲蝎药粉 (25敏捷)")
+local Warning_Encrusted = SEWarningText(checkButton_Encrusted)
+
+checkButton_Encrusted:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.Encrusted = 1
+    else
+        MPElixirSaved.Encrusted = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
 
 postion_y = postion_y-30
 
@@ -377,8 +392,25 @@ checkButton_Firewater:SetScript("OnClick", function(self)
     MPResetConflict()
 end)
 
+
+-- 创建单选框 - 黑根酒
+local checkButton_HerbalBrew = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "黑根酒 (35AP)")
+local Warning_HerbalBrew = SEWarningText(checkButton_HerbalBrew)
+
+checkButton_HerbalBrew:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.HerbalBrew = 1
+    else
+        MPElixirSaved.HerbalBrew = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
+
+
 -- 创建单选框 - 魂能之击
-local checkButton_SoulStrike = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "魂能之击 (40AP)")
+local checkButton_SoulStrike = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 660, postion_y, "魂能之击 (40AP)")
 local Warning_SoulStrike = SEWarningText(checkButton_SoulStrike)
 
 checkButton_SoulStrike:SetScript("OnClick", function(self)
@@ -391,19 +423,6 @@ checkButton_SoulStrike:SetScript("OnClick", function(self)
     MPResetConflict()
 end)
 
--- 创建单选框 - 厚甲蝎药粉
-local checkButton_Encrusted = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 660, postion_y, "厚甲蝎药粉 (25敏捷)")
-local Warning_Encrusted = SEWarningText(checkButton_Encrusted)
-
-checkButton_Encrusted:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPElixirSaved.Encrusted = 1
-    else
-        MPElixirSaved.Encrusted = 0
-    end
-    MPCatElixirReset()
-    MPResetConflict()
-end)
 
 
 
@@ -413,14 +432,14 @@ end)
 
 postion_y = postion_y+45
 
--- 添加提示内容区域
+-- 法术药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 Text:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 Text:SetWidth(250)
 Text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 Text:SetTextColor(1, 0.8, 0)
 Text:SetJustifyH("LEFT")
-Text:SetText("法术药剂")
+Text:SetText(MPLanguage.UI_Set_SpellElixir)
 
 
 postion_y = postion_y-100
@@ -594,14 +613,14 @@ end)
 
 postion_y = postion_y+80
 
--- 添加提示内容区域
+-- 混合药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 Text:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 Text:SetWidth(250)
 Text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 Text:SetTextColor(1, 0.8, 0)
 Text:SetJustifyH("LEFT")
-Text:SetText("混合药剂")
+Text:SetText(MPLanguage.UI_Set_MixedElixir)
 
 
 postion_y = postion_y-135
@@ -644,14 +663,14 @@ end)
 
 postion_y = postion_y+92
 
--- 添加提示内容区域
+-- 烹饪食物 (单选)
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 Text:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 Text:SetWidth(250)
 Text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 Text:SetTextColor(1, 0.8, 0)
 Text:SetJustifyH("LEFT")
-Text:SetText("烹饪食物 (单选)")
+Text:SetText(MPLanguage.UI_Set_FoodElixir)
 
 
 postion_y = postion_y-145
@@ -1154,14 +1173,14 @@ end)
 
 postion_y = postion_y+132
 
--- 添加提示内容区域
+-- 武器临时附魔 (单选)
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 Text:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
 Text:SetWidth(250)
 Text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 Text:SetTextColor(1, 0.8, 0)
 Text:SetJustifyH("LEFT")
-Text:SetText("武器临时附魔 (单选)")
+Text:SetText(MPLanguage.UI_Set_WeaponEnchant)
 
 
 postion_y = postion_y-188
@@ -1285,7 +1304,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -1308,7 +1327,7 @@ TipText:SetPoint("BOTTOM", CatUISettingsElixir, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ |cFF007582/cate|r ]")
+TipText:SetText(MPLanguage.UI_Set_ElixirMacroTip)
 
 
 
@@ -1342,12 +1361,13 @@ function MPResetElixirSettings()
     MPElixirSaved.Mongoose = 0
     MPElixirSaved.Demon = 0
     MPElixirSaved.DemonBoss = 1
+    MPElixirSaved.Encrusted = 0
     MPElixirSaved.Giants = 0
     MPElixirSaved.SoulEnergy = 0
     MPElixirSaved.Firewater = 0
+    MPElixirSaved.HerbalBrew = 0
     MPElixirSaved.SoulStrike = 0
     MPElixirSaved.HyenaStimulant = 0
-    MPElixirSaved.Encrusted = 0
 
     -- 法伤
     MPElixirSaved.DreamEssence = 0
@@ -1445,13 +1465,19 @@ function MPResetConflict()
 
     -- 冬泉火酒
     Warning_Firewater:Hide()
-    if MPElixirSaved.Firewater==1 and MPElixirSaved.SoulStrike==1 then
+    if MPElixirSaved.Firewater==1 and (MPElixirSaved.HerbalBrew==1 or MPElixirSaved.SoulStrike==1) then
         Warning_Firewater:Show()
+    end
+
+    -- 黑根酒
+    Warning_HerbalBrew:Hide()
+    if MPElixirSaved.HerbalBrew==1 and (MPElixirSaved.Firewater==1 or MPElixirSaved.SoulStrike==1) then
+        Warning_HerbalBrew:Show()
     end
 
     --魂能之击
     Warning_SoulStrike:Hide()
-    if MPElixirSaved.SoulStrike==1 and MPElixirSaved.Firewater==1 then
+    if MPElixirSaved.SoulStrike==1 and (MPElixirSaved.Firewater==1 or MPElixirSaved.HerbalBrew==1) then
         Warning_SoulStrike:Show()
     end
 
@@ -1510,12 +1536,13 @@ function MPInitElixirSettingsPart1()
     checkButton_Mongoose:SetChecked(ToBoolean(MPElixirSaved.Mongoose))
     checkButton_Demon:SetChecked(ToBoolean(MPElixirSaved.Demon))
     checkButton_DemonBoss:SetChecked(ToBoolean(MPElixirSaved.DemonBoss))
+    checkButton_Encrusted:SetChecked(ToBoolean(MPElixirSaved.Encrusted))
     checkButton_Giants:SetChecked(ToBoolean(MPElixirSaved.Giants))
     checkButton_SoulEnergy:SetChecked(ToBoolean(MPElixirSaved.SoulEnergy))
     checkButton_Firewater:SetChecked(ToBoolean(MPElixirSaved.Firewater))
+    checkButton_HerbalBrew:SetChecked(ToBoolean(MPElixirSaved.HerbalBrew))
     checkButton_SoulStrike:SetChecked(ToBoolean(MPElixirSaved.SoulStrike))
     checkButton_HyenaStimulant:SetChecked(ToBoolean(MPElixirSaved.HyenaStimulant))
-    checkButton_Encrusted:SetChecked(ToBoolean(MPElixirSaved.Encrusted))
 
 
 end

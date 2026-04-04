@@ -1,6 +1,6 @@
 -- -------------------------------------
 -- 乌龟服 - 自动药剂一键宏
--- 发布日期：2026-03-21 （后面根据时间来判断版本）
+-- 发布日期：2026-03-29 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -120,6 +120,10 @@ function MPCatElixir()
 	if MPElixirSaved.Firewater==1 and MPBuffTime("冬泉火酒")<min then
 		MPElixirMsg("使用：冬泉火酒")
 		MPUseItemByName("冬泉火酒")
+	end
+	if MPElixirSaved.HerbalBrew==1 and MPBuffTime("黑根酒")<min then
+		MPElixirMsg("使用：黑根酒")
+		MPUseItemByName("黑根酒")
 	end
 	if MPElixirSaved.SoulStrike==1 and MPBuffTime("魂能之击")<min then
 		if MPGetItemByNameCD("魂能之击") then

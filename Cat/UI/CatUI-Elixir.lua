@@ -42,7 +42,7 @@ SetButton:SetWidth(50)
 SetButton:SetHeight(20)
 SetButton:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
 SetButton:SetPoint("TOPRIGHT", CatElixir, "TOPRIGHT", -35, -8)
-SetButton:SetText("设置")
+SetButton:SetText(MPLanguage.UI_Setting)
 SetButton:SetScript("OnClick", function(self)
     MPCatSettingsCloseAll()
     CatUISettingsElixir:Show()
@@ -53,7 +53,7 @@ end)
 -- 添加标题文字
 local title = CatElixir:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 title:SetPoint("TOPLEFT", CatElixir, "TOPLEFT", 10, -10)
-title:SetText("药剂")
+title:SetText(MPLanguage.UI_ElixirTitle)
 
 
 -- 添加标准关闭按钮（精确对齐标题行）
@@ -162,7 +162,7 @@ local function MPAddBuff(buff, item, text, bufficon)
     MPCatElixirButton[count].item = item
 
     MPCatElixirButton[count]:SetScript("OnClick", function(self)
-        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."使用："..item)
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_Use..item)
         MPUseItemByName(item)
     end)
 
@@ -230,6 +230,7 @@ function MPCatElixirReset()
     if MPElixirSaved.Encrusted==1 then MPAddBuff("厚甲蝎之击", "厚甲蝎药粉", "厚甲蝎药粉") end
     if MPElixirSaved.SoulEnergy==1 then MPAddBuff("魂能之力", "魂能之力", "魂能之力") end
     if MPElixirSaved.Firewater==1 then MPAddBuff("冬泉火酒", "冬泉火酒", "冬泉火酒") end
+    if MPElixirSaved.HerbalBrew==1 then MPAddBuff("黑根酒", "黑根酒", "黑根酒") end
     if MPElixirSaved.SoulStrike==1 then MPAddBuff("魂能之击", "魂能之击", "魂能之击") end
     if MPElixirSaved.Demon==1 then MPAddBuff("屠魔药剂", "屠魔药剂", "屠魔药剂") end
 
@@ -329,7 +330,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(Value))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         elseif MPCatElixirButton[i].item=="神圣磨刀石" then
@@ -347,7 +348,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(Value))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         elseif MPCatElixirButton[i].item=="神圣巫师之油" then
@@ -365,7 +366,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(Value))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         elseif MPCatElixirButton[i].item=="卓越巫师之油" then
@@ -383,7 +384,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(Value))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         elseif MPCatElixirButton[i].item=="卓越法力之油" then
@@ -401,7 +402,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(Value))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         else
@@ -422,7 +423,7 @@ local function ElixirEventPollingFunction()
                     MPCatElixirButton[i].time:SetText(greenFont..SecondsToTimeString(bufftime))
                 end
             else
-                MPCatElixirButton[i].time:SetText("|cFF888888未激活|r")
+                MPCatElixirButton[i].time:SetText(MPLanguage.Item_ElixirInactive)
             end
 
         end

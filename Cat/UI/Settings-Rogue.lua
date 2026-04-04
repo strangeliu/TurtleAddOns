@@ -23,7 +23,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -99,7 +99,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPRogueSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueSaved.TUBoss = 1
@@ -181,7 +181,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPRogueSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueSaved.TBBoss = 1
@@ -815,7 +815,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-140
@@ -876,12 +876,40 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 剑刃乱舞
-local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞 (SuperWoW)")
+local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
+local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
+slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
+slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
+slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
+slider_BladeFlurry_Value:SetValueStep(1)
+slider_BladeFlurry_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+
+local color_BladeFlurry = "|cFFFFD100"
+
+_G[slider_BladeFlurry_Value:GetName().."Low"]:Hide()
+_G[slider_BladeFlurry_Value:GetName().."High"]:Hide()
+
+-- 值变化时的回调函数
+slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPRogueSaved.BladeFlurry_Value = arg1
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved.BladeFlurry_Value .."码|r")
+end)
+
+-- 设置点击事件
 checkButton_BladeFlurry:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueSaved.BladeFlurry = 1
+        color_BladeFlurry = "|cFFFFD100"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved.BladeFlurry_Value .."码|r")
     else
         MPRogueSaved.BladeFlurry = 0
+        color_BladeFlurry = "|cFF888888"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved.BladeFlurry_Value .."码|r")
     end
 end)
 
@@ -933,7 +961,7 @@ postion_y = postion_y-40
 local checkButton_LeftTime = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "提前保持Buff\n(SuperWoW)")
 
 local slider_LeftTime = CreateFrame("Slider", ADDON_NAME.."Slider_SliceDiceTime", checkButton_LeftTime, "OptionsSliderTemplate")
-slider_LeftTime:SetPoint("RIGHT", checkButton_LeftTime, "RIGHT", 250, -2)
+slider_LeftTime:SetPoint("RIGHT", checkButton_LeftTime, "RIGHT", 260, -2)
 slider_LeftTime:SetWidth(150) -- 拖动条长度
 slider_LeftTime:SetHeight(16) -- 拖动条高度
 
@@ -1094,7 +1122,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsRogue, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -1111,7 +1139,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsRogue)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueSaved.Power = 1
@@ -1120,14 +1148,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPRogueSaved.Pick = 1
@@ -1136,7 +1164,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -1153,7 +1181,7 @@ TipText:SetText("宏命令 -  [ |cFFFFF569/rdps|r ]")
 
 
 -- 配置文件版本号
-local RogueSettingsUIVersion = 26
+local RogueSettingsUIVersion = 27
 
 function MPResetRogueSettings()
 
@@ -1266,7 +1294,7 @@ function MPResetRogueSettings()
     MPRogueSaved.LeftTime_Value = 2
 
     MPRogueSaved.BladeFlurry = 0
-    MPRogueSaved.BladeFlurry_Value = 1
+    MPRogueSaved.BladeFlurry_Value = 10
     MPRogueSaved.Protect = 0
 
     MPRogueSaved.SinisterStrike = 1
@@ -1302,7 +1330,6 @@ local function InitRogueSettingsPart1()
     checkButton_RacialTraits:SetChecked(ToBoolean(MPRogueSaved.RacialTraits))
     checkButton_Soulspeed:SetChecked(ToBoolean(MPRogueSaved.Soulspeed))
 
-    checkButton_BladeFlurry:SetChecked(MPRogueSaved.BladeFlurry)
     checkButton_Protect:SetChecked(MPRogueSaved.Protect)
     checkButton_SinisterStrike:SetChecked(MPRogueSaved.SinisterStrike)
 
@@ -1369,6 +1396,16 @@ function MPInitRogueSettings()
         color_Carrot = "|cFF888888"
     end
     _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPRogueSaved.Carrot_Value .."%|r")
+
+
+    checkButton_BladeFlurry:SetChecked(MPRogueSaved.BladeFlurry)
+    slider_BladeFlurry_Value:SetValue(MPRogueSaved.BladeFlurry_Value)
+    if MPRogueSaved.BladeFlurry==1 then
+        color_BladeFlurry = "|cFFFFD100"
+    else
+        color_BladeFlurry = "|cFF888888"
+    end
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved.BladeFlurry_Value .."码|r")
 
 
 

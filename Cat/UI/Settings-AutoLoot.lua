@@ -4,7 +4,7 @@ local ADDON_NAME = "Settings-AutoLoot"
 
 
 -- 创建主框架
-CatUISettingAutoLoot = MPCreateFrame(ADDON_NAME.."Frame", 520, 180, "|cFFDD4080通用 - 自动拾取|r")
+CatUISettingAutoLoot = MPCreateFrame(ADDON_NAME.."Frame", 520, 180, "|cFFDD4080"..MPLanguage.UI_Set_AutoLootTitle.."|r")
 
 
 local postion_y = -50
@@ -16,7 +16,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 local postion_y = postion_y-50
@@ -26,9 +26,9 @@ local postion_y = postion_y-50
 local checkButton_AutoLoot = nil
 
 if MP_Interact then
-    checkButton_AutoLoot = MPCreateCheckButton(CatUISettingAutoLoot, ADDON_NAME.."CheckButton", 20, postion_y, "启用 自动拾取、采集、交互 (依赖Interact模组)")
+    checkButton_AutoLoot = MPCreateCheckButton(CatUISettingAutoLoot, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_EnableAutoLootInteract)
 else
-    checkButton_AutoLoot = MPCreateCheckButton(CatUISettingAutoLoot, ADDON_NAME.."CheckButton", 20, postion_y, "启用 自动拾取、采集、交互 (|cFFFF2020需Interact模组|r)")
+    checkButton_AutoLoot = MPCreateCheckButton(CatUISettingAutoLoot, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_EnableAutoLootNeedInteract)
 end
 checkButton_AutoLoot:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -49,10 +49,10 @@ local checkText_Help = CatUISettingAutoLoot:CreateFontString(nil, "OVERLAY", "Ga
 checkText_Help:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
 checkText_Help:SetTextColor(1, 1, 1)
 checkText_Help:SetPoint("TOPLEFT", CatUISettingAutoLoot, "TOPLEFT", 20, postion_y)
-checkText_Help:SetText("|cFFDD4080说明：|r测试期间，仅对近战DPS宏生效，如：猫德、狂暴战士等。")
+checkText_Help:SetText(MPLanguage.UI_Set_AutoLootNote)
 
 
-local myButton = MPCreateButton(CatUISettingAutoLoot, ADDON_NAME.."ButtonReset", "恢复默认值", 120, -44, 100, 22)
+local myButton = MPCreateButton(CatUISettingAutoLoot, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
     MPResetAutoLootSettings()
     MPInitAutoLootSettings()
@@ -65,7 +65,7 @@ TipText:SetPoint("BOTTOM", CatUISettingAutoLoot, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ 独立使用 |cFFDD4080/catpick|r ]")
+TipText:SetText(MPLanguage.UI_Set_AutoLootMacroTip)
 
 
 

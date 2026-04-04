@@ -6,7 +6,7 @@ CatPaladinSeal = CreateFrame("Frame", ADDON_NAME.."Frame", UIParent)
 CatPaladinSeal:Hide()
 
 -- 设置窗口基本属性
-CatPaladinSeal:SetWidth(240)
+CatPaladinSeal:SetWidth(330)
 CatPaladinSeal:SetHeight(140)
 CatPaladinSeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 CatPaladinSeal:SetFrameLevel(1)
@@ -56,7 +56,7 @@ local divider = CatPaladinSeal:CreateTexture(nil, "ARTWORK")
 divider:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
 divider:SetTexCoord(0.81, 0.94, 0.5, 1)
 divider:SetVertexColor(0.5, 0.5, 0.5)
-divider:SetWidth(230)
+divider:SetWidth(320)
 divider:SetHeight(4)
 divider:SetPoint("TOP", CatPaladinSeal, "TOP", 0, -30)
 
@@ -83,7 +83,7 @@ JusticeButtonNormal:SetPoint("TOPLEFT", CatPaladinSeal, "TOPLEFT", postion_x, po
 -- 设置技能图标
 JusticeButtonNormal.icon = JusticeButtonNormal:CreateTexture("MySkillButtonIcon", "BACKGROUND")
 JusticeButtonNormal.icon:SetAllPoints()
-JusticeButtonNormal.icon:SetTexture("Interface\\Icons\\Spell_Shadow_Sealofkings") -- 替换为你想要的技能图标路径
+JusticeButtonNormal.icon:SetTexture("Interface\\Icons\\Spell_Nature_WispSplode") -- 替换为你想要的技能图标路径
 JusticeButtonNormal:SetAlpha(1.0)
 -- 添加高亮效果
 JusticeButtonNormal:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
@@ -187,6 +187,36 @@ JusticeButtonCrusader.text:SetTextColor(1, 1, 1)
 JusticeButtonCrusader.text:SetText("十字军")
 
 
+
+postion_x = postion_x + 45 
+postion_x = postion_x + 45 
+
+local ButtonConsecration = CreateFrame("Button", "MySkillButton", CatPaladinSeal, "ActionButtonTemplate")
+
+-- 设置按钮大小和位置
+ButtonConsecration:SetWidth(36)  -- 标准技能按钮大小
+ButtonConsecration:SetHeight(36)
+ButtonConsecration:SetPoint("TOPLEFT", CatPaladinSeal, "TOPLEFT", postion_x, postion_y)
+
+-- 设置技能图标
+ButtonConsecration.icon = ButtonConsecration:CreateTexture("MySkillButtonIcon", "BACKGROUND")
+ButtonConsecration.icon:SetAllPoints()
+ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Holy_InnerFire") -- 替换为你想要的技能图标路径
+ButtonConsecration:SetAlpha(PopColor)
+-- 添加高亮效果
+ButtonConsecration:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+
+-- 添加按下效果
+ButtonConsecration:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+
+-- 添加按钮文本(可选)
+ButtonConsecration.text = ButtonConsecration:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ButtonConsecration.text:SetPoint("BOTTOM", ButtonConsecration, "BOTTOM", 0, 5)
+ButtonConsecration.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
+ButtonConsecration.text:SetTextColor(1, 1, 1)
+ButtonConsecration.text:SetText("奉献")
+
+
 -- 添加点击事件
 JusticeButtonNormal:SetScript("OnClick", function()
     JusticeButtonNormal:SetAlpha(1.0)
@@ -220,7 +250,17 @@ JusticeButtonCrusader:SetScript("OnClick", function()
     MPPaladinSealSaved.Justice = 3
 end)
 
-
+ButtonConsecration:SetScript("OnClick", function()
+    if MPPaladinCJSaved.Consecration==1 or MPPaladinTankSaved.Consecration==1 then
+        ButtonConsecration:SetAlpha(PopColor)
+        MPPaladinCJSaved.Consecration=0
+        MPPaladinTankSaved.Consecration = 0
+    else
+        ButtonConsecration:SetAlpha(1.0)
+        MPPaladinCJSaved.Consecration=1
+        MPPaladinTankSaved.Consecration = 1
+    end
+end)
 
 
 
@@ -261,7 +301,7 @@ SealButtonNormal.text = SealButtonNormal:CreateFontString(nil, "OVERLAY", "GameF
 SealButtonNormal.text:SetPoint("BOTTOM", SealButtonNormal, "BOTTOM", 0, 5)
 SealButtonNormal.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
 SealButtonNormal.text:SetTextColor(1, 1, 1)
-SealButtonNormal.text:SetText("伤害")
+SealButtonNormal.text:SetText("自动")
 
 
 
@@ -352,12 +392,71 @@ SealButtonCrusader.text:SetTextColor(1, 1, 1)
 SealButtonCrusader.text:SetText("十字军")
 
 
+postion_x = postion_x + 45 
+
+local SealButtonJustice = CreateFrame("Button", "MySkillButton", CatPaladinSeal, "ActionButtonTemplate")
+
+-- 设置按钮大小和位置
+SealButtonJustice:SetWidth(36)  -- 标准技能按钮大小
+SealButtonJustice:SetHeight(36)
+SealButtonJustice:SetPoint("TOPLEFT", CatPaladinSeal, "TOPLEFT", postion_x, postion_y)
+
+-- 设置技能图标
+SealButtonJustice.icon = SealButtonJustice:CreateTexture("MySkillButtonIcon", "BACKGROUND")
+SealButtonJustice.icon:SetAllPoints()
+SealButtonJustice.icon:SetTexture("Interface\\Icons\\Ability_ThunderBolt") -- 替换为你想要的技能图标路径
+SealButtonJustice:SetAlpha(PopColor)
+-- 添加高亮效果
+SealButtonJustice:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+
+-- 添加按下效果
+SealButtonJustice:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+
+-- 添加按钮文本(可选)
+SealButtonJustice.text = SealButtonJustice:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+SealButtonJustice.text:SetPoint("BOTTOM", SealButtonJustice, "BOTTOM", 0, 5)
+SealButtonJustice.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
+SealButtonJustice.text:SetTextColor(1, 1, 1)
+SealButtonJustice.text:SetText("正义")
+
+
+
+postion_x = postion_x + 45 
+
+local SealButtonCommand = CreateFrame("Button", "MySkillButton", CatPaladinSeal, "ActionButtonTemplate")
+
+-- 设置按钮大小和位置
+SealButtonCommand:SetWidth(36)  -- 标准技能按钮大小
+SealButtonCommand:SetHeight(36)
+SealButtonCommand:SetPoint("TOPLEFT", CatPaladinSeal, "TOPLEFT", postion_x, postion_y)
+
+-- 设置技能图标
+SealButtonCommand.icon = SealButtonCommand:CreateTexture("MySkillButtonIcon", "BACKGROUND")
+SealButtonCommand.icon:SetAllPoints()
+SealButtonCommand.icon:SetTexture("Interface\\Icons\\Ability_Warrior_InnerRage") -- 替换为你想要的技能图标路径
+SealButtonCommand:SetAlpha(PopColor)
+-- 添加高亮效果
+SealButtonCommand:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+
+-- 添加按下效果
+SealButtonCommand:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+
+-- 添加按钮文本(可选)
+SealButtonCommand.text = SealButtonCommand:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+SealButtonCommand.text:SetPoint("BOTTOM", SealButtonCommand, "BOTTOM", 0, 5)
+SealButtonCommand.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
+SealButtonCommand.text:SetTextColor(1, 1, 1)
+SealButtonCommand.text:SetText("命令")
+
+
 -- 添加点击事件
 SealButtonNormal:SetScript("OnClick", function()
     SealButtonNormal:SetAlpha(1.0)
     SealButtonWisdom:SetAlpha(PopColor)
     SealButtonRight:SetAlpha(PopColor)
     SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(PopColor)
     MPPaladinSealSaved.Seal = 0
 end)
 
@@ -366,6 +465,8 @@ SealButtonWisdom:SetScript("OnClick", function()
     SealButtonWisdom:SetAlpha(1.0)
     SealButtonRight:SetAlpha(PopColor)
     SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(PopColor)
     MPPaladinSealSaved.Seal = 1
 end)
 
@@ -374,6 +475,8 @@ SealButtonRight:SetScript("OnClick", function()
     SealButtonWisdom:SetAlpha(PopColor)
     SealButtonRight:SetAlpha(1.0)
     SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(PopColor)
     MPPaladinSealSaved.Seal = 2
 end)
 
@@ -382,9 +485,30 @@ SealButtonCrusader:SetScript("OnClick", function()
     SealButtonWisdom:SetAlpha(PopColor)
     SealButtonRight:SetAlpha(PopColor)
     SealButtonCrusader:SetAlpha(1.0)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(PopColor)
     MPPaladinSealSaved.Seal = 3
 end)
 
+SealButtonJustice:SetScript("OnClick", function()
+    SealButtonNormal:SetAlpha(PopColor)
+    SealButtonWisdom:SetAlpha(PopColor)
+    SealButtonRight:SetAlpha(PopColor)
+    SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(1.0)
+    SealButtonCommand:SetAlpha(PopColor)
+    MPPaladinSealSaved.Seal = 4
+end)
+
+SealButtonCommand:SetScript("OnClick", function()
+    SealButtonNormal:SetAlpha(PopColor)
+    SealButtonWisdom:SetAlpha(PopColor)
+    SealButtonRight:SetAlpha(PopColor)
+    SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(1.0)
+    MPPaladinSealSaved.Seal = 5
+end)
 
 
 
@@ -425,6 +549,8 @@ function MPCatPaladinSealInit()
     SealButtonWisdom:SetAlpha(PopColor)
     SealButtonRight:SetAlpha(PopColor)
     SealButtonCrusader:SetAlpha(PopColor)
+    SealButtonJustice:SetAlpha(PopColor)
+    SealButtonCommand:SetAlpha(PopColor)
 
     if MPPaladinSealSaved.Justice==0 then
         JusticeButtonNormal:SetAlpha(1.0)
@@ -444,6 +570,20 @@ function MPCatPaladinSealInit()
         SealButtonRight:SetAlpha(1.0)
     elseif MPPaladinSealSaved.Seal==3 then
         SealButtonCrusader:SetAlpha(1.0)
+    elseif MPPaladinSealSaved.Seal==4 then
+        SealButtonJustice:SetAlpha(1.0)
+    elseif MPPaladinSealSaved.Seal==5 then
+        SealButtonCommand:SetAlpha(1.0)
+    end
+
+    if MPPaladinCJSaved.Consecration==1 or MPPaladinTankSaved.Consecration==1 then
+        ButtonConsecration:SetAlpha(1.0)
+        MPPaladinCJSaved.Consecration=1
+        MPPaladinTankSaved.Consecration = 1
+    else
+        ButtonConsecration:SetAlpha(PopColor)
+        MPPaladinCJSaved.Consecration=0
+        MPPaladinTankSaved.Consecration = 0
     end
 
 end

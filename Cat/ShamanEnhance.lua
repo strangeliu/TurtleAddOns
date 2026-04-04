@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 增强萨一键宏
--- 更新日期：2026-03-23 （后面根据时间来判断版本）
+-- 更新日期：2026-04-02 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -283,28 +283,83 @@ function MPShamanAutoEnhance()
     EnhanceWaterTotemManager()
     EnhanceAirTotemManager()
 
-    -- 闪电之盾
-    if MPShamanEnhanceSaved.LightningShield==1 then
-        MPCancelBuffByName("水之护盾", "player")
-        if not MPBuff("闪电之盾") then
-            CastSpellByName("闪电之盾")
-            return
-        end
-    end
+    if MPShamanEnhanceSaved.AutoWaterShield==1 then
 
-    -- 大地之盾
-    if MPShamanEnhanceSaved.EarthShield==1 then
-        MPCancelBuffByName("水之护盾", "player")
-        if not MPBuff("大地之盾") then
-            CastSpellByName("大地之盾")
-            return
-        end
-    end
+        if Mana < MPShamanEnhanceSaved.AutoWaterShield_Value then
+            if not MPBuff("水之护盾") then
+                CastSpellByName("水之护盾")
+            end
+        elseif Mana > (MPShamanEnhanceSaved.AutoWaterShield_Value+1000) then
 
-    -- 水之护盾
-    if MPShamanEnhanceSaved.WaterShield==1 then
-        if not MPBuff("水之护盾") then
-            CastSpellByName("水之护盾")
+            -- 闪电之盾
+            if MPShamanEnhanceSaved.LightningShield==1 then
+                MPCancelBuffByName("水之护盾", "player")
+                if not MPBuff("闪电之盾") then
+                    CastSpellByName("闪电之盾")
+                    return
+                end
+            end
+
+            -- 大地之盾
+            if MPShamanEnhanceSaved.EarthShield==1 then
+                MPCancelBuffByName("水之护盾", "player")
+                if not MPBuff("大地之盾") then
+                    CastSpellByName("大地之盾")
+                    return
+                end
+            end
+
+            -- 水之护盾
+            if MPShamanEnhanceSaved.WaterShield==1 then
+                if not MPBuff("水之护盾") then
+                    CastSpellByName("水之护盾")
+                end
+            end
+
+        else
+
+            -- 闪电之盾
+            if MPShamanEnhanceSaved.LightningShield==1 and not MPBuff("闪电之盾") and not MPBuff("水之护盾") then
+                CastSpellByName("闪电之盾")
+                return
+            end
+
+            -- 大地之盾
+            if MPShamanEnhanceSaved.EarthShield==1 and not MPBuff("大地之盾") and not MPBuff("水之护盾") then
+                CastSpellByName("大地之盾")
+                return
+            end
+
+            -- 水之护盾
+            if MPShamanEnhanceSaved.WaterShield==1 and not MPBuff("水之护盾") then
+                CastSpellByName("水之护盾")
+            end
+
+        end
+    else
+        -- 闪电之盾
+        if MPShamanEnhanceSaved.LightningShield==1 then
+            MPCancelBuffByName("水之护盾", "player")
+            if not MPBuff("闪电之盾") then
+                CastSpellByName("闪电之盾")
+                return
+            end
+        end
+
+        -- 大地之盾
+        if MPShamanEnhanceSaved.EarthShield==1 then
+            MPCancelBuffByName("水之护盾", "player")
+            if not MPBuff("大地之盾") then
+                CastSpellByName("大地之盾")
+                return
+            end
+        end
+
+        -- 水之护盾
+        if MPShamanEnhanceSaved.WaterShield==1 then
+            if not MPBuff("水之护盾") then
+                CastSpellByName("水之护盾")
+            end
         end
     end
 

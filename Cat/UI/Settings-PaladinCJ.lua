@@ -15,7 +15,7 @@ TipText:SetWidth(250)
 TipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText:SetTextColor(1, 0.8, 0)
 TipText:SetJustifyH("LEFT")
-TipText:SetText("基本配置")
+TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
@@ -66,7 +66,7 @@ checkButton_Trinket_Upper:SetScript("OnClick", function(self)
         MPPaladinCJSaved.Trinket_Upper = 0
     end
 end)
-local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.TUBoss = 1
@@ -95,10 +95,13 @@ checkText_Consecration:SetText("开启 奉献")
 -- 设置点击事件
 checkButton_Consecration:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinCJSaved.Consecration = 1
+        MPPaladinCJSaved.Consecration=1
+        MPPaladinTankSaved.Consecration = 1
     else
-        MPPaladinCJSaved.Consecration = 0
+        MPPaladinCJSaved.Consecration=0
+        MPPaladinTankSaved.Consecration = 0
     end
+    MPCatPaladinSealInit()
 end)
 
 -- 创建单选框 - 下方饰品
@@ -121,7 +124,7 @@ checkButton_Trinket_Below:SetScript("OnClick", function(self)
         MPPaladinCJSaved.Trinket_Below = 0
     end
 end)
-local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 520, postion_y, "仅BOSS")
+local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.TBBoss = 1
@@ -245,7 +248,7 @@ TipText1:SetWidth(250)
 TipText1:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
 TipText1:SetTextColor(1, 0.8, 0)
 TipText1:SetJustifyH("LEFT")
-TipText1:SetText("高级配置")
+TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
 postion_y = postion_y-80
@@ -665,7 +668,7 @@ postion_y = postion_y - 40
 
 
 -- 创建单选框 - 圣契
-local checkButton_Relic = MPCreateCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButtonSoulspeed", 20, postion_y, "目标血量<35% 切换圣契")
+local checkButton_Relic = MPCreateCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButtonSoulspeed", 20, postion_y, "目标血量<35%切换圣契")
 checkButton_Relic:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.Relic = 1
@@ -673,6 +676,15 @@ checkButton_Relic:SetScript("OnClick", function(self)
         MPPaladinCJSaved.Relic = 0
     end
 end)
+local checkButton_RelicBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 240, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RelicBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinCJSaved.RelicBoss = 1
+    else
+        MPPaladinCJSaved.RelicBoss = 0
+    end
+end)
+
 
 
 -- 获取纹理元素（兼容所有版本）
@@ -728,7 +740,9 @@ middle_Relic_Normal:SetHeight(60) -- 主宽度
 -- 定义选项（带固定索引的表）
 local modes_Relic_Normal = {
     [1] = {text = "|cFF9D38C8永恒之塔圣契|r", item="永恒之塔圣契", value = 1},
-    [2] = {text = "|cFF0070DD热情圣契|r", item="热情圣契", value = 2},
+    [2] = {text = "|cFF9D38C8热忱圣契|r", item="热忱圣契", value = 2},
+    [3] = {text = "|cFF9D38C8神圣领域圣契|r", item="神圣领域圣契", value = 3},
+    [4] = {text = "|cFF0070DD热情圣契|r", item="热情圣契", value = 4},
 }
 
 -- 菜单初始化（修复空索引问题）
@@ -891,7 +905,7 @@ myButton:SetPoint("TOPLEFT", CatUISettingsPaladinCJ, "TOPLEFT", 120, -44)
 myButton:SetWidth(100)
 myButton:SetHeight(22)
 myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText("恢复默认值")
+myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
 -- 调整按钮纹理
 myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
@@ -916,7 +930,7 @@ end)
 -- 添加分隔线
 MPBottomLine(CatUISettingsPaladinCJ)
 
-local checkButton_Power = MPPublicCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 20, 40, "启动 功能药水")
+local checkButton_Power = MPPublicCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.Power = 1
@@ -925,14 +939,14 @@ checkButton_Power:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPower = MPPublicButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", "设置", 150, 34, 80, 22)
+local ButtonPower = MPPublicButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 150, 34, 80, 22)
 ButtonPower:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingsPower:Show()
 end)
 
 
-local checkButton_Pick = MPPublicCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 340, 40, "启动 自动拾取")
+local checkButton_Pick = MPPublicCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.Pick = 1
@@ -941,7 +955,7 @@ checkButton_Pick:SetScript("OnClick", function(self)
     end
 end)
 
-local ButtonPick = MPPublicButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", "设置", 405, 34, 80, 22)
+local ButtonPick = MPPublicButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", MPLanguage.UI_Set_Settings, 405, 34, 80, 22)
 ButtonPick:SetScript("OnClick", function()
     MPCatSettingsCloseAll()
     CatUISettingAutoLoot:Show()
@@ -959,7 +973,7 @@ TipText:SetText("宏命令 -  [ |cFFF58CBA/pdps|r ]")
 
 
 -- 配置文件版本号
-local PaladinCJSettingsUIVersion = 13
+local PaladinCJSettingsUIVersion = 14
 
 function MPResetPaladinCJSettings()
 
@@ -993,6 +1007,7 @@ function MPResetPaladinCJSettings()
     MPPaladinCJSaved.Relic = 0
     MPPaladinCJSaved.Relic_Low = "最终审判圣契"
     MPPaladinCJSaved.Relic_Normal = "永恒之塔圣契"
+    MPPaladinCJSaved.RelicBoss = 0
 
     -- 治疗石、糖水茶
     MPPaladinCJSaved.HealthStone = 1
@@ -1147,6 +1162,7 @@ function MPInitPaladinCJSettings()
             _G[dropdown_Relic_Low:GetName().."Text"]:SetText(data_Relic_Low.text)
         end
     end
+    checkButton_RelicBoss:SetChecked(MPPaladinCJSaved.RelicBoss)
 
     for idx_Relic_Normal, data_Relic_Normal in pairs(modes_Relic_Normal) do
         if string.find(data_Relic_Normal.text,MPPaladinCJSaved.Relic_Normal) then

@@ -33,6 +33,11 @@ frame:RegisterEvent("RAW_COMBATLOG")
 
 -- Nampower专有事件
 frame:RegisterEvent("SPELL_FAILED_SELF")
+frame:RegisterEvent("BUFF_ADDED_SELF")
+frame:RegisterEvent("BUFF_REMOVED_SELF")
+frame:RegisterEvent("DEBUFF_ADDED_SELF")
+frame:RegisterEvent("DEBUFF_REMOVED_SELF")
+frame:RegisterEvent("AURA_CAST_ON_SELF")
 
 
 MP_UnitXP = pcall(UnitXP, "nop", "nop");
@@ -62,6 +67,12 @@ local castDuration = {}
 local MainHandBeginTime = 0
 local MainHandDuration = 0
 
+-- Buff & Debuff
+MPPlayerAurasSpellID = {}
+MPPlayerAurasSpellSlot = {}
+MPPlayerAurasSpellName = {}
+MPPlayerAurasSpellStacks = {}
+MPPlayerAurasSpellDuration = {}
 
 -- GCD计时器
 local gcdtimer = 0
@@ -124,7 +135,7 @@ local function CheckSpellLog(str)
             castStartTime[objectGUID] = GetTime()
             castName[objectGUID] = spellName
             castDuration[objectGUID] = 20000        -- 用20秒作为长度
-            MPMsg("敌方 ["..objectGUID.."] 开始施放 ["..spellName.."]")
+            --MPMsg("敌方 ["..objectGUID.."] 开始施放 ["..spellName.."]")
             return
         end
     end
@@ -214,25 +225,16 @@ local function OnEvent()
 
         if MP_Nampower then
             local major, minor, patch=GetNampowerVersion()
-            MPtextSystemInfo = MPtextSystemInfo .. MPLanguage.UI_FoundNampower..major.."."..minor.."."..patch.."|r"
-            if major>=3 then
-                MP_Nampower3 = true
-		        SetCVar("NP_EnableAutoAttackEvents", "1") 
-		        SetCVar("NP_EnableAuraCastEvents", "1") 
-		        SetCVar("NP_EnableSpellHealEvents", "1") 
-		        SetCVar("NP_EnableSpellGoEvents", "1")
-		        SetCVar("NP_EnableSpellStartEvents", "1")
-            end
             if major>=4 then
+                MPtextSystemInfo = MPtextSystemInfo .. MPLanguage.UI_FoundNampower..major.."."..minor.."."..patch.."|r"
                 MP_Nampower4 = true
 		        SetCVar("NP_EnableAutoAttackEvents", "1") 
 		        SetCVar("NP_EnableAuraCastEvents", "1") 
 		        SetCVar("NP_EnableSpellHealEvents", "1") 
 		        SetCVar("NP_EnableSpellGoEvents", "1")
 		        SetCVar("NP_EnableSpellStartEvents", "1")
-            end
-            if major>=5 then
-                MP_Nampower5 = true
+            else
+                MPtextSystemInfo = MPtextSystemInfo .. "\n发现 |cFFFF0000nampower模组 "..major.."."..minor.."."..patch.." (过期)|r"
             end
 
         end
@@ -281,11 +283,29 @@ local function OnEvent()
         MPInitMiniButton()
         MPCatSettingsCloseAll()
 
+
     -- 进入游戏世界刷新常量值
     elseif event == "PLAYER_ENTERING_WORLD" then
         -- 刷新角色属性状态值
         MPRefreshInfo()
         ResetData()
+
+        if MP_Nampower4 then
+            local data = GetUnitData("player")
+            for i=1,48 do
+                --MPMsg(data.aura[i])
+                if data.aura[i]>0 then
+                    local spellname = GetSpellRecField(data.aura[i], "name")
+                    MPPlayerAurasSpellID[data.aura[i]] = true
+                    MPPlayerAurasSpellSlot[spellname] = i
+                    MPPlayerAurasSpellName[spellname] = true
+                    MPPlayerAurasSpellStacks[spellname] = 1
+                    MPPlayerAurasSpellDuration[spellname] = 0
+                end
+            end
+        end
+
+        frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
     -- 装备变化刷新常量值
     elseif event == "UNIT_INVENTORY_CHANGED" then
@@ -518,10 +538,83 @@ local function OnEvent()
             ErrorBehind = false
         end
 
+    elseif event == "BUFF_ADDED_SELF" then
+
+        local spellname = GetSpellRecField(arg3, "name")
+        if arg2<=0 then arg2=99 end
+
+        MPPlayerAurasSpellID[arg3] = true
+        MPPlayerAurasSpellSlot[spellname] = arg6
+        MPPlayerAurasSpellName[spellname] = true
+        MPPlayerAurasSpellStacks[spellname] = arg4
+        MPPlayerAurasSpellDuration[spellname] = -1
+
+    elseif event == "BUFF_REMOVED_SELF" then
+
+        local spellname = GetSpellRecField(arg3, "name")
+
+        if MPPlayerAurasSpellID[arg3] then MPPlayerAurasSpellID[arg3]=nil end
+        if MPPlayerAurasSpellSlot[spellname] then MPPlayerAurasSpellSlot[spellname]=nil end
+        if MPPlayerAurasSpellName[spellname] then MPPlayerAurasSpellName[spellname]=nil end
+        if MPPlayerAurasSpellStacks[spellname] then MPPlayerAurasSpellStacks[spellname]=nil end
+        if MPPlayerAurasSpellDuration[spellname] then MPPlayerAurasSpellDuration[spellname]=nil end
+
+    elseif event == "DEBUFF_ADDED_SELF" then
+
+        local spellname = GetSpellRecField(arg3, "name")
+        if arg2<=0 then arg2=99 end
+
+        MPPlayerAurasSpellID[arg3] = true
+        MPPlayerAurasSpellSlot[spellname] = arg6
+        MPPlayerAurasSpellName[spellname] = true
+        MPPlayerAurasSpellStacks[spellname] = arg4
+        MPPlayerAurasSpellDuration[spellname] = -1
+
+    elseif event == "DEBUFF_REMOVED_SELF" then
+
+        local spellname = GetSpellRecField(arg3, "name")
+
+        if MPPlayerAurasSpellID[arg3] then MPPlayerAurasSpellID[arg3]=nil end
+        if MPPlayerAurasSpellSlot[spellname] then MPPlayerAurasSpellSlot[spellname]=nil end
+        if MPPlayerAurasSpellName[spellname] then MPPlayerAurasSpellName[spellname]=nil end
+        if MPPlayerAurasSpellStacks[spellname] then MPPlayerAurasSpellStacks[spellname]=nil end
+        if MPPlayerAurasSpellDuration[spellname] then MPPlayerAurasSpellDuration[spellname]=nil end
+
+    elseif event == "AURA_CAST_ON_SELF" then
+
+        if arg9>0 then
+
+            local spellname = GetSpellRecField(arg1, "name")
+
+            if spellname and not MPPlayerAurasSpellID[arg1] then
+                MPPlayerAurasSpellID[arg1] = true
+                MPPlayerAurasSpellSlot[spellname] = 0
+                MPPlayerAurasSpellName[spellname] = true
+                MPPlayerAurasSpellStacks[spellname] = 1
+                MPPlayerAurasSpellDuration[spellname] = arg8
+                --print(spellname)
+                --print(arg8)
+            end
+
+        end
 
     end
 
 
+end
+
+-- 测试，要删除
+function MPPrintAuras()
+    local count = 1
+    MPMsg("=== Auras ===")
+    for key, value in pairs(MPPlayerAurasSpellName) do
+        if value then
+            MPMsg(count.." Auras: "..key.."   Layer: "..MPPlayerAurasSpellStacks[key])
+            count = count + 1
+        else
+            MPMsg("空 Auras")
+        end
+    end
 end
 
 local interval = 0.05  -- 轮询间隔（秒）
@@ -530,6 +623,8 @@ local melee_interval = 0.02  -- 轮询间隔（秒）
 local melee_elapsed = 0
 local catmsg_interval = 30  -- 轮询间隔（秒）
 local catmsg_elapsed = 0
+local nameframe_interval = 0.2  -- 轮询间隔（秒）
+local nameframe_elapsed = 0
 local UIinterval = 0.1  -- 轮询间隔（秒）
 local UIelapsed = 0
 
@@ -579,6 +674,41 @@ local function EventPollingFunction()
     OldEnergy = UnitMana("player")
 end
 
+local function NameFramePollingFunction()
+
+    if not MP_SuperWoW then
+        return
+    end
+
+    -- 收集NamePlate
+
+    --[[
+    if _G["pfNamePlate1"] then
+        for i=1,30 do
+            local frameName = "pfNamePlate"..i
+            local frame = _G[frameName]
+            if frame then
+                if frame:IsVisible() and frame.lastGuid then
+                    MPPushObject(frame.lastGuid)
+                end
+            else
+                break
+            end
+        end
+    end
+    ]]
+    local parentcount = WorldFrame:GetNumChildren()
+    local childs = { WorldFrame:GetChildren() }
+	for i=1, parentcount do
+		plate = childs[i]
+		if plate:GetObjectType() ~= NAMEPLATE_FRAMETYPE then 
+            if plate:GetName(1) then
+                MPPushObject(plate:GetName(1))
+			end
+		end
+	end
+
+end
 
 
 local function OnUpdate()
@@ -598,6 +728,12 @@ local function OnUpdate()
     if catmsg_elapsed >= catmsg_interval then
         catmsg_elapsed = 0  -- 重置计时器
         MPSendCatMsg()
+    end
+
+    nameframe_elapsed = nameframe_elapsed + arg1
+    if nameframe_elapsed >= nameframe_interval then
+        nameframe_elapsed = 0  -- 重置计时器
+        NameFramePollingFunction()
     end
 
 
@@ -855,8 +991,6 @@ function MPScanNearbyEnemiesCount(range)
 
     -- 优化部分B
 
-
- 
     if not MPInCombat then
         -- 检查团队成员（1-40），仅在团队中时生效
         if GetNumRaidMembers() > 0 then  -- 替代 IsInRaid()
@@ -884,6 +1018,7 @@ function MPScanNearbyEnemiesCount(range)
             end
         end
     end
+
 
 
     -- 基础部分
