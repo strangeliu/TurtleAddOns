@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 战士Tank一键宏
--- 更新日期：2026-03-26 （后面根据时间来判断版本）
+-- 更新日期：2026-04-21 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -38,12 +38,16 @@ MPWarriorLifeJewel = 0
 
 
 
-local NQ,XX,DPMJ,ZDMJ,DPGD,FC,GCD,FZ,ZS,SX
+local NQ,XX,DPMJ,ZDMJ,DPGD,FC,GCD,FZ,ZS,SX,HPP
 local waitYZ=false
 local TargetDistance = false
 
 MPWarriorCZTimer=0
 MPWarriorLTTimer=0
+
+-- 默认配置
+MPWarriorTankConfig = 1
+
 
 local function MPWarriorTankPart()
 
@@ -79,20 +83,25 @@ function MPWarriorTank()
 	XX=MPSpellReady("血性狂暴")
 	YZ = MPSpellReadyOffset("压制",1.5)
 	TargetDistance = MPGetTargetDistance()
+	if UnitExists("target") then
+		HPP = UnitHealth("target")/UnitHealthMax("target")*100
+	else
+		HPP = 100
+	end
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPWarriorTankSaved.Target)
+	MPAutoSwitchTarget(MPWarriorTankSaved[MPWarriorTankConfig].Target)
 
 	-- 开启自动攻击
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPWarriorTankSaved.Pick==1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPWarriorTankSaved.Power==1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -104,39 +113,41 @@ function MPWarriorTank()
 	-- 在战斗中
 	if MPInCombat then
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and TargetDistance and MPWarriorTankSaved.Trinket_Upper==1 then
-			if MPWarriorTankSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and TargetDistance and MPWarriorTankSaved[MPWarriorTankConfig].Trinket_Upper==1 then
+			if MPWarriorTankSaved[MPWarriorTankConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPWarriorTankSaved.TUBoss==0 then
+			elseif MPWarriorTankSaved[MPWarriorTankConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and TargetDistance and MPWarriorTankSaved.Trinket_Below==1 then
-			if MPWarriorTankSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and TargetDistance and MPWarriorTankSaved[MPWarriorTankConfig].Trinket_Below==1 then
+			if MPWarriorTankSaved[MPWarriorTankConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPWarriorTankSaved.TBBoss==0 then
+			elseif MPWarriorTankSaved[MPWarriorTankConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPWarriorTankSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPWarriorTankSaved[MPWarriorTankConfig].Soulspeed==1 and TargetDistance then
+			if MPWarriorTankSaved[MPWarriorTankConfig].SoulspeedBoss==0 or (MPWarriorTankSaved[MPWarriorTankConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-		if percent<MPWarriorTankSaved.HealthStone_Value and MPWarriorTankSaved.HealthStone==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].HealthStone_Value and MPWarriorTankSaved[MPWarriorTankConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPWarriorTankSaved.HerbalTea_Value and MPWarriorTankSaved.HerbalTea==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].HerbalTea_Value and MPWarriorTankSaved[MPWarriorTankConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
-		if percent<MPWarriorTankSaved.Carrot_Value and MPWarriorTankSaved.Carrot==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].Carrot_Value and MPWarriorTankSaved[MPWarriorTankConfig].Carrot==1 then
 			MPUseItemByName("鞭根块茎")
 		end
 		-- 盾牌格挡的开启血线
-		if percent<=MPWarriorTankSaved.ShieldBlock_Value and MPWarriorTankSaved.ShieldBlock==1 then
+		if percent<=MPWarriorTankSaved[MPWarriorTankConfig].ShieldBlock_Value and MPWarriorTankSaved[MPWarriorTankConfig].ShieldBlock==1 then
 			local totName = UnitName("targettarget")
 			if totName and totName==UnitName("player") then
 				if NQ>9 and DPGD and MPGetShape(2) and not DPMJ and not MPBuff("强化盾牌猛击") then
@@ -145,17 +156,17 @@ function MPWarriorTank()
 			end
 		end
 		-- 破釜沉舟的开启血线
-		if percent<MPWarriorTankSaved.LastStand_Value and MPWarriorTankSaved.LastStand==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].LastStand_Value and MPWarriorTankSaved[MPWarriorTankConfig].LastStand==1 then
 			CastSpellByName("破釜沉舟")
 		end
 		-- 盾墙的开启血线
-		if percent<MPWarriorTankSaved.ShieldWall_Value and MPWarriorTankSaved.ShieldWall==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].ShieldWall_Value and MPWarriorTankSaved[MPWarriorTankConfig].ShieldWall==1 then
 			if MPGetShape(2) then
 				CastSpellByName("盾墙")
 			end
 		end
 		-- 生命宝石的开启血线
-		if percent<MPWarriorTankSaved.LifeJewel_Value and MPWarriorTankSaved.LifeJewel==1 then
+		if percent<MPWarriorTankSaved[MPWarriorTankConfig].LifeJewel_Value and MPWarriorTankSaved[MPWarriorTankConfig].LifeJewel==1 then
 
 			-- 该饰品是否存在
 			if MPWarriorLifeJewel>0 then
@@ -165,40 +176,47 @@ function MPWarriorTank()
 
 		-- 特定 种族天赋 --
 
-		if MPWarriorTankSaved.RacialTraits==1 and TargetDistance then
+		if MPWarriorTankSaved[MPWarriorTankConfig].RacialTraits==1 and TargetDistance then
+			if MPWarriorTankSaved[MPWarriorTankConfig].RacialTraitsBoss==0 or (MPWarriorTankSaved[MPWarriorTankConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
+		-- 是否自动开启死亡之愿
+		if MPWarriorTankSaved[MPWarriorTankConfig].DeathWish==1 and MPWarriorDPSDeathWish==1 and TargetDistance then
+			if MPWarriorTankSaved[MPWarriorTankConfig].DeathWishBoss==0 or (MPWarriorTankSaved[MPWarriorTankConfig].DeathWishBoss==1 and MPIsBossTarget()) then
+				local SY = MPSpellReady("死亡之愿")
+				if SY and NQ>=MPWarriorDPSDeathWishPower then CastSpellByName("死亡之愿") return end
+			end
+		end
 
 	end
 
 	-- 是否自动取消拯救
-	if MPWarriorTankSaved.UnSalvation==1 and ( MPBuff("强效拯救祝福") or MPBuff("拯救祝福") ) then
+	if MPWarriorTankSaved[MPWarriorTankConfig].UnSalvation==1 and ( MPBuff("强效拯救祝福") or MPBuff("拯救祝福") ) then
 		MPCancelBuffByName("强效拯救祝福")
 		MPCancelBuffByName("拯救祝福")
 	end
 
 	-- 压制
-	if MPWarriorTankSaved.Overpower==1 and MPWarriorOverpower() and YZ and NQ>4 then
-		if NQ<MPWarriorTankSaved.Overpower_Value and not MPGetShape(1) then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Overpower==1 and MPWarriorOverpower() and YZ and NQ>4 then
+		if NQ<MPWarriorTankSaved[MPWarriorTankConfig].Overpower_Value and not MPGetShape(1) then
 			CastSpellByName("战斗姿态")
 			waitYZ = true
 		end
@@ -219,74 +237,89 @@ function MPWarriorTank()
 	end
 
 	-- 确保在防御姿态下
-	if MPWarriorTankSaved.Defensive==1 and not MPGetShape(2) then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Defensive==1 and not MPGetShape(2) then
 		CastSpellByName("防御姿态")
 	end
 
 	-- 自动打断
-	if MPWarriorTankSaved.Interrupt==1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Interrupt==1 then
 		MPINTCast()
 	end
 
 
 	-- 英勇打击 顺劈斩
-	if MPWarriorTankSaved.NearbyEnemies==1 then
-		if NQ>MPWarriorTankSaved.HeroicStrike and MPScanNearbyEnemiesCount(6) > 1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].NearbyEnemies==1 then
+		if NQ>MPWarriorTankSaved[MPWarriorTankConfig].HeroicStrike and MPScanNearbyEnemiesCount(6) > 1 then
 			MPCastWithNampower("顺劈斩")
-		elseif NQ>MPWarriorTankSaved.HeroicStrike then
+		elseif NQ>MPWarriorTankSaved[MPWarriorTankConfig].HeroicStrike then
 			MPCastWithNampower("英勇打击")
 		end
 	else
-		if NQ>MPWarriorTankSaved.HeroicStrike then
+		if NQ>MPWarriorTankSaved[MPWarriorTankConfig].HeroicStrike then
 			MPCastWithNampower("英勇打击")
 		end
 	end
 
 
-	if NQ<30 and MPWarriorTankSaved.BerserkerRage==1 and XX and TargetDistance and MPInCombat then CastSpellByName("血性狂暴") end
+	if NQ<30 and MPWarriorTankSaved[MPWarriorTankConfig].BerserkerRage==1 and XX and TargetDistance and MPInCombat then CastSpellByName("血性狂暴") end
 
-	if MPWarriorTankConcussion==1 and MPWarriorTankSaved.Shockwave==1 and ZDMJ then CastSpellByName("震荡猛击") return end
+	if MPWarriorTankConcussion==1 and MPWarriorTankSaved[MPWarriorTankConfig].Shockwave==1 and ZDMJ then CastSpellByName("震荡猛击") return end
 
 	-- 主技能
 
-	-- 用于武器战临时切换的技能输出
-	if MPWarriorDPSType==1 then
-		if MPMortalStrike==1 then ZS=MPSpellReadyOffset("致死打击") else ZS=false end
-		if ZS and NQ>29 then
-			CastSpellByName("致死打击")
-			return
-		end
+	if MPWarriorTankSaved[MPWarriorTankConfig].MainSkill==1 then
+		-- 用于武器战临时切换的技能输出
+		if MPWarriorDPSType==1 then
+			if MPMortalStrike==1 then ZS=MPSpellReadyOffset("致死打击") else ZS=false end
+			if ZS and NQ>29 then
+				CastSpellByName("致死打击")
+				return
+			end
 
-	-- 用于狂暴战临时切换的技能输出
-	elseif MPWarriorDPSType==2 then
-		if MPBloodthirst==1 then SX=MPSpellReadyOffset("嗜血") else SX=false end
-		if SX and NQ>29 then
-			CastSpellByName("嗜血")
-			return
-		end
+		-- 用于狂暴战临时切换的技能输出
+		elseif MPWarriorDPSType==2 then
+			if MPBloodthirst==1 then SX=MPSpellReadyOffset("嗜血") else SX=false end
+			if SX and NQ>29 then
+				CastSpellByName("嗜血")
+				return
+			end
 
-	else
+		else
 
-		if MPWarriorTankShieldSlam==1 and DPMJ and NQ>19 then
-			CastSpellByName("盾牌猛击")
-			return
-		end
+			if MPWarriorTankShieldSlam==1 and DPMJ and NQ>19 then
+				CastSpellByName("盾牌猛击")
+				return
+			end
 	
+		end
 	end
 
+	-- 旋风斩
+	if MPWarriorTankSaved[MPWarriorTankConfig].Whirlwind==1 then
+		if NQ>24 and MPSpellReadyOffset("旋风斩",1.5) and MPGetShape(MPWarriorBerserkerStanceID) then
+			CastSpellByName("旋风斩")
+			return
+		end
+	end
 
 	-- 复仇
-	if FC and MPWarriorTankSaved.Revenge==1 and MPWarriorCounterAttack() and NQ>4 and MPGetShape(2) then
+	if FC and MPWarriorTankSaved[MPWarriorTankConfig].Revenge==1 and MPWarriorCounterAttack() and NQ>4 and MPGetShape(2) then
 		CastSpellByName("复仇") 
 		return
 	end 
 
+	-- 斩杀
+	if MPWarriorTankSaved[MPWarriorTankConfig].Execute==1 and NQ>14 and HPP<20 and not MPGetShape(2) then
+		CastSpellByName("斩杀") 
+		return
+	end
+
 	-- 保持战斗怒吼
-	if not MPBuff("战斗怒吼") and NQ>9 and MPWarriorTankSaved.BattleShout==1 then CastSpellByName("战斗怒吼") return end
+	if not MPBuff("战斗怒吼") and NQ>9 and MPWarriorTankSaved[MPWarriorTankConfig].BattleShout==1 then CastSpellByName("战斗怒吼") return end
 
 
 	-- 是否要补挫志怒吼
-	if MPWarriorTankSaved.Demoralizing==1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].Demoralizing==1 then
 		if NQ>9 and UnitExists("target") and GetTime()-MPWarriorCZTimer>10 and TargetDistance then
 			if not MPBuff("挫志咆哮","target") and not MPBuff("挫志怒吼","target") then
 				CastSpellByName("挫志怒吼")
@@ -298,7 +331,7 @@ function MPWarriorTank()
 	end
 
 	-- 是否要补雷霆一击
-	if MPWarriorTankSaved.ThunderClap==1 then
+	if MPWarriorTankSaved[MPWarriorTankConfig].ThunderClap==1 then
 		if NQ>19 and UnitExists("target") and GetTime()-MPWarriorLTTimer>10 and TargetDistance then
 			if not MPBuff("雷霆一击","target") then
 				CastSpellByName("雷霆一击")
@@ -309,7 +342,7 @@ function MPWarriorTank()
 		end
 	end
 
-	if MPWarriorTankSaved.SunderArmor==1 and NQ>MPWarriorTankSaved.SunderArmor_Value then CastSpellByName("破甲攻击") end
+	if MPWarriorTankSaved[MPWarriorTankConfig].SunderArmor==1 and NQ>MPWarriorTankSaved[MPWarriorTankConfig].SunderArmor_Value then CastSpellByName("破甲攻击") end
 
 end
 

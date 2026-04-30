@@ -82,6 +82,7 @@ function BCS:OnLoad()
 	self.Frame:RegisterEvent("UNIT_INVENTORY_CHANGED") -- fires when equipment changes
 	self.Frame:RegisterEvent("CHARACTER_POINTS_CHANGED") -- fires when learning talent
 	self.Frame:RegisterEvent("PLAYER_AURAS_CHANGED") -- buffs/warrior stances
+	self.Frame:RegisterEvent("PLAYER_ENTERING_WORLD") -- confirm data ready 
 	
 	local _, classFileName = UnitClass("Player")
 	self.playerClass = strupper(classFileName)
@@ -100,6 +101,15 @@ function BCS:OnEvent()
 		tinsert(BCS.DebugStack, t)
 	end]]
 	
+	if event == "PLAYER_ENTERING_WORLD" then
+		if BCS.PaperDollFrame:IsVisible() then
+			BCS:UpdateStats()
+		else
+			BCS.needUpdate = true
+		end
+		return
+	end
+	
 	if
 		event == "PLAYER_AURAS_CHANGED" or
 		event == "CHARACTER_POINTS_CHANGED"
@@ -116,11 +126,16 @@ function BCS:OnEvent()
 			BCS.needUpdate = true
 		end
 	elseif event == "ADDON_LOADED" and arg1 == "BetterCharacterStats" then
+		BCSConfig = BCSConfig or {}
 		IndexLeft = BCSConfig["DropdownLeft"] or BCS.PLAYERSTAT_DROPDOWN_OPTIONS[1]
 		IndexRight = BCSConfig["DropdownRight"] or BCS.PLAYERSTAT_DROPDOWN_OPTIONS[1]
 
 		UIDropDownMenu_SetSelectedValue(PlayerStatFrameLeftDropDown, IndexLeft)
 		UIDropDownMenu_SetSelectedValue(PlayerStatFrameRightDropDown, IndexRight)
+		
+		if BCS.PropertiesPanel then
+			BCS.PropertiesPanel:Init()
+		end
 	end
 end
 
@@ -132,7 +147,6 @@ function BCS:OnShow()
 end
 
 -- debugging / profiling
-
 --[[
 local avgV = {}
 local avg = 0
@@ -163,7 +177,6 @@ function BCS:UpdateStats()
 	BCS:UpdatePaperdollStats("PlayerStatFrameLeft", IndexLeft)
 	BCS:UpdatePaperdollStats("PlayerStatFrameRight", IndexRight)
 end
-
 
 function BCS:SetStat(statFrame, statIndex)
 	local label = getglobal(statFrame:GetName().."Label")
@@ -396,6 +409,33 @@ function BCS:SetSpellPower(statFrame, school,return_spellPower,return_secondaryP
 	local label = getglobal(statFrame:GetName() .. "Label")
 	local colorPos = "|cff20ff20"
 	local colorNeg = "|cffff2020"
+	--use nampower first
+	if BCS:IsNampowerReady() then
+		local physical, holy, fire, nature, frost, shadow, arcane = GetSpellPower()
+		if school then
+			local schoolPower = 0
+            if school == "Arcane" then
+                schoolPower = arcane or 0
+            elseif school == "Fire" then
+                schoolPower = fire or 0
+            elseif school == "Frost" then
+                schoolPower = frost or 0
+            elseif school == "Holy" then
+                schoolPower = holy or 0
+            elseif school == "Nature" then
+                schoolPower = nature or 0
+            elseif school == "Shadow" then
+                schoolPower = shadow or 0
+            end
+            label:SetText(L["SPELL_SCHOOL_"..strupper(school)])
+            text:SetText(schoolPower)
+		else
+			local totalPower = math.max(holy, fire, nature, frost, shadow, arcane)
+            label:SetText(L.SPELL_POWER_COLON)
+            text:SetText(format("%.0f", totalPower))
+        end
+        return
+    end
 	if school then
 		label:SetText(L["SPELL_SCHOOL_"..strupper(school)])
 		local base = return_spellPower
@@ -463,7 +503,11 @@ function BCS:SetRating(statFrame, ratingType)
 		else
 			rating = rating .. ".00%"
 		end
-		text:SetText(rating)
+		if rating == nil then
+			text:SetText("--")
+		else
+			text:SetText(rating)
+		end
 		
 		frame.tooltip = L.MELEE_HIT_TOOLTIP
 		if L[BCS.playerClass .. "_MELEE_HIT_TOOLTIP"] then
@@ -486,7 +530,11 @@ function BCS:SetRating(statFrame, ratingType)
 			else
 				rating = rating .. ".00%"
 			end
-			text:SetText(rating)
+			if rating == nil then
+				text:SetText("--")
+			else
+				text:SetText(rating)
+			end
 		end
 		frame.tooltip = L.MELEE_HIT_TOOLTIP
 		if L[BCS.playerClass .. "_MELEE_HIT_TOOLTIP"] then
@@ -567,7 +615,13 @@ function BCS:SetMeleeCritChance(statFrame)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	
 	label:SetText(L.MELEE_CRIT_COLON)
-	text:SetText(format("%.2f%%", BCS:GetCritChance()))
+
+	local crit = BCS:GetCritChance()
+	if crit == nil then 
+		text:SetText("--")
+	else
+		text:SetText(format("%.2f%%", crit))
+	end
 end
 
 function BCS:SetSpellCritChance(statFrame)
@@ -922,7 +976,12 @@ function BCS:UpdatePaperdollStats(prefix, index)
 	local return_spellPower, return_secondaryPower, return_secondaryPowerName, return_damagePower, arcanePower, firePower, frostPower, holyPower, naturePower, shadowPower
 	
 	if ( index == "PLAYERSTAT_SPELL_COMBAT" ) or ( index == "PLAYERSTAT_SPELL_SCHOOLS" ) then
+		if BCS:IsNampowerReady() then
+			return_spellPower, return_secondaryPower, return_secondaryPowerName, return_damagePower, 
+            arcanePower, firePower, frostPower, holyPower, naturePower, shadowPower = 0, 0, "", 0, 0, 0, 0, 0, 0, 0
+		else
 		return_spellPower, return_secondaryPower, return_secondaryPowerName, return_damagePower, arcanePower, firePower, frostPower, holyPower, naturePower, shadowPower = BCS:GetSpellPower(school)
+		end
 	end
 
 	if ( index == "PLAYERSTAT_BASE_STATS" ) then
@@ -1032,23 +1091,46 @@ function BCS:SetHaste(statFrame,index)
 	local label = getglobal(statFrame:GetName() .. "Label")
 	
 	local showSchool
-	local haste = 0
+	local haste
+	local extend_str
+	local val1 = nil
+	local val2 = nil
 	
-	local val1,val2 = BCS:EstimateHaste()
-	if val1 == nil then
-		haste = BCS:GetHaste()
-	else
-		haste = val1
+	if self:IsNampowerReady() then
+		local castSpeed = GetUnitField("player", "modCastSpeed")
+		if castSpeed then
+			haste = (1 / castSpeed - 1) * 100
+		end
+	end
+	
+	if not haste then
+		local val1,val2 = BCS:EstimateHaste()
+		if val1 == nil then
+			haste = BCS:GetHaste()
+		else
+			haste = val1
+		end
 	end
 	local haste_str = format("%.2f%%", haste)
+	local reduce = (1 - 1/(1 + haste/100)) * 100
+	local reduce_str = format("%.2f%%", math.abs(reduce))
+	
+	if haste < -0.0001 then
+		extend_str = "延长"
+	else 
+		extend_str = "缩短"
+	end
+	
 	label:SetText(L.HASTE_COLON)
+	
 	if val1 ~=nil and val2 ~= "general" then
-		frame.tooltip = format(L.HASTE_TOOLTIP_2, haste_str, val2)
+		frame.tooltip = format(L.HASTE_TOOLTIP_3, val2 , extend_str, reduce_str)
 	else
-		frame.tooltip = format(L.HASTE_TOOLTIP, haste_str)
+		frame.tooltip = format(L.HASTE_TOOLTIP_4, extend_str, reduce_str)
 	end
 	text:SetText(format("%.2f%%", haste))
 	statFrame:Show()
+	
 	if frame.tooltip then
 		frame:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
@@ -1155,3 +1237,10 @@ function BCS:GetDruidForm()
 	return L_FORM.OTHER
 end
 
+function BCS:IsNampowerReady()
+	if not GetNampowerVersion then
+		return false
+	else
+		return true
+	end
+end

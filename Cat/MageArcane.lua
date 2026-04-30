@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奥法一键宏
--- 更新日期：2026-01-06（后面根据时间来判断版本）
+-- 更新日期：2026-04-12（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -46,12 +46,15 @@ MPMageArcaneMissilesnMana = 655
 
 local MHP,DM,ASKL,ASYD,HYCJ
 
+-- 默认配置
+MPMageArcaneConfig = 1
+
 
 local function MageArmor()
 	local m =  (UnitMana("player") - MPMageArmorMana) / UnitManaMax("player") * 100
-	if MPMageArcaneSaved.ArcanePowerSafe==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe==1 then
 		if MPBuff("奥术强化") then
-			if m > MPMageArcaneSaved.ArcanePowerSafe_Value+2 then
+			if m > MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe_Value+2 then
 				CastSpellByName("魔甲术")
 			else
 				DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."奥术强化 蓝量保护。|r")
@@ -68,9 +71,9 @@ end
 
 local function ArcaneExplosion()
 	local m =  (UnitMana("player") - MPMageArcaneExplosionMana) / UnitManaMax("player") * 100
-	if MPMageArcaneSaved.ArcanePowerSafe==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe==1 then
 		if MPBuff("奥术强化") then
-			if m > MPMageArcaneSaved.ArcanePowerSafe_Value+2 then
+			if m > MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe_Value+2 then
 				MPCast("奥术溃裂")
 			else
 				DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."奥术强化 蓝量保护。|r")
@@ -85,9 +88,9 @@ end
 
 local function ArcaneMissiles()
 	local m =  (UnitMana("player") - MPMageArcaneMissilesnMana) / UnitManaMax("player") * 100
-	if MPMageArcaneSaved.ArcanePowerSafe==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe==1 then
 		if MPBuff("奥术强化") then
-			if m > MPMageArcaneSaved.ArcanePowerSafe_Value+4 then
+			if m > MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe_Value+4 then
 				MPCastSpell("奥术飞弹")
 			else
 				DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."奥术强化 蓝量保护。|r")
@@ -103,9 +106,9 @@ end
 local function ArcaneSurge()
 
 	local m =  (UnitMana("player") - MPMageArcaneSurgeMana) / UnitManaMax("player") * 100
-	if MPMageArcaneSaved.ArcanePowerSafe==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe==1 then
 		if MPBuff("奥术强化") then
-			if m < MPMageArcaneSaved.ArcanePowerSafe_Value+2 then
+			if m < MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerSafe_Value+2 then
 				DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."奥术强化 蓝量保护。|r")
 				return
 			end
@@ -115,6 +118,25 @@ local function ArcaneSurge()
 	MPCast("奥术涌动")
 	return true
 end
+
+
+local function MageArcane_FireBlast()
+	-- 奥法增加在没有奥术溃裂CD的时候才允许火冲
+	if GetMageArcaneMissiles()<=0 then
+		if MP_UnitXP and UnitExists("target") then
+			local inRange = UnitXP("distanceBetween", "player", "target")
+			if MPMageArcaneSaved[MPMageArcaneConfig].FireBlast==1 and HYCJ and not MPBuff("奥术溃裂") and inRange<MPMageFireBlastDist then
+				CastSpellByName("火焰冲击")
+				return
+			end
+		else
+			if MPMageArcaneSaved[MPMageArcaneConfig].FireBlast==1 and HYCJ and not MPBuff("奥术溃裂") then
+				CastSpellByName("火焰冲击")
+			end
+		end
+	end
+end
+
 
 
 function MPMageArcaneAuto()
@@ -129,15 +151,15 @@ function MPMageArcaneAuto()
 	HYCJ = MPSpellReady("火焰冲击")
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPMageArcaneSaved.Target, 0)
+	MPAutoSwitchTarget(MPMageArcaneSaved[MPMageArcaneConfig].Target, 0)
 
 	-- 自动拾取
-	if MPMageArcaneSaved.Pick==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPMageArcaneSaved.Power==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -148,40 +170,42 @@ function MPMageArcaneAuto()
 	if MPInCombat and GetMageArcaneMissiles()<=0.2 then
 
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPMageArcaneSaved.Trinket_Upper==1 then
-			if MPMageArcaneSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPMageArcaneSaved[MPMageArcaneConfig].Trinket_Upper==1 then
+			if MPMageArcaneSaved[MPMageArcaneConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPMageArcaneSaved.TUBoss==0 then
+			elseif MPMageArcaneSaved[MPMageArcaneConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPMageArcaneSaved.Trinket_Below==1 then
-			if MPMageArcaneSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPMageArcaneSaved[MPMageArcaneConfig].Trinket_Below==1 then
+			if MPMageArcaneSaved[MPMageArcaneConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPMageArcaneSaved.TBBoss==0 then
+			elseif MPMageArcaneSaved[MPMageArcaneConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPMageArcaneSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPMageArcaneSaved[MPMageArcaneConfig].Soulspeed==1 and GetMageArcaneMissiles()<=0 then
+			if MPMageArcaneSaved[MPMageArcaneConfig].SoulspeedBoss==0 or (MPMageArcaneSaved[MPMageArcaneConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理，潜行下不吃药
-		if percent<MPMageArcaneSaved.HealthStone_Value and MPMageArcaneSaved.HealthStone==1 then
+		if percent<MPMageArcaneSaved[MPMageArcaneConfig].HealthStone_Value and MPMageArcaneSaved[MPMageArcaneConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPMageArcaneSaved.HerbalTea_Value and MPMageArcaneSaved.HerbalTea==1 then
+		if percent<MPMageArcaneSaved[MPMageArcaneConfig].HerbalTea_Value and MPMageArcaneSaved[MPMageArcaneConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPMageArcaneSaved.HerbalTeaMana_Value and MPMageArcaneSaved.HerbalTeaMana==1 then
+		if percentMana<MPMageArcaneSaved[MPMageArcaneConfig].HerbalTeaMana_Value and MPMageArcaneSaved[MPMageArcaneConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPMageArcaneSaved.JewelMana_Value and MPMageArcaneSaved.JewelMana==1 then
+		if percentMana<MPMageArcaneSaved[MPMageArcaneConfig].JewelMana_Value and MPMageArcaneSaved[MPMageArcaneConfig].JewelMana==1 then
 			MPUseItemByName("法力红宝石")
 			MPUseItemByName("法力黄水晶")
 			MPUseItemByName("法力翡翠")
@@ -191,26 +215,26 @@ function MPMageArcaneAuto()
 
 		-- 特定 种族天赋 --
 
-		if MPMageArcaneSaved.RacialTraits==1 and GetMageArcaneMissiles()<=0 then
+		if MPMageArcaneSaved[MPMageArcaneConfig].RacialTraits==1 and GetMageArcaneMissiles()<=0 then
+			if MPMageArcaneSaved[MPMageArcaneConfig].RacialTraitsBoss==0 or (MPMageArcaneSaved[MPMageArcaneConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 	end
@@ -220,19 +244,19 @@ function MPMageArcaneAuto()
 
 
 
-	if MPMageArcaneSaved.MageArmor==1 and not MPBuff("魔甲术") then
+	if MPMageArcaneSaved[MPMageArcaneConfig].MageArmor==1 and not MPBuff("魔甲术") then
 		MageArmor()
 	end
 
 	-- 奥术涌动
-	if MPMageArcaneSaved.ArcaneSurge==1 and MPGetMageArcaneSurge() and ASYD and GetMageArcaneMissiles()<=0.5 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcaneSurge==1 and MPGetMageArcaneSurge() and ASYD and GetMageArcaneMissiles()<=0.5 then
 
 		-- 奥术强化时的处理
-		if MPMageArcaneSaved.ArcanePowerNoSurge==1 and MPBuff("奥术强化") then
+		if MPMageArcaneSaved[MPMageArcaneConfig].ArcanePowerNoSurge==1 and MPBuff("奥术强化") then
 
 			-- 不打
 
-		elseif MPMageArcaneSaved.ArcaneExplosionNoSurge==1 and MPBuff("奥术溃裂") then
+		elseif MPMageArcaneSaved[MPMageArcaneConfig].ArcaneExplosionNoSurge==1 and MPBuff("奥术溃裂") then
 
 			-- 不打
 
@@ -244,25 +268,24 @@ function MPMageArcaneAuto()
 
 	end
 
-	-- 火焰冲击
-	-- 奥法增加在没有奥术溃裂CD的时候才允许火冲
-	if GetMageArcaneMissiles()<=0 then
-		if MP_UnitXP and UnitExists("target") then
-			local inRange = UnitXP("distanceBetween", "player", "target")
-			if MPMageArcaneSaved.FireBlast==1 and HYCJ and not MPBuff("奥术溃裂") and inRange<MPMageFireBlastDist then
-				CastSpellByName("火焰冲击")
+	-- 保护 点燃
+	if MPMageArcaneSaved[MPMageArcaneConfig].IgniteProtect==1 and GetNumRaidMembers()>5 then 
+		if MPBuff("点燃", "target") or (GetTime()-MPInCombatTime)>12 then
+			-- 火焰冲击
+			if MageArcane_FireBlast() then
 				return
 			end
-		else
-			if MPMageArcaneSaved.FireBlast==1 and HYCJ and not MPBuff("奥术溃裂") then
-				CastSpellByName("火焰冲击")
-			end
+		end
+	else
+		-- 火焰冲击
+		if MageArcane_FireBlast() then
+			return
 		end
 	end
 
 	-- 奥术溃裂
-	if MPMageArcaneSaved.ArcaneExplosion==1 and ASKL and MPMageArcaneExplosion==1 and not MPBuff("奥术溃裂") then
-		if MPMageArcaneSaved.IntExplosion==1 then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcaneExplosion==1 and ASKL and MPMageArcaneExplosion==1 and not MPBuff("奥术溃裂") then
+		if MPMageArcaneSaved[MPMageArcaneConfig].IntExplosion==1 then
 			-- 时间融合
 			-- 补溃裂
 			ArcaneExplosion()
@@ -283,7 +306,7 @@ function MPMageArcaneAuto()
 	end
 
 	--[[
-	if MPMageArcaneSaved.ArcaneExplosion==1 and MPMageArcaneExplosion==1 and MPMageArcaneSaved.IntExplosion==1 and ASKL and GetMageArcaneMissiles()>0 and not MPBuff("奥术溃裂") then
+	if MPMageArcaneSaved[MPMageArcaneConfig].ArcaneExplosion==1 and MPMageArcaneExplosion==1 and MPMageArcaneSaved[MPMageArcaneConfig].IntExplosion==1 and ASKL and GetMageArcaneMissiles()>0 and not MPBuff("奥术溃裂") then
 		ArcaneExplosion()
 		return
 	end

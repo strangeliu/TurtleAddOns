@@ -58,6 +58,7 @@ local height = 0
 
     local buttonCat = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_CatDruid, function()
         MPCatSettingsCloseAll()
+        --CatUISettingsCatMini:Show()
         CatUISettingsCatWindow:Show()
     end)
     buttonCat:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
@@ -501,6 +502,7 @@ local buttonNormalMelee = CreateFlatButton("buttonNormalDebug", CatUISettingsCat
     else
         MPCatSettingsCloseAll()
         CatUIMelee:Show()
+        CatUISettingMelee:Show()
         MPPublicSaved.MeleeWindowDisplay=1
     end
 end)

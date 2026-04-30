@@ -5,6 +5,10 @@
 --- return boolean can 能流血返回真，否则返回假
 MPmonsterList = {
 
+    -- 木喉
+    ["裂地者欧曼诺斯"] = true,
+    ["欧曼诺斯的颤岩"] = true,
+
 	-- K40
     ["地狱之怒碎片"] = true,
     ["噩梦爬行者"] = true,
@@ -147,10 +151,9 @@ function MPIsBossTarget()
         return true
     end
     
-
     -- 检查血量（普通BOSS通常血量远高于玩家）
     local healthMax = UnitHealthMax("target")
-    if healthMax > 200000 then
+    if healthMax > 300000 then
         return true
     end
     
@@ -162,7 +165,6 @@ function MPIsBossTarget()
     if bossList[UnitName("target")] then
         return true
     end
-
     
     return false
 end
@@ -240,6 +242,9 @@ end
 -- 精灵之火黑名单
 MPFaerieFireBlcokList = {
 
+    -- 木喉
+    ["被污染的胶团"] = true,
+
 	-- NAXX
     ["鬼灵训练师"] = true,
     ["鬼灵坐骑"] = true,
@@ -257,6 +262,7 @@ MPFaerieFireBlcokList = {
 
     -- 世界
     ["熔岩元素"] = true,
+    ["涅玛丝拉"] = true,
 
 	-- test
     --["学徒训练假人"] = true,
@@ -283,6 +289,10 @@ end
 
 -- 猎人印记黑名单
 MPHunterMarkBlcokList = {
+
+	-- K40
+    ["阿诺玛鲁斯"] = true,
+
 	-- TAQ
     ["维克洛尔大帝"] = true,
     ["维克尼拉斯大帝"] = true,
@@ -310,6 +320,9 @@ end
 
 -- 奥术射击黑名单
 MPHunterArcaneShotBlcokList = {
+	-- K40
+    ["阿诺玛鲁斯"] = true,
+
 	-- TAQ
     ["维克洛尔大帝"] = true,
     ["维克尼拉斯大帝"] = true,

@@ -10,12 +10,16 @@ end
 
 -- 暗影收割
 MPWarlockShadowHarvest = 0
+MPWarlockShadowBeginTimer = 0
+
+-- 献祭
 MPImmolateTimer = 0
 
 -- 灵魂之火 蓝量
 MPWarlockSoulFireMana = {}
 
 -- 燃烧 蓝量
+MPWarlockConflagrate = 0
 MPWarlockConflagrateMana = {}
 
 -- 灼热之痛 蓝量
@@ -49,15 +53,19 @@ MPWarlockShadowBoltMana = {}
 
 -- 痛苦诅咒持续时间
 MPCurseAgonyDuration = 24
+MPCurseAgonyRange = 30
 
 -- 腐蚀术持续时间
 MPWarlockCorruptionDuration = 18
+MPWarlockCorruptionRange = 30
 
 -- 生命虹吸持续时间
 MPWarlockSiphonLifeDuration = 30
+MPWarlockSiphonLifeRange = 30
 
 -- 献祭持续时间
 MPWarlockImmolateDuration = 15
+MPWarlockImmolateRange = 30
 
 -- 鲁莽诅咒持续时间
 MPWarlockCurseRecklessnessDuration = 120
@@ -91,6 +99,11 @@ frame:RegisterEvent("SPELLCAST_CHANNEL_STOP")
 -- SuperWow专有事件
 frame:RegisterEvent("UNIT_CASTEVENT")
 frame:RegisterEvent("RAW_COMBATLOG")
+
+-- Nampower专有事件
+frame:RegisterEvent("SPELL_CHANNEL_START")
+
+
 
 -- 自己的GUID
 local PLAYER_GUID = 0
@@ -275,6 +288,34 @@ local function OnEvent()
                 ChanneledTimer = GetTime()
                 ChanneledSpellID = arg4
 
+                if not MP_Nampower4 then
+                    if arg4==52550 or arg4==52551 or arg4==52552 then
+
+                        MPMsg("施放 [暗影收割]，持续时间"..string.format("%.2f",arg5/1000).."重新计算DOT持续时间")
+
+                        -- 痛苦诅咒
+                        if MPGetCurseAgonyDot() then
+                            if CurseAgonyCheck[arg2] then
+                                CurseAgonyCheck[arg2] = CurseAgonyCheck[arg2] - (arg5/2000) + 0.6
+                            end
+                        end
+
+                        -- 腐蚀术
+                        if MPGetCorruptionDot() then
+                            if CorruptionCheck[arg2] then
+                                CorruptionCheck[arg2] = CorruptionCheck[arg2] - (arg5/2000) + 0.6
+                            end
+                        end
+
+                        -- 生命虹吸
+                        if MPGetSiphonLifeDot() then
+                            if SiphonLifeCheck[arg2] then
+                                SiphonLifeCheck[arg2] = SiphonLifeCheck[arg2] - (arg5/2000) + 0.6
+                            end
+                        end
+                    end
+                end
+
             end
 
         -- 施法事件监测
@@ -303,9 +344,9 @@ local function OnEvent()
                     ImmolateDelayTime[arg2] = GetTime()
 
                 -- 燃烧
-                elseif arg4==18932 then
-                    if ImmolateDelayTime[guid] then 
-                        local timer = GetTime() - ImmolateDelayTime[guid]
+                elseif arg4==17962 or arg4==18930 or arg4==18931 or arg4==18932 then
+                    if ImmolateDelayTime[arg2] then 
+                        local timer = GetTime() - ImmolateDelayTime[arg2]
                         -- 0.2秒监测期里
                         if timer <= BLEENCHECKDELAY then
                             ImmolateDelayTime[arg2] = ImmolateDelayTime[arg2] - 3.0
@@ -370,6 +411,36 @@ local function OnEvent()
 
         end
 
+    -- Nampower专有事件
+
+    elseif event == "SPELL_CHANNEL_START" then
+
+        if arg1==52550 or arg1==52551 or arg1==52552 then
+            MPMsg("施放 [暗影收割]，持续时间"..string.format("%.2f",arg3/1000).."重新计算DOT持续时间")
+
+            -- 痛苦诅咒
+            if MPGetCurseAgonyDot() then
+                if CurseAgonyCheck[arg2] then
+                    CurseAgonyCheck[arg2] = CurseAgonyCheck[arg2] - (arg3/2000) + 0.4
+                end
+            end
+
+            -- 腐蚀术
+            if MPGetCorruptionDot() then
+                if CorruptionCheck[arg2] then
+                    CorruptionCheck[arg2] = CorruptionCheck[arg2] - (arg3/2000) + 0.4
+                end
+            end
+
+            -- 生命虹吸
+            if MPGetSiphonLifeDot() then
+                if SiphonLifeCheck[arg2] then
+                    SiphonLifeCheck[arg2] = SiphonLifeCheck[arg2] - (arg3/2000) + 0.4
+                end
+            end
+
+        end
+
     end
 
 
@@ -408,7 +479,7 @@ function MPGetCurseAgonyDot(unit, value)
     value = value or 0
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("痛苦诅咒","target")
     end
 
@@ -460,7 +531,7 @@ function MPGetCorruptionDot(unit, value)
     value = value or 0
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("腐蚀术","target")
     end
 
@@ -513,7 +584,7 @@ function MPGetSiphonLifeDot(unit, value)
     value = value or 0
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("生命虹吸","target")
     end
 
@@ -569,7 +640,7 @@ function MPGetImmolateDot(unit, value)
     value = value or 0
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("献祭","target")
     end
 
@@ -735,14 +806,18 @@ function MPWarlockRefreshInfo()
     elseif MPIsTalentLearned(1,10)==2 then
         MPWarlockRuthlessExtend = 6
     end
+    MPWarlockCorruptionRange = 30 + MPWarlockRuthlessExtend
+    MPCurseAgonyRange = 30 + MPWarlockRuthlessExtend
+    MPWarlockSiphonLifeRange = 30 + MPWarlockRuthlessExtend
 
     -- 毁灭延伸
     MPWarlockDestructionExtend = 0
     if MPIsTalentLearned(3,10)==1 then
-        MPWarlockDestructionExtend = 2
+        MPWarlockDestructionExtend = 3
     elseif MPIsTalentLearned(3,10)==2 then
-        MPWarlockDestructionExtend = 4
+        MPWarlockDestructionExtend = 6
     end
+    MPWarlockImmolateRange = 30 + MPWarlockDestructionExtend
 
     -- 邪咒
     MPWarlockCurseEvil = MPIsTalentLearned(1,16)
@@ -816,6 +891,8 @@ function MPWarlockRefreshInfo()
     -- 暗影收割 天赋
     MPWarlockShadowHarvest = MPIsTalentLearned(1,18)
 
+    -- 燃烧 天赋
+    MPWarlockConflagrate = MPIsTalentLearned(3,16)
 
 end
 

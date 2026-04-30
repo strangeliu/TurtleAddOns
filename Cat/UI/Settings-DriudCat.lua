@@ -2,9 +2,65 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-DriudCat"
 
+local ConfigCurrent = 1
 
 -- 创建主框架
 CatUISettingsCatWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 660, "|cFFFF7D0A设置 - 猫德|r")
+
+--[[
+CatUISettingsCatMini, CatUISettingsCatWindow = MPCreateMainFrame(ADDON_NAME.."Frame", 520, 660, "|cFFFF7D0A猫德|r")
+
+local Skill_Shapeshift = MPSKillButton(CatUISettingsCatMini, -40, "Interface\\Icons\\spell_reshift_2", "重整")
+Skill_Shapeshift:SetScript("OnClick", function(self)
+    if MPDriudCatSaved[ConfigCurrent].Shapeshift == 0 then
+        MPDriudCatSaved[ConfigCurrent].Shapeshift = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].Shapeshift = 0
+    end
+    MPInitCatSettings()
+end)
+
+local Skill_TigerFury = MPSKillButton(CatUISettingsCatMini, -80, "Interface\\Icons\\Ability_Mount_JungleTiger", "猛虎之怒")
+Skill_TigerFury:SetScript("OnClick", function(self)
+    if MPDriudCatSaved[ConfigCurrent].TigerFury == 0 then
+        MPDriudCatSaved[ConfigCurrent].TigerFury = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].TigerFury = 0
+    end
+    MPInitCatSettings()
+end)
+
+local Skill_FaerieFire = MPSKillButton(CatUISettingsCatMini, -120, "Interface\\Icons\\Spell_Nature_FaerieFire", "精灵之火")
+Skill_FaerieFire:SetScript("OnClick", function(self)
+    if MPDriudCatSaved[ConfigCurrent].FaerieFire == 0 then
+        MPDriudCatSaved[ConfigCurrent].FaerieFire = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].FaerieFire = 0
+    end
+    MPInitCatSettings()
+end)
+
+local Skill_Cower = MPSKillButton(CatUISettingsCatMini, -160, "Interface\\Icons\\Ability_Druid_Cower", "畏缩")
+Skill_Cower:SetScript("OnClick", function(self)
+    if MPDriudCatSaved[ConfigCurrent].Cower == 0 then
+        MPDriudCatSaved[ConfigCurrent].Cower = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].Cower = 0
+    end
+    MPInitCatSettings()
+end)
+
+local Skill_Target = MPSKillButton(CatUISettingsCatMini, -200, "Interface\\Icons\\Ability_Hunter_Pathfinding", "自动锁敌")
+Skill_Target:SetScript("OnClick", function(self)
+    if MPDriudCatSaved[ConfigCurrent].Target == 0 then
+        MPDriudCatSaved[ConfigCurrent].Target = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].Target = 0
+    end
+    MPInitCatSettings()
+end)
+]]
+
 
 
 local postion_y = -50
@@ -25,10 +81,11 @@ local postion_y = postion_y-40
 local checkButton_Shapeshift = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "启用 重整 (变身回能)")
 checkButton_Shapeshift:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Shapeshift = 1
+        MPDriudCatSaved[ConfigCurrent].Shapeshift = 1
     else
-        MPDriudCatSaved.Shapeshift = 0
+        MPDriudCatSaved[ConfigCurrent].Shapeshift = 0
     end
+    MPInitCatSettings()
 end)
 
 
@@ -37,17 +94,17 @@ end)
 local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(上)")
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Trinket_Upper = 1
+        MPDriudCatSaved[ConfigCurrent].Trinket_Upper = 1
     else
-        MPDriudCatSaved.Trinket_Upper = 0
+        MPDriudCatSaved[ConfigCurrent].Trinket_Upper = 0
     end
 end)
 local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.TUBoss = 1
+        MPDriudCatSaved[ConfigCurrent].TUBoss = 1
     else
-        MPDriudCatSaved.TUBoss = 0
+        MPDriudCatSaved[ConfigCurrent].TUBoss = 0
     end
 end)
 
@@ -58,10 +115,11 @@ postion_y = postion_y-30
 local checkButton_TigerFury = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 猛虎之怒")
 checkButton_TigerFury:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.TigerFury = 1
+        MPDriudCatSaved[ConfigCurrent].TigerFury = 1
     else
-        MPDriudCatSaved.TigerFury = 0
+        MPDriudCatSaved[ConfigCurrent].TigerFury = 0
     end
+    MPInitCatSettings()
 end)
 
 
@@ -69,17 +127,17 @@ end)
 local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Trinket_Below = 1
+        MPDriudCatSaved[ConfigCurrent].Trinket_Below = 1
     else
-        MPDriudCatSaved.Trinket_Below = 0
+        MPDriudCatSaved[ConfigCurrent].Trinket_Below = 0
     end
 end)
 local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.TBBoss = 1
+        MPDriudCatSaved[ConfigCurrent].TBBoss = 1
     else
-        MPDriudCatSaved.TBBoss = 0
+        MPDriudCatSaved[ConfigCurrent].TBBoss = 0
     end
 end)
 
@@ -90,10 +148,11 @@ postion_y = postion_y-30
 local checkButton_FaerieFire = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 精灵之火")
 checkButton_FaerieFire:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.FaerieFire = 1
+        MPDriudCatSaved[ConfigCurrent].FaerieFire = 1
     else
-        MPDriudCatSaved.FaerieFire = 0
+        MPDriudCatSaved[ConfigCurrent].FaerieFire = 0
     end
+    MPInitCatSettings()
 end)
 
 
@@ -101,9 +160,9 @@ end)
 local checkButton_Target = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动锁敌 (攻击最近的敌人)")
 checkButton_Target:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Target = 1
+        MPDriudCatSaved[ConfigCurrent].Target = 1
     else
-        MPDriudCatSaved.Target = 0
+        MPDriudCatSaved[ConfigCurrent].Target = 0
     end
 end)
 
@@ -114,9 +173,9 @@ postion_y = postion_y-30
 local checkButton_Prowl = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "潜行时自动 突袭/毁灭")
 checkButton_Prowl:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Prowl = 1
+        MPDriudCatSaved[ConfigCurrent].Prowl = 1
     else
-        MPDriudCatSaved.Prowl = 0
+        MPDriudCatSaved[ConfigCurrent].Prowl = 0
     end
 end)
 
@@ -125,10 +184,11 @@ end)
 local checkButton_Cower = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 畏缩 (需要TWT插件)")
 checkButton_Cower:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Cower = 1
+        MPDriudCatSaved[ConfigCurrent].Cower = 1
     else
-        MPDriudCatSaved.Cower = 0
+        MPDriudCatSaved[ConfigCurrent].Cower = 0
     end
+    MPInitCatSettings()
 end)
 
 
@@ -157,9 +217,9 @@ postion_y = postion_y-70
 local checkButton_UnitXP = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "启用UnitXP模组 (朝向判断)")
 checkButton_UnitXP:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.UnitXP = 1
+        MPDriudCatSaved[ConfigCurrent].UnitXP = 1
     else
-        MPDriudCatSaved.UnitXP = 0
+        MPDriudCatSaved[ConfigCurrent].UnitXP = 0
     end
 end)
 
@@ -180,24 +240,22 @@ MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved.HealthStone_Value .."%|r")
+    MPDriudCatSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.HealthStone = 1
+        MPDriudCatSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPDriudCatSaved.HealthStone = 0
+        MPDriudCatSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
 
@@ -207,23 +265,13 @@ postion_y = postion_y-40
 
 
 -- 阿莎曼之怒
-local checkButton_Ashamane = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsCatWindow, "UICheckButtonTemplate")
-checkButton_Ashamane:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 20, postion_y)
-checkButton_Ashamane:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Ashamane = checkButton_Ashamane:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Ashamane:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Ashamane:SetTextColor(1, 1, 1)
-checkText_Ashamane:SetPoint("LEFT", checkButton_Ashamane, "LEFT", 34, 1)
-checkText_Ashamane:SetText("阿莎曼之怒 (T3.5特性倾斜)")
-
+local checkButton_Ashamane = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "阿莎曼之怒 (T3.5特性倾斜)")
 -- 设置点击事件
 checkButton_Ashamane:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Ashamane = 1
+        MPDriudCatSaved[ConfigCurrent].Ashamane = 1
     else
-        MPDriudCatSaved.Ashamane = 0
+        MPDriudCatSaved[ConfigCurrent].Ashamane = 0
     end
 end)
 
@@ -244,25 +292,23 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPDriudCatSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved.HerbalTea_Value .."%|r")
+    MPDriudCatSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.HerbalTea = 1
+        MPDriudCatSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPDriudCatSaved.HerbalTea = 0
+        MPDriudCatSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -286,24 +332,23 @@ MPCatUISliderRegionHide(slider_Barkskin)
 
 local color_Barkskin = "|cFFFFD100"
 
-_G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: 20%|r")
 -- 值变化时的回调函数
 slider_Barkskin:SetScript("OnValueChanged", function()
     --print("Berserk当前值:", arg1)
-    MPDriudCatSaved.Barkskin_Value = arg1
+    MPDriudCatSaved[ConfigCurrent].Barkskin_Value = arg1
     _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. arg1 .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_Barkskin:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Barkskin = 1
+        MPDriudCatSaved[ConfigCurrent].Barkskin = 1
         color_Barkskin = "|cFFFFD100"
-        _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved.Barkskin_Value .."%|r")
+        _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved[ConfigCurrent].Barkskin_Value .."%|r")
     else
-        MPDriudCatSaved.Barkskin = 0
+        MPDriudCatSaved[ConfigCurrent].Barkskin = 0
         color_Barkskin = "|cFF888888"
-        _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved.Barkskin_Value .."%|r")
+        _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved[ConfigCurrent].Barkskin_Value .."%|r")
     end
 end)
 
@@ -348,10 +393,9 @@ slider_Ferocious:SetValueStep(1)
 slider_Ferocious:SetValue(3) -- 默认值
 MPCatUISliderRegionHide(slider_Ferocious)
 
-
 -- 值变化时的回调函数
 slider_Ferocious:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.Ferocious_Bite = arg1
+    MPDriudCatSaved[ConfigCurrent].Ferocious_Bite = arg1
     _G[slider_Ferocious:GetName().."Text"]:SetText("撕咬: ".. arg1 .."星")
 end)
 
@@ -367,10 +411,9 @@ slider_Ferocious_Value:SetValueStep(1)
 slider_Ferocious_Value:SetValue(50) -- 默认值
 MPCatUISliderRegionHide(slider_Ferocious_Value)
 
-
 -- 值变化时的回调函数
 slider_Ferocious_Value:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.Ferocious_Value = arg1
+    MPDriudCatSaved[ConfigCurrent].Ferocious_Value = arg1
 
     _G[slider_Ferocious_Value:GetName().."Text"]:SetText("撕咬<"..arg1.."能量")
 end)
@@ -393,7 +436,7 @@ MPCatUISliderRegionHide(slider_BleedModeShapeshift)
 
 -- 值变化时的回调函数
 slider_BleedModeShapeshift:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.BleedModeShapeshift = arg1
+    MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift = arg1
 
     _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..arg1.."能量")
 end)
@@ -414,7 +457,7 @@ MPCatUISliderRegionHide(slider_Rip)
 -- 值变化时的回调函数
 slider_Rip:SetScript("OnValueChanged", function()
     --print("Rip当前值:", arg1)
-    MPDriudCatSaved.OutHPRip = arg1
+    MPDriudCatSaved[ConfigCurrent].OutHPRip = arg1
     _G[slider_Rip:GetName().."Text"]:SetText("<".. arg1/1000 .."k不撕扯")
 end)
 
@@ -436,23 +479,13 @@ postion_y = postion_y-150
 
 
 -- BOSS
-local checkButton_BOSS = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsCatWindow, "UICheckButtonTemplate")
-checkButton_BOSS:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 20, postion_y+30)
-checkButton_BOSS:SetScale(0.8)
-
--- 添加文字标签
-local checkText_BOSS = checkButton_BOSS:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_BOSS:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_BOSS:SetTextColor(1, 1, 1)
-checkText_BOSS:SetPoint("LEFT", checkButton_BOSS, "LEFT", 34, 1)
-checkText_BOSS:SetText("非BOSS级 禁用撕扯")
-
+local checkButton_BOSS = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y+30, "非BOSS级 禁用撕扯")
 -- 设置点击事件
 checkButton_BOSS:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.BOSS = 1
+        MPDriudCatSaved[ConfigCurrent].BOSS = 1
     else
-        MPDriudCatSaved.BOSS = 0
+        MPDriudCatSaved[ConfigCurrent].BOSS = 0
     end
 end)
 
@@ -498,7 +531,7 @@ MPCatUISliderRegionHide(slider_ShredFerocious)
 
 -- 值变化时的回调函数
 slider_ShredFerocious:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.ShredFerocious_Bite = arg1
+    MPDriudCatSaved[ConfigCurrent].ShredFerocious_Bite = arg1
     _G[slider_ShredFerocious:GetName().."Text"]:SetText("撕咬: ".. arg1 .."星")
 end)
 
@@ -516,7 +549,7 @@ MPCatUISliderRegionHide(slider_ShredFerocious_Value)
 
 -- 值变化时的回调函数
 slider_ShredFerocious_Value:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.ShredFerocious_Value = arg1
+    MPDriudCatSaved[ConfigCurrent].ShredFerocious_Value = arg1
 
     _G[slider_ShredFerocious_Value:GetName().."Text"]:SetText("撕咬<"..arg1.."能量")
 end)
@@ -536,7 +569,7 @@ MPCatUISliderRegionHide(slider_ShredModeShapeshift)
 
 -- 值变化时的回调函数
 slider_ShredModeShapeshift:SetScript("OnValueChanged", function()
-    MPDriudCatSaved.ShredModeShapeshift = arg1
+    MPDriudCatSaved[ConfigCurrent].ShredModeShapeshift = arg1
 
     _G[slider_ShredModeShapeshift:GetName().."Text"]:SetText("变身<"..arg1 .."能量")
 end)
@@ -551,39 +584,39 @@ local checkButton_Style4 = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAM
 local checkButton_Style3 = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 140, postion_y, "均衡 偏向撕碎")
 checkButton_Style1:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Style = 1
+        MPDriudCatSaved[ConfigCurrent].Style = 1
     end
-    checkButton_Style1:SetChecked(MPDriudCatSaved.Style)
+    checkButton_Style1:SetChecked(MPDriudCatSaved[ConfigCurrent].Style)
     checkButton_Style2:SetChecked(false)
     checkButton_Style3:SetChecked(false)
     checkButton_Style4:SetChecked(false)
 end)
 checkButton_Style2:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Style = 2
+        MPDriudCatSaved[ConfigCurrent].Style = 2
     end
     checkButton_Style1:SetChecked(false)
-    checkButton_Style2:SetChecked(MPDriudCatSaved.Style)
+    checkButton_Style2:SetChecked(MPDriudCatSaved[ConfigCurrent].Style)
     checkButton_Style3:SetChecked(false)
     checkButton_Style4:SetChecked(false)
 end)
 checkButton_Style3:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Style = 3
+        MPDriudCatSaved[ConfigCurrent].Style = 3
     end
     checkButton_Style1:SetChecked(false)
     checkButton_Style2:SetChecked(false)
-    checkButton_Style3:SetChecked(MPDriudCatSaved.Style)
+    checkButton_Style3:SetChecked(MPDriudCatSaved[ConfigCurrent].Style)
     checkButton_Style4:SetChecked(false)
 end)
 checkButton_Style4:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Style = 4
+        MPDriudCatSaved[ConfigCurrent].Style = 4
     end
     checkButton_Style1:SetChecked(false)
     checkButton_Style2:SetChecked(false)
     checkButton_Style3:SetChecked(false)
-    checkButton_Style4:SetChecked(MPDriudCatSaved.Style)
+    checkButton_Style4:SetChecked(MPDriudCatSaved[ConfigCurrent].Style)
 end)
 
 
@@ -593,23 +626,21 @@ postion_y = postion_y+325
 
 
 -- 魂能之速
-local checkButton_Soulspeed = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsCatWindow, "UICheckButtonTemplate")
-checkButton_Soulspeed:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 340, postion_y)
-checkButton_Soulspeed:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Soulspeed = checkButton_Soulspeed:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Soulspeed:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Soulspeed:SetTextColor(1, 1, 1)
-checkText_Soulspeed:SetPoint("LEFT", checkButton_Soulspeed, "LEFT", 34, 1)
-checkText_Soulspeed:SetText("自动 魂能之速 (BOSS时)")
-
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 魂能之速")
 -- 设置点击事件
 checkButton_Soulspeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Soulspeed = 1
+        MPDriudCatSaved[ConfigCurrent].Soulspeed = 1
     else
-        MPDriudCatSaved.Soulspeed = 0
+        MPDriudCatSaved[ConfigCurrent].Soulspeed = 0
+    end
+end)
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPDriudCatSaved[ConfigCurrent].SoulspeedBoss = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].SoulspeedBoss = 0
     end
 end)
 
@@ -617,24 +648,14 @@ end)
 postion_y = postion_y-40
 
 -- 献祭之油
-local checkButton_Sacrificial = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsCatWindow, "UICheckButtonTemplate")
-checkButton_Sacrificial:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 340, postion_y)
-checkButton_Sacrificial:SetScale(0.8)
+local checkButton_Sacrificial = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 献祭之油 (SuperWoW)")
 checkButton_Sacrificial:Hide()
-
--- 添加文字标签
-local checkText_Sacrificial = checkButton_Sacrificial:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Sacrificial:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Sacrificial:SetTextColor(1, 1, 1)
-checkText_Sacrificial:SetPoint("LEFT", checkButton_Sacrificial, "LEFT", 34, 1)
-checkText_Sacrificial:SetText("自动 献祭之油 (SuperWoW)")
-
 -- 设置点击事件
 checkButton_Sacrificial:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Sacrificial = 1
+        MPDriudCatSaved[ConfigCurrent].Sacrificial = 1
     else
-        MPDriudCatSaved.Sacrificial = 0
+        MPDriudCatSaved[ConfigCurrent].Sacrificial = 0
     end
 end)
 
@@ -651,9 +672,9 @@ postion_y = postion_y-60
 local checkButton_Idol_Dance = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButtonUnSalvation", 340, postion_y, "神像舞 (正常 <-> 终结技)")
 checkButton_Idol_Dance:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Idol_Dance = 1
+        MPDriudCatSaved[ConfigCurrent].Idol_Dance = 1
     else
-        MPDriudCatSaved.Idol_Dance = 0
+        MPDriudCatSaved[ConfigCurrent].Idol_Dance = 0
     end
 end)
 
@@ -685,7 +706,7 @@ local function Dropdown_Init_Idol_Dance_Low()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_Idol_Dance_Low, index)
-                MPDriudCatSaved.Idol_Dance_Low = modes_Idol_Dance_Low[index].item
+                MPDriudCatSaved[ConfigCurrent].Idol_Dance_Low = modes_Idol_Dance_Low[index].item
                 --message("选择："..modes_Idol_Dance_Low[index].text)
             end
         end)(idx) -- 立即传入当前索引
@@ -725,7 +746,7 @@ local function Dropdown_Init_Idol_Dance_High()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_Idol_Dance_High, index)
-                MPDriudCatSaved.Idol_Dance_High = modes_Idol_Dance_High[index].item
+                MPDriudCatSaved[ConfigCurrent].Idol_Dance_High = modes_Idol_Dance_High[index].item
                 --message("选择："..modes_Idol_Dance_High[index].text)
             end
         end)(idx) -- 立即传入当前索引
@@ -748,9 +769,9 @@ postion_y = postion_y-80
 local checkButton_Swap_Idol = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButtonUnSalvation", 340, postion_y, "随目标神像 (是否吃流血)")
 checkButton_Swap_Idol:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Target_Swap_Idol = 1
+        MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol = 1
     else
-        MPDriudCatSaved.Target_Swap_Idol = 0
+        MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol = 0
     end
 end)
 
@@ -788,7 +809,7 @@ local function Dropdown_Init_Target_Swap_Idol_Bleed()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Bleed, index)
-                MPDriudCatSaved.Target_Swap_Idol_Bleed = modes_Target_Swap_Idol_Bleed[index].item
+                MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Bleed = modes_Target_Swap_Idol_Bleed[index].item
                 --message("选择："..modes_Target_Swap_Idol_Bleed[index].text)
             end
         end)(idx) -- 立即传入当前索引
@@ -839,7 +860,7 @@ local function Dropdown_Init_Target_Swap_Idol_Shred()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Shred, index)
-                MPDriudCatSaved.Target_Swap_Idol_Shred = modes_Target_Swap_Idol_Shred[index].item
+                MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Shred = modes_Target_Swap_Idol_Shred[index].item
                 --message("选择："..modes_Target_Swap_Idol_Shred[index].text)
             end
         end)(idx) -- 立即传入当前索引
@@ -890,7 +911,7 @@ local function Dropdown_Init_Target_Swap_Idol_Bear()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Bear, index)
-                MPDriudCatSaved.Target_Swap_Idol_Bear = modes_Target_Swap_Idol_Bear[index].item
+                MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Bear = modes_Target_Swap_Idol_Bear[index].item
                 --message("选择："..modes_Target_Swap_Idol_Bear[index].text)
             end
         end)(idx) -- 立即传入当前索引
@@ -913,10 +934,59 @@ Text_Swap_Idol_Bear:SetText("|cFFFFFFFF熊形态|r")
 
 local myButton = MPCreateButton(CatUISettingsCatWindow, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetCatSettings()
+    MPResetCatSettings(ConfigCurrent)
     MPInitCatSettings()
 end)
 
+
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsCatWindow, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsCatWindow, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsCatWindow, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitCatSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitCatSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
+    MPInitCatSettings()
+end)
 
 
 -- 添加分隔线
@@ -925,9 +995,9 @@ MPBottomLine(CatUISettingsCatWindow)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Power = 1
+        MPDriudCatSaved[ConfigCurrent].Power = 1
     else
-        MPDriudCatSaved.Power = 0
+        MPDriudCatSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -941,9 +1011,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPDriudCatSaved.Pick = 1
+        MPDriudCatSaved[ConfigCurrent].Pick = 1
     else
-        MPDriudCatSaved.Pick = 0
+        MPDriudCatSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -962,7 +1032,7 @@ TipText:SetPoint("BOTTOM", CatUISettingsCatWindow, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ 全自动 |cFFFF7D0A/catdps|r ]  [ 背刺流 |cFFFF7D0A/catshred|r ]")
+TipText:SetText("宏命令 全自动 |cFFFF7D0A/catdps |r[ 1 | 2 | 3 ]  背刺流 |cFFFF7D0A/catshred |r[ 1 | 2 | 3 ]")
 
 
 
@@ -971,163 +1041,156 @@ TipText:SetText("宏命令 -  [ 全自动 |cFFFF7D0A/catdps|r ]  [ 背刺流 |cF
 
 
 -- 配置文件版本号
-local CatSettingsUIVersion = 27
+local CatSettingsUIVersion = 29
 
-function MPResetCatSettings()
+function MPResetCatSettings(config)
 
     MPDriudCatSaved.Version = CatSettingsUIVersion
 
     -- 基本配置
-    MPDriudCatSaved.Shapeshift = 1
-    MPDriudCatSaved.TigerFury = 1
-    MPDriudCatSaved.FaerieFire = 1
-    MPDriudCatSaved.Prowl = 1
-    MPDriudCatSaved.Trinket_Upper = 1
-    MPDriudCatSaved.TUBoss = 0
-    MPDriudCatSaved.Trinket_Below = 1
-    MPDriudCatSaved.TBBoss = 0
-    MPDriudCatSaved.Target = 0
-    MPDriudCatSaved.Cower = 0
+    MPDriudCatSaved[config].Shapeshift = 1
+    MPDriudCatSaved[config].TigerFury = 1
+    MPDriudCatSaved[config].FaerieFire = 1
+    MPDriudCatSaved[config].Prowl = 1
+    MPDriudCatSaved[config].Trinket_Upper = 1
+    MPDriudCatSaved[config].TUBoss = 0
+    MPDriudCatSaved[config].Trinket_Below = 1
+    MPDriudCatSaved[config].TBBoss = 0
+    MPDriudCatSaved[config].Target = 0
+    MPDriudCatSaved[config].Cower = 0
 
     -- 高级配置
 
     -- 治疗石、糖水茶
-    MPDriudCatSaved.HealthStone = 1
-    MPDriudCatSaved.HealthStone_Value = 30
-    MPDriudCatSaved.HerbalTea = 1
-    MPDriudCatSaved.HerbalTea_Value = 20
-    MPDriudCatSaved.Barkskin = 0
-    MPDriudCatSaved.Barkskin_Value = 30
+    MPDriudCatSaved[config].HealthStone = 1
+    MPDriudCatSaved[config].HealthStone_Value = 30
+    MPDriudCatSaved[config].HerbalTea = 1
+    MPDriudCatSaved[config].HerbalTea_Value = 20
+    MPDriudCatSaved[config].Barkskin = 0
+    MPDriudCatSaved[config].Barkskin_Value = 30
 
     -- SuperWoW,UnitXP
-    MPDriudCatSaved.SuperWoW = 1
-    MPDriudCatSaved.UnitXP = 0
+    MPDriudCatSaved[config].SuperWoW = 1
+    MPDriudCatSaved[config].UnitXP = 0
 
     -- 参数
-    MPDriudCatSaved.Ferocious_Bite = 5
-    MPDriudCatSaved.Ferocious_Value = 53
-    MPDriudCatSaved.BleedModeShapeshift = 20
-    MPDriudCatSaved.OutHPRip = 3000
-    MPDriudCatSaved.HighShred = 1
-    MPDriudCatSaved.HighShred_Value = 68
-    MPDriudCatSaved.Style = 2
+    MPDriudCatSaved[config].Ferocious_Bite = 5
+    MPDriudCatSaved[config].Ferocious_Value = 53
+    MPDriudCatSaved[config].BleedModeShapeshift = 20
+    MPDriudCatSaved[config].OutHPRip = 3000
+    MPDriudCatSaved[config].HighShred = 1
+    MPDriudCatSaved[config].HighShred_Value = 68
+    MPDriudCatSaved[config].Style = 2
 
-    MPDriudCatSaved.ShredFerocious_Bite = 3
-    MPDriudCatSaved.ShredFerocious_Value = 55
-    MPDriudCatSaved.ShredModeShapeshift = 25
+    MPDriudCatSaved[config].ShredFerocious_Bite = 3
+    MPDriudCatSaved[config].ShredFerocious_Value = 55
+    MPDriudCatSaved[config].ShredModeShapeshift = 25
 
-    MPDriudCatSaved.Ashamane = 0
-    MPDriudCatSaved.Soulspeed = 0
-    MPDriudCatSaved.Sacrificial = 0
+    MPDriudCatSaved[config].Ashamane = 0
+    MPDriudCatSaved[config].Soulspeed = 0
+    MPDriudCatSaved[config].SoulspeedBoss = 1
+    MPDriudCatSaved[config].Sacrificial = 0
 
-    MPDriudCatSaved.BOSS = 0
+    MPDriudCatSaved[config].BOSS = 0
 
     -- 神像相关
-    MPDriudCatSaved.Idol_Dance = 0
-    MPDriudCatSaved.Idol_Dance_Point = 4
-    MPDriudCatSaved.Idol_Dance_Low = "凶猛神像"
-    MPDriudCatSaved.Idol_Dance_High = "撕裂神像"
-    color_Idol_Dance = "|cFF888888"
+    MPDriudCatSaved[config].Idol_Dance = 0
+    MPDriudCatSaved[config].Idol_Dance_Point = 4
+    MPDriudCatSaved[config].Idol_Dance_Low = "凶猛神像"
+    MPDriudCatSaved[config].Idol_Dance_High = "撕裂神像"
 
-    MPDriudCatSaved.Target_Swap_Idol = 0
-    MPDriudCatSaved.Target_Swap_Idol_Bleed = "凶猛神像"
-    MPDriudCatSaved.Target_Swap_Idol_Shred = "撕裂神像"
-    MPDriudCatSaved.Target_Swap_Idol_Bear = "蛮兽神像"
+    MPDriudCatSaved[config].Target_Swap_Idol = 0
+    MPDriudCatSaved[config].Target_Swap_Idol_Bleed = "凶猛神像"
+    MPDriudCatSaved[config].Target_Swap_Idol_Shred = "撕裂神像"
+    MPDriudCatSaved[config].Target_Swap_Idol_Bear = "蛮兽神像"
 
 
     -- 通用
-    MPDriudCatSaved.Power = 0
-    MPDriudCatSaved.Pick = 0
+    MPDriudCatSaved[config].Power = 0
+    MPDriudCatSaved[config].Pick = 0
 
 end
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
 
 local function CatSettingsPart1()
-    checkButton_Shapeshift:SetChecked(ToBoolean(MPDriudCatSaved.Shapeshift))
-    checkButton_TigerFury:SetChecked( ToBoolean(MPDriudCatSaved.TigerFury) )
-    checkButton_FaerieFire:SetChecked( ToBoolean(MPDriudCatSaved.FaerieFire) )
+    checkButton_Shapeshift:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Shapeshift))
+    checkButton_TigerFury:SetChecked( MPToBoolean(MPDriudCatSaved[ConfigCurrent].TigerFury) )
+    checkButton_FaerieFire:SetChecked( MPToBoolean(MPDriudCatSaved[ConfigCurrent].FaerieFire) )
 
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPDriudCatSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPDriudCatSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPDriudCatSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPDriudCatSaved.TBBoss))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].TBBoss))
 
-    checkButton_Target:SetChecked(ToBoolean(MPDriudCatSaved.Target))
-    checkButton_Prowl:SetChecked(ToBoolean(MPDriudCatSaved.Prowl))
-    checkButton_Cower:SetChecked(ToBoolean(MPDriudCatSaved.Cower))
+    checkButton_Target:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Target))
+    checkButton_Prowl:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Prowl))
+    checkButton_Cower:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Cower))
 
-    checkButton_UnitXP:SetChecked(ToBoolean(MPDriudCatSaved.UnitXP))
+    checkButton_UnitXP:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].UnitXP))
 
-    checkButton_HealthStone:SetChecked(ToBoolean(MPDriudCatSaved.HealthStone))
-    slider_HealthStone:SetValue(MPDriudCatSaved.HealthStone_Value)
-    if MPDriudCatSaved.HealthStone==1 then
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPDriudCatSaved[ConfigCurrent].HealthStone_Value)
+    if MPDriudCatSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPDriudCatSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPDriudCatSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPDriudCatSaved.HerbalTea_Value)
-    if MPDriudCatSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPDriudCatSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPDriudCatSaved[ConfigCurrent].HerbalTea_Value)
+    if MPDriudCatSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPDriudCatSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_Barkskin:SetChecked(MPDriudCatSaved.Barkskin)
-    slider_Barkskin:SetValue(MPDriudCatSaved.Barkskin_Value)
-    if MPDriudCatSaved.Barkskin==1 then
+    checkButton_Barkskin:SetChecked(MPDriudCatSaved[ConfigCurrent].Barkskin)
+    slider_Barkskin:SetValue(MPDriudCatSaved[ConfigCurrent].Barkskin_Value)
+    if MPDriudCatSaved[ConfigCurrent].Barkskin==1 then
         color_Barkskin = "|cFFFFD100"
     else
         color_Barkskin = "|cFF888888"
     end
-    _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved.Barkskin_Value .."%|r")
+    _G[slider_Barkskin:GetName().."Text"]:SetText(color_Barkskin.."血线: ".. MPDriudCatSaved[ConfigCurrent].Barkskin_Value .."%|r")
 
 end
 
 local function CatSettingsPart2()
-    slider_Ferocious:SetValue(MPDriudCatSaved.Ferocious_Bite)
-    _G[slider_Ferocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved.Ferocious_Bite .."星")
-    slider_Ferocious_Value:SetValue(MPDriudCatSaved.Ferocious_Value)
-    _G[slider_Ferocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved.Ferocious_Value.."能量")
-    slider_BleedModeShapeshift:SetValue(MPDriudCatSaved.BleedModeShapeshift)
-    _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved.BleedModeShapeshift.."能量")
-    slider_Rip:SetValue(MPDriudCatSaved.OutHPRip)
-    _G[slider_Rip:GetName().."Text"]:SetText("<".. MPDriudCatSaved.OutHPRip/1000 .."k不撕扯")
+    slider_Ferocious:SetValue(MPDriudCatSaved[ConfigCurrent].Ferocious_Bite)
+    _G[slider_Ferocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved[ConfigCurrent].Ferocious_Bite .."星")
+    slider_Ferocious_Value:SetValue(MPDriudCatSaved[ConfigCurrent].Ferocious_Value)
+    _G[slider_Ferocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved[ConfigCurrent].Ferocious_Value.."能量")
+    slider_BleedModeShapeshift:SetValue(MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift)
+    _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift.."能量")
+    slider_Rip:SetValue(MPDriudCatSaved[ConfigCurrent].OutHPRip)
+    _G[slider_Rip:GetName().."Text"]:SetText("<".. MPDriudCatSaved[ConfigCurrent].OutHPRip/1000 .."k不撕扯")
 
-    slider_ShredFerocious:SetValue(MPDriudCatSaved.ShredFerocious_Bite)
-    _G[slider_ShredFerocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved.ShredFerocious_Bite .."星")
-    slider_ShredFerocious_Value:SetValue(MPDriudCatSaved.ShredFerocious_Value)
-    _G[slider_ShredFerocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved.ShredFerocious_Value.."能量")
-    slider_ShredModeShapeshift:SetValue(MPDriudCatSaved.ShredModeShapeshift)
-    _G[slider_ShredModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved.ShredModeShapeshift.."能量")
+    slider_ShredFerocious:SetValue(MPDriudCatSaved[ConfigCurrent].ShredFerocious_Bite)
+    _G[slider_ShredFerocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved[ConfigCurrent].ShredFerocious_Bite .."星")
+    slider_ShredFerocious_Value:SetValue(MPDriudCatSaved[ConfigCurrent].ShredFerocious_Value)
+    _G[slider_ShredFerocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved[ConfigCurrent].ShredFerocious_Value.."能量")
+    slider_ShredModeShapeshift:SetValue(MPDriudCatSaved[ConfigCurrent].ShredModeShapeshift)
+    _G[slider_ShredModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved[ConfigCurrent].ShredModeShapeshift.."能量")
 
 
-    if MPDriudCatSaved.Style==1 then
+    if MPDriudCatSaved[ConfigCurrent].Style==1 then
         checkButton_Style1:SetChecked(true)
     else
         checkButton_Style1:SetChecked(false)
     end
-    if MPDriudCatSaved.Style==2 then
+    if MPDriudCatSaved[ConfigCurrent].Style==2 then
         checkButton_Style2:SetChecked(true)
     else
         checkButton_Style2:SetChecked(false)
     end
-    if MPDriudCatSaved.Style==3 then
+    if MPDriudCatSaved[ConfigCurrent].Style==3 then
         checkButton_Style3:SetChecked(true)
     else
         checkButton_Style3:SetChecked(false)
     end
-    if MPDriudCatSaved.Style==4 then
+    if MPDriudCatSaved[ConfigCurrent].Style==4 then
         checkButton_Style4:SetChecked(true)
     else
         checkButton_Style4:SetChecked(false)
@@ -1135,17 +1198,17 @@ local function CatSettingsPart2()
 
 
 
-    checkButton_Idol_Dance:SetChecked(ToBoolean(MPDriudCatSaved.Idol_Dance))
+    checkButton_Idol_Dance:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Idol_Dance))
 
     for idx_Idol_Dance_Low, data_Idol_Dance_Low in pairs(modes_Idol_Dance_Low) do
-        if string.find(data_Idol_Dance_Low.text,MPDriudCatSaved.Idol_Dance_Low) then
+        if string.find(data_Idol_Dance_Low.text,MPDriudCatSaved[ConfigCurrent].Idol_Dance_Low) then
             UIDropDownMenu_SetSelectedID(dropdown_Idol_Dance_Low, data_Idol_Dance_Low.value)
             _G[dropdown_Idol_Dance_Low:GetName().."Text"]:SetText(data_Idol_Dance_Low.text)
         end
     end
 
     for idx_Idol_Dance_High, data_Idol_Dance_High in pairs(modes_Idol_Dance_High) do
-        if string.find(data_Idol_Dance_High.text,MPDriudCatSaved.Idol_Dance_High) then
+        if string.find(data_Idol_Dance_High.text,MPDriudCatSaved[ConfigCurrent].Idol_Dance_High) then
             UIDropDownMenu_SetSelectedID(dropdown_Idol_Dance_High, modes_Idol_Dance_High[idx_Idol_Dance_High].value)
             _G[dropdown_Idol_Dance_High:GetName().."Text"]:SetText(data_Idol_Dance_High.text)
         end
@@ -1153,51 +1216,110 @@ local function CatSettingsPart2()
 
     
 
-    checkButton_Swap_Idol:SetChecked(ToBoolean(MPDriudCatSaved.Target_Swap_Idol))
+    checkButton_Swap_Idol:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol))
 
     for idx_Target_Swap_Idol_Bleed, data_Target_Swap_Idol_Bleed in pairs(modes_Target_Swap_Idol_Bleed) do
-        if string.find(data_Target_Swap_Idol_Bleed.text,MPDriudCatSaved.Target_Swap_Idol_Bleed) then
+        if string.find(data_Target_Swap_Idol_Bleed.text,MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Bleed) then
             UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Bleed, data_Target_Swap_Idol_Bleed.value)
             _G[dropdown_Target_Swap_Idol_Bleed:GetName().."Text"]:SetText(data_Target_Swap_Idol_Bleed.text)
         end
     end
 
     for idx_Target_Swap_Idol_Shred, data_Target_Swap_Idol_Shred in pairs(modes_Target_Swap_Idol_Shred) do
-        if string.find(data_Target_Swap_Idol_Shred.text,MPDriudCatSaved.Target_Swap_Idol_Shred) then
+        if string.find(data_Target_Swap_Idol_Shred.text,MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Shred) then
             UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Shred, modes_Target_Swap_Idol_Shred[idx_Target_Swap_Idol_Shred].value)
             _G[dropdown_Target_Swap_Idol_Shred:GetName().."Text"]:SetText(data_Target_Swap_Idol_Shred.text)
         end
     end
 
     for idx_Target_Swap_Idol_Bear, data_Target_Swap_Idol_Bear in pairs(modes_Target_Swap_Idol_Bear) do
-        if string.find(data_Target_Swap_Idol_Bear.text,MPDriudCatSaved.Target_Swap_Idol_Bear) then
+        if string.find(data_Target_Swap_Idol_Bear.text,MPDriudCatSaved[ConfigCurrent].Target_Swap_Idol_Bear) then
             UIDropDownMenu_SetSelectedID(dropdown_Target_Swap_Idol_Bear, modes_Target_Swap_Idol_Bear[idx_Target_Swap_Idol_Bear].value)
             _G[dropdown_Target_Swap_Idol_Bear:GetName().."Text"]:SetText(data_Target_Swap_Idol_Bear.text)
         end
     end
 
-    checkButton_Ashamane:SetChecked(ToBoolean(MPDriudCatSaved.Ashamane))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPDriudCatSaved.Soulspeed))
-    checkButton_Sacrificial:SetChecked(ToBoolean(MPDriudCatSaved.Sacrificial))
-    checkButton_BOSS:SetChecked(ToBoolean(MPDriudCatSaved.BOSS))
+    checkButton_Ashamane:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Ashamane))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].SoulspeedBoss))
+    checkButton_Sacrificial:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Sacrificial))
+    checkButton_BOSS:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].BOSS))
 
-    checkButton_Power:SetChecked(ToBoolean(MPDriudCatSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPDriudCatSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Pick))
 
 end
 
 function MPInitCatSettings()
+
     if not MPDriudCatSaved then
         MPDriudCatSaved = {}
-        MPResetCatSettings()
+
+        -- 第一套配置
+        if not MPDriudCatSaved[1] then
+            MPDriudCatSaved[1] = {}
+            MPResetCatSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPDriudCatSaved[2] then
+            MPDriudCatSaved[2] = {}
+            MPResetCatSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPDriudCatSaved[3] then
+            MPDriudCatSaved[3] = {}
+            MPResetCatSettings(3)
+        end
     end
 
+
     if MPDriudCatSaved.Version ~= CatSettingsUIVersion then
-        MPResetCatSettings()
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[猫德宏]当前配置，这是新版插件正常数据更新！|r")
+        MPDriudCatSaved[1] = {}
+        MPDriudCatSaved[2] = {}
+        MPDriudCatSaved[3] = {}
+        MPResetCatSettings(1)
+        MPResetCatSettings(2)
+        MPResetCatSettings(3)
     end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
 
     CatSettingsPart1()
     CatSettingsPart2()
+
+    --[[
+    if MPDriudCatSaved[ConfigCurrent].Shapeshift == 0 then
+        MPSKillButtonClose(Skill_Shapeshift, "重整")
+    else
+        MPSKillButtonOpen(Skill_Shapeshift, "重整")
+    end
+    if MPDriudCatSaved[ConfigCurrent].TigerFury == 0 then
+        MPSKillButtonClose(Skill_TigerFury, "猛虎之怒")
+    else
+        MPSKillButtonOpen(Skill_TigerFury, "猛虎之怒")
+    end
+    if MPDriudCatSaved[ConfigCurrent].FaerieFire == 0 then
+        MPSKillButtonClose(Skill_FaerieFire, "精灵之火")
+    else
+        MPSKillButtonOpen(Skill_FaerieFire, "精灵之火")
+    end
+    if MPDriudCatSaved[ConfigCurrent].Cower == 0 then
+        MPSKillButtonClose(Skill_Cower, "畏缩")
+    else
+        MPSKillButtonOpen(Skill_Cower, "畏缩")
+    end
+    if MPDriudCatSaved[ConfigCurrent].Target == 0 then
+        MPSKillButtonClose(Skill_Target, "自动锁敌")
+    else
+        MPSKillButtonOpen(Skill_Target, "自动锁敌")
+    end
+    ]]
 
 end
 

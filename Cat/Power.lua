@@ -31,12 +31,58 @@ function MPCatPower()
 
 
 	local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-	local _,M = UnitMana("player")
-	local _,Mmax = UnitManaMax("player")
 	local percentMana = 100
-	if M and Mmax then
-		percentMana = M / Mmax * 100
-	end
+
+    if MPPlayerClass == "WARRIOR" then
+    elseif MPPlayerClass == "ROGUE" then
+    elseif MPPlayerClass == "MAGE" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "HUNTER" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "PRIEST" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "WARLOCK" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "DRUID" then
+		local _,M = UnitMana("player")
+		local _,Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "PALADIN" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    elseif MPPlayerClass == "SHAMAN" then
+		local M = UnitMana("player")
+		local Mmax = UnitManaMax("player")
+		if M and Mmax then
+			percentMana = M / Mmax * 100
+		end
+    else
+        return
+    end
+	
+
+
 
 	-- 草药茶 HP
 	if MPPowerSaved.HerbalTea==1 and percent<MPPowerSaved.HerbalTea_Value then

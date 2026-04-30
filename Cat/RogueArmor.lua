@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 破甲贼一键宏
--- 发布日期：2026-03-15 （后面根据时间来判断版本）
+-- 发布日期：2026-04-12 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -27,10 +27,6 @@ local AUTO_RDPS_Trinket_Delay = 3			-- 进入战斗后，3秒后才允许使用�
 -- 以下参数请勿手动修改，插件会自动进行变化
 
 
--- 是否有出血
-MPRogueHemorrhage = 0
-MPRogueHemorrhageEnergy = 45
-
 -- 能量消耗相关
 
 -- 破甲星
@@ -41,12 +37,17 @@ MPExposeArmorCombo = 0
 
 local QG,GCP,QX,THP,myPower,TX,XX,JRLW,DS,PJ,MoD,GMGJ
 
+-- 默认配置
+MPRogueArmorConfig = 1
+
+
+
 function MPRoguePJZ()
 
 	myPower = UnitMana("player")
 	THP = UnitHealth("target")
-	if MPRogueArmorSaved.SliceDiceTime==1 then
-		QG = MPGetRogueSlice(MPRogueArmorSaved.SliceDiceTime_Value)
+	if MPRogueArmorSaved[MPRogueArmorConfig].SliceDiceTime==1 then
+		QG = MPGetRogueSlice(MPRogueArmorSaved[MPRogueArmorConfig].SliceDiceTime_Value)
 	else
 		QG = MPBuff("切割")
 	end
@@ -55,45 +56,45 @@ function MPRoguePJZ()
 	GMGJ = MPSpellReady("鬼魅攻击")
 	PJ = MPGetExposeArmorDot(15) --MPBuff("破甲","target")
 	GCP = GetComboPoints("target")
-	BEHIND = MPCheckBehind(MPRogueArmorSaved.UnitXP)
+	BEHIND = MPCheckBehind(MPRogueArmorSaved[MPRogueArmorConfig].UnitXP)
 
 
 	-- 补充毒药
-	if MPRogueArmorSaved.LeaveFight==0 or (MPRogueArmorSaved.LeaveFight==1 and not MPInCombat) then
+	if MPRogueArmorSaved[MPRogueArmorConfig].LeaveFight==0 or (MPRogueArmorSaved[MPRogueArmorConfig].LeaveFight==1 and not MPInCombat) then
 
 		-- 主手
-		if MPRogueArmorSaved.MainHand==1 then
+		if MPRogueArmorSaved[MPRogueArmorConfig].MainHand==1 then
 
 			-- 获取武器信息
 			local main, mc, mn = MPGetMainHandCount()
 
 			-- 覆盖
-			if MPRogueArmorSaved.Cover==1 and main then
-				if mn ~= MPRogueArmorSaved.MainHand_Value then
-					MPPutonPostion(MPRogueArmorSaved.MainHand_Value, 16)
+			if MPRogueArmorSaved[MPRogueArmorConfig].Cover==1 and main then
+				if mn ~= MPRogueArmorSaved[MPRogueArmorConfig].MainHand_Value then
+					MPPutonPostion(MPRogueArmorSaved[MPRogueArmorConfig].MainHand_Value, 16)
 				end
 			end
 
-			if mc<MPRogueArmorSaved.MainHandCount then
-				MPPutonPostion(MPRogueArmorSaved.MainHand_Value, 16)
+			if mc<MPRogueArmorSaved[MPRogueArmorConfig].MainHandCount then
+				MPPutonPostion(MPRogueArmorSaved[MPRogueArmorConfig].MainHand_Value, 16)
 			end
 
 		end
 
 		-- 副手
-		if MPRogueArmorSaved.OffHand==1 then
+		if MPRogueArmorSaved[MPRogueArmorConfig].OffHand==1 then
 
 			-- 获取武器信息
 			local off, oc, on = MPGetOffHandCount()
 
-			if MPRogueArmorSaved.Cover==1 and off then
-				if on~=MPRogueArmorSaved.OffHand_Value then
-					MPPutonPostion(MPRogueArmorSaved.OffHand_Value, 17)
+			if MPRogueArmorSaved[MPRogueArmorConfig].Cover==1 and off then
+				if on~=MPRogueArmorSaved[MPRogueArmorConfig].OffHand_Value then
+					MPPutonPostion(MPRogueArmorSaved[MPRogueArmorConfig].OffHand_Value, 17)
 				end
 			end
 
-			if oc<MPRogueArmorSaved.OffHandCount then
-				MPPutonPostion(MPRogueArmorSaved.OffHand_Value, 17)
+			if oc<MPRogueArmorSaved[MPRogueArmorConfig].OffHandCount then
+				MPPutonPostion(MPRogueArmorSaved[MPRogueArmorConfig].OffHand_Value, 17)
 			end
 
 		end
@@ -102,7 +103,7 @@ function MPRoguePJZ()
 
 
 	-- 在潜行状态
-	if QX and MPRogueArmorSaved.Stealth==1 then
+	if QX and MPRogueArmorSaved[MPRogueArmorConfig].Stealth==1 then
 
 		MPStopAttack()
 
@@ -124,18 +125,18 @@ function MPRoguePJZ()
 
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPRogueArmorSaved.Target)
+	MPAutoSwitchTarget(MPRogueArmorSaved[MPRogueArmorConfig].Target)
 
 	-- 开启自动攻击
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPRogueArmorSaved.Pick==1 then
+	if MPRogueArmorSaved[MPRogueArmorConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPRogueArmorSaved.Power==1 then
+	if MPRogueArmorSaved[MPRogueArmorConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -147,66 +148,68 @@ function MPRoguePJZ()
 	-- 在战斗中
 	if MPInCombat then
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and MPGetTargetDistance() and MPRogueArmorSaved.Trinket_Upper==1 then
-			if MPRogueArmorSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and MPGetTargetDistance() and MPRogueArmorSaved[MPRogueArmorConfig].Trinket_Upper==1 then
+			if MPRogueArmorSaved[MPRogueArmorConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPRogueArmorSaved.TUBoss==0 then
+			elseif MPRogueArmorSaved[MPRogueArmorConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and MPGetTargetDistance() and MPRogueArmorSaved.Trinket_Below==1 then
-			if MPRogueArmorSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_RDPS_Trinket_Delay and MPGetTargetDistance() and MPRogueArmorSaved[MPRogueArmorConfig].Trinket_Below==1 then
+			if MPRogueArmorSaved[MPRogueArmorConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPRogueArmorSaved.TBBoss==0 then
+			elseif MPRogueArmorSaved[MPRogueArmorConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPRogueArmorSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPRogueArmorSaved[MPRogueArmorConfig].Soulspeed==1 and MPGetTargetDistance() then
+			if MPRogueArmorSaved[MPRogueArmorConfig].SoulspeedBoss==0 or (MPRogueArmorSaved[MPRogueArmorConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-		if percent<MPRogueArmorSaved.HealthStone_Value and MPRogueArmorSaved.HealthStone==1 then
+		if percent<MPRogueArmorSaved[MPRogueArmorConfig].HealthStone_Value and MPRogueArmorSaved[MPRogueArmorConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPRogueArmorSaved.HerbalTea_Value and MPRogueArmorSaved.HerbalTea==1 then
+		if percent<MPRogueArmorSaved[MPRogueArmorConfig].HerbalTea_Value and MPRogueArmorSaved[MPRogueArmorConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
-		if percent<MPRogueArmorSaved.Carrot_Value and MPRogueArmorSaved.Carrot==1 then
+		if percent<MPRogueArmorSaved[MPRogueArmorConfig].Carrot_Value and MPRogueArmorSaved[MPRogueArmorConfig].Carrot==1 then
 			MPUseItemByName("鞭根块茎")
 		end
 
 		-- 特定 种族天赋 --
 
-		if MPRogueArmorSaved.RacialTraits==1 and MPGetTargetDistance() then
+		if MPRogueArmorSaved[MPRogueArmorConfig].RacialTraits==1 and MPGetTargetDistance() then
+			if MPRogueArmorSaved[MPRogueArmorConfig].RacialTraitsBoss==0 or (MPRogueArmorSaved[MPRogueArmorConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 	end
 
 	-- 自动打断
-	if MPRogueArmorSaved.Interrupt==1 then
+	if MPRogueArmorSaved[MPRogueArmorConfig].Interrupt==1 then
 		MPINTCast()
 	end
 
@@ -218,14 +221,14 @@ function MPRoguePJZ()
 	if GCP>=1 and GCP<=2 then
 
 		-- 有SuperWoW才提前打低星破甲
-		if MPRogueArmorSaved.FirstStar==1 and MP_SuperWoW then
+		if MPRogueArmorSaved[MPRogueArmorConfig].FirstStar==1 and MP_SuperWoW then
 			if not MPGetExposeArmorDot() then
 				MPCastWithoutNampower("破甲")
 				return
 			end
 		end
 
-		if not MPGetRogueSlice() and MPRogueArmorSaved.SliceDice==1 and MPExposeArmorCombo==5 then
+		if not MPGetRogueSlice() and MPRogueArmorSaved[MPRogueArmorConfig].SliceDice==1 and MPExposeArmorCombo==5 then
 			MPCastWithoutNampower("切割")
 			return
 		end
@@ -234,7 +237,7 @@ function MPRoguePJZ()
 
 		if MPGetExposeArmorDot(14) and MPExposeArmorCombo==5 then
 
-			if not MPGetRogueSlice(1) and MPRogueArmorSaved.SliceDice==1 then
+			if not MPGetRogueSlice(1) and MPRogueArmorSaved[MPRogueArmorConfig].SliceDice==1 then
 				MPCastWithoutNampower("切割")
 				return
 			end
@@ -252,7 +255,7 @@ function MPRoguePJZ()
 
 		if MPGetExposeArmorDot(14) and MPExposeArmorCombo==5 then
 
-			if not MPGetRogueSlice(2) and MPRogueArmorSaved.SliceDice==1 then
+			if not MPGetRogueSlice(2) and MPRogueArmorSaved[MPRogueArmorConfig].SliceDice==1 then
 				MPCastWithoutNampower("切割")
 				return
 			end
@@ -271,7 +274,7 @@ function MPRoguePJZ()
 
 		if MPGetExposeArmorDot(14) and MPExposeArmorCombo==5 then
 
-			if not MPGetRogueSlice(3) and MPRogueArmorSaved.SliceDice==1 then
+			if not MPGetRogueSlice(3) and MPRogueArmorSaved[MPRogueArmorConfig].SliceDice==1 then
 				MPCastWithoutNampower("切割")
 				return
 			end
@@ -292,20 +295,22 @@ function MPRoguePJZ()
 
 
 	-- 死亡标记
-	if MPRogueArmorSaved.Marked==1 and MoD and MPIsBossTarget() then
-		CastSpellByName("死亡标记")
-		return
+	if MPRogueArmorSaved[MPRogueArmorConfig].Marked==1 and MoD and MPGetTargetDistance() then
+		if MPRogueArmorSaved[MPRogueArmorConfig].MarkedBoss==0 or (MPRogueArmorSaved[MPRogueArmorConfig].MarkedBoss==1 and MPIsBossTarget()) then
+			CastSpellByName("死亡标记")
+			return
+		end
 	end
 
 	-- 尝试还击
-	if MPRogueArmorSaved.Riposte==1 and myPower>9 then
+	if MPRogueArmorSaved[MPRogueArmorConfig].Riposte==1 and myPower>9 then
 		CastSpellByName("还击")
 	end
 
 	if GCP>=5 and myPower>=80 then
 
 		-- 鬼魅攻击
-		if MPRogueArmorSaved.GhostlyStrike==1 and GMGJ then
+		if MPRogueArmorSaved[MPRogueArmorConfig].GhostlyStrike==1 and GMGJ then
 			if myPower>44 then
 				CastSpellByName("鬼魅攻击")
 				return
@@ -322,7 +327,7 @@ function MPRoguePJZ()
 	elseif GCP<5 then
 
 		-- 鬼魅攻击
-		if MPRogueArmorSaved.GhostlyStrike==1 and GMGJ then
+		if MPRogueArmorSaved[MPRogueArmorConfig].GhostlyStrike==1 and GMGJ then
 			if myPower>44 then
 				CastSpellByName("鬼魅攻击")
 				return

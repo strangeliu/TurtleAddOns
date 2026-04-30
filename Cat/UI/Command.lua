@@ -4,60 +4,82 @@ BINDING_HEADER_CAT_PLUGINNAME = MPLanguage.UI_BindingHeader
 
 
 -- 注册猫德输出指令
-function MPCatCommand()
+function MPCatCommand(msg)
     if MPPlayerClass ~= "DRUID" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPDriudCatConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPDriudCatConfig = num
+		end
+	end
+
 	MPCat()
 end
-function MPCatAshamaneCommand()
+function MPCatShredCommand(msg)
     if MPPlayerClass ~= "DRUID" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	if MPDriudPrimalFury>=20 then  MPDuridCatFinishers=0 end
-
-	MPCat()
-end
-function MPCatShredCommand()
-    if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPDriudCatConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPDriudCatConfig = num
+		end
 	end
 
 	MPCat(2)
 end
-function MPBearCommand()
+function MPBearCommand(msg)
     if MPPlayerClass ~= "DRUID" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPDriudBearConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPDriudBearConfig = num
+		end
 	end
 
 	MPBear()
 end
-function MPBearOneCommand()
+function MPCooCommand(msg)
     if MPPlayerClass ~= "DRUID" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	MPBear(1)
-end
-function MPCooCommand()
-    if MPPlayerClass ~= "DRUID" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPDriudCooConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPDriudCooConfig = num
+		end
 	end
 
 	MPCoo()
 end
-function MPDHealCommand()
+function MPDHealCommand(msg)
     if MPPlayerClass ~= "DRUID" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPDriudHealConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPDriudHealConfig = num
+		end
 	end
 
 	MPDriudAutoHealth()
@@ -67,115 +89,71 @@ end
 
 
 
-function MPPaladinHealCommand()
-    if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
-	end
 
-	MPPaladinAutoHealth()
-end
-function MPPaladinMeleeHealCommand()
-    if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
-	end
-
-	MPPaladinAutoMeleeHealth()
-end
-function MPPaladinDPSSpellCommand()
-    if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
-	end
-
-	MPPaladinCJSpell()
-end
-function MPPaladinTankCommand()
-    if MPPlayerClass ~= "PALADIN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
-	end
-
-	MPPallyTank()
-end
-
-
-
-
-function MPWarriorDPSCommand()
+function MPWarriorArmsCommand(msg)
     if MPPlayerClass ~= "WARRIOR" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."请使用新指令：/Arms or /Fury or /Evil")
-end
-function MPWarriorDPSOneCommand()
-    if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
-	end
-
-	DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."请使用新指令：/Armso or /Furyo or /Evilo")
-end
-
-function MPWarriorArmsCommand()
-    if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPWarrorArmsConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarrorArmsConfig = num
+		end
 	end
 
 	MPArmsDPS()
 end
-function MPWarriorArmsOneCommand()
+
+function MPWarriorFuryCommand(msg)
     if MPPlayerClass ~= "WARRIOR" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	MPArmsDPS(1)
-end
-
-function MPWarriorFuryCommand()
-    if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPWarriorFuryConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarriorFuryConfig = num
+		end
 	end
 
 	MPFuryDPS()
 end
-function MPWarriorFuryOneCommand()
+
+function MPWarriorEvilCommand(msg)
     if MPPlayerClass ~= "WARRIOR" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	MPFuryDPS(1)
-end
-
-function MPWarriorEvilCommand()
-    if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPWarriorEvilConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarriorEvilConfig = num
+		end
 	end
 
 	MPEvilDPS()
 end
-function MPWarriorEvilOneCommand()
+
+
+function MPWarriorTankCommand(msg)
     if MPPlayerClass ~= "WARRIOR" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	MPEvilDPS(1)
-end
-
-
-function MPWarriorTankCommand()
-    if MPPlayerClass ~= "WARRIOR" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPWarriorTankConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarriorTankConfig = num
+		end
 	end
 
 	MPWarriorTank()
@@ -184,38 +162,141 @@ end
 
 
 
-function MPRogueDPSCommand()
+function MPPaladinHealCommand(msg)
+    if MPPlayerClass ~= "PALADIN" then
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
+		return
+	end
+
+	MPPaladinHealConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPaladinHealConfig = num
+		end
+	end
+
+	MPPaladinAutoHealth()
+end
+function MPPaladinMeleeHealCommand(msg)
+    if MPPlayerClass ~= "PALADIN" then
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
+		return
+	end
+
+	MPPaladinMeleeHealConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPaladinMeleeHealConfig = num
+		end
+	end
+
+	MPPaladinAutoMeleeHealth()
+end
+function MPPaladinDPSSpellCommand(msg)
+    if MPPlayerClass ~= "PALADIN" then
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
+		return
+	end
+
+	MPPaladinCJConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPaladinCJConfig = num
+		end
+	end
+
+	MPPaladinCJSpell()
+end
+function MPPaladinTankCommand(msg)
+    if MPPlayerClass ~= "PALADIN" then
+		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
+		return
+	end
+
+	MPPaladinTankConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPaladinTankConfig = num
+		end
+	end
+
+	MPPallyTank()
+end
+
+
+
+
+
+
+
+
+function MPRogueDPSCommand(msg)
     if MPPlayerClass ~= "ROGUE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPRogueConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPRogueConfig = num
+		end
+	end
+
 	MPRogueDPS()
-	--DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."请使用新指令！")
 end
 
-function MPRogueEnvenomCommand()
+function MPRogueEnvenomCommand(msg)
     if MPPlayerClass ~= "ROGUE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPRogueEnvenomConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPRogueEnvenomConfig = num
+		end
 	end
 
 	MPRogueEnvenomDPS()
 end
 
-function MPRogueCombatCommand()
+function MPRogueCombatCommand(msg)
     if MPPlayerClass ~= "ROGUE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPRogueCombatConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPRogueCombatConfig = num
+		end
+	end
+
 	MPRogueCombatDPS()
 end
 
-function MPRoguePJZCommand()
+function MPRoguePJZCommand(msg)
     if MPPlayerClass ~= "ROGUE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPRogueArmorConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPRogueArmorConfig = num
+		end
 	end
 
 	MPRoguePJZ()
@@ -224,34 +305,50 @@ end
 
 
 
-function MPShamanHealCommand()
+function MPShamanHealCommand(msg)
     if MPPlayerClass ~= "SHAMAN" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPShamanHealConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPShamanHealConfig = num
+		end
 	end
 
 	MPShamanAutoHealth()
 end
-function MPShamanEnhanceCommand()
+function MPShamanEnhanceCommand(msg)
     if MPPlayerClass ~= "SHAMAN" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPShamanEnhanceConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPShamanEnhanceConfig = num
+		end
 	end
 
 	MPShamanAutoEnhance()
 end
-function MPShamanFireCommand()
+function MPShamanElementalCommand(msg)
     if MPPlayerClass ~= "SHAMAN" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
-	MPShamanAutoFireSM()
-end
-function MPShamanElementalCommand()
-    if MPPlayerClass ~= "SHAMAN" then
-		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
-		return
+	MPShamanElementalConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPShamanElementalConfig = num
+		end
 	end
 
 	MPShamanAutoElemental()
@@ -261,34 +358,66 @@ end
 
 
 
-function MPWarlockSDCommand()
+function MPWarlockSDCommand(msg)
     if MPPlayerClass ~= "WARLOCK" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPWarlockSDConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarlockSDConfig = num
+		end
 	end
 
 	MPWarlockSD()
 end
-function MPWarlockFDCommand()
+function MPWarlockFDCommand(msg)
     if MPPlayerClass ~= "WARLOCK" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPWarlockFDConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarlockFDConfig = num
+		end
 	end
 
 	MPWarlockFD()
 end
-function MPWarlockAffCommand()
+function MPWarlockAffCommand(msg)
     if MPPlayerClass ~= "WARLOCK" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPWarlockAffConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWarlockAffConfig = num
+		end
+	end
+
 	MPWarlockAff()
 end
-function MPWarlockDemoCommand()
+function MPWarlockDemoCommand(msg)
     if MPPlayerClass ~= "WARLOCK" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPWalockDemoConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPWalockDemoConfig = num
+		end
 	end
 
 	MPWarlockDemo()
@@ -298,26 +427,50 @@ end
 
 
 
-function MPMageArcaneCommand()
+function MPMageArcaneCommand(msg)
     if MPPlayerClass ~= "MAGE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPMageArcaneConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPMageArcaneConfig = num
+		end
 	end
 
 	MPMageArcaneAuto()
 end
-function MPMageFireCommand()
+function MPMageFireCommand(msg)
     if MPPlayerClass ~= "MAGE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPMageFireConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPMageFireConfig = num
+		end
+	end
+
 	MPMageFireAuto()
 end
-function MPMageFrostCommand()
+function MPMageFrostCommand(msg)
     if MPPlayerClass ~= "MAGE" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPMageFrostConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPMageFrostConfig = num
+		end
 	end
 
 	MPMageFrostAuto()
@@ -327,26 +480,50 @@ end
 
 
 
-function MPHolyPriestCommand()
+function MPHolyPriestCommand(msg)
     if MPPlayerClass ~= "PRIEST" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPPriestHealConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPriestHealConfig = num
+		end
 	end
 
 	MPPriestAutoHealth()
 end
-function MPShadowPriestCommand()
+function MPShadowPriestCommand(msg)
     if MPPlayerClass ~= "PRIEST" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPPriestShadowConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPriestShadowConfig = num
+		end
+	end
+
 	MPPriestShadow()
 end
-function MPDisciplinePriestCommand()
+function MPDisciplinePriestCommand(msg)
     if MPPlayerClass ~= "PRIEST" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPPriestDConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPPriestDConfig = num
+		end
 	end
 
 	MPPriestDiscipline()
@@ -356,26 +533,50 @@ end
 
 
 
-function MPHunterShotCommand()
+function MPHunterShotCommand(msg)
     if MPPlayerClass ~= "HUNTER" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPHunterShotConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPHunterShotConfig = num
+		end
 	end
 
 	MPHunterShotDPS()
 end
-function MPHunterBeastCommand()
+function MPHunterBeastCommand(msg)
     if MPPlayerClass ~= "HUNTER" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
 	end
 
+	MPHunterBeastConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPHunterBeastConfig = num
+		end
+	end
+
 	MPHunterBeastDPS()
 end
-function MPHunterMeleeCommand()
+function MPHunterMeleeCommand(msg)
     if MPPlayerClass ~= "HUNTER" then
 		DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_ClassError)
 		return
+	end
+
+	MPHunterMeleeConfig = 1
+	local num = MPToNumber(MPMatch(msg or "", "(%d+)"))
+	if num then
+		if num>0 and num<4 then
+			MPHunterMeleeConfig = num
+		end
 	end
 
 	MPHunterMeleeDPS()
@@ -430,51 +631,33 @@ SlashCmdList['CAT1'] = MPCatCommand
 SLASH_CAT11 = '/catdps'
 SlashCmdList['CAT2'] = MPCatShredCommand
 SLASH_CAT21 = '/catshred'
-SlashCmdList['CAT3'] = MPCatAshamaneCommand
-SLASH_CAT31 = '/catasm'
 SlashCmdList['BEAR'] = MPBearCommand
 SLASH_BEAR1 = '/beardps'
-SlashCmdList['BEARONE'] = MPBearOneCommand
-SLASH_BEARONE1 = '/bearone'
 SlashCmdList['COO'] = MPCooCommand
 SLASH_COO1 = '/coodps'
 SlashCmdList['DHEAL'] = MPDHealCommand
 SLASH_DHEAL1 = '/dheal'
+
+
+SlashCmdList['WARRIORARMS'] = MPWarriorArmsCommand
+SLASH_WARRIORARMS1 = '/arms'
+SlashCmdList['WARRIORFURY'] = MPWarriorFuryCommand
+SLASH_WARRIORFURY1 = '/fury'
+SlashCmdList['WARRIOREVIL'] = MPWarriorEvilCommand
+SLASH_WARRIOREVIL1 = '/evil'
+SlashCmdList['WARRIORTANK'] = MPWarriorTankCommand
+SLASH_WARRIORTANK1 = '/wtank'
+
 
 SlashCmdList['PALADINHEAL'] = MPPaladinHealCommand
 SLASH_PALADINHEAL1 = '/pheal'
 SlashCmdList['PALADINMELEEHEAL'] = MPPaladinMeleeHealCommand
 SLASH_PALADINMELEEHEAL1 = '/mpheal'
 SlashCmdList['PALADINDPS'] = MPPaladinDPSSpellCommand
-SLASH_PALADINDPS1 = '/paladindps_spell'
-SLASH_PALADINDPS2 = '/pdps'
+SLASH_PALADINDPS1 = '/pdps'
 SlashCmdList['PALADINTANK'] = MPPaladinTankCommand
 SLASH_PALADINTANK1 = '/ptank'
 
-
-SlashCmdList['WARRIORDPS'] = MPWarriorDPSCommand
-SLASH_WARRIORDPS1 = '/wdps'
-SlashCmdList['WARRIORDPSONE'] = MPWarriorDPSOneCommand
-SLASH_WARRIORDPSONE1 = '/wdpso'
-
-SlashCmdList['WARRIORARMS'] = MPWarriorArmsCommand
-SLASH_WARRIORARMS1 = '/arms'
-SlashCmdList['WARRIORARMSONE'] = MPWarriorArmsOneCommand
-SLASH_WARRIORARMSONE1 = '/armso'
-
-SlashCmdList['WARRIORFURY'] = MPWarriorFuryCommand
-SLASH_WARRIORFURY1 = '/fury'
-SlashCmdList['WARRIORFURYONE'] = MPWarriorFuryOneCommand
-SLASH_WARRIORFURYONE1 = '/furyo'
-
-SlashCmdList['WARRIOREVIL'] = MPWarriorEvilCommand
-SLASH_WARRIOREVIL1 = '/evil'
-SlashCmdList['WARRIOREVILONE'] = MPWarriorEvilOneCommand
-SLASH_WARRIOREVILONE1 = '/evilo'
-
-SlashCmdList['WARRIORTANK'] = MPWarriorTankCommand
-SLASH_WARRIORTANK1 = '/warriortank'
-SLASH_WARRIORTANK2 = '/wtank'
 
 SlashCmdList['ROGUEDPS'] = MPRogueDPSCommand
 SLASH_ROGUEDPS1 = '/rdps'
@@ -485,14 +668,14 @@ SLASH_ROGUECOMBAT1 = '/zddps'
 SlashCmdList['ROGUEPJZ'] = MPRoguePJZCommand
 SLASH_ROGUEPJZ1 = '/pjz'
 
+
 SlashCmdList['SHAMANHEAL'] = MPShamanHealCommand
 SLASH_SHAMANHEAL1 = '/sheal'
 SlashCmdList['SHAMANENHANCE'] = MPShamanEnhanceCommand
 SLASH_SHAMANENHANCE1 = '/swdps'
-SlashCmdList['SHAMANFIRE'] = MPShamanFireCommand
-SLASH_SHAMANFIRE1 = '/fedps'
 SlashCmdList['SHAMANELEMENTAL'] = MPShamanElementalCommand
 SLASH_SHAMANELEMENTAL1 = '/sedps'
+
 
 SlashCmdList['WARLOCKSD'] = MPWarlockSDCommand
 SLASH_WARLOCKSD1 = '/ahdps'

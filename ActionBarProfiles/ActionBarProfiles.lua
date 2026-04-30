@@ -381,6 +381,38 @@ function ABP_DropDownMenu_OnLoad()
         return
     end
 
+    -- 新增：保存子菜单
+    if UIDROPDOWNMENU_MENU_VALUE == "Save menu" then
+        UIDropDownMenu_AddButton({
+            text = "选择要覆盖的布局",
+            isTitle = true,
+            owner = this:GetParent(),
+            justifyH = "CENTER",
+        }, UIDROPDOWNMENU_MENU_LEVEL)
+
+        local list = ABP_Layout and ABP_Layout[ABP_PlayerName] or nil
+        if list then
+            for profileName in pairs(list) do
+                UIDropDownMenu_AddButton({
+                    text = profileName,
+                    value = profileName,
+                    func = function() ABP_SaveProfile(this:GetText()) end,
+                    notCheckable = 1,
+                    owner = this:GetParent(),
+                }, UIDROPDOWNMENU_MENU_LEVEL)
+            end
+        end
+
+        UIDropDownMenu_AddButton({
+            text = "新建...",
+            func = function() StaticPopup_Show("ABP_NewProfile") end,
+            notCheckable = 1,
+            owner = this:GetParent(),
+        }, UIDROPDOWNMENU_MENU_LEVEL)
+        return
+    end
+
+    -- 原默认菜单
     UIDropDownMenu_AddButton({
         text = UnitName("player") .. "的动作条",
         isTitle = true,
@@ -406,10 +438,12 @@ function ABP_DropDownMenu_OnLoad()
         justifyH = "CENTER",
     }, UIDROPDOWNMENU_MENU_LEVEL)
 
+    -- 原“保存当前动作条的布局”改为带有子菜单的按钮
     UIDropDownMenu_AddButton({
         text = "保存当前动作条的布局",
-        func = function() StaticPopup_Show("ABP_NewProfile") end,
+        value = "Save menu",
         notCheckable = 1,
+        hasArrow = true,
         owner = this:GetParent(),
     }, UIDROPDOWNMENU_MENU_LEVEL)
 

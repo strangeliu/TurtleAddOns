@@ -68,6 +68,9 @@ BCS["L"] = {
 	["HASTE_TOOLTIP_2"] = [[|cffffffff攻击和施法速度提高 %s |r
 	|cff20ff20%s|r法术施法速度提高.]],
 	
+	["HASTE_TOOLTIP_3"] = [[|cff20ff20%s|r法术施法时间%s %s.]],
+	["HASTE_TOOLTIP_4"] = [[施法时间%s %s.]],
+		
 	["HASTE_MELEE_TOOLTIP"] = [[|cffffffff近战攻击速度提高 %s |r
 	包含如乱舞、切割等技能和装备的效果.]],
 	["HASTE_RANGE_TOOLTIP"] = [[|cffffffff远程攻击速度提高 %s |r
@@ -174,6 +177,7 @@ BCS["L_TALENT"] = {
 	WARLOCK_DESTRUCTION_DEVASTATION = "破坏",
 	WARLOCK_DESTRUCTION_IMPROVED_SEARINGPAIN = "强化灼热之痛",
 	ROGUE_SERRATED_BLADES = "锯齿利刃",
+	HUNTER_LETHAL_SHOOTS = { name = "夺命射击", tab = 2,number = 4} 
 }
 
 BCS["L_FORM"] = {
@@ -244,8 +248,7 @@ BCS["L_SPELLCRIT"] = {
 	["Moonkin Aura"] = "法术的致命一击率提高(%d+)%%。",
 	["Atiesh, Greatstaff of the Guardian_Mage_aura"] = "^法术造成致命一击的几率提高(%d)%%。",
 	["Melee critical-hit chance reduced by (%d+)%%.\r\nSpell critical-hit chance reduced by (%d+)%%."] = "近战武器造成致命一击的几率降低(%d+)%%。\r\n法术造成致命一击的几率降低(%d+)%%。",
-	["Dream_Mongoose"] = "^法术伤害提高%d+点，\r\n敏捷提高25点，\r\n致命一击几率提高(%d+)%%",
-	
+	["Dream_Mongoose"] = "^法术伤害和治疗效果提高%d+点，\r\n敏捷提高25点，\r\n物理和法术致命一击几率提高(%d+)%%",
 	["Firestone"] = "^火焰法术的致命一击几率提高(%d+)%%。",
 	["Combustion"] = "^火焰系法术致命一击的几率提高(%d+)%%。",
 	
@@ -324,7 +327,7 @@ BCS["L_SPELLPOWER"] = {
 	["Spell Damage %+(%d+)"] = "%+(%d+) 法术伤害",
 	["^%+(%d+) Spell Damage and Healing"] = "^法术治疗和伤害 %+(%d+)",
 	["^%+(%d+) Damage and Healing Spells"] = "^%+(%d+) 伤害和治疗法术",
-	["Healing Spells and Damage %+(%d+)"] = "治疗和法术伤害 %+(%d+)",
+	["fm_12_spell_damage"] = "治疗和法术伤害 %+(%d+)",
 	["Desecration"] = "装备： 法术伤害和治疗效果提高(%d+)",
 	["^Set: Increases damage and healing done by magical spells and effects by up to (%d+)%."] = "^套装：提高所有法术和魔法效果所造成的伤害和治疗效果，最多(%d+)点。",
 	
@@ -339,8 +342,8 @@ BCS["L_SPELLPOWER"] = {
 	["Remains_of_Overwhelming_Power"] = "^法术伤害和治疗效果增加(%d+)",
 	["The_Restrained_Essence_of_Sapphiron"] = "^法术伤害和治疗效果提高最多(%d+)点。",
 	["Arcane_Giant"] = "^法术伤害提高(%d+)点，\r\n力量提高25点。",
-	["Dream_Firewater"] = "^法术伤害提高(%d+)点，\r\n攻击强度提高35点。",
-	["Dream_Mongoose"] = "^法术伤害提高(%d+)点，\r\n敏捷提高25点，\r\n致命一击几率提高(%d+)%%",
+	["Dream_Firewater"] = "^法术伤害提高(%d+)点，\r\n近战攻击强度提高35点。",
+	["Dream_Mongoose"] = "^法术伤害和治疗效果提高(%d+)点，\r\n敏捷提高25点，\r\n物理和法术致命一击几率提高(%d+)%%",
 	
 	["Wizard_Oil"] = "^巫师之油(%D+)",
 	["Brilliant_Wizard_Oil"] = "^卓越巫师之油(%D+)",
@@ -358,12 +361,14 @@ BCS["L_HEALPOWER"] = {
 	["Atiesh, Greatstaff of the Guardian_Priest"] = "装备： 使你的法术伤害提高最多(%d+)点，治疗效果提高最多(%d+)点。",
 	["Resilience of the Scourge"] = "^治疗%+(%d+)点，每5秒回复(%d+)点法力值",
 	["^Set: Increases healing done by spells and effects by up to (%d+)%."] = "^套装：提高法术所造成的治疗效果，最多(%d+)点。",
+	--["fm_12_spell_damage"] = "治疗和法术伤害 %+(%d+)",
 	
 	["Dreamshard Elixir"] = "^法术伤害增加(%d+)点，治疗效果增加(%d+)点，使用法术造成致命一击的几率增加(%d+)%%。",
 	["Healing done by magical spells is increased by up to (%d+)."] = "治疗法术的效果提高最多(%d+)点。",
 	["Atiesh, Greatstaff of the Guardian_Priest_aura"] = "^法术和魔法效果所造成的治疗效果提高最多(%d+)点。",
 	["Zandalarian_Hero_Charm_hp"] = "法术治疗效果提高最多(%d+)点。",
 	["Spirit_of_Arathor"] = "^治疗效果提高(%d+)。",
+	
 	
 	["Brilliant_Mana_Oil"] = "^卓越法力之油(%D+)",
 }
@@ -403,4 +408,8 @@ BCS["L_LUCKY"] = {
 
 BCS["L_AVOID"] = {
 	["AVOID_1"] = "受到范围法术和技能伤害降低(%d+)%%。",
+}
+
+BCS["L_RANGECRIT"] = {
+	["RANGECRIT_1"] = "^瞄准镜（%+(%d)%% 致命一击）",
 }

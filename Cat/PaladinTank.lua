@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 防骑一键宏
--- 更新日期：2026-02-10 （后面根据时间来判断版本）
+-- 更新日期：2026-04-18 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -31,6 +31,11 @@ end
 
 local Mana,ManaPercent,GCD,SP,QXS,SZJ,FX,CH,THP,HasTarget
 local JudgmentDelay = 0
+
+-- 默认配置
+MPPaladinTankConfig = 1
+
+
 
 -- 奉献
 local function Consecration()
@@ -147,25 +152,25 @@ function MPPallyTank()
     local position = string.find("亡灵,恶魔", creature)
 
 	--保持正义之怒
-	if not MPBuff("正义之怒") and MPPaladinTankSaved.RighteousFury==1 then
+	if not MPBuff("正义之怒") and MPPaladinTankSaved[MPPaladinTankConfig].RighteousFury==1 then
 		CastSpellByName("正义之怒")
 		return
 	end
 
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPPaladinTankSaved.Target)
+	MPAutoSwitchTarget(MPPaladinTankSaved[MPPaladinTankConfig].Target)
 
 	-- 开启自动攻击
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPPaladinTankSaved.Pick==1 then
+	if MPPaladinTankSaved[MPPaladinTankConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPPaladinTankSaved.Power==1 then
+	if MPPaladinTankSaved[MPPaladinTankConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -177,65 +182,70 @@ function MPPallyTank()
 	-- 在战斗中
 	if MPInCombat then
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MPGetTargetDistance() and MPPaladinTankSaved.Trinket_Upper==1 and MP_Trinket_Upper==1 then
-			if MPPaladinTankSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MPGetTargetDistance() and MPPaladinTankSaved[MPPaladinTankConfig].Trinket_Upper==1 and MP_Trinket_Upper==1 then
+			if MPPaladinTankSaved[MPPaladinTankConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPPaladinTankSaved.TUBoss==0 then
+			elseif MPPaladinTankSaved[MPPaladinTankConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MPGetTargetDistance() and MPPaladinTankSaved.Trinket_Below==1 and MP_Trinket_Below==1 then
-			if MPPaladinTankSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MPGetTargetDistance() and MPPaladinTankSaved[MPPaladinTankConfig].Trinket_Below==1 and MP_Trinket_Below==1 then
+			if MPPaladinTankSaved[MPPaladinTankConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPPaladinTankSaved.TBBoss==0 then
+			elseif MPPaladinTankSaved[MPPaladinTankConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPPaladinTankSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPPaladinTankSaved[MPPaladinTankConfig].Soulspeed==1 and MPGetTargetDistance() then
+			if MPPaladinTankSaved[MPPaladinTankConfig].SoulspeedBoss==0 or (MPPaladinTankSaved[MPPaladinTankConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理，潜行下不吃药
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-		if percent<MPPaladinTankSaved.HealthStone_Value and MPPaladinTankSaved.HealthStone==1 then
+		if percent<MPPaladinTankSaved[MPPaladinTankConfig].HealthStone_Value and MPPaladinTankSaved[MPPaladinTankConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPPaladinTankSaved.HerbalTea_Value and MPPaladinTankSaved.HerbalTea==1 then
+		if percent<MPPaladinTankSaved[MPPaladinTankConfig].HerbalTea_Value and MPPaladinTankSaved[MPPaladinTankConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
-		if percent<MPPaladinTankSaved.Righteous_Value and MPPaladinTankSaved.Righteous==1 then
+		if percent<MPPaladinTankSaved[MPPaladinTankConfig].Righteous_Value and MPPaladinTankSaved[MPPaladinTankConfig].Righteous==1 then
 			CastSpellByName("正义壁垒")
 		end
+		if percent<MPPaladinTankSaved[MPPaladinTankConfig].LayHands_Value and MPPaladinTankSaved[MPPaladinTankConfig].LayHands==1 then
+			MPCastSpellWithoutTarget("圣疗术","player")
+		end
 		local percentMana = UnitMana("player") / UnitManaMax("player") * 100
-		if percentMana<MPPaladinTankSaved.HerbalTeaMana_Value and MPPaladinTankSaved.HerbalTeaMana==1 then
+		if percentMana<MPPaladinTankSaved[MPPaladinTankConfig].HerbalTeaMana_Value and MPPaladinTankSaved[MPPaladinTankConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
 		-- 特定 种族天赋 --
 
-		if MPPaladinTankSaved.RacialTraits==1 and MPGetTargetDistance() then
+		if MPPaladinTankSaved[MPPaladinTankConfig].RacialTraits==1 and MPGetTargetDistance() then
+			if MPPaladinTankSaved[MPPaladinTankConfig].RacialTraitsBoss==0 or (MPPaladinTankSaved[MPPaladinTankConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 
@@ -243,22 +253,22 @@ function MPPallyTank()
 
 
 	-- 是否自动取消拯救
-	if MPPaladinTankSaved.UnSalvation==1 and ( MPBuff("强效拯救祝福") or MPBuff("拯救祝福") ) then
+	if MPPaladinTankSaved[MPPaladinTankConfig].UnSalvation==1 and ( MPBuff("强效拯救祝福") or MPBuff("拯救祝福") ) then
 		MPCancelBuffByName("强效拯救祝福")
 		MPCancelBuffByName("拯救祝福")
 	end
 
 	-- 自动 小庇护祝福
-	if MPPaladinTankSaved.Sanctuary==1 then
+	if MPPaladinTankSaved[MPPaladinTankConfig].Sanctuary==1 then
 		if not MPBuff("强效庇护祝福") and not MPBuff("庇护祝福") then
 			CastSpellByName("庇护祝福")
 		end
 	end
 
 	-- 神圣之盾
-	if SSZD and MPPaladinTankSaved.HolyShield==1 then
+	if SSZD and MPPaladinTankSaved[MPPaladinTankConfig].HolyShield==1 then
 
-		if MPPaladinTankSaved.HolyShieldTarget==1 then
+		if MPPaladinTankSaved[MPPaladinTankConfig].HolyShieldTarget==1 then
 			local totName = UnitName("targettarget")
 			if totName and totName==UnitName("player") then
 				CastSpellByName("神圣之盾")
@@ -270,7 +280,7 @@ function MPPallyTank()
 
 
 
-	if MPPaladinTankSaved.CrusaderStrike==1 and MPInCombat and GetTime()-MPInCombatTime>MPPaladinTankSaved.CrusaderStrikeTimer then
+	if MPPaladinTankSaved[MPPaladinTankConfig].CrusaderStrike==1 and MPInCombat and GetTime()-MPInCombatTime>MPPaladinTankSaved[MPPaladinTankConfig].CrusaderStrikeTimer then
 		-- 根据狂热的持续时间来选择主打技能
 		if GetTime()-MPPaladinFrenzyDuration<22 and MPPaladinFrenzyLayer>=3 then
 			if SZJ and Mana>=90 then CastSpellByName("神圣打击")  end
@@ -286,7 +296,7 @@ function MPPallyTank()
 
 		-- 通过小窗参数 - 审判
 
-		if THP>MPPaladinTankSaved.JudgementOutHP then
+		if THP>MPPaladinTankSaved[MPPaladinTankConfig].JudgementOutHP then
 			if MPPaladinSealSaved.Justice==1 and not MPBuff("智慧审判", "target") then
 
 				-- 打智慧圣印
@@ -339,9 +349,9 @@ function MPPallyTank()
 
 				local type = 1   -- 1=正义，2=命令
 
-				if MPPaladinTankSaved.Seal_Value==2 then
+				if MPPaladinTankSaved[MPPaladinTankConfig].Seal_Value==2 then
 					type = 1
-				elseif MPPaladinTankSaved.Seal_Value==3 then
+				elseif MPPaladinTankSaved[MPPaladinTankConfig].Seal_Value==3 then
 					type = 2
 				else
 					if MPPaladinSealCommand==0 then
@@ -377,8 +387,8 @@ function MPPallyTank()
 
 
 	--[[
-		local J = MPPaladinTankSaved.Judgement
-		local J_Value = MPPaladinTankSaved.Judgement_Value
+		local J = MPPaladinTankSaved[MPPaladinTankConfig].Judgement
+		local J_Value = MPPaladinTankSaved[MPPaladinTankConfig].Judgement_Value
 
 		-- 动态调整审判，存在则强制进行前置审判
 		if MPPaladinSealSaved.Justice>0 then
@@ -393,15 +403,15 @@ function MPPallyTank()
 			-- 是否使用前置圣印（正义圣印、智慧圣印、十字军圣印）
 			if J_Value==1 then
 				-- 打智慧圣印
-				if not MPBuff("智慧审判", "target") and not MPSeal("智慧圣印") and THP>MPPaladinTankSaved.JudgementOutHP then CastSpellByName("智慧圣印")  return end
+				if not MPBuff("智慧审判", "target") and not MPSeal("智慧圣印") and THP>MPPaladinTankSaved[MPPaladinTankConfig].JudgementOutHP then CastSpellByName("智慧圣印")  return end
 				if MPSeal("智慧圣印") and SP and Mana>=76 and GCD>1.4 then CastSpellByName("审判") return end
 			elseif J_Value==2 then
 				-- 打十字军圣印
-				if not MPBuff("十字军审判", "target") and not MPSeal("十字军圣印") and THP>MPPaladinTankSaved.JudgementOutHP then CastSpellByName("十字军圣印")  return end
+				if not MPBuff("十字军审判", "target") and not MPSeal("十字军圣印") and THP>MPPaladinTankSaved[MPPaladinTankConfig].JudgementOutHP then CastSpellByName("十字军圣印")  return end
 				if MPSeal("十字军圣印") and SP and Mana>=76 and GCD>1.4 then CastSpellByName("审判") return end
 			elseif J_Value==3 then
 				-- 打光明圣印
-				if not MPBuff("光明审判", "target") and not MPSeal("光明圣印") and THP>MPPaladinTankSaved.JudgementOutHP then CastSpellByName("光明圣印") return end
+				if not MPBuff("光明审判", "target") and not MPSeal("光明圣印") and THP>MPPaladinTankSaved[MPPaladinTankConfig].JudgementOutHP then CastSpellByName("光明圣印") return end
 				if MPSeal("光明圣印") and SP and Mana>=76 and GCD>1.4 then CastSpellByName("审判") return end
 			end
 
@@ -409,8 +419,8 @@ function MPPallyTank()
 
 		-- 中段审判策略
 
-		local M = MPPaladinTankSaved.MiddleJudgement
-		local M_Value = MPPaladinTankSaved.MiddleJudgement_Value
+		local M = MPPaladinTankSaved[MPPaladinTankConfig].MiddleJudgement
+		local M_Value = MPPaladinTankSaved[MPPaladinTankConfig].MiddleJudgement_Value
 
 		-- 动态调整审判，存在则强制进行前置审判
 		if MPPaladinSealSaved.Justice>0 then
@@ -420,7 +430,7 @@ function MPPallyTank()
 			if (MPSeal("智慧圣印") or MPSeal("十字军圣印") or MPSeal("光明圣印")) and SP and Mana>=76 and GCD>1.4 then CastSpellByName("审判") return end
 		end
 
-		if M==1 and MPInCombat and GetTime()-MPInCombatTime>MPPaladinTankSaved.MiddleJudgementTimer then
+		if M==1 and MPInCombat and GetTime()-MPInCombatTime>MPPaladinTankSaved[MPPaladinTankConfig].MiddleJudgementTimer then
 
 			-- 是否使用前置圣印（智慧圣印、十字军圣印）
 			if M_Value==1 then
@@ -484,7 +494,7 @@ function MPPallyTank()
 
 
 	-- 目标是亡灵、恶魔的时候才尝试使用驱邪术
-	if QXS and not SZJ and position and MPPaladinTankSaved.Exorcism==1 then
+	if QXS and not SZJ and position and MPPaladinTankSaved[MPPaladinTankConfig].Exorcism==1 then
 		if Mana>=345 then
 			CastSpellByName("驱邪术") return
 		elseif Mana>=180 then
@@ -496,8 +506,41 @@ function MPPallyTank()
 
 
 	-- 是否踩奉献
-	if MPPaladinTankSaved.Consecration==1 and not SZJ and MPGetTargetDistance() and FX then
-		if MPPaladinTankSaved.Consecration_Level==0 then
+	if CatPaladinSeal:IsVisible() then
+		if MPPaladinSealSaved.Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
+			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
+				if ManaPercent>0.8 then
+					CastSpellByName("奉献(等级 5)")
+				elseif ManaPercent>0.5 then
+					CastSpellByName("奉献(等级 3)")
+				elseif Mana>MPPaladinConsecrationLevel1 then
+					CastSpellByName("奉献(等级 1)")
+				end
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
+			end
+		end
+	else
+		-- 是否踩奉献
+		if MPPaladinTankSaved[MPPaladinTankConfig].Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
+
+			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
+				if ManaPercent>0.8 then
+					CastSpellByName("奉献(等级 5)")
+				elseif ManaPercent>0.5 then
+					CastSpellByName("奉献(等级 3)")
+				elseif Mana>MPPaladinConsecrationLevel1 then
+					CastSpellByName("奉献(等级 1)")
+				end
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
+			end
+		end
+	end
+
+	--[[
+	if MPPaladinTankSaved[MPPaladinTankConfig].Consecration==1 and not SZJ and MPGetTargetDistance() and FX then
+		if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
 			if ManaPercent>0.8 then
 				CastSpellByName("奉献(等级 5)")
 			elseif ManaPercent>0.5 then
@@ -506,10 +549,10 @@ function MPPallyTank()
 				CastSpellByName("奉献(等级 1)")
 			end
 		else
-			CastSpellByName("奉献(等级 "..MPPaladinTankSaved.Consecration_Level..")")
+			CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
 		end
 	end
-
+	]]
 
 
 	if MP_Nampower then

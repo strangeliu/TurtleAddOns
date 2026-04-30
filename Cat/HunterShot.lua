@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 射击猎一键宏
--- 发布日期：2026-04-02 （后面根据时间来判断版本）
+-- 发布日期：2026-04-15 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -45,6 +45,10 @@ MPHunterShotTimer = 100
 
 local DCSJ,KSDC,ASSJ,MZSJ
 
+-- 默认配置
+MPHunterShotConfig = 1
+
+
 -- 检测自动射击是否拖出来
 local function MPCheckAutoShot()
 	for A=1,172 do
@@ -78,21 +82,21 @@ function MPHunterShotDPS()
 
 
 	-- 自动拾取
-	if MPHunterShotSaved.Pick==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPHunterShotSaved.Power==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].Power==1 then
 		MPCatPower()
 	end
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPHunterShotSaved.Target, 0)
-	MPSwitchDistantTarget(MPHunterShotSaved.Distant)
+	MPAutoSwitchTarget(MPHunterShotSaved[MPHunterShotConfig].Target, 0)
+	MPSwitchDistantTarget(MPHunterShotSaved[MPHunterShotConfig].Distant)
 
 	-- 瞄准射击
-	if MPHunterShotSaved.FirstAimedShot==1 and MPHunterShotSaved.AimedShot==1 and MPHunterAimedShot==1 and MZSJ and not MPInCombat then
+	if MPHunterShotSaved[MPHunterShotConfig].FirstAimedShot==1 and MPHunterShotSaved[MPHunterShotConfig].AimedShot==1 and MPHunterAimedShot==1 and MZSJ and not MPInCombat then
 		CastSpellByName("瞄准射击")
 		return
 	end
@@ -110,42 +114,44 @@ function MPHunterShotDPS()
 	end
 
 	-- 宠物攻击
-	if MPHunterShotSaved.PetAttack==1 and UnitAffectingCombat("target") then
+	if MPHunterShotSaved[MPHunterShotConfig].PetAttack==1 and UnitAffectingCombat("target") then
 		PetAttack()
 	end
 
 	-- 在战斗中
 	if MPInCombat then
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_SJDPS_Trinket_Delay and MPHunterShotSaved.Trinket_Upper==1 then
-			if MPHunterShotSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_SJDPS_Trinket_Delay and MPHunterShotSaved[MPHunterShotConfig].Trinket_Upper==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPHunterShotSaved.TUBoss==0 then
+			elseif MPHunterShotSaved[MPHunterShotConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_SJDPS_Trinket_Delay and MPHunterShotSaved.Trinket_Below==1 then
-			if MPHunterShotSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_SJDPS_Trinket_Delay and MPHunterShotSaved[MPHunterShotConfig].Trinket_Below==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPHunterShotSaved.TBBoss==0 then
+			elseif MPHunterShotSaved[MPHunterShotConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
-		if MPHunterShotSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPHunterShotSaved[MPHunterShotConfig].Soulspeed==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].SoulspeedBoss==0 or (MPHunterShotSaved[MPHunterShotConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-		if percent<MPHunterShotSaved.HealthStone_Value and MPHunterShotSaved.HealthStone==1 then
+		if percent<MPHunterShotSaved[MPHunterShotConfig].HealthStone_Value and MPHunterShotSaved[MPHunterShotConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPHunterShotSaved.HerbalTea_Value and MPHunterShotSaved.HerbalTea==1 then
+		if percent<MPHunterShotSaved[MPHunterShotConfig].HerbalTea_Value and MPHunterShotSaved[MPHunterShotConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 		local percentMana = UnitMana("player") / UnitManaMax("player") * 100
-		if percentMana<MPHunterShotSaved.HerbalTeaMana_Value and MPHunterShotSaved.HerbalTeaMana==1 then
+		if percentMana<MPHunterShotSaved[MPHunterShotConfig].HerbalTeaMana_Value and MPHunterShotSaved[MPHunterShotConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
@@ -153,31 +159,33 @@ function MPHunterShotDPS()
 
 		-- 特定 种族天赋 --
 
-		if MPHunterShotSaved.RacialTraits==1 then
+		if MPHunterShotSaved[MPHunterShotConfig].RacialTraits==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].RacialTraitsBoss==0 or (MPHunterShotSaved[MPHunterShotConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 		-- 急速射击
-		if MPHunterShotSaved.RapidFire==1 and MPSpellReady("急速射击") then
-			CastSpellByName("急速射击")
+		if MPHunterShotSaved[MPHunterShotConfig].RapidFire==1 and MPSpellReady("急速射击") then
+			if MPHunterShotSaved[MPHunterShotConfig].RapidFireBoss==0 or (MPHunterShotSaved[MPHunterShotConfig].RapidFireBoss==1 and MPIsBossTarget()) then
+				CastSpellByName("急速射击")
+			end
 		end
 
 	end
@@ -186,39 +194,39 @@ function MPHunterShotDPS()
 
 
 	-- 补buff
-	if MPHunterShotSaved.ViperGuardian==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].ViperGuardian==1 then
 		local mana = UnitMana("player")
-		if mana < MPHunterShotSaved.Viper_Value then
+		if mana < MPHunterShotSaved[MPHunterShotConfig].Viper_Value then
 			if not MPBuff("蝰蛇守护") then
 				CastSpellByName("蝰蛇守护")
 				return
 			end
-		elseif mana > (MPHunterShotSaved.Viper_Value+1000) then
-			if MPHunterShotSaved.Hawk==1 and not MPBuff("雄鹰守护") then
+		elseif mana > (MPHunterShotSaved[MPHunterShotConfig].Viper_Value+1000) then
+			if MPHunterShotSaved[MPHunterShotConfig].Hawk==1 and not MPBuff("雄鹰守护") then
 				CastSpellByName("雄鹰守护")
 				return
 			end
 		else
 			-- 介于回蓝中间
-			if MPHunterShotSaved.Hawk==1 and not MPBuff("雄鹰守护") and not MPBuff("蝰蛇守护") then
+			if MPHunterShotSaved[MPHunterShotConfig].Hawk==1 and not MPBuff("雄鹰守护") and not MPBuff("蝰蛇守护") then
 				CastSpellByName("雄鹰守护")
 				return
 			end
 
 		end
 	else
-		if MPHunterShotSaved.Hawk==1 and not MPBuff("雄鹰守护") then
+		if MPHunterShotSaved[MPHunterShotConfig].Hawk==1 and not MPBuff("雄鹰守护") then
 			CastSpellByName("雄鹰守护")
 			return
 		end
 	end
 
-	if MPHunterShotSaved.Trueshot==1 and not MPBuff("强击光环") then
+	if MPHunterShotSaved[MPHunterShotConfig].Trueshot==1 and not MPBuff("强击光环") then
 		CastSpellByName("强击光环")
 	end
 
-	if MPHunterShotSaved.Mark==1 then
-		if MPHunterShotSaved.MarkBossOnly==0 or (MPHunterShotSaved.MarkBossOnly==1 and MPIsBossTarget()) then
+	if MPHunterShotSaved[MPHunterShotConfig].Mark==1 then
+		if MPHunterShotSaved[MPHunterShotConfig].MarkBossOnly==0 or (MPHunterShotSaved[MPHunterShotConfig].MarkBossOnly==1 and MPIsBossTarget()) then
 			if not MPBuff("猎人印记","target") and MPIsHunterMark() then
 				CastSpellByName("猎人印记")
 			end
@@ -229,11 +237,11 @@ function MPHunterShotDPS()
 	-- 被近身处理
 	if MPGetTargetDistance("target",2.8) then
 
-		if MPHunterShotSaved.RaptorStrike==1 then
+		if MPHunterShotSaved[MPHunterShotConfig].RaptorStrike==1 then
 			CastSpellByName("猛禽一击")
 		end
 
-		if MPHunterShotSaved.MeerkatsBiting==1 then
+		if MPHunterShotSaved[MPHunterShotConfig].MeerkatsBiting==1 then
 			CastSpellByName("猫鼬撕咬")
 		end
 
@@ -241,13 +249,22 @@ function MPHunterShotDPS()
 
 	-- 射击
 
+	if MPIsMoving() then
+		if MPHunterShotSaved[MPHunterShotConfig].ArcaneShot==1 and ASSJ then
+			CastSpellByName("奥术射击")
+		end
+		if MPHunterShotSaved[MPHunterShotConfig].Serpent==1 and not MPGetSerpentStingDot() and MPIsPosion() then
+			CastSpellByName("毒蛇钉刺")
+		end
+	end
+
 	-- 瞄准射击 旗下条件
-	if MPHunterShotSaved.AimedShot==1 and MPHunterElement==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].AimedShot==1 and MPHunterElement==1 then
 
 		if MPGetHunterShotLeft()<1.1 and not MZSJ then
 
 			-- 瞄准射击->火焰弹药
-			if MPHunterShotSaved.MultiShot==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].MultiShot==1 then
 				if MPBuff("爆炸弹药") and DCSJ then
 					CastSpellByName("多重射击")
 					return
@@ -255,7 +272,7 @@ function MPHunterShotDPS()
 			end
 
 			-- 瞄准射击->奥术弹药
-			if MPHunterShotSaved.ArcaneShot==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].ArcaneShot==1 then
 				if MPBuff("魔力弹药") and ASSJ and MPIsHunterArcaneShot() then
 					CastSpellByName("奥术射击")
 					return
@@ -263,7 +280,7 @@ function MPHunterShotDPS()
 			end
 
 			-- 瞄准射击->自然弹药
-			if MPHunterShotSaved.Serpent==1 then
+			if MPHunterShotSaved[MPHunterShotConfig].Serpent==1 then
 				if MPBuff("剧毒弹药") and not MPGetSerpentStingDot() and MPIsPosion() then
 					CastSpellByName("毒蛇钉刺")
 					return
@@ -279,19 +296,19 @@ function MPHunterShotDPS()
 		if MPGetHunterShotLeft()<1.1 then
 
 			-- 瞄准射击->火焰弹药
-			if MPHunterShotSaved.MultiShot==1 and DCSJ then
+			if MPHunterShotSaved[MPHunterShotConfig].MultiShot==1 and DCSJ then
 				CastSpellByName("多重射击")
 				return
 			end
 
 			-- 瞄准射击->奥术弹药
-			if MPHunterShotSaved.ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
+			if MPHunterShotSaved[MPHunterShotConfig].ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
 				CastSpellByName("奥术射击")
 				return
 			end
 
 			-- 瞄准射击->自然弹药
-			if MPHunterShotSaved.Serpent==1 and not MPGetSerpentStingDot() and MPIsPosion() then
+			if MPHunterShotSaved[MPHunterShotConfig].Serpent==1 and not MPGetSerpentStingDot() and MPIsPosion() then
 				CastSpellByName("毒蛇钉刺")
 				return
 			end
@@ -301,23 +318,30 @@ function MPHunterShotDPS()
 	end
 
 	-- 瞄准射击
-	if MPHunterShotSaved.AimedShot==1 and MZSJ and MPHunterAimedShot==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].AimedShot==1 and MZSJ and MPHunterAimedShot==1 then
 		if MPBuff("荷枪实弹") then
 			if MPGetHunterShotLeft()>1.1 then
 				MPCastWithoutNampower("瞄准射击")
 				return
 			end
-		else
-			if MPGetHunterShotLeft()>(UnitAttackSpeed("player")/2) then
+		elseif MPBuff("急速射击") then
+			if MPGetHunterShotLeft()>1.5 then
 				MPCastWithoutNampower("瞄准射击")
 				return
+			end
+		else
+			if MPHunterShotSaved[MPHunterShotConfig].FullyArmed==0 then
+				if MPGetHunterShotLeft()>(UnitAttackSpeed("player")/2) then
+					MPCastWithoutNampower("瞄准射击")
+					return
+				end
 			end
 		end
 	end
 
 
 	-- 蝰蛇钉刺
-	if MPHunterShotSaved.Viper==1 then
+	if MPHunterShotSaved[MPHunterShotConfig].Viper==1 then
 		local TMP = 0
 		if UnitExists("target") then
 			TMP = UnitManaMax("target")
@@ -330,28 +354,29 @@ function MPHunterShotDPS()
 
 
 	-- 稳固射击
-	if MPBuff("急速射击") and MPGetHunterShotLeft()>(MPHunterShotSaved.SteadyShot_Value-0.4) then
-		MPCastWithoutNampower("稳固射击")
-		return
-	else
-		if MPHunterShotSaved.ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
+	if MPBuff("急速射击") then
+		if MPGetHunterShotLeft()>(MPHunterShotSaved[MPHunterShotConfig].SteadyShot_Value-0.4) then
+			MPCastWithoutNampower("稳固射击")
+			return
+		end
+
+		if MPHunterShotSaved[MPHunterShotConfig].ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
 			CastSpellByName("奥术射击")
 			return
 		end
 	end
 
-	if MPGetHunterShotLeft()>MPHunterShotSaved.SteadyShot_Value then
+	if MPGetHunterShotLeft()>MPHunterShotSaved[MPHunterShotConfig].SteadyShot_Value then
 		MPCastWithoutNampower("稳固射击")
 		return
-	else
-		if not MZSJ then
-			if MPHunterShotSaved.ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
-				CastSpellByName("奥术射击")
-				return
-			end
-		end
 	end
 
+	if not MZSJ then
+		if MPHunterShotSaved[MPHunterShotConfig].ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
+			CastSpellByName("奥术射击")
+			return
+		end
+	end
 
 
 

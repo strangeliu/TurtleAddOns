@@ -94,11 +94,15 @@ ButtonHolyLight.text:SetText("圣光术")
 
 ButtonHolyLight:SetScript("OnClick", function()
 
-    if MPPaladinHealSaved.HolyLight==1 then
-        MPPaladinHealSaved.HolyLight = 0
+    if MPPaladinHealSaved[1].HolyLight==1 then
+        MPPaladinHealSaved[1].HolyLight = 0
+        MPPaladinHealSaved[2].HolyLight = 0
+        MPPaladinHealSaved[3].HolyLight = 0
         ButtonHolyLight:SetAlpha(0.3)
     else
-        MPPaladinHealSaved.HolyLight = 1
+        MPPaladinHealSaved[1].HolyLight = 1
+        MPPaladinHealSaved[2].HolyLight = 1
+        MPPaladinHealSaved[3].HolyLight = 1
         ButtonHolyLight:SetAlpha(1.0)
     end
     MPInitPaladinHealSettings()
@@ -135,11 +139,15 @@ ButtonFlashLight.text:SetText("圣光闪现")
 
 ButtonFlashLight:SetScript("OnClick", function()
 
-    if MPPaladinHealSaved.FlashLight==1 then
-        MPPaladinHealSaved.FlashLight = 0
+    if MPPaladinHealSaved[1].FlashLight==1 then
+        MPPaladinHealSaved[1].FlashLight = 0
+        MPPaladinHealSaved[2].FlashLight = 0
+        MPPaladinHealSaved[3].FlashLight = 0
         ButtonFlashLight:SetAlpha(0.3)
     else
-        MPPaladinHealSaved.FlashLight = 1
+        MPPaladinHealSaved[1].FlashLight = 1
+        MPPaladinHealSaved[2].FlashLight = 0
+        MPPaladinHealSaved[3].FlashLight = 0
         ButtonFlashLight:SetAlpha(1.0)
     end
     MPInitPaladinHealSettings()
@@ -177,11 +185,15 @@ ButtonHolyShock.text:SetText("神圣震击")
 
 ButtonHolyShock:SetScript("OnClick", function()
 
-    if MPPaladinHealSaved.HolyShock==1 then
-        MPPaladinHealSaved.HolyShock = 0
+    if MPPaladinHealSaved[1].HolyShock==1 then
+        MPPaladinHealSaved[1].HolyShock = 0
+        MPPaladinHealSaved[2].HolyShock = 0
+        MPPaladinHealSaved[2].HolyShock = 0
         ButtonHolyShock:SetAlpha(0.3)
     else
-        MPPaladinHealSaved.HolyShock = 1
+        MPPaladinHealSaved[1].HolyShock = 1
+        MPPaladinHealSaved[2].HolyShock = 1
+        MPPaladinHealSaved[3].HolyShock = 1
         ButtonHolyShock:SetAlpha(1.0)
     end
     MPInitPaladinHealSettings()
@@ -193,23 +205,22 @@ end)
 function MPCatPaladinControlHealInit()
 
     if not MPPaladinHealSaved then
-        MPPaladinHealSaved = {}
-        MPResetPaladinHealSettings()
+        return
     end
 
-    if MPPaladinHealSaved.HolyLight==1 then
+    if MPPaladinHealSaved[1].HolyLight==1 then
         ButtonHolyLight:SetAlpha(1.0)
     else
         ButtonHolyLight:SetAlpha(0.3)
     end
 
-    if MPPaladinHealSaved.FlashLight==1 then
+    if MPPaladinHealSaved[1].FlashLight==1 then
         ButtonFlashLight:SetAlpha(1.0)
     else
         ButtonFlashLight:SetAlpha(0.3)
     end
 
-    if MPPaladinHealSaved.HolyShock==1 then
+    if MPPaladinHealSaved[1].HolyShock==1 then
         ButtonHolyShock:SetAlpha(1.0)
     else
         ButtonHolyShock:SetAlpha(0.3)

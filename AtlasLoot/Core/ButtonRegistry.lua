@@ -60,13 +60,19 @@ AtlasLoot_ButtonRegistry = {
 	};
 	["TMHUrsol"] = {
 		Title = AL["Ursol"];
-		Next_Page = "TMHTrash";
+		Next_Page = "TMHPerotharn";
 		Prev_Page = "TMHArchdruidKronn";
+		Back_Page = "DUNGEONSMENU1";
+	};
+	["TMHPerotharn"] = {
+		Title = AL["Perotharn"];
+		Next_Page = "TMHTrash";
+		Prev_Page = "TMHUrsol";
 		Back_Page = "DUNGEONSMENU1";
 	};
 	["TMHTrash"] = {
 		Title = AL["Trash Mobs"];
-		Prev_Page = "TMHUrsol";
+		Prev_Page = "TMHPerotharn";
 		Back_Page = "DUNGEONSMENU1";
 	};
 	-- Frostmane Hollow	霜鬃洞穴
@@ -3045,7 +3051,15 @@ AtlasLoot_ButtonRegistry = {
 		Title = AL["M-0L1Y"];
 		Prev_Page = "WidowoftheWoods";
 	};
-	-- Factions
+	-- Factions阵营/声望势力
+	["EarthenRing"] = {
+		Title = AL["Earthen Ring"],
+		Back_Page = "REPMENU",
+	};
+	["DraeneiExiles"] = {
+		Title = AL["Draenei Exiles"],
+		Back_Page = "REPMENU",
+	};
 	["Argent1"] = {
 		Title = AL["Argent Dawn"] .. ": " .. AL["Token Hand-Ins"];
 		Next_Page = "Argent2";
@@ -3960,6 +3974,10 @@ AtlasLoot_ButtonRegistry = {
 	};
 	["Tabards"] = {
 		Title = AL["Tabards"];
+		Back_Page = "SETMENU";
+	};
+	["TimbermawSET"] = {
+		Title = AL["Timbermaw Hold Sets"];
 		Back_Page = "SETMENU";
 	};
 	["Legendaries"] = {

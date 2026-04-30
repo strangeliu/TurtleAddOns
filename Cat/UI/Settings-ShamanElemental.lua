@@ -2,17 +2,10 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-ShamanElemental"
 
-
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
+local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsShamanElementalWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 630, "|cFF0070DE设置 - 元素萨|r")
+CatUISettingsShamanElementalWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 650, "|cFF0070DE设置 - 元素萨|r")
 
 local postion_y = -50
 
@@ -34,407 +27,215 @@ local postion_y = postion_y-40
 
 
 -- 创建单选框 - 闪电箭
-local checkButton_LightningBolt = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_LightningBolt:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_LightningBolt:SetScale(0.8)
-
--- 添加文字标签
-local checkText_LightningBolt = checkButton_LightningBolt:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_LightningBolt:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_LightningBolt:SetTextColor(1, 1, 1)
-checkText_LightningBolt:SetPoint("LEFT", checkButton_LightningBolt, "LEFT", 34, 1)
-checkText_LightningBolt:SetText("开启 闪电箭")
-
+local checkButton_LightningBolt = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 闪电箭")
 -- 闪电箭设置点击事件
 checkButton_LightningBolt:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.LightningBolt = 1
+        MPShamanElementalSaved[ConfigCurrent].LightningBolt = 1
     else
-        MPShamanElementalSaved.LightningBolt = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningBolt = 0
     end
 end)
 
 
-
-
-
-
 -- 创建单选框 - 上方饰品
-local checkButton_Trinket_Upper = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_Trinket_Upper:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Upper:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Upper = checkButton_Trinket_Upper:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Upper:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Upper:SetTextColor(1, 1, 1)
-checkText_Trinket_Upper:SetPoint("LEFT", checkButton_Trinket_Upper, "LEFT", 34, 1)
-checkText_Trinket_Upper:SetText("自动开启饰品(上)")
-
+local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(上)")
 -- 设置点击事件
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Trinket_Upper = 1
+        MPShamanElementalSaved[ConfigCurrent].Trinket_Upper = 1
     else
-        MPShamanElementalSaved.Trinket_Upper = 0
+        MPShamanElementalSaved[ConfigCurrent].Trinket_Upper = 0
     end
 end)
 local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.TUBoss = 1
+        MPShamanElementalSaved[ConfigCurrent].TUBoss = 1
     else
-        MPShamanElementalSaved.TUBoss = 0
+        MPShamanElementalSaved[ConfigCurrent].TUBoss = 0
     end
 end)
-
-
 
 
 
 postion_y = postion_y-30
 
-
-
--- 创建单选框 - 熔岩爆裂
-local checkButton_LavaBurst = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_LavaBurst:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_LavaBurst:SetScale(0.8)
-
--- 添加文字标签
-local checkText_LavaBurst = checkButton_LavaBurst:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_LavaBurst:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_LavaBurst:SetTextColor(1, 1, 1)
-checkText_LavaBurst:SetPoint("LEFT", checkButton_LavaBurst, "LEFT", 34, 1)
-checkText_LavaBurst:SetText("开启 熔岩爆裂+烈焰震击")
-
--- 熔岩爆裂设置点击事件
-checkButton_LavaBurst:SetScript("OnClick", function(self)
+-- 创建单选框 - 闪电链
+local checkButton_ChainLightning = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 闪电链")
+-- 设置点击事件
+checkButton_ChainLightning:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.LavaBurst = 1
+        MPShamanElementalSaved[ConfigCurrent].ChainLightning = 1
     else
-        MPShamanElementalSaved.LavaBurst = 0
+        MPShamanElementalSaved[ConfigCurrent].ChainLightning = 0
     end
 end)
-
 
 
 
 
 -- 创建单选框 - 下方饰品
-local checkButton_Trinket_Below = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_Trinket_Below:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Below:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Below = checkButton_Trinket_Below:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Below:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Below:SetTextColor(1, 1, 1)
-checkText_Trinket_Below:SetPoint("LEFT", checkButton_Trinket_Below, "LEFT", 34, 1)
-checkText_Trinket_Below:SetText("自动开启饰品(下)")
-
+local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
 -- 设置点击事件
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Trinket_Below = 1
+        MPShamanElementalSaved[ConfigCurrent].Trinket_Below = 1
     else
-        MPShamanElementalSaved.Trinket_Below = 0
+        MPShamanElementalSaved[ConfigCurrent].Trinket_Below = 0
     end
 end)
 local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.TBBoss = 1
+        MPShamanElementalSaved[ConfigCurrent].TBBoss = 1
     else
-        MPShamanElementalSaved.TBBoss = 0
+        MPShamanElementalSaved[ConfigCurrent].TBBoss = 0
     end
 end)
-
 
 
 
 postion_y = postion_y-30
 
 
-
--- 创建单选框 - 保持 火舌图腾
-local checkButton_WEnhance = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_WEnhance:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_WEnhance:SetScale(0.8)
-
--- 添加文字标签
-local checkText_WEnhance = checkButton_WEnhance:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_WEnhance:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_WEnhance:SetTextColor(1, 1, 1)
-checkText_WEnhance:SetPoint("LEFT", checkButton_WEnhance, "LEFT", 34, 1)
-checkText_WEnhance:SetText("保持 火舌武器")
-
+-- 创建单选框 - 地震术
+local checkButton_EarthSpell = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 地震术")
 -- 设置点击事件
-checkButton_WEnhance:SetScript("OnClick", function(self)
+checkButton_EarthSpell:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.WEnhance = 1
+        MPShamanElementalSaved[ConfigCurrent].EarthSpell = 1
     else
-        MPShamanElementalSaved.WEnhance = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthSpell = 0
     end
 end)
 
 
 
 -- 创建单选框 - 自动锁敌
-local checkButton_Target = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_Target:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_Target:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Target = checkButton_Target:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Target:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Target:SetTextColor(1, 1, 1)
-checkText_Target:SetPoint("LEFT", checkButton_Target, "LEFT", 34, 1)
-checkText_Target:SetText("自动锁敌 (攻击最近的敌人)")
-
+local checkButton_Target = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动锁敌 (攻击最近的敌人)")
 -- 设置点击事件
 checkButton_Target:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Target = 1
+        MPShamanElementalSaved[ConfigCurrent].Target = 1
     else
-        MPShamanElementalSaved.Target = 0
+        MPShamanElementalSaved[ConfigCurrent].Target = 0
     end
 end)
 
 
 postion_y = postion_y-30
 
-
--- 创建单选框 - 闪电链
-local checkButton_ChainLightning = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_ChainLightning:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_ChainLightning:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ChainLightning = checkButton_ChainLightning:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ChainLightning:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ChainLightning:SetTextColor(1, 1, 1)
-checkText_ChainLightning:SetPoint("LEFT", checkButton_ChainLightning, "LEFT", 34, 1)
-checkText_ChainLightning:SetText("开启 闪电链")
-
--- 设置点击事件
-checkButton_ChainLightning:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPShamanElementalSaved.ChainLightning = 1
-    else
-        MPShamanElementalSaved.ChainLightning = 0
-    end
-end)
-
-
-
-
-
-
-
-
-postion_y = postion_y-30
-
-
-
--- 创建单选框 - 地震术
-local checkButton_EarthSpell = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_EarthSpell:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_EarthSpell:SetScale(0.8)
-
--- 添加文字标签
-local checkText_EarthSpell = checkButton_EarthSpell:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_EarthSpell:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_EarthSpell:SetTextColor(1, 1, 1)
-checkText_EarthSpell:SetPoint("LEFT", checkButton_EarthSpell, "LEFT", 34, 1)
-checkText_EarthSpell:SetText("开启 地震术")
-
--- 设置点击事件
-checkButton_EarthSpell:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPShamanElementalSaved.EarthSpell = 1
-    else
-        MPShamanElementalSaved.EarthSpell = 0
-    end
-end)
-
-
-
-
--- 创建单选框 - 闪电之盾
-local checkButton_LightningShield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_LightningShield:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_LightningShield:SetScale(0.8)
-
--- 添加文字标签
-local checkText_LightningShield = checkButton_LightningShield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_LightningShield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_LightningShield:SetTextColor(1, 1, 1)
-checkText_LightningShield:SetPoint("LEFT", checkButton_LightningShield, "LEFT", 34, 1)
-checkText_LightningShield:SetText("保持 闪电之盾 (单选)")
-
-
-
-postion_y = postion_y-30
-
---[[
 -- 创建单选框 - 烈焰震击
-local checkButton_FlameShock = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_FlameShock:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_FlameShock:SetScale(0.8)
-
--- 添加文字标签
-local checkText_FlameShock = checkButton_FlameShock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_FlameShock:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_FlameShock:SetTextColor(1, 1, 1)
-checkText_FlameShock:SetPoint("LEFT", checkButton_FlameShock, "LEFT", 34, 1)
-checkText_FlameShock:SetText("保持 烈焰震击")
-
--- 设置点击事件
+local checkButton_FlameShock = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 烈焰震击")
 checkButton_FlameShock:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.FlameShock = 1
+        MPShamanElementalSaved[ConfigCurrent].FlameShock = 1
     else
-        MPShamanElementalSaved.FlameShock = 0
+        MPShamanElementalSaved[ConfigCurrent].FlameShock = 0
     end
 end)
-]]
 
+
+
+
+postion_y = postion_y-30
 
 -- 创建单选框 - 大地震击
-local checkButton_EarthShock = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_EarthShock:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_EarthShock:SetScale(0.8)
+local checkButton_EarthShock = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 大地震击 (单选)")
 
--- 添加文字标签
-local checkText_EarthShock = checkButton_EarthShock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_EarthShock:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_EarthShock:SetTextColor(1, 1, 1)
-checkText_EarthShock:SetPoint("LEFT", checkButton_EarthShock, "LEFT", 34, 1)
-checkText_EarthShock:SetText("开启 大地震击 (单选)")
-
-
-
-
-
-
-
-
--- 创建单选框 - 水之护盾
-local checkButton_WaterShield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_WaterShield:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_WaterShield:SetScale(0.8)
-
--- 添加文字标签
-local checkText_WaterShield = checkButton_WaterShield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_WaterShield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_WaterShield:SetTextColor(1, 1, 1)
-checkText_WaterShield:SetPoint("LEFT", checkButton_WaterShield, "LEFT", 34, 1)
-checkText_WaterShield:SetText("保持 水之护盾 (单选)")
-
+-- 创建单选框 - 闪电之盾
+local checkButton_LightningShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 闪电之盾 (单选)")
 
 
 
 postion_y = postion_y-30
 
 -- 创建单选框 - 冰霜震击
-local checkButton_FrostShock = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_FrostShock:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_FrostShock:SetScale(0.8)
-
--- 添加文字标签
-local checkText_FrostShock = checkButton_FrostShock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_FrostShock:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_FrostShock:SetTextColor(1, 1, 1)
-checkText_FrostShock:SetPoint("LEFT", checkButton_FrostShock, "LEFT", 34, 1)
-checkText_FrostShock:SetText("开启 冰霜震击 (单选)")
-
+local checkButton_FrostShock = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 冰霜震击 (单选)")
 
 -- 大地震击设置点击事件
 checkButton_EarthShock:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.EarthShock = 1
-        MPShamanElementalSaved.FrostShock = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShock = 1
+        MPShamanElementalSaved[ConfigCurrent].FrostShock = 0
     else
-        MPShamanElementalSaved.EarthShock = 0
-        MPShamanElementalSaved.FrostShock = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShock = 0
+        MPShamanElementalSaved[ConfigCurrent].FrostShock = 0
     end
-    checkButton_EarthShock:SetChecked(ToBoolean(MPShamanElementalSaved.EarthShock))
-    checkButton_FrostShock:SetChecked( ToBoolean(MPShamanElementalSaved.FrostShock) )
+    checkButton_EarthShock:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShock))
+    checkButton_FrostShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FrostShock) )
 end)
 
 -- 冰霜震击设置点击事件
 checkButton_FrostShock:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.FrostShock = 1
-        MPShamanElementalSaved.EarthShock = 0
+        MPShamanElementalSaved[ConfigCurrent].FrostShock = 1
+        MPShamanElementalSaved[ConfigCurrent].EarthShock = 0
     else
-        MPShamanElementalSaved.FrostShock = 0
-        MPShamanElementalSaved.EarthShock = 0
+        MPShamanElementalSaved[ConfigCurrent].FrostShock = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShock = 0
     end
-    checkButton_EarthShock:SetChecked(ToBoolean(MPShamanElementalSaved.EarthShock))
-    checkButton_FrostShock:SetChecked( ToBoolean(MPShamanElementalSaved.FrostShock) )
+    checkButton_EarthShock:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShock))
+    checkButton_FrostShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FrostShock) )
 end)
 
+-- 创建单选框 - 水之护盾
+local checkButton_WaterShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 水之护盾 (单选)")
+
+
+
+postion_y = postion_y-30
 
 -- 创建单选框 - 大地之盾
-local checkButton_EarthShield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_EarthShield:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_EarthShield:SetScale(0.8)
-
--- 添加文字标签
-local checkText_EarthShield = checkButton_EarthShield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_EarthShield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_EarthShield:SetTextColor(1, 1, 1)
-checkText_EarthShield:SetPoint("LEFT", checkButton_EarthShield, "LEFT", 34, 1)
-checkText_EarthShield:SetText("保持 大地之盾 (单选)")
+local checkButton_EarthShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 大地之盾 (单选)")
 
 -- 设置点击事件
 checkButton_LightningShield:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.EarthShield = 0
-        MPShamanElementalSaved.WaterShield = 0
-        MPShamanElementalSaved.LightningShield = 1
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 1
     else
-        MPShamanElementalSaved.EarthShield = 0
-        MPShamanElementalSaved.LightningShield = 0
-        MPShamanElementalSaved.WaterShield = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 0
     end
-    checkButton_LightningShield:SetChecked( ToBoolean(MPShamanElementalSaved.LightningShield) )
-    checkButton_WaterShield:SetChecked( ToBoolean(MPShamanElementalSaved.WaterShield) )
-    checkButton_EarthShield:SetChecked( ToBoolean(MPShamanElementalSaved.EarthShield) )
+    checkButton_LightningShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LightningShield) )
+    checkButton_WaterShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WaterShield) )
+    checkButton_EarthShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShield) )
 end)
 
 -- 设置点击事件
 checkButton_WaterShield:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.EarthShield = 0
-        MPShamanElementalSaved.WaterShield = 1
-        MPShamanElementalSaved.LightningShield = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 1
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 0
     else
-        MPShamanElementalSaved.EarthShield = 0
-        MPShamanElementalSaved.WaterShield = 0
-        MPShamanElementalSaved.LightningShield = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 0
     end
-    checkButton_LightningShield:SetChecked( ToBoolean(MPShamanElementalSaved.LightningShield) )
-    checkButton_WaterShield:SetChecked( ToBoolean(MPShamanElementalSaved.WaterShield) )
-    checkButton_EarthShield:SetChecked( ToBoolean(MPShamanElementalSaved.EarthShield) )
+    checkButton_LightningShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LightningShield) )
+    checkButton_WaterShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WaterShield) )
+    checkButton_EarthShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShield) )
 end)
 
 -- 设置点击事件
 checkButton_EarthShield:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.EarthShield = 1
-        MPShamanElementalSaved.WaterShield = 0
-        MPShamanElementalSaved.LightningShield = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 1
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 0
     else
-        MPShamanElementalSaved.EarthShield = 0
-        MPShamanElementalSaved.WaterShield = 0
-        MPShamanElementalSaved.LightningShield = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthShield = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterShield = 0
+        MPShamanElementalSaved[ConfigCurrent].LightningShield = 0
     end
-    checkButton_LightningShield:SetChecked( ToBoolean(MPShamanElementalSaved.LightningShield) )
-    checkButton_WaterShield:SetChecked( ToBoolean(MPShamanElementalSaved.WaterShield) )
-    checkButton_EarthShield:SetChecked( ToBoolean(MPShamanElementalSaved.EarthShield) )
+    checkButton_LightningShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LightningShield) )
+    checkButton_WaterShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WaterShield) )
+    checkButton_EarthShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShield) )
 end)
 
 
@@ -460,23 +261,13 @@ postion_y = postion_y-90
 
 
 -- 大地图腾
-local checkButton_EarthTotem = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_EarthTotem:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_EarthTotem:SetScale(0.8)
-
--- 添加文字标签
-local checkText_EarthTotem = checkButton_EarthTotem:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_EarthTotem:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_EarthTotem:SetTextColor(1, 1, 1)
-checkText_EarthTotem:SetPoint("LEFT", checkButton_EarthTotem, "LEFT", 34, 1)
-checkText_EarthTotem:SetText("大地图腾")
-
+local checkButton_EarthTotem = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "大地图腾")
 -- 设置点击事件
 checkButton_EarthTotem:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.EarthTotem = 1
+        MPShamanElementalSaved[ConfigCurrent].EarthTotem = 1
     else
-        MPShamanElementalSaved.EarthTotem = 0
+        MPShamanElementalSaved[ConfigCurrent].EarthTotem = 0
     end
 end)
 
@@ -503,7 +294,7 @@ local function Dropdown_Init_EarthTotem()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_EarthTotem, index)
-                MPShamanElementalSaved.EarthTotem_Value = modes_EarthTotem[index].text
+                MPShamanElementalSaved[ConfigCurrent].EarthTotem_Value = modes_EarthTotem[index].text
             end
         end)(idx) -- 立即传入当前索引
         UIDropDownMenu_AddButton(info)
@@ -522,23 +313,13 @@ UIDropDownMenu_SetSelectedID(dropdown_EarthTotem, 1) -- 默认选中第一项
 
 
 -- 火焰图腾
-local checkButton_FireTotem = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_FireTotem:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 175, postion_y)
-checkButton_FireTotem:SetScale(0.8)
-
--- 添加文字标签
-local checkText_FireTotem = checkButton_FireTotem:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_FireTotem:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_FireTotem:SetTextColor(1, 1, 1)
-checkText_FireTotem:SetPoint("LEFT", checkButton_FireTotem, "LEFT", 34, 1)
-checkText_FireTotem:SetText("火焰图腾")
-
+local checkButton_FireTotem = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 175, postion_y, "火焰图腾")
 -- 设置点击事件
 checkButton_FireTotem:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.FireTotem = 1
+        MPShamanElementalSaved[ConfigCurrent].FireTotem = 1
     else
-        MPShamanElementalSaved.FireTotem = 0
+        MPShamanElementalSaved[ConfigCurrent].FireTotem = 0
     end
 end)
 
@@ -565,7 +346,7 @@ local function Dropdown_Init_FireTotem()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_FireTotem, index)
-                MPShamanElementalSaved.FireTotem_Value = modes_FireTotem[index].text
+                MPShamanElementalSaved[ConfigCurrent].FireTotem_Value = modes_FireTotem[index].text
             end
         end)(idx) -- 立即传入当前索引
         UIDropDownMenu_AddButton(info)
@@ -583,23 +364,13 @@ UIDropDownMenu_SetSelectedID(dropdown_FireTotem, 1) -- 默认选中第一项
 
 
 -- 水之图腾
-local checkButton_WaterTotem = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_WaterTotem:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 330, postion_y)
-checkButton_WaterTotem:SetScale(0.8)
-
--- 添加文字标签
-local checkText_WaterTotem = checkButton_WaterTotem:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_WaterTotem:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_WaterTotem:SetTextColor(1, 1, 1)
-checkText_WaterTotem:SetPoint("LEFT", checkButton_WaterTotem, "LEFT", 34, 1)
-checkText_WaterTotem:SetText("水之图腾")
-
+local checkButton_WaterTotem = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 330, postion_y, "水之图腾")
 -- 设置点击事件
 checkButton_WaterTotem:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.WaterTotem = 1
+        MPShamanElementalSaved[ConfigCurrent].WaterTotem = 1
     else
-        MPShamanElementalSaved.WaterTotem = 0
+        MPShamanElementalSaved[ConfigCurrent].WaterTotem = 0
     end
 end)
 
@@ -626,7 +397,7 @@ local function Dropdown_Init_WaterTotem()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_WaterTotem, index)
-                MPShamanElementalSaved.WaterTotem_Value = modes_WaterTotem[index].text
+                MPShamanElementalSaved[ConfigCurrent].WaterTotem_Value = modes_WaterTotem[index].text
             end
         end)(idx) -- 立即传入当前索引
         UIDropDownMenu_AddButton(info)
@@ -642,23 +413,13 @@ UIDropDownMenu_SetSelectedID(dropdown_WaterTotem, 1) -- 默认选中第一项
 
 
 -- 空气图腾
-local checkButton_AirTotem = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_AirTotem:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 485, postion_y)
-checkButton_AirTotem:SetScale(0.8)
-
--- 添加文字标签
-local checkText_AirTotem = checkButton_AirTotem:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_AirTotem:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_AirTotem:SetTextColor(1, 1, 1)
-checkText_AirTotem:SetPoint("LEFT", checkButton_AirTotem, "LEFT", 34, 1)
-checkText_AirTotem:SetText("空气图腾")
-
+local checkButton_AirTotem = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 485, postion_y, "空气图腾")
 -- 设置点击事件
 checkButton_AirTotem:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.AirTotem = 1
+        MPShamanElementalSaved[ConfigCurrent].AirTotem = 1
     else
-        MPShamanElementalSaved.AirTotem = 0
+        MPShamanElementalSaved[ConfigCurrent].AirTotem = 0
     end
 end)
 
@@ -687,7 +448,7 @@ local function Dropdown_Init_AirTotem()
             return function()
                 -- 使用闭包保存的index
                 UIDropDownMenu_SetSelectedID(dropdown_AirTotem, index)
-                MPShamanElementalSaved.AirTotem_Value = modes_AirTotem[index].text
+                MPShamanElementalSaved[ConfigCurrent].AirTotem_Value = modes_AirTotem[index].text
             end
         end)(idx) -- 立即传入当前索引
         UIDropDownMenu_AddButton(info)
@@ -730,49 +491,36 @@ MPCatUISliderRegionHide(slider_RecallTotems)
 
 local color_RecallTotems = "|cFFFFD100"
 
-_G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.."30 码距离|r")
-_G[slider_RecallTotems:GetName().."Low"]:Hide()
-_G[slider_RecallTotems:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_RecallTotems:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPShamanElementalSaved.RecallTotems_Value = arg1
-    _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved.RecallTotems_Value .." 码距离|r")
+    MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value = arg1
+    _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value .." 码距离|r")
 end)
 
 -- 设置点击事件
 checkButton_RecallTotems:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.RecallTotems = 1
+        MPShamanElementalSaved[ConfigCurrent].RecallTotems = 1
         color_RecallTotems = "|cFFFFD100"
-        _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved.RecallTotems_Value .." 码距离|r")
+        _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value .." 码距离|r")
     else
-        MPShamanElementalSaved.RecallTotems = 0
+        MPShamanElementalSaved[ConfigCurrent].RecallTotems = 0
         color_RecallTotems = "|cFF888888"
-        _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved.RecallTotems_Value .." 码距离|r")
+        _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." "..MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value .." 码距离|r")
     end
 end)
 
 ]]
 
 -- 创建单选框 - 强制图腾
-local checkButton_ForceTotem = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonForceTotem", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_ForceTotem:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_ForceTotem:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ForceTotem = checkButton_ForceTotem:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ForceTotem:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ForceTotem:SetTextColor(1, 1, 1)
-checkText_ForceTotem:SetPoint("LEFT", checkButton_ForceTotem, "LEFT", 34, 1)
-checkText_ForceTotem:SetText("开启 强制图腾配置")
-
+local checkButton_ForceTotem = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "开启 强制图腾配置")
 -- 设置点击事件
 checkButton_ForceTotem:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.ForceTotem = 1
+        MPShamanElementalSaved[ConfigCurrent].ForceTotem = 1
     else
-        MPShamanElementalSaved.ForceTotem = 0
+        MPShamanElementalSaved[ConfigCurrent].ForceTotem = 0
     end
 end)
 
@@ -800,41 +548,21 @@ TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 postion_y = postion_y-130
 
 
--- 创建单选框 - 种族天赋
-local checkButton_RacialTraits = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_RacialTraits:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 20, postion_y)
-checkButton_RacialTraits:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RacialTraits = checkButton_RacialTraits:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RacialTraits:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RacialTraits:SetTextColor(1, 1, 1)
-checkText_RacialTraits:SetPoint("LEFT", checkButton_RacialTraits, "LEFT", 34, 1)
-checkText_RacialTraits:SetText("自动开启 种族天赋 (爆发类)")
-
--- 设置点击事件
-checkButton_RacialTraits:SetScript("OnClick", function(self)
+-- 创建单选框 - 熔岩爆裂
+local checkButton_LavaBurst = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启火萨流程 熔岩+烈震")
+-- 熔岩爆裂设置点击事件
+checkButton_LavaBurst:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.RacialTraits = 1
+        MPShamanElementalSaved[ConfigCurrent].LavaBurst = 1
     else
-        MPShamanElementalSaved.RacialTraits = 0
+        MPShamanElementalSaved[ConfigCurrent].LavaBurst = 0
     end
 end)
 
 
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HealthStone", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_HealthStone:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_HealthStone:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HealthStone = checkButton_HealthStone:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HealthStone:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HealthStone:SetTextColor(1, 1, 1)
-checkText_HealthStone:SetPoint("LEFT", checkButton_HealthStone, "LEFT", 34, 1)
-checkText_HealthStone:SetText("自动 治疗石")
-
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 治疗石")
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -849,26 +577,23 @@ MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-_G[slider_HealthStone:GetName().."Low"]:Hide()
-_G[slider_HealthStone:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPShamanElementalSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved.HealthStone_Value .."%|r")
+    MPShamanElementalSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.HealthStone = 1
+        MPShamanElementalSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPShamanElementalSaved.HealthStone = 0
+        MPShamanElementalSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
 
@@ -876,21 +601,21 @@ end)
 postion_y = postion_y-40
 
 
+-- 创建单选框 - 保持 火舌图腾
+local checkButton_WEnhance = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 火舌武器")
+-- 设置点击事件
+checkButton_WEnhance:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanElementalSaved[ConfigCurrent].WEnhance = 1
+    else
+        MPShamanElementalSaved[ConfigCurrent].WEnhance = 0
+    end
+end)
 
 
 
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTea", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_HerbalTea:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTea:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTea = checkButton_HerbalTea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTea:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTea:SetTextColor(1, 1, 1)
-checkText_HerbalTea:SetPoint("LEFT", checkButton_HerbalTea, "LEFT", 34, 1)
-checkText_HerbalTea:SetText("自动 草药茶")
-
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -905,26 +630,23 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-_G[slider_HerbalTea:GetName().."Low"]:Hide()
-_G[slider_HerbalTea:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPShamanElementalSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved.HerbalTea_Value .."%|r")
+    MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.HerbalTea = 1
+        MPShamanElementalSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPShamanElementalSaved.HerbalTea = 0
+        MPShamanElementalSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -933,17 +655,7 @@ end)
 postion_y = postion_y - 40
 
 -- 创建单选框 - 草药茶 蓝量
-local checkButton_HerbalTeaMana = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTeaMana", CatUISettingsShamanElementalWindow, "UICheckButtonTemplate")
-checkButton_HerbalTeaMana:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTeaMana:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTeaMana = checkButton_HerbalTeaMana:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTeaMana:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTeaMana:SetTextColor(1, 1, 1)
-checkText_HerbalTeaMana:SetPoint("LEFT", checkButton_HerbalTeaMana, "LEFT", 34, 1)
-checkText_HerbalTeaMana:SetText("自动 草药茶")
-
+local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTeaMana = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTeaMana", checkButton_HerbalTeaMana, "OptionsSliderTemplate")
 slider_HerbalTeaMana:SetPoint("RIGHT", checkButton_HerbalTeaMana, "RIGHT", 250, -2)
@@ -958,26 +670,23 @@ MPCatUISliderRegionHide(slider_HerbalTeaMana)
 
 local color_HerbalTeaMana = "|cFFFFD100"
 
-_G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: 20%|r")
-_G[slider_HerbalTeaMana:GetName().."Low"]:Hide()
-_G[slider_HerbalTeaMana:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTeaMana:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPShamanElementalSaved.HerbalTeaMana_Value = arg1
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved.HerbalTeaMana_Value .."%|r")
+    MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value = arg1
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTeaMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.HerbalTeaMana = 1
+        MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana = 1
         color_HerbalTeaMana = "|cFFFFD100"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     else
-        MPShamanElementalSaved.HerbalTeaMana = 0
+        MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana = 0
         color_HerbalTeaMana = "|cFF888888"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -986,34 +695,102 @@ end)
 postion_y = postion_y-40
 
 -- 魂能之速
-local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速 (BOSS时)")
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速")
 checkButton_Soulspeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Soulspeed = 1
+        MPShamanElementalSaved[ConfigCurrent].Soulspeed = 1
     else
-        MPShamanElementalSaved.Soulspeed = 0
+        MPShamanElementalSaved[ConfigCurrent].Soulspeed = 0
+    end
+end)
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanElementalSaved[ConfigCurrent].SoulspeedBoss = 1
+    else
+        MPShamanElementalSaved[ConfigCurrent].SoulspeedBoss = 0
     end
 end)
 
 
 
+postion_y = postion_y-40
+
+-- 创建单选框 - 种族天赋
+local checkButton_RacialTraits = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 种族天赋")
+-- 设置点击事件
+checkButton_RacialTraits:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanElementalSaved[ConfigCurrent].RacialTraits = 1
+    else
+        MPShamanElementalSaved[ConfigCurrent].RacialTraits = 0
+    end
+end)
+local checkButton_RacialTraitsBoss = MPCreateCheckButtonSmall(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RacialTraitsBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanElementalSaved[ConfigCurrent].RacialTraitsBoss = 1
+    else
+        MPShamanElementalSaved[ConfigCurrent].RacialTraitsBoss = 0
+    end
+end)
+
+
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsShamanElementalWindow, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetShamanElementalSettings()
+    MPResetShamanElementalSettings(ConfigCurrent)
+    MPInitShamanElementalSettings()
+end)
+
+
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsShamanElementalWindow, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsShamanElementalWindow, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsShamanElementalWindow, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsShamanElementalWindow, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitShamanElementalSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitShamanElementalSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
     MPInitShamanElementalSettings()
 end)
 
@@ -1024,9 +801,9 @@ MPBottomLine(CatUISettingsShamanElementalWindow)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Power = 1
+        MPShamanElementalSaved[ConfigCurrent].Power = 1
     else
-        MPShamanElementalSaved.Power = 0
+        MPShamanElementalSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -1040,9 +817,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPShamanElementalSaved.Pick = 1
+        MPShamanElementalSaved[ConfigCurrent].Pick = 1
     else
-        MPShamanElementalSaved.Pick = 0
+        MPShamanElementalSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -1058,182 +835,216 @@ TipText:SetPoint("BOTTOM", CatUISettingsShamanElementalWindow, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ 元素萨 |cFF0070DE/sedps|r ]  [ 火萨(忽略自然系) |cFF0070DE/fedps|r ]")
+TipText:SetText("宏命令 |cFF0070DE/sedps|r [ 1 | 2 | 3 ]")
 
 
 
 -- 配置文件版本号
-local ShamanElementalSettingsUIVersion = 11
+local ShamanElementalSettingsUIVersion = 13
 
-function MPResetShamanElementalSettings()
+function MPResetShamanElementalSettings(config)
 
     MPShamanElementalSaved.Version = ShamanElementalSettingsUIVersion
 
     -- 基本配置
 
-    MPShamanElementalSaved.LightningBolt = 1
-    MPShamanElementalSaved.LavaBurst = 1
-    MPShamanElementalSaved.ChainLightning = 0
-    MPShamanElementalSaved.EarthSpell = 0
-    MPShamanElementalSaved.EarthShock = 0
-    MPShamanElementalSaved.FrostShock = 0
-    MPShamanElementalSaved.FlameShock = 0
+    MPShamanElementalSaved[config].LightningBolt = 1
+    MPShamanElementalSaved[config].ChainLightning = 1
+    MPShamanElementalSaved[config].EarthSpell = 0
+    MPShamanElementalSaved[config].EarthShock = 1
+    MPShamanElementalSaved[config].FrostShock = 0
+    MPShamanElementalSaved[config].FlameShock = 0
 
-    MPShamanElementalSaved.LightningShield = 0
-    MPShamanElementalSaved.WaterShield = 1
-    MPShamanElementalSaved.EarthShield = 0
+    MPShamanElementalSaved[config].LightningShield = 0
+    MPShamanElementalSaved[config].WaterShield = 1
+    MPShamanElementalSaved[config].EarthShield = 0
 
-    MPShamanElementalSaved.Trinket_Upper = 1
-    MPShamanElementalSaved.TUBoss = 0
-    MPShamanElementalSaved.Trinket_Below = 1
-    MPShamanElementalSaved.TBBoss = 0
-    MPShamanElementalSaved.Target = 0
-    MPShamanElementalSaved.WEnhance = 0
-    MPShamanElementalSaved.WEnhance_Value = "火舌武器"
+    MPShamanElementalSaved[config].Trinket_Upper = 1
+    MPShamanElementalSaved[config].TUBoss = 0
+    MPShamanElementalSaved[config].Trinket_Below = 1
+    MPShamanElementalSaved[config].TBBoss = 0
+    MPShamanElementalSaved[config].Target = 0
 
+    --- 火萨
+    MPShamanElementalSaved[config].WEnhance = 0
+    MPShamanElementalSaved[config].WEnhance_Value = "火舌武器"
+    MPShamanElementalSaved[config].LavaBurst = 0
 
-    MPShamanElementalSaved.EarthTotem = 1
-    MPShamanElementalSaved.EarthTotem_Value = "大地之力图腾"
-    MPShamanElementalSaved.FireTotem = 1
-    MPShamanElementalSaved.FireTotem_Value = "灼热图腾"
-    MPShamanElementalSaved.WaterTotem = 1
-    MPShamanElementalSaved.WaterTotem_Value = "法力之泉图腾"
-    MPShamanElementalSaved.AirTotem = 1
-    MPShamanElementalSaved.AirTotem_Value = "风怒图腾"
+    MPShamanElementalSaved[config].EarthTotem = 1
+    MPShamanElementalSaved[config].EarthTotem_Value = "大地之力图腾"
+    MPShamanElementalSaved[config].FireTotem = 1
+    MPShamanElementalSaved[config].FireTotem_Value = "灼热图腾"
+    MPShamanElementalSaved[config].WaterTotem = 1
+    MPShamanElementalSaved[config].WaterTotem_Value = "法力之泉图腾"
+    MPShamanElementalSaved[config].AirTotem = 1
+    MPShamanElementalSaved[config].AirTotem_Value = "风怒图腾"
 
-    MPShamanElementalSaved.RecallTotems = 1
-    MPShamanElementalSaved.RecallTotems_Value = 40
+    MPShamanElementalSaved[config].RecallTotems = 1
+    MPShamanElementalSaved[config].RecallTotems_Value = 40
 
-    MPShamanElementalSaved.ForceTotem = 0
+    MPShamanElementalSaved[config].ForceTotem = 0
 
     -- 高级配置
 
     -- 治疗石、糖水茶
-    MPShamanElementalSaved.HealthStone = 1
-    MPShamanElementalSaved.HealthStone_Value = 30
-    MPShamanElementalSaved.HerbalTea = 1
-    MPShamanElementalSaved.HerbalTea_Value = 20
-    MPShamanElementalSaved.HerbalTeaMana = 0
-    MPShamanElementalSaved.HerbalTeaMana_Value = 20
+    MPShamanElementalSaved[config].HealthStone = 1
+    MPShamanElementalSaved[config].HealthStone_Value = 30
+    MPShamanElementalSaved[config].HerbalTea = 1
+    MPShamanElementalSaved[config].HerbalTea_Value = 20
+    MPShamanElementalSaved[config].HerbalTeaMana = 0
+    MPShamanElementalSaved[config].HerbalTeaMana_Value = 20
 
     -- SuperWoW,UnitXP
-    MPShamanElementalSaved.SuperWoW = 1
-    MPShamanElementalSaved.UnitXP = 1
+    MPShamanElementalSaved[config].SuperWoW = 1
+    MPShamanElementalSaved[config].UnitXP = 1
 
-    MPShamanElementalSaved.RacialTraits = 0
-    MPShamanElementalSaved.Soulspeed = 0
+    MPShamanElementalSaved[config].RacialTraits = 0
+    MPShamanElementalSaved[config].RacialTraitsBoss = 1
+    MPShamanElementalSaved[config].Soulspeed = 0
+    MPShamanElementalSaved[config].SoulspeedBoss = 1
 
-    --MPShamanElementalSaved.Force = 0
+    --MPShamanElementalSaved[config].Force = 0
 
-    --MPShamanElementalSaved.Wave_Value = 60
-    --MPShamanElementalSaved.SecondaryWave_Value = 99
-    --MPShamanElementalSaved.Chain_Value = 3
-    --MPShamanElementalSaved.WaterShieldLevel = 0
+    --MPShamanElementalSaved[config].Wave_Value = 60
+    --MPShamanElementalSaved[config].SecondaryWave_Value = 99
+    --MPShamanElementalSaved[config].Chain_Value = 3
+    --MPShamanElementalSaved[config].WaterShieldLevel = 0
 
     -- 通用
-    MPShamanElementalSaved.Power = 0
-    MPShamanElementalSaved.Pick = 0
+    MPShamanElementalSaved[config].Power = 0
+    MPShamanElementalSaved[config].Pick = 0
 
 end
 
 
 function InitShamanElementalSettingsPart1()
 
-    checkButton_LightningBolt:SetChecked(ToBoolean(MPShamanElementalSaved.LightningBolt))
-    checkButton_ChainLightning:SetChecked(ToBoolean(MPShamanElementalSaved.ChainLightning))
-    checkButton_EarthSpell:SetChecked(ToBoolean(MPShamanElementalSaved.EarthSpell))
-    checkButton_EarthShock:SetChecked(ToBoolean(MPShamanElementalSaved.EarthShock))
-    checkButton_FrostShock:SetChecked( ToBoolean(MPShamanElementalSaved.FrostShock) )
-    checkButton_LavaBurst:SetChecked( ToBoolean(MPShamanElementalSaved.LavaBurst) )
+    checkButton_LightningBolt:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LightningBolt))
+    checkButton_ChainLightning:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].ChainLightning))
+    checkButton_EarthSpell:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthSpell))
+    checkButton_EarthShock:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShock))
+    checkButton_FrostShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FrostShock) )
+    checkButton_FlameShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShock) )
+    checkButton_LavaBurst:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LavaBurst) )
 
-    checkButton_WEnhance:SetChecked( ToBoolean(MPShamanElementalSaved.WEnhance) )
+    checkButton_WEnhance:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WEnhance) )
 
-    checkButton_LightningShield:SetChecked( ToBoolean(MPShamanElementalSaved.LightningShield) )
-    checkButton_WaterShield:SetChecked( ToBoolean(MPShamanElementalSaved.WaterShield) )
-    checkButton_EarthShield:SetChecked( ToBoolean(MPShamanElementalSaved.EarthShield) )
+    checkButton_LightningShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LightningShield) )
+    checkButton_WaterShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WaterShield) )
+    checkButton_EarthShield:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShield) )
 
-    checkButton_Target:SetChecked(ToBoolean(MPShamanElementalSaved.Target))
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPShamanElementalSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPShamanElementalSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPShamanElementalSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPShamanElementalSaved.TBBoss))
+    checkButton_Target:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Target))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].TBBoss))
 
-    checkButton_RacialTraits:SetChecked(ToBoolean(MPShamanElementalSaved.RacialTraits))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPShamanElementalSaved.Soulspeed))
+    checkButton_RacialTraits:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].RacialTraits))
+    checkButton_RacialTraitsBoss:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].RacialTraitsBoss))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].SoulspeedBoss))
 
-    checkButton_Power:SetChecked(ToBoolean(MPShamanElementalSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPShamanElementalSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].Pick))
 end
 
 function MPInitShamanElementalSettings()
     if not MPShamanElementalSaved then
         MPShamanElementalSaved = {}
-        MPResetShamanElementalSettings()
+
+        -- 第一套配置
+        if not MPShamanElementalSaved[1] then
+            MPShamanElementalSaved[1] = {}
+            MPResetShamanElementalSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPShamanElementalSaved[2] then
+            MPShamanElementalSaved[2] = {}
+            MPResetShamanElementalSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPShamanElementalSaved[3] then
+            MPShamanElementalSaved[3] = {}
+            MPResetShamanElementalSettings(3)
+        end
     end
 
     if MPShamanElementalSaved.Version ~= ShamanElementalSettingsUIVersion then
-        MPResetShamanElementalSettings()
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[元素萨宏]当前配置，这是新版插件正常数据更新！|r")
+        MPShamanElementalSaved[1] = {}
+        MPShamanElementalSaved[2] = {}
+        MPShamanElementalSaved[3] = {}
+        MPResetShamanElementalSettings(1)
+        MPResetShamanElementalSettings(2)
+        MPResetShamanElementalSettings(3)
     end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
 
     InitShamanElementalSettingsPart1()
 
-    checkButton_HealthStone:SetChecked(ToBoolean(MPShamanElementalSaved.HealthStone))
-    slider_HealthStone:SetValue(MPShamanElementalSaved.HealthStone_Value)
-    if MPShamanElementalSaved.HealthStone==1 then
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPShamanElementalSaved[ConfigCurrent].HealthStone_Value)
+    if MPShamanElementalSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPShamanElementalSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPShamanElementalSaved.HerbalTea_Value)
-    if MPShamanElementalSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPShamanElementalSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value)
+    if MPShamanElementalSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_HerbalTeaMana:SetChecked(MPShamanElementalSaved.HerbalTeaMana)
-    slider_HerbalTeaMana:SetValue(MPShamanElementalSaved.HerbalTeaMana_Value)
-    if MPShamanElementalSaved.HerbalTeaMana==1 then
+    checkButton_HerbalTeaMana:SetChecked(MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana)
+    slider_HerbalTeaMana:SetValue(MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value)
+    if MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana==1 then
         color_HerbalTeaMana = "|cFFFFD100"
     else
         color_HerbalTeaMana = "|cFF888888"
     end
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved.HerbalTeaMana_Value .."%|r")
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPShamanElementalSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 
 
 
 
-    checkButton_EarthTotem:SetChecked(ToBoolean(MPShamanElementalSaved.EarthTotem))
+    checkButton_EarthTotem:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthTotem))
     for idx_EarthTotem, data_EarthTotem in pairs(modes_EarthTotem) do
-        if string.find(data_EarthTotem.text, MPShamanElementalSaved.EarthTotem_Value) then
+        if string.find(data_EarthTotem.text, MPShamanElementalSaved[ConfigCurrent].EarthTotem_Value) then
             UIDropDownMenu_SetSelectedID(dropdown_EarthTotem, data_EarthTotem.value)
             _G[dropdown_EarthTotem:GetName().."Text"]:SetText(data_EarthTotem.text)
         end
     end
 
-    checkButton_FireTotem:SetChecked(ToBoolean(MPShamanElementalSaved.FireTotem))
+    checkButton_FireTotem:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FireTotem))
     for idx_FireTotem, data_FireTotem in pairs(modes_FireTotem) do
-        if string.find(data_FireTotem.text, MPShamanElementalSaved.FireTotem_Value) then
+        if string.find(data_FireTotem.text, MPShamanElementalSaved[ConfigCurrent].FireTotem_Value) then
             UIDropDownMenu_SetSelectedID(dropdown_FireTotem, data_FireTotem.value)
             _G[dropdown_FireTotem:GetName().."Text"]:SetText(data_FireTotem.text)
         end
     end
 
-    checkButton_WaterTotem:SetChecked(ToBoolean(MPShamanElementalSaved.WaterTotem))
+    checkButton_WaterTotem:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WaterTotem))
     for idx_WaterTotem, data_WaterTotem in pairs(modes_WaterTotem) do
-        if string.find(data_WaterTotem.text, MPShamanElementalSaved.WaterTotem_Value) then
+        if string.find(data_WaterTotem.text, MPShamanElementalSaved[ConfigCurrent].WaterTotem_Value) then
             UIDropDownMenu_SetSelectedID(dropdown_WaterTotem, data_WaterTotem.value)
             _G[dropdown_WaterTotem:GetName().."Text"]:SetText(data_WaterTotem.text)
         end
     end
 
-    checkButton_AirTotem:SetChecked(ToBoolean(MPShamanElementalSaved.AirTotem))
+    checkButton_AirTotem:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].AirTotem))
     for idx_AirTotem, data_AirTotem in pairs(modes_AirTotem) do
-        if string.find(data_AirTotem.text, MPShamanElementalSaved.AirTotem_Value) then
+        if string.find(data_AirTotem.text, MPShamanElementalSaved[ConfigCurrent].AirTotem_Value) then
             UIDropDownMenu_SetSelectedID(dropdown_AirTotem, data_AirTotem.value)
             _G[dropdown_AirTotem:GetName().."Text"]:SetText(data_AirTotem.text)
         end
@@ -1241,17 +1052,17 @@ function MPInitShamanElementalSettings()
 
 
     --[[
-    checkButton_RecallTotems:SetChecked(MPShamanElementalSaved.RecallTotems)
-    slider_RecallTotems:SetValue(MPShamanElementalSaved.RecallTotems_Value)
-    if MPShamanElementalSaved.RecallTotems==1 then
+    checkButton_RecallTotems:SetChecked(MPShamanElementalSaved[ConfigCurrent].RecallTotems)
+    slider_RecallTotems:SetValue(MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value)
+    if MPShamanElementalSaved[ConfigCurrent].RecallTotems==1 then
         color_RecallTotems = "|cFFFFD100"
     else
         color_RecallTotems = "|cFF888888"
     end
-    _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." ".. MPShamanElementalSaved.RecallTotems_Value .." 码距离|r")
+    _G[slider_RecallTotems:GetName().."Text"]:SetText(color_RecallTotems.." ".. MPShamanElementalSaved[ConfigCurrent].RecallTotems_Value .." 码距离|r")
     ]]
 
-    checkButton_ForceTotem:SetChecked(ToBoolean(MPShamanElementalSaved.ForceTotem))
+    checkButton_ForceTotem:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].ForceTotem))
 
 end
 

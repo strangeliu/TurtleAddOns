@@ -1458,4 +1458,5 @@ Dependencies: AceLibrary, AceLocale-2.2
 	["Chieftain Partath"] = true,
 	["Selenaxx Foulheart"] = true,
 	["Ursol"] = true,
+	["Perotharn"] = true,
 } end)

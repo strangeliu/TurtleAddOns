@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 猫德一键宏
--- 更新日期：2026-04-03 （后面根据时间来判断版本）
+-- 更新日期：2026-04-12 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -87,6 +87,7 @@ MPDriudMaxRakeAP = 0
 MPSacrificialTimer = 0
 
 MPDriudCatPVP = 0
+MPDriudCatTest = 0
 
 -- 临时变量 -------------------------------------
 
@@ -96,6 +97,9 @@ local TargetBOSS = false
 
 local Timer = 0
 local SlowRun = 0
+
+-- 默认配置
+MPDriudCatConfig = 1
 
 -------------------------------------------------
 
@@ -146,14 +150,14 @@ function MPCat(type)
 	end
 
 	-- 确保在豹子形态下
-	if MPDriudCatSaved.Shapeshift==1 and MPDriudCatShapeshiftID>0 then
+	if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and MPDriudCatShapeshiftID>0 then
 		if not MPGetShape(MPDriudCatShapeshiftID) then
 			CastShapeshiftForm(MPDriudCatShapeshiftID)
 			return
 		end
 	end
 	--[[
-	if MPDriudCatSaved.Shapeshift==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 then
 		if not MPBuff("猎豹形态") then
 			CastSpellByName("猎豹形态")
 		end
@@ -167,7 +171,7 @@ function MPCat(type)
 	Timer = GetTime()
 
 	-- 在潜行状态
-	if QX and MPDriudCatSaved.Prowl==1 then
+	if QX and MPDriudCatSaved[MPDriudCatConfig].Prowl==1 then
 
 		if MPBuff("放逐术", "target") then
 			return
@@ -176,7 +180,7 @@ function MPCat(type)
 		MPStopAttack()
 
 		-- 潜行时，可以预先开启猛虎之怒
-		if MPDriudCatSaved.TigerFury==1 and (not MPMHTimer or Timer-MPMHTimer>10) and myPower>=80 then
+		if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 and (not MPMHTimer or Timer-MPMHTimer>10) and myPower>=80 then
 			CastSpellByName("猛虎之怒")
 			MPMHTimer=Timer
 		end
@@ -200,7 +204,7 @@ function MPCat(type)
 	GCD = MPGetGCD()
 	GCP = GetComboPoints("target")
 	JNSF = MPGetOmen()
-	BEHIND = MPCheckBehind(MPDriudCatSaved.UnitXP)
+	BEHIND = MPCheckBehind(MPDriudCatSaved[MPDriudCatConfig].UnitXP)
 	WS = MPSpellReady("畏缩")
 	JLZH = MPSpellReady("精灵之火（野性）")
 	THP = UnitHealth("target")
@@ -208,18 +212,18 @@ function MPCat(type)
 	TargetBOSS = MPIsBossTarget()
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPDriudCatSaved.Target)
+	MPAutoSwitchTarget(MPDriudCatSaved[MPDriudCatConfig].Target)
 
 	-- 开启自动攻击
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPDriudCatSaved.Pick==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPDriudCatSaved.Power==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -233,23 +237,23 @@ function MPCat(type)
 	if MPInCombat and (Timer-SlowRun>0) then
 
 
-		if MPDriudCatSaved.Ashamane==1 then
+		if MPDriudCatSaved[MPDriudCatConfig].Ashamane==1 then
 			if GCP>=(25-MPDriudPrimalFury-2) and MPDriudPrimalFury>=20 then
 				-- 自动开启饰品
 				if MP_Trinket_Upper==1 then
-					if TargetDistance and MPDriudCatSaved.Trinket_Upper==1 and GetInventoryItemCooldown("player",13)==0 then
-						if MPDriudCatSaved.TUBoss==1 and TargetBOSS then
+					if TargetDistance and MPDriudCatSaved[MPDriudCatConfig].Trinket_Upper==1 and GetInventoryItemCooldown("player",13)==0 then
+						if MPDriudCatSaved[MPDriudCatConfig].TUBoss==1 and TargetBOSS then
 							UseInventoryItem(13)
-						elseif MPDriudCatSaved.TUBoss==0 then
+						elseif MPDriudCatSaved[MPDriudCatConfig].TUBoss==0 then
 							UseInventoryItem(13)
 						end
 					end
 				end
 				if MP_Trinket_Below==1 then
-					if TargetDistance and MPDriudCatSaved.Trinket_Below==1 and GetInventoryItemCooldown("player",14)==0 then
-						if MPDriudCatSaved.TBBoss==1 and TargetBOSS then
+					if TargetDistance and MPDriudCatSaved[MPDriudCatConfig].Trinket_Below==1 and GetInventoryItemCooldown("player",14)==0 then
+						if MPDriudCatSaved[MPDriudCatConfig].TBBoss==1 and TargetBOSS then
 							UseInventoryItem(14)
-						elseif MPDriudCatSaved.TBBoss==0 then
+						elseif MPDriudCatSaved[MPDriudCatConfig].TBBoss==0 then
 							UseInventoryItem(14)
 						end
 					end
@@ -258,22 +262,22 @@ function MPCat(type)
 		else
 			-- 自动开启饰品
 			if MP_Trinket_Upper==1 then
-				if TargetDistance and MPDriudCatSaved.Trinket_Upper==1 and Timer-MPInCombatTime>AUTO_Cat_Trinket_Delay and GetInventoryItemCooldown("player",13)==0 then
-					if MPDriudCatSaved.TUBoss==1 and TargetBOSS then
+				if TargetDistance and MPDriudCatSaved[MPDriudCatConfig].Trinket_Upper==1 and Timer-MPInCombatTime>AUTO_Cat_Trinket_Delay and GetInventoryItemCooldown("player",13)==0 then
+					if MPDriudCatSaved[MPDriudCatConfig].TUBoss==1 and TargetBOSS then
 						UseInventoryItem(13)
 						return
-					elseif MPDriudCatSaved.TUBoss==0 then
+					elseif MPDriudCatSaved[MPDriudCatConfig].TUBoss==0 then
 						UseInventoryItem(13)
 						return
 					end
 				end
 			end
 			if MP_Trinket_Below==1 then
-				if TargetDistance and MPDriudCatSaved.Trinket_Below==1 and Timer-MPInCombatTime>AUTO_Cat_Trinket_Delay and GetInventoryItemCooldown("player",14)==0 then
-					if MPDriudCatSaved.TBBoss==1 and TargetBOSS then
+				if TargetDistance and MPDriudCatSaved[MPDriudCatConfig].Trinket_Below==1 and Timer-MPInCombatTime>AUTO_Cat_Trinket_Delay and GetInventoryItemCooldown("player",14)==0 then
+					if MPDriudCatSaved[MPDriudCatConfig].TBBoss==1 and TargetBOSS then
 						UseInventoryItem(14)
 						return
-					elseif MPDriudCatSaved.TBBoss==0 then
+					elseif MPDriudCatSaved[MPDriudCatConfig].TBBoss==0 then
 						UseInventoryItem(14)
 						return
 					end
@@ -281,25 +285,29 @@ function MPCat(type)
 			end
 		end
 
-		if MPDriudCatSaved.Soulspeed==1 and TargetBOSS then
-			MPUseItemByName("魂能之速")
+		if MPDriudCatSaved[MPDriudCatConfig].Soulspeed==1 and TargetDistance then
+			if MPDriudCatSaved[MPDriudCatConfig].SoulspeedBoss==1 and TargetBOSS then
+				MPUseItemByName("魂能之速")
+			elseif MPDriudCatSaved[MPDriudCatConfig].SoulspeedBoss==0 then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
 
-		if MPDriudCatSaved.Barkskin==1 then
-			if percent<MPDriudCatSaved.Barkskin_Value and MPGetShape(MPDriudCatShapeshiftID) then
+		if MPDriudCatSaved[MPDriudCatConfig].Barkskin==1 then
+			if percent<MPDriudCatSaved[MPDriudCatConfig].Barkskin_Value and MPGetShape(MPDriudCatShapeshiftID) then
 				CastSpellByName("树皮术（野性）")
 			end
 		end
-		if MPDriudCatSaved.HealthStone==1 then
-			if percent<MPDriudCatSaved.HealthStone_Value then
+		if MPDriudCatSaved[MPDriudCatConfig].HealthStone==1 then
+			if percent<MPDriudCatSaved[MPDriudCatConfig].HealthStone_Value then
 				MPUseItemByName("特效治疗石")
 			end
 		end
-		if MPDriudCatSaved.HerbalTea==1 then
-			if percent<MPDriudCatSaved.HerbalTea_Value then
+		if MPDriudCatSaved[MPDriudCatConfig].HerbalTea==1 then
+			if percent<MPDriudCatSaved[MPDriudCatConfig].HerbalTea_Value then
 				MPUseItemByName("糖水茶")
 				MPUseItemByName("诺达纳尔草药茶")
 			end
@@ -313,7 +321,7 @@ function MPCat(type)
 
 	-- 献祭之油
 	--[[
-	if MPDriudCatSaved.Sacrificial==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].Sacrificial==1 then
 		if Timer-MPSacrificialTimer>0 and MPScanNearbyEnemiesCount(8)>3 then
 			MPUseItemByName("献祭之油")
 		end
@@ -334,8 +342,14 @@ function MPCat(type)
 			MPCatBackstabNew()
 		else
 
-			if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
+			if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
 				MPCatBackstabNew()
+			elseif MPDriudCatTest==1 then
+				if MPTargetBleed then	-- 目标可流血
+					MPCatBleedTest()
+				else					-- 目标不可流血
+					MPCatBackstabNew()
+				end
 			else
 
 				if MPTargetBleed then	-- 目标可流血
@@ -353,7 +367,7 @@ function MPCat(type)
 		if type == 2 then
 			MPCatBackstab()			-- 背刺流
 		else
-			if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
+			if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
 				MPCatBackstab()
 			else
 				if MPTargetBleed then	-- 目标可流血
@@ -381,7 +395,7 @@ local function AllowFerocious(Bite)
 
 	--[[
 	-- 阿莎曼之怒 特效补星
-	--if MPDriudCatSaved.Ashamane==1 then
+	--if MPDriudCatSaved[MPDriudCatConfig].Ashamane==1 then
 		local last = 25-MPDriudPrimalFury
 		if last < 5 then
 			if GCP>=last then
@@ -408,12 +422,12 @@ end
 
 function MPCatIdolDance(CombeValue)
 	-- 检测开关，同时交互交互界面的安全检测
-	if MPDriudCatSaved.Idol_Dance==1 and not MPCheckUIStatus() and GCD<0.2 then
+	if MPDriudCatSaved[MPDriudCatConfig].Idol_Dance==1 and not MPCheckUIStatus() and GCD<0.2 then
 		-- 几星切换神像，根据撕咬的星数来决定
 		if AllowFerocious(CombeValue) then
-			MPEquipItemByName(MPDriudCatSaved.Idol_Dance_High, 9)
+			MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Idol_Dance_High, 9)
 		else
-			MPEquipItemByName(MPDriudCatSaved.Idol_Dance_Low, 9)
+			MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Idol_Dance_Low, 9)
 		end
 	end
 end
@@ -425,7 +439,7 @@ function MPDriudSwapIdol(value)
 	value = value or 0
 
 	-- 开关检测
-	if MPDriudCatSaved.Target_Swap_Idol == 0 then
+	if MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol == 0 then
 		return
 	end
 
@@ -458,30 +472,30 @@ function MPDriudSwapIdol(value)
 
 		-- 熊形态下，神像固定
 		if MPGetShape(MPDriudBearShapeshiftID) then
-			MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Bear, 9)
+			MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Bear, 9)
 			return
 		elseif MPGetShape(MPDriudCatShapeshiftID) then
 			-- 流血状态，且没有打开银行等窗口
 			if MPTargetBleed then
-				MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Bleed, 9)
+				MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Bleed, 9)
 			else
-				MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Shred, 9)
+				MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Shred, 9)
 			end
 		end
 
 	-- 强制熊
 	elseif value==1 then
 
-		MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Bear, 9)
+		MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Bear, 9)
 		return
 
 	-- 强制猫德
 	elseif value==2 then
 		-- 流血状态，且没有打开银行等窗口
 		if MPTargetBleed then
-			MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Bleed, 9)
+			MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Bleed, 9)
 		else
-			MPEquipItemByName(MPDriudCatSaved.Target_Swap_Idol_Shred, 9)
+			MPEquipItemByName(MPDriudCatSaved[MPDriudCatConfig].Target_Swap_Idol_Shred, 9)
 		end
 	end
 
@@ -492,7 +506,7 @@ end
 function MPFaerieFire()
 
 	-- 开关
-	if MPDriudCatSaved.FaerieFire==0 then
+	if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==0 then
 		return
 	end
 
@@ -526,13 +540,12 @@ local function MPCastClaw()
 	if UnitExists("target") then
 		local n = UnitExists("targettarget")
 		if n and n==UnitName("player") then
-			MPCastWithNampower("爪击")
+			CastSpellByName("爪击")
 		else
 			if myPower>=80 then
-				MPCastWithNampower("爪击")
-			end
-			if JNSF and myPower>=70 then
-				MPCastWithNampower("爪击")
+				CastSpellByName("爪击")
+			elseif myPower>=60 and JNSF then
+				CastSpellByName("爪击")
 			end
 		end
 	end
@@ -545,19 +558,27 @@ local function MPCatAttack(type)
 	-- 根据正反面撕碎/爪击填充空挡
 	-- 基础技能
 	if type==1 then
-
-		-- 爪击流
-		MPCastWithNampower("爪击")
-		return
+		if myPower>=MPDriudClawEnergy then
+			-- 爪击流
+			CastSpellByName("爪击")
+			return
+		end
 
 	elseif type==2 then
 
 		-- 均衡 朝向自动
 		if BEHIND then
-			MPCastWithNampower("撕碎")
-			return
+			if myPower>=MPDriudShredEnergy then
+				CastSpellByName("撕碎")
+				return
+			elseif myPower>=MPDriudClawEnergy then
+				if MPGetRakeDot() and MPGetRipDot() then
+					CastSpellByName("爪击")
+					return
+				end
+			end
 		else
-			MPCastWithNampower("爪击")
+			CastSpellByName("爪击")
 			return
 		end
 
@@ -565,18 +586,20 @@ local function MPCatAttack(type)
 
 		-- 均衡 偏向撕碎
 		if BEHIND then
-			MPCastWithNampower("撕碎")
+			CastSpellByName("撕碎")
 			return
-		else
+		elseif myPower>=MPDriudClawEnergy then
 			MPCastClaw()
 			return
 		end
 
 	else
 	
-		-- 撕碎流
-		MPCastWithNampower("撕碎")
-		return
+		if myPower>=MPDriudShredEnergy then
+			-- 撕碎流
+			CastSpellByName("撕碎")
+			return
+		end
 
 	end
 
@@ -619,41 +642,40 @@ function MPCatBackstab()
 	PCD = MPGetRestoredEnergy()
 
 	-- 神像舞
-	MPCatIdolDance(MPDriudCatSaved.ShredFerocious_Bite)
+	MPCatIdolDance(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite)
 
-
-	if MPDriudCatSaved.TigerFury==1 then
-		if MPDriudCatSaved.Shapeshift==0 then
+	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
+		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==0 then
 			-- 走地猫的开启猛虎优化
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
-				MPCastWithNampower("猛虎之怒")
+				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
 		else
 			-- 变身猫的猛虎策略
 			if (not MPMHTimer or Timer-MPMHTimer>17) and myPower>=30 then
-				MPCastWithNampower("猛虎之怒")
+				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
 		end
 	end
 
-	if AllowFerocious(MPDriudCatSaved.ShredFerocious_Bite) and myPower<MPDriudCatSaved.ShredModeShapeshift and JNSF then
+	if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift and JNSF then
 		MPCastWithoutNampower("凶猛撕咬")
 		return
 	end
 
 	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
 	if JNSF then
-		if MPDriudCatSaved.Style==1 then
-			MPCastWithNampower("爪击")
+		if MPDriudCatSaved[MPDriudCatConfig].Style==1 then
+			CastSpellByName("爪击")
 			return
 		else
 			if BEHIND then
-				MPCastWithNampower("撕碎")
+				CastSpellByName("撕碎")
 				return
 			else
-				MPCastWithNampower("爪击")
+				CastSpellByName("爪击")
 				return
 			end
 		end
@@ -661,13 +683,13 @@ function MPCatBackstab()
 
 	-- 仇恨高的时候畏缩
 	-- 仇恨高于80
-	if MPDriudCatSaved.Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
-		MPCastWithNampower("畏缩")
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
+		CastSpellByName("畏缩")
 		return
 	end
 
 	-- 无清晰预兆，再撕咬
-	if AllowFerocious(MPDriudCatSaved.ShredFerocious_Bite) and myPower<MPDriudCatSaved.ShredFerocious_Value and not JNSF then
+	if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Value and not JNSF then
 		MPCastWithoutNampower("凶猛撕咬")
 		return
 	end
@@ -675,9 +697,9 @@ function MPCatBackstab()
 	if Timer-MPMHTimer>15 then
 
 		if not MPBuff("裂隙诅咒") then -- 防御村长的诅咒意外变身解除
-			if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.9 and not MPBuff("狂暴") then
+			if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.9 and not MPBuff("狂暴") then
 				if myPower<30 then
-					MPCastWithNampower("重整")
+					CastSpellByName("重整")
 					MPMHTimer=0
 					return
 				end
@@ -688,16 +710,16 @@ function MPCatBackstab()
 	elseif Timer-MPMHTimer>8 then
 
 		if not MPBuff("裂隙诅咒") then -- 防御村长的诅咒意外变身解除
-			if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 and not MPBuff("狂暴") and MPGetRestoredEnergy()<1.5 then
-				if myPower<MPDriudCatSaved.ShredModeShapeshift then
-					MPCastWithNampower("重整")
+			if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 and not MPBuff("狂暴") and MPGetRestoredEnergy()<1.5 then
+				if myPower<MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift then
+					CastSpellByName("重整")
 					MPMHTimer=0
 					return
 				end
 			end
 
-			if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and  myPower<30 and GCD>0.9 then
-				MPCastWithNampower("重整")
+			if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and  myPower<30 and GCD>0.9 then
+				CastSpellByName("重整")
 				MPMHTimer=0
 				return
 			end
@@ -705,23 +727,23 @@ function MPCatBackstab()
 
 	else
 		-- 空挡仇恨高于70
-		if MPDriudCatSaved.Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=70 then
-			MPCastWithNampower("畏缩")
+		if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=70 then
+			CastSpellByName("畏缩")
 			return
 		end
 
 		-- 空挡时补精灵之火
-		if MPDriudCatSaved.FaerieFire==1 and MPIsFaerieFire() then
+		if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 and MPIsFaerieFire() then
 			if MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and TargetDistance and not JNSF and JLZH then
-				if myPower<=MPDriudCatSaved.ShredModeShapeshift then
-					MPCastWithNampower("精灵之火（野性）")
+				if myPower<=MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift then
+					CastSpellByName("精灵之火（野性）")
 					return
 				end
 			end
 		end
 	end
 
-	MPCatAttack(MPDriudCatSaved.Style)
+	MPCatAttack(MPDriudCatSaved[MPDriudCatConfig].Style)
 
 end
 
@@ -740,11 +762,11 @@ function MPCatBleed()
 	local _,guid = UnitExists("target")
 
 	-- 神像舞
-	MPCatIdolDance(MPDriudCatSaved.Ferocious_Bite)
+	MPCatIdolDance(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
 
-	if MPDriudCatSaved.TigerFury==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
 
-		if MPDriudCatSaved.Shapeshift==0 then
+		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==0 then
 			-- 走地猫的开启猛虎优化
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
 				CastSpellByName("猛虎之怒")
@@ -759,52 +781,53 @@ function MPCatBleed()
 		end
 	end
 
+
 	-- 非BOSS 禁用撕扯
-	if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
+	if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
 		MPRip = true
 	else
 
 		-- 补撕扯
-		if not MPRip and GCP>=5 and THP>MPDriudCatSaved.OutHPRip and (myPower>=30 or JNSF) then
-			MPCastWithNampower("撕扯")
+		if not MPRip and GCP>=5 and THP>MPDriudCatSaved[MPDriudCatConfig].OutHPRip and (myPower>=30 or JNSF) then
+			CastSpellByName("撕扯")
 			return
 		end
 
 	end
 
 
-	if AllowFerocious(MPDriudCatSaved.Ferocious_Bite) and myPower<MPDriudCatSaved.BleedModeShapeshift and JNSF and MPRip then
+	if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].BleedModeShapeshift and JNSF and MPRip then
 		MPCastWithoutNampower("凶猛撕咬")
 		return
 	end
 
 	if JNSF then
-		if MPDriudCatSaved.Style==1 then
-			MPCastWithNampower("爪击")
+		if MPDriudCatSaved[MPDriudCatConfig].Style==1 then
+			CastSpellByName("爪击")
 			return
 		else
 			if BEHIND then
-				MPCastWithNampower("撕碎")
+				CastSpellByName("撕碎")
 				return
 			end
 		end
 	end
 
 	-- 补扫击
-	if not MPRake and not AllowFerocious(MPDriudCatSaved.Ferocious_Bite) and myPower>=MPDriudRakeEnergy then 
-		MPCastWithNampower("扫击")
+	if not MPRake and not AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite) and myPower>=MPDriudRakeEnergy then 
+		CastSpellByName("扫击")
 		return
 	end
 
 	-- 仇恨高的时候畏缩
 	-- 仇恨高于80
-	if MPDriudCatSaved.Cower==1 and WS and MPGetHatredFromTWT()>=80 then
-		MPCastWithNampower("畏缩")
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and MPGetHatredFromTWT()>=80 then
+		CastSpellByName("畏缩")
 		return
 	end
 
 	-- 撕咬
-	if MPRip and AllowFerocious(MPDriudCatSaved.Ferocious_Bite) and myPower<MPDriudCatSaved.Ferocious_Value then
+	if MPRip and AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Value then
 		MPCastWithoutNampower("凶猛撕咬")
 		return
 	end
@@ -815,23 +838,23 @@ function MPCatBleed()
 		if not MPBuff("裂隙诅咒") then -- 防御村长的诅咒意外变身解除
 
 			-- 变身基本条件
-			if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and not MPBuff("狂暴") and GCD>0.8 then
+			if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and not MPBuff("狂暴") and GCD>0.8 then
 
-				if AllowFerocious(MPDriudCatSaved.Ferocious_Bite) then
+				if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite) then
 					if myPower<15 then
-						MPCastWithNampower("重整")
+						CastSpellByName("重整")
 						MPMHTimer=0
 						return
 					end
 				else
-					if myPower<MPDriudCatSaved.BleedModeShapeshift then
-						MPCastWithNampower("重整")
+					if myPower<MPDriudCatSaved[MPDriudCatConfig].BleedModeShapeshift then
+						CastSpellByName("重整")
 						MPMHTimer=0
 						return
 					end
 
 					if Timer-MPMHTimer>15 and myPower<35 then
-						MPCastWithNampower("重整")
+						CastSpellByName("重整")
 						MPMHTimer=0
 						return
 					end
@@ -843,25 +866,25 @@ function MPCatBleed()
 	end
 
 	-- 补充畏缩
-	if MPDriudCatSaved.Cower==1 and WS and MPGetHatredFromTWT()>=70 then
-		MPCastWithNampower("畏缩")
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and MPGetHatredFromTWT()>=70 then
+		CastSpellByName("畏缩")
 		return
 	end
 
 	-- 允许精灵之火
-	if MPDriudCatSaved.FaerieFire==1 and MPIsFaerieFire() then
+	if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 and MPIsFaerieFire() then
 
 
 		-- 必要条件
 		if TargetDistance and MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
 
 			if myPower<15 then
-				MPCastWithNampower("精灵之火（野性）")
+				CastSpellByName("精灵之火（野性）")
 				return
 			end
 
-			if myPower<(MPDriudClawEnergy-20) and GCP<MPDriudCatSaved.Ferocious_Bite then
-				MPCastWithNampower("精灵之火（野性）")
+			if myPower<(MPDriudClawEnergy-20) and GCP<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite then
+				CastSpellByName("精灵之火（野性）")
 				return
 			end
 
@@ -869,7 +892,7 @@ function MPCatBleed()
 
 	end
 
-	MPCatAttack(MPDriudCatSaved.Style)
+	MPCatAttack(MPDriudCatSaved[MPDriudCatConfig].Style)
 
 end
 
@@ -892,30 +915,31 @@ end
 -- New A
 function MPCatBleedNew()
 
-	local AF = AllowFerocious(MPDriudCatSaved.Ferocious_Bite)
+	local AF = AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
 
 	MPRake = MPGetRakeDot()
 	MPRip = MPGetRipDot()
 	MPRavage = MPGetRavageDot()
 	local _,guid = UnitExists("target")
 
-	-- 神像舞
-	MPCatIdolDance(MPDriudCatSaved.Ferocious_Bite)
-
-
 	-- 变身基本条件
-	if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then --
+	if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then --
 
 		if Timer-MPMHTimer>17 and myPower<=30 then
-			MPCastWithoutNampower("重整")
+			CastSpellByName("重整")
 			MPMsg("猛虎即将结束")
 			return
 		end
 		
 		if not JNSF and not MPBuff("狂暴") then
 
-			if MPCheckShapeshift()>=7 and myPower<MPDriudCatSaved.BleedModeShapeshift then
-				MPCastWithoutNampower("重整")
+			if MPCheckShapeshift()>=7 and myPower<MPDriudCatSaved[MPDriudCatConfig].BleedModeShapeshift then
+				CastSpellByName("重整")
+				return
+			end
+
+			if MPCheckShapeshift()>=4 and myPower<5 then
+				CastSpellByName("重整")
 				return
 			end
 
@@ -923,29 +947,316 @@ function MPCatBleedNew()
 
 	end
 
+	-- 神像舞
+	MPCatIdolDance(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
 
-	if MPDriudCatSaved.TigerFury==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
 
-		if MPDriudCatSaved.Shapeshift==1 then
+		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 then
 			-- 变身猫的猛虎策略
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-				MPCastWithNampower("猛虎之怒")
+				CastSpellByName("猛虎之怒")
 			end
 		else
 			-- 不变身猫的猛虎策略
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
-				MPCastWithNampower("猛虎之怒")
+				CastSpellByName("猛虎之怒")
 			end
 		end
 	end
 
 	-- 非BOSS 禁用撕扯
-	if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
+	if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
 		MPRip = true
 	else
 
 		-- 补撕扯
-		if not MPRip and GCP>=5 and THP>MPDriudCatSaved.OutHPRip then
+		if not MPRip and GCP>=5 and THP>MPDriudCatSaved[MPDriudCatConfig].OutHPRip and myPower>=30 then
+			CastSpellByName("撕扯")
+			return
+		end
+
+	end
+
+	-- 抢救 撕扯
+	if AF and MPRip and (myPower>=35 or JNSF) then
+		local check = MPGetRipCheck()
+        if check[guid] then
+			local timer = MPDriudRipDuration-(Timer-check[guid])
+			if timer < 3 then 
+				MPCastWithoutNampower("凶猛撕咬")
+				MPMsg("|cFFee1111抢救 撕扯|r")
+				return
+			end
+		end
+	end
+
+	--清晰预兆
+	if JNSF then
+		if MPDriudCatSaved[MPDriudCatConfig].Style==1 then
+			CastSpellByName("爪击")
+			return
+		else
+			if BEHIND then
+				CastSpellByName("撕碎")
+				return
+			end
+		end
+	end
+
+
+	-- 仇恨高的时候畏缩
+	-- 仇恨高于80
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 then
+		if WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
+			CastSpellByName("畏缩")
+			return
+		end
+	end
+
+
+	-- 撕咬
+	if AF and myPower<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Value and MPRip and not JNSF and myPower>=35 then
+		MPCastWithoutNampower("凶猛撕咬")
+		return
+	else
+
+		-- 补扫击
+		if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
+			if not BEHIND and not MPRake and myPower>=MPDriudRakeEnergy then 
+
+				CastSpellByName("扫击")
+				return
+			end
+		else
+			if not MPRake and myPower>=MPDriudRakeEnergy then 
+
+				CastSpellByName("扫击")
+				return
+			end
+		end
+
+	end
+	
+
+	if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 then
+
+		-- 允许精灵之火
+		if MPCheckShapeshift()<4 and GCD>0.8 and MPIsFaerieFire() then
+
+			-- 必要条件
+			if MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
+
+				if myPower<35 then
+					CastSpellByName("精灵之火（野性）")
+					return
+				end
+
+			end
+
+		end
+
+	end
+
+	MPCatAttack(MPDriudCatSaved[MPDriudCatConfig].Style)
+
+end
+
+
+
+
+-- 新-背刺猫攻击流程
+-- New A
+function MPCatBackstabNew()
+
+
+	-- 变身基本条件
+	if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then 
+
+		if Timer-MPMHTimer>17 then
+			if myPower<30 then
+				CastSpellByName("重整")
+				return
+			end
+		end
+
+		if MPCheckShapeshift()>4 and not JNSF and not MPBuff("狂暴") then
+
+			if myPower<MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift then
+				CastSpellByName("重整")
+				return
+			end
+
+		end
+
+	end
+
+	-- 神像舞
+	MPCatIdolDance(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite)
+
+	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
+		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 then
+			-- 变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
+				CastSpellByName("猛虎之怒")
+			end
+		else
+			-- 不变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+				CastSpellByName("猛虎之怒")
+			end
+		end
+	end
+
+	if GCP>=5 and myPower<15 and JNSF and MPRip then   -- AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
+		MPCastWithNampower("凶猛撕咬")
+		return
+	end
+
+	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
+	if JNSF then
+		if MPDriudCatSaved[MPDriudCatConfig].Style==1 then
+			CastSpellByName("爪击")
+			return
+		else
+			if BEHIND then
+				CastSpellByName("撕碎")
+				return
+			end
+		end
+	end
+
+	-- 仇恨高的时候畏缩
+	-- 仇恨高于80
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
+		CastSpellByName("畏缩")
+		return
+	end
+
+
+	-- 无清晰预兆，再撕咬
+	if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Value and not JNSF and myPower>=35 then
+		CastSpellByName("凶猛撕咬")
+		return
+	end
+
+
+	if MPCheckShapeshift()<4 and GCD>0.8 then
+
+		-- 变身保护期
+
+		if MPDriudCatSaved[MPDriudCatConfig].Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=70 then
+			CastSpellByName("畏缩")
+			return
+		end
+
+		-- 允许精灵之火
+		if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 and MPIsFaerieFire() then
+
+			-- 必要条件
+			if TargetDistance and MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
+
+				if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) then
+					if myPower>=MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift and myPower<35 then
+						CastSpellByName("精灵之火（野性）")
+						return
+					end
+
+				else
+					if myPower>=MPDriudCatSaved[MPDriudCatConfig].ShredModeShapeshift and myPower<MPDriudShredEnergy then
+						CastSpellByName("精灵之火（野性）")
+						return
+					end
+
+				end
+
+
+			end
+
+		end
+
+	end
+
+	MPCatAttack(MPDriudCatSaved[MPDriudCatConfig].Style)
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- 流血猫攻击流程
+-- Test版
+function MPCatBleedTest()
+
+	local AF = AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
+
+	MPRake = MPGetRakeDot()
+	MPRip = MPGetRipDot()
+	MPRavage = MPGetRavageDot()
+	local _,guid = UnitExists("target")
+
+
+
+	-- 变身基本条件
+	if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then --
+
+		if Timer-MPMHTimer>17 then
+			if myPower<30 then
+				CastSpellByName("重整")
+				return
+			end
+		else
+			if Timer-MPMHTimer>10 then
+				if myPower<=MPDriudCatSaved[MPDriudCatConfig].BleedModeShapeshift and MPCheckShapeshift()>4 then
+					CastSpellByName("重整")
+					return
+				end
+			end
+			if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 then
+				if MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
+					CastSpellByName("精灵之火（野性）")
+					return
+				end
+			end
+		end
+		
+	end
+
+	-- 神像舞
+	MPCatIdolDance(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
+
+	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
+
+		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==1 then
+			-- 变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
+				CastSpellByName("猛虎之怒")
+			end
+		else
+			-- 不变身猫的猛虎策略
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+				CastSpellByName("猛虎之怒")
+			end
+		end
+	end
+
+	-- 非BOSS 禁用撕扯
+	if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
+		MPRip = true
+	else
+
+		-- 补撕扯
+		if not MPRip and GCP>=5 and THP>MPDriudCatSaved[MPDriudCatConfig].OutHPRip and myPower>29 then
 			MPCastWithNampower("撕扯")
 			return
 		end
@@ -967,290 +1278,71 @@ function MPCatBleedNew()
 
 	--清晰预兆
 	if JNSF then
-		if MPDriudCatSaved.Style==1 then
-			MPCastWithNampower("爪击")
+		if BEHIND then
+			CastSpellByName("撕碎")
 			return
-		else
-			if BEHIND then
-				MPCastWithNampower("撕碎")
-				return
-			end
 		end
 	end
 
 
 	-- 仇恨高的时候畏缩
 	-- 仇恨高于80
-	if MPDriudCatSaved.Cower==1 then
+	if MPDriudCatSaved[MPDriudCatConfig].Cower==1 then
 		if WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
-			MPCastWithoutNampower("畏缩")
+			CastSpellByName("畏缩")
 			return
 		end
 	end
 
 	-- 撕咬
-	if AF and myPower<MPDriudCatSaved.Ferocious_Value and MPRip and not JNSF and myPower>=35 then
+	if AF and myPower<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Value and MPRip and not JNSF and myPower>=35 then
 		MPCastWithoutNampower("凶猛撕咬")
 		return
-	else
+	elseif myPower>=MPDriudRakeEnergy then
 
 		-- 补扫击
-		if MPDriudCatSaved.BOSS==1 and not TargetBOSS then
+		if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
 			if not BEHIND and not MPRake then 
 
-				MPCastWithNampower("扫击")
+				CastSpellByName("扫击")
 				return
 			end
 		else
 			if not MPRake then 
 
-				MPCastWithNampower("扫击")
+				CastSpellByName("扫击")
 				return
 			end
 		end
 
 	end
 	
-
-	if MPDriudCatSaved.FaerieFire==1 then
-
-		-- 允许精灵之火
-		if MPCheckShapeshift()<4 and GCD>0.8 and MPIsFaerieFire() then
-
-			-- 必要条件
-			if MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
-
-				if AF then
-					if myPower>=MPDriudCatSaved.BleedModeShapeshift and myPower<35 then
-						MPCastWithNampower("精灵之火（野性）")
-						return
-					end
-				else
-					if myPower>=MPDriudCatSaved.BleedModeShapeshift and myPower<MPDriudShredEnergy then
-						MPCastWithNampower("精灵之火（野性）")
-						return
-					end
-				end
-
-			end
-
-		end
-
-	end
-
-	MPCatAttack(MPDriudCatSaved.Style)
-
-end
-
-
-
-
--- 新-背刺猫攻击流程
--- New A
-function MPCatBackstabNew()
-
-	-- 神像舞
-	MPCatIdolDance(MPDriudCatSaved.ShredFerocious_Bite)
-
-	-- 变身基本条件
-	if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then 
-
-		if Timer-MPMHTimer>17 then
-			if myPower<30 then
-				MPCastWithNampower("重整")
-				return
-			end
-		end
-
-		if MPCheckShapeshift()>4 and not JNSF and not MPBuff("狂暴") then
-
-			if myPower<MPDriudCatSaved.ShredModeShapeshift then
-				MPCastWithNampower("重整")
-				return
-			end
-
-		end
-
-	end
-
-	if MPDriudCatSaved.TigerFury==1 then
-		if MPDriudCatSaved.Shapeshift==1 then
-			-- 变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-				MPCastWithNampower("猛虎之怒")
-			end
-		else
-			-- 不变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
-				MPCastWithNampower("猛虎之怒")
-			end
-		end
-	end
-
-	if GCP>=5 and myPower<15 and JNSF and MPRip then   -- AllowFerocious(MPDriudCatSaved.Ferocious_Bite)
-		MPCastWithNampower("凶猛撕咬")
-		return
-	end
-
-	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
-	if JNSF then
-		if MPDriudCatSaved.Style==1 then
-			MPCastWithNampower("爪击")
-			return
-		else
-			if BEHIND then
-				MPCastWithNampower("撕碎")
-				return
-			end
-		end
-	end
-
-	-- 仇恨高的时候畏缩
-	-- 仇恨高于80
-	if MPDriudCatSaved.Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=80 then
-		MPCastWithNampower("畏缩")
-		return
-	end
-
-
-	-- 无清晰预兆，再撕咬
-	if AllowFerocious(MPDriudCatSaved.ShredFerocious_Bite) and myPower<MPDriudCatSaved.ShredFerocious_Value and not JNSF and myPower>=35 then
-		MPCastWithNampower("凶猛撕咬")
-		return
-	end
-
-
-	if MPCheckShapeshift()<4 and GCD>0.8 then
-
-		-- 变身保护期
-
-		if MPDriudCatSaved.Cower==1 and WS and myPower>=20 and MPGetHatredFromTWT()>=70 then
-			MPCastWithoutNampower("畏缩")
+	-- 三流血
+	if MPRake and MPRip and MPRavage then
+		if myPower>=MPDriudClawEnergy then
+			CastSpellByName("爪击")
 			return
 		end
-
-		-- 允许精灵之火
-		if MPDriudCatSaved.FaerieFire==1 and MPIsFaerieFire() then
-
-			-- 必要条件
-			if TargetDistance and MPGetShape(MPDriudCatShapeshiftID) and MPInCombat and not JNSF and JLZH then
-
-				if AllowFerocious(MPDriudCatSaved.ShredFerocious_Bite) then
-					if myPower>=MPDriudCatSaved.ShredModeShapeshift and myPower<35 then
-						MPCastWithoutNampower("精灵之火（野性）")
-						return
-					end
-
-				else
-					if myPower>=MPDriudCatSaved.ShredModeShapeshift and myPower<MPDriudShredEnergy then
-						MPCastWithoutNampower("精灵之火（野性）")
-						return
-					end
-
-				end
-
-
-			end
-
-		end
-
 	end
 
-	MPCatAttack(MPDriudCatSaved.Style)
-
-end
-
-
-function MPCatPVP()
-
-	-- 不在近战范围
-	if not MPGetTargetDistance("target",8) then
-		CastSpellByName("精灵之火（野性）")
-	end
-
-
-	MPRake = MPGetRakeDot()
-	MPRip = MPGetRipDot()
-	MPRavage = MPGetRavageDot()
-	local _,guid = UnitExists("target")
-
-	-- 变身基本条件
-	if MPDriudCatSaved.Shapeshift==1 and DM>=MPDriudShapeshiftMana and GCD>0.8 then --
-
-		if Timer-MPMHTimer>17 and myPower<=30 then
-			MPCastWithoutNampower("重整")
-			MPMsg("猛虎即将结束")
-			return
-		end
-		
-		if not JNSF and not MPBuff("狂暴") then
-
-			if MPCheckShapeshift()>=7 and myPower<MPDriudCatSaved.BleedModeShapeshift then
-				MPCastWithoutNampower("重整")
-				return
-			end
-
-		end
-
-	end
-
-
-	if MPDriudCatSaved.TigerFury==1 then
-
-		if MPDriudCatSaved.Shapeshift==1 then
-			-- 变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
-				MPCastWithNampower("猛虎之怒")
-			end
-		else
-			-- 不变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
-				MPCastWithNampower("猛虎之怒")
-			end
-		end
-	end
-
-	-- 补撕扯
-	if not MPRip and GCP>=1 and THP>2000 then
-		MPCastWithNampower("撕扯")
-		return
-	end
-
-
-	--清晰预兆
-	if JNSF and BEHIND then
-		MPCastWithNampower("撕碎")
-		return
-	end
-
-	-- 撕咬
-	if GCP>3 and myPower<MPDriudCatSaved.Ferocious_Value and MPRip and not JNSF and myPower>=35 then
-		MPCastWithoutNampower("凶猛撕咬")
+	-- 均衡 朝向自动
+	if BEHIND then
+		CastSpellByName("撕碎")
 		return
 	else
-
-		-- 补扫击
-		if not MPRake then 
-			MPCastWithNampower("扫击")
-			return
-		end
-
-	end
-	
-
-
-	local bn = {}
-	bn["反击风暴"]=true
-	bn["闪避"]=true
-
-	if MPBuffList(bn, "target") then
-		MPCatAttack(4)
-		return
-	else
-		MPCatAttack(2)
+		CastSpellByName("爪击")
 		return
 	end
-
-
+	--[[
+	-- 均衡 朝向自动 能量不够打爪击
+	if BEHIND and myPower>=MPDriudShredEnergy then
+		CastSpellByName("撕碎")
+		return
+	elseif myPower>=MPDriudClawEnergy then
+		CastSpellByName("爪击")
+		return
+	end
+	]]
 end
+
 

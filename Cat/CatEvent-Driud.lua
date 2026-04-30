@@ -195,9 +195,11 @@ local function OnEvent()
             -- 此记录只对亡灵类怪物进行处理
 	        if position then
                 local targetName = UnitName("target")
-                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]不吃流血。")
-                -- 将该目标加入流血表（临时，重登后丢失）
-                MPmonsterList[targetName] = true
+                if targetName then
+                    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]不吃流血。")
+                    -- 将该目标加入流血表（临时，重登后丢失）
+                    MPmonsterList[targetName] = true
+                end
 	        end
 
         end
@@ -628,19 +630,6 @@ end
 
 
 
-local function EventDriudPollingFunction()
-
-    -- 更新德鲁伊蓝量
-    --if not MP_SuperWoW then
-        -- 没有SuperWoW模组则通过判断获取并实时存储
-        local manaMax = UnitManaMax("player")
-        if manaMax > 100 then
-            MPDriudManaValue = UnitMana("player")
-        end
-    --end
-
-end
-
 
 
 
@@ -691,7 +680,7 @@ frame:SetScript("OnUpdate", OnUpdate)
 function MPGetRakeDot()
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW or not MP_Nampower4 then
+    if not MP_SuperWoW or not MP_Nampower4 or MPPlayerLevel<60 then
         return MPBuff("扫击","target")
     end
 
@@ -743,7 +732,7 @@ end
 function MPGetRipDot()
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW or not MP_Nampower4 then
+    if not MP_SuperWoW or not MP_Nampower4 or MPPlayerLevel<60 then
         return MPBuff("撕扯","target")
     end
 
@@ -794,7 +783,7 @@ end
 function MPGetRavageDot()
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW or not MP_Nampower4 then
+    if not MP_SuperWoW or not MP_Nampower4 or MPPlayerLevel<60 then
         return MPBuff("血袭","target")
     end
 
@@ -846,7 +835,7 @@ function MPGetMoonfireDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW or not MP_Nampower4 then
+    if not MP_SuperWoW or not MP_Nampower4 or MPPlayerLevel<60 then
         return MPBuff("月火术","target")
     end
 
@@ -895,7 +884,7 @@ function MPGetInsectSwarmDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW or not MP_Nampower4 then
+    if not MP_SuperWoW or not MP_Nampower4 or MPPlayerLevel<60 then
         return MPBuff("虫群","target")
     end
 
@@ -1152,7 +1141,9 @@ function MPDriudRefreshInfo()
 	end
 
 	MPDriudMoonfireMana = MPFloor( 375 * percent )
+    MPDriudMoonfireRange = 30 + (30 * (MPIsTalentLearned(1,11)*0.1) )
 	MPDriudInsectSwarmMana = MPFloor( 160 * percent )
+    MPDriudInsectSwarmRange = 30 + (30 * (MPIsTalentLearned(1,11)*0.1) )
 	MPDriudWrathMana = MPFloor( 210 * percent )
 	MPDriudStarfireMana = MPFloor( 340 * percent )
 

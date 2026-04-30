@@ -7,3 +7,4 @@
 ## Version: 1.2
 ## SavedVariablesPerCharacter: BCSConfig
 BetterCharacterStats.xml
+BCS_PropertiesPanel.lua

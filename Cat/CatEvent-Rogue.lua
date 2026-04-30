@@ -18,6 +18,57 @@ frame:RegisterEvent("RAW_COMBATLOG")
 local PLAYER_GUID = 0
 
 
+
+-- 突袭天赋是否存在
+MPRogueRiposte = 0
+
+-- 血腥气息是否点满
+MPRogueBloody = 0
+
+-- 是否有剑刃乱舞
+MPRogueBladeFlurry = 0
+
+-- 能量消耗相关
+
+-- 切割能量
+MPRogueSliceEnergy = 20
+MPRogueSliceDuration = 0
+MPRogueSliceTalent = 0
+
+-- 当前连击点
+MPRogueCombo = 1
+
+-- 割裂buff持续时间
+MPRogueBloodyDuration = 0
+MPRogueBloodyTalent = 0
+
+-- 毒伤buff持续时间
+MPRogueEnvenomDuration = 0
+
+
+-- 突袭的闪避状态
+MPRogueSurpriseStrikeTimer = 0
+MPRogueSurpriseStrikeTargetGUID = 0
+MPRogueSurpriseStrikeTimerNoSW = 0
+
+-- 盗贼主手武器 1=其他 2=匕首
+MPRogueMainHand = 1
+
+-- 毒伤 天赋
+MPRogueEnvenom = 0
+
+-- 双刃毒袭 天赋
+MPRogueBothSword = 0
+
+-- 出血
+MPRogueHemorrhage = 0
+MPRogueHemorrhageEnergy = 45
+
+-- 冲动
+MPRogueImpulse = 0
+
+
+
 -- 切割buff
 MPSliceTimer = 0
 
@@ -225,7 +276,7 @@ function MPGetRogueBloody(leaveTime)
     leaveTime = leaveTime or 0;
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("血腥气息")
     end
     
@@ -243,7 +294,7 @@ function MPGetRogueEnvenom(leaveTime)
     leaveTime = leaveTime or 0;
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("毒伤")
     end
     
@@ -261,7 +312,7 @@ function MPGetRogueSlice(leaveTime)
     leaveTime = leaveTime or 0;
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("切割")
     end
     
@@ -285,7 +336,7 @@ function MPGetExposeArmorDot(value)
     value = value or 0
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("破甲","target")
     end
 
@@ -408,6 +459,9 @@ function MPRogueRefreshInfo()
 
     -- 检查双刃毒袭天赋
     MPRogueBothSword = MPIsTalentLearned(1,18)
+
+    -- 检查 冲动 天赋
+    MPRogueImpulse = MPIsTalentLearned(2,18)
 
 end
 

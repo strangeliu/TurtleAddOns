@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奶骑一键宏
--- 更新日期：2026-01-26 （后面根据时间来判断版本）
+-- 更新日期：2026-04-15 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -32,16 +32,21 @@ MPPaladinCastHealTarget = nil
 local MPHealTargetDelay = {}
 local MPHealthUnit = nil
 
+-- 默认配置
+MPPaladinHealConfig = 1
+
+
+
 function MPPaladinAutoHealth()
 
     -- 正在读条
     if GetTime()-MPPaladinCastHeal < 3 then
 
         -- 是否有治疗目标
-        if MPHealthUnit and MPPaladinHealSaved.Overflow==1 then
+        if MPHealthUnit and MPPaladinHealSaved[MPPaladinHealConfig].Overflow==1 then
             -- 被治疗目标状态
             local target_percent = UnitHealth(MPHealthUnit) / UnitHealthMax(MPHealthUnit) * 100
-            if target_percent > MPPaladinHealSaved.Begin_Value then
+            if target_percent > MPPaladinHealSaved[MPPaladinHealConfig].Begin_Value then
                 SpellStopCasting()
             end
         end
@@ -50,12 +55,12 @@ function MPPaladinAutoHealth()
     end
 
 	-- 自动拾取
-	if MPPaladinHealSaved.Pick==1 then
+	if MPPaladinHealSaved[MPPaladinHealConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPPaladinHealSaved.Power==1 then
+	if MPPaladinHealSaved[MPPaladinHealConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -64,24 +69,24 @@ function MPPaladinAutoHealth()
 	if MPInCombat then
 	    -- 血量危险时处理，潜行下不吃药
 	    local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-	    if percent<MPPaladinHealSaved.HealthStone_Value and MPPaladinHealSaved.HealthStone==1 then
+	    if percent<MPPaladinHealSaved[MPPaladinHealConfig].HealthStone_Value and MPPaladinHealSaved[MPPaladinHealConfig].HealthStone==1 then
 		    MPUseItemByName("特效治疗石")
 	    end
-	    if percent<MPPaladinHealSaved.HerbalTea_Value and MPPaladinHealSaved.HerbalTea==1 then
+	    if percent<MPPaladinHealSaved[MPPaladinHealConfig].HerbalTea_Value and MPPaladinHealSaved[MPPaladinHealConfig].HerbalTea==1 then
 		    MPUseItemByName("糖水茶")
 		    MPUseItemByName("诺达纳尔草药茶")
 	    end
 
 		local percentMana = UnitMana("player") / UnitManaMax("player") * 100
-		if percentMana<MPPaladinHealSaved.HerbalTeaMana_Value and MPPaladinHealSaved.HerbalTeaMana==1 then
+		if percentMana<MPPaladinHealSaved[MPPaladinHealConfig].HerbalTeaMana_Value and MPPaladinHealSaved[MPPaladinHealConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percent<MPPaladinHealSaved.Protection_Value and MPPaladinHealSaved.Protection==1 then
+		if percent<MPPaladinHealSaved[MPPaladinHealConfig].Protection_Value and MPPaladinHealSaved[MPPaladinHealConfig].Protection==1 then
 			MPCastSpellWithoutTarget("保护之手","player")
 		end
-		if percent<MPPaladinHealSaved.DivineShield_Value and MPPaladinHealSaved.DivineShield==1 then
+		if percent<MPPaladinHealSaved[MPPaladinHealConfig].DivineShield_Value and MPPaladinHealSaved[MPPaladinHealConfig].DivineShield==1 then
 			CastSpellByName("圣盾术")
 		end
 
@@ -94,30 +99,30 @@ function MPPaladinAutoHealth()
     end
 
     -- 目标
-    if UnitExists("target") and MPPaladinHealSaved.TargetFirst==1 then
+    if UnitExists("target") and MPPaladinHealSaved[MPPaladinHealConfig].TargetFirst==1 then
         if MPPaladinHealth("target") then
             return
         end
     end
 
     -- 目标
-    if UnitExists("target") and UnitExists("targettarget") and MPPaladinHealSaved.TargetTarget==1 then
+    if UnitExists("target") and UnitExists("targettarget") and MPPaladinHealSaved[MPPaladinHealConfig].TargetTarget==1 then
         if MPPaladinHealth("targettarget") then
             return
         end
     end
 
     -- 自己
-    if MPPaladinHealSaved.SelfFirst==1 then
+    if MPPaladinHealSaved[MPPaladinHealConfig].SelfFirst==1 then
         if MPPaladinHealth("player") then
             return
         end
     end
 
     -- 队伍里的其他人
-    if MPPaladinHealSaved.ScanTeam==1 then
+    if MPPaladinHealSaved[MPPaladinHealConfig].ScanTeam==1 then
 
-        if MPPaladinHealSaved.ScanTeam_Low==1 then
+        if MPPaladinHealSaved[MPPaladinHealConfig].ScanTeam_Low==1 then
 
             local sortedMembers = MPGetSortedGroupByHealth()
             for i, member in ipairs(sortedMembers) do
@@ -173,7 +178,7 @@ function MPPaladinHealth(unit)
     percentHealth = health/maxHealth*100
     HealthDec = maxHealth - health
 
-    if MPPaladinHealSaved.Begin_Value <= percentHealth then
+    if MPPaladinHealSaved[MPPaladinHealConfig].Begin_Value <= percentHealth then
         return false
     end
 
@@ -215,12 +220,12 @@ function MPPaladinHealth(unit)
     -- 治疗 --
 
 
-    if percentHealth < MPPaladinHealSaved.LayHands_Value and MPPaladinHealSaved.LayHands==1 and SLS then
+    if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].LayHands_Value and MPPaladinHealSaved[MPPaladinHealConfig].LayHands==1 and SLS then
         MPHealTargetDelay[targetName] = GetTime()
         return MPCastSpellWithoutTarget("圣疗术", unit, 1)
     end
 
-    if percentHealth < MPPaladinHealSaved.HolyShock_Value and MPPaladinHealSaved.HolyShock==1 and SSZJ then
+    if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].HolyShock_Value and MPPaladinHealSaved[MPPaladinHealConfig].HolyShock==1 and SSZJ then
         if MP_UnitXP then
             if UnitXP("distanceBetween", "player", unit)<=20 then
                 MPHealTargetDelay[targetName] = GetTime()
@@ -241,15 +246,15 @@ function MPPaladinHealth(unit)
 
     MPHealthUnit = unit
 
-    if percentHealth < MPPaladinHealSaved.HolyLight_Value and MPPaladinHealSaved.HolyLight==1 and MPPaladinHolyLightMaxLevel>0 then
+    if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].HolyLight_Value and MPPaladinHealSaved[MPPaladinHealConfig].HolyLight==1 and MPPaladinHolyLightMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local HolyLightMaxLevel = MPPaladinHolyLightMaxLevel
-        local HolyLightMinLevel = MPPaladinHealSaved.HolyLightMinLevel
-        if MPPaladinHealSaved.HolyLightMaxLevel < MPPaladinHolyLightMaxLevel then
-            HolyLightMaxLevel = MPPaladinHealSaved.HolyLightMaxLevel
+        local HolyLightMinLevel = MPPaladinHealSaved[MPPaladinHealConfig].HolyLightMinLevel
+        if MPPaladinHealSaved[MPPaladinHealConfig].HolyLightMaxLevel < MPPaladinHolyLightMaxLevel then
+            HolyLightMaxLevel = MPPaladinHealSaved[MPPaladinHealConfig].HolyLightMaxLevel
         end
 
         for i = HolyLightMaxLevel, HolyLightMinLevel, -1 do
@@ -264,20 +269,20 @@ function MPPaladinHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("圣光术(等级 "..MPPaladinHealSaved.HolyLightMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("圣光术(等级 "..MPPaladinHealSaved[MPPaladinHealConfig].HolyLightMinLevel..")", unit, 1)
     end
 
 
 
-    if MPPaladinHealSaved.FlashLight==1 and MPPaladinFlashLightMaxLevel>0 then
+    if MPPaladinHealSaved[MPPaladinHealConfig].FlashLight==1 and MPPaladinFlashLightMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local FlashLightMaxLevel = MPPaladinFlashLightMaxLevel
-        local FlashLightMinLevel = MPPaladinHealSaved.FlashLightMinLevel
-        if MPPaladinHealSaved.FlashLightMaxLevel < MPPaladinFlashLightMaxLevel then
-            FlashLightMaxLevel = MPPaladinHealSaved.FlashLightMaxLevel
+        local FlashLightMinLevel = MPPaladinHealSaved[MPPaladinHealConfig].FlashLightMinLevel
+        if MPPaladinHealSaved[MPPaladinHealConfig].FlashLightMaxLevel < MPPaladinFlashLightMaxLevel then
+            FlashLightMaxLevel = MPPaladinHealSaved[MPPaladinHealConfig].FlashLightMaxLevel
         end
 
         for i = FlashLightMaxLevel, FlashLightMinLevel, -1 do
@@ -292,7 +297,7 @@ function MPPaladinHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("圣光闪现(等级 "..MPPaladinHealSaved.FlashLightMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("圣光闪现(等级 "..MPPaladinHealSaved[MPPaladinHealConfig].FlashLightMinLevel..")", unit, 1)
     end
 
 

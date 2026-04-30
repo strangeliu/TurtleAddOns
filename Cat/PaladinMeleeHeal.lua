@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 近战奶骑一键宏
--- 更新日期：2026-01-26 （后面根据时间来判断版本）
+-- 更新日期：2026-04-11 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -25,6 +25,10 @@ MPCastHolyLightDelay = 0
 
 
 local Mana
+
+-- 默认配置
+MPPaladinMeleeHealConfig = 1
+
 
 -- 正义圣印
 local function SealJustice()
@@ -89,12 +93,12 @@ function MPPaladinAutoMeleeHealth()
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPPaladinMeleeHealSaved.Pick==1 then
+	if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPPaladinMeleeHealSaved.Power==1 then
+	if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -104,24 +108,24 @@ function MPPaladinAutoMeleeHealth()
 	if MPInCombat then
 	    -- 血量危险时处理，潜行下不吃药
 	    local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-	    if percent<MPPaladinMeleeHealSaved.HealthStone_Value and MPPaladinMeleeHealSaved.HealthStone==1 then
+	    if percent<MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HealthStone_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HealthStone==1 then
 		    MPUseItemByName("特效治疗石")
 	    end
-	    if percent<MPPaladinMeleeHealSaved.HerbalTea_Value and MPPaladinMeleeHealSaved.HerbalTea==1 then
+	    if percent<MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HerbalTea_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HerbalTea==1 then
 		    MPUseItemByName("糖水茶")
 		    MPUseItemByName("诺达纳尔草药茶")
 	    end
 
 		local percentMana = UnitMana("player") / UnitManaMax("player") * 100
-		if percentMana<MPPaladinMeleeHealSaved.HerbalTeaMana_Value and MPPaladinMeleeHealSaved.HerbalTeaMana==1 then
+		if percentMana<MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HerbalTeaMana_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percent<MPPaladinMeleeHealSaved.Protection_Value and MPPaladinMeleeHealSaved.Protection==1 then
+		if percent<MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Protection_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Protection==1 then
 			MPCastSpellWithoutTarget("保护之手","player")
 		end
-		if percent<MPPaladinMeleeHealSaved.DivineShield_Value and MPPaladinMeleeHealSaved.DivineShield==1 then
+		if percent<MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].DivineShield_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].DivineShield==1 then
 			CastSpellByName("圣盾术")
 		end
 
@@ -134,7 +138,7 @@ function MPPaladinAutoMeleeHealth()
     end
 
     --[[
-    if MPPaladinMeleeHealSaved.Justice==1 then
+    if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Justice==1 then
 
         -- 上智慧审判
         if not MPBuff("智慧审判", "target") and not MPBuff("智慧圣印") then
@@ -222,12 +226,12 @@ function MPPaladinAutoMeleeHealth()
         return
     end
 
-    if MPPaladinMeleeHealSaved.CrusaderStrike==1 and not SSZZ and SZJ then
+    if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].CrusaderStrike==1 and not SSZZ and SZJ then
         CastSpellByName("十字军打击")
         return
     end
 
-    if MPPaladinMeleeHealSaved.HolyStrike==1 and SZJ then
+    if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HolyStrike==1 and SZJ then
         CastSpellByName("神圣打击")
         return
     end
@@ -306,7 +310,7 @@ function MPPaladinMeleeHealth(unit)
     percentHealth = health/maxHealth*100
     HealthDec = maxHealth - health
 
-    if MPPaladinMeleeHealSaved.Begin_Value <= percentHealth then
+    if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Begin_Value <= percentHealth then
         return false
     end
 
@@ -347,13 +351,13 @@ function MPPaladinMeleeHealth(unit)
 
     -- 治疗 --
 
-    if percentHealth < MPPaladinMeleeHealSaved.LayHands_Value and MPPaladinMeleeHealSaved.LayHands==1 and SLS then
+    if percentHealth < MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].LayHands_Value and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].LayHands==1 and SLS then
         MPHealTargetDelay[targetName] = GetTime()
         return MPCastSpellWithoutTarget("圣疗术", unit, 1)
     end
 
 
-    if percentHealth < MPPaladinMeleeHealSaved.HolyShock_Value and SSZZ and MPPaladinMeleeHealSaved.HolyShock==1 then
+    if percentHealth < MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HolyShock_Value and SSZZ and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HolyShock==1 then
         --print(unit)
         if MP_UnitXP then
             if UnitXP("distanceBetween", "player", unit)<=20 then
@@ -373,11 +377,11 @@ function MPPaladinMeleeHealth(unit)
 
     MPHealthUnit = unit
 
-    if percentHealth < MPPaladinMeleeHealSaved.HolyLight_Value and MPBuff("神圣制裁") and MPPaladinMeleeHealSaved.HolyLight==1 and GetTime()-MPCastHolyLightDelay>0 then
+    if percentHealth < MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HolyLight_Value and MPBuff("神圣制裁") and MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].HolyLight==1 and GetTime()-MPCastHolyLightDelay>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
-        if MPPaladinHolyLightEffect[9]<HealthDec or MPPaladinMeleeHealSaved.Force==1 then
+        if MPPaladinHolyLightEffect[9]<HealthDec or MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Force==1 then
 
             if DM >= MPPaladinHolyLight[9] then
                 return MPCastSpellWithoutTarget("圣光术(等级 9)", unit, 1)
@@ -408,11 +412,11 @@ function MPPaladinMeleeHealth(unit)
 
 
 
-    if MPPaladinMeleeHealSaved.FlashLight==1 then
+    if MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].FlashLight==1 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
-        if MPPaladinFlashLightEffect[7]<HealthDec or MPPaladinMeleeHealSaved.Force==1 then
+        if MPPaladinFlashLightEffect[7]<HealthDec or MPPaladinMeleeHealSaved[MPPaladinMeleeHealConfig].Force==1 then
 
             if DM >= MPPaladinFlashLight[7] then
                 return MPCastSpellWithoutTarget("圣光闪现(等级 7)", unit, 1)

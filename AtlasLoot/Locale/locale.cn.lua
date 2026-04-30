@@ -2606,7 +2606,8 @@ AL:RegisterTranslations("zhCN", function() return {
 	["Tier 1 Sets"] = "T1套装",
 	["Tier 2 Sets"] = "T2套装",
 	["Tier 3 Sets"] = "T3套装",
-        ["Tier 3.5"] = "T3.5",
+	["Tier 3.5"] = "T3.5",
+	["Timbermaw Hold Sets"] = "木喉要塞套装",
 	--阵营
 	["Argent Dawn"] = "银色黎明",
     ["Bloodsail Buccaneers"] = "血帆海盗",
@@ -2635,6 +2636,8 @@ AL:RegisterTranslations("zhCN", function() return {
     ["Undercity"] = "|cffff0000幽暗城",
     ["Gnomeregan Exiles"] = "|cff2773ff诺莫瑞根复兴城",
     ["Thunder Bluff"] = "|cffff0000雷霆崖",
+	["Earthen Ring"] = "大地之环",
+	["Draenei Exiles"] = "德莱尼流亡者",
 	--副本boss名称
 	--怒焰裂谷
 	["Jergosh the Invoker"] = "祈求者耶戈什",
@@ -3098,6 +3101,7 @@ AL:RegisterTranslations("zhCN", function() return {
 	["Chieftain Partath"] = "大酋长帕萨斯",
 	["Selenaxx Foulheart"] = "塞雷纳克斯·腐心",
 	["Ursol"] = "乌索尔",
+	["Perotharn"] = "佩罗萨恩",
 	--杂项
     ["Cloth"] = "布甲",
     ["Ring"] = "戒指",

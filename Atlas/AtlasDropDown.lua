@@ -206,6 +206,7 @@ Atlas_DropDownLayouts = {
 		[ATLAS_DDL_PARTYSIZE_20] = {
 			"TheRuinsofAhnQiraj",
 			"ZulGurub",
+			"TimbermawHold", -- TurtleWOW 1.18.1 木喉要塞
 		},
 		[ATLAS_DDL_PARTYSIZE_40] = {
 			"BlackwingLair",

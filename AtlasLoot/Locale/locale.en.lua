@@ -3336,4 +3336,10 @@ AL:RegisterTranslations("enUS", function() return {
 	["Chieftain Partath"] = true,--1.18.1新增Boss
 	["Selenaxx Foulheart"] = true,--1.18.1新增Boss
 	["Ursol"] = true,--1.18.1新增Boss
+	["Perotharn"] = true,--木喉隐藏boss
+	--1.18新增阵营
+	["Earthen Ring"] = true,
+	["Draenei Exiles"] = true,
+	--木喉要塞套装
+	["Timbermaw Hold Sets"] = true,
 } end)

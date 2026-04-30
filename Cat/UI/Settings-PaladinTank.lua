@@ -2,6 +2,7 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-PaladinTank"
 
+local ConfigCurrent = 1
 
 -- 创建主框架
 CatUISettingsPaladinTank = MPCreateFrame(ADDON_NAME.."Frame", 520, 550, "|cFFF58CBA设置 - 防骑|r")
@@ -25,53 +26,33 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 local postion_y = postion_y-40
 
 -- 创建单选框 - 正义之怒
-local checkButton_RighteousFury = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_RighteousFury:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_RighteousFury:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RighteousFury = checkButton_RighteousFury:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RighteousFury:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RighteousFury:SetTextColor(1, 1, 1)
-checkText_RighteousFury:SetPoint("LEFT", checkButton_RighteousFury, "LEFT", 34, 1)
-checkText_RighteousFury:SetText("保持 正义之怒")
-
+local checkButton_RighteousFury = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "保持 正义之怒")
 -- 设置点击事件
 checkButton_RighteousFury:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.RighteousFury = 1
+        MPPaladinTankSaved[ConfigCurrent].RighteousFury = 1
     else
-        MPPaladinTankSaved.RighteousFury = 0
+        MPPaladinTankSaved[ConfigCurrent].RighteousFury = 0
     end
 end)
 
 
 -- 创建单选框 - 上方饰品
-local checkButton_Trinket_Upper = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Trinket_Upper:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Upper:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Upper = checkButton_Trinket_Upper:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Upper:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Upper:SetTextColor(1, 1, 1)
-checkText_Trinket_Upper:SetPoint("LEFT", checkButton_Trinket_Upper, "LEFT", 34, 1)
-checkText_Trinket_Upper:SetText("自动开启饰品(上)")
-
+local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(上)")
 -- 设置点击事件
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Trinket_Upper = 1
+        MPPaladinTankSaved[ConfigCurrent].Trinket_Upper = 1
     else
-        MPPaladinTankSaved.Trinket_Upper = 0
+        MPPaladinTankSaved[ConfigCurrent].Trinket_Upper = 0
     end
 end)
 local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.TUBoss = 1
+        MPPaladinTankSaved[ConfigCurrent].TUBoss = 1
     else
-        MPPaladinTankSaved.TUBoss = 0
+        MPPaladinTankSaved[ConfigCurrent].TUBoss = 0
     end
 end)
 
@@ -81,56 +62,36 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 奉献
-local checkButton_Consecration = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Consecration:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_Consecration:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Consecration = checkButton_Consecration:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Consecration:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Consecration:SetTextColor(1, 1, 1)
-checkText_Consecration:SetPoint("LEFT", checkButton_Consecration, "LEFT", 34, 1)
-checkText_Consecration:SetText("开启 奉献")
-
+local checkButton_Consecration = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "开启 奉献")
 -- 设置点击事件
 checkButton_Consecration:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPaladinCJSaved.Consecration=1
-        MPPaladinTankSaved.Consecration = 1
+        MPPaladinTankSaved[ConfigCurrent].Consecration = 1
     else
         MPPaladinCJSaved.Consecration=0
-        MPPaladinTankSaved.Consecration = 0
+        MPPaladinTankSaved[ConfigCurrent].Consecration = 0
     end
     MPCatPaladinSealInit()
 end)
 
 
 -- 创建单选框 - 下方饰品
-local checkButton_Trinket_Below = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Trinket_Below:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Below:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Below = checkButton_Trinket_Below:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Below:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Below:SetTextColor(1, 1, 1)
-checkText_Trinket_Below:SetPoint("LEFT", checkButton_Trinket_Below, "LEFT", 34, 1)
-checkText_Trinket_Below:SetText("自动开启饰品(下)")
-
+local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
 -- 设置点击事件
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Trinket_Below = 1
+        MPPaladinTankSaved[ConfigCurrent].Trinket_Below = 1
     else
-        MPPaladinTankSaved.Trinket_Below = 0
+        MPPaladinTankSaved[ConfigCurrent].Trinket_Below = 0
     end
 end)
 local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.TBBoss = 1
+        MPPaladinTankSaved[ConfigCurrent].TBBoss = 1
     else
-        MPPaladinTankSaved.TBBoss = 0
+        MPPaladinTankSaved[ConfigCurrent].TBBoss = 0
     end
 end)
 
@@ -140,45 +101,25 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 神圣之盾
-local checkButton_HolyShield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_HolyShield:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_HolyShield:SetScale(0.8)
-
--- 添加文字标签
-local checkTextHolyShield = checkButton_HolyShield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkTextHolyShield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkTextHolyShield:SetTextColor(1, 1, 1)
-checkTextHolyShield:SetPoint("LEFT", checkButton_HolyShield, "LEFT", 34, 1)
-checkTextHolyShield:SetText("开启 神圣之盾")
-
+local checkButton_HolyShield = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "开启 神圣之盾")
 -- 设置点击事件
 checkButton_HolyShield:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.HolyShield = 1
+        MPPaladinTankSaved[ConfigCurrent].HolyShield = 1
     else
-        MPPaladinTankSaved.HolyShield = 0
+        MPPaladinTankSaved[ConfigCurrent].HolyShield = 0
     end
 end)
 
 
 -- 创建单选框 - 自动锁敌
-local checkButton_Target = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Target:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_Target:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Target = checkButton_Target:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Target:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Target:SetTextColor(1, 1, 1)
-checkText_Target:SetPoint("LEFT", checkButton_Target, "LEFT", 34, 1)
-checkText_Target:SetText("自动锁敌 (攻击最近的敌人)")
-
+local checkButton_Target = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动锁敌 (攻击最近的敌人)")
 -- 设置点击事件
 checkButton_Target:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Target = 1
+        MPPaladinTankSaved[ConfigCurrent].Target = 1
     else
-        MPPaladinTankSaved.Target = 0
+        MPPaladinTankSaved[ConfigCurrent].Target = 0
     end
 end)
 
@@ -186,46 +127,26 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 十字军打击
-local checkButton_CrusaderStrike = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_CrusaderStrike:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_CrusaderStrike:SetScale(0.8)
-
--- 添加文字标签
-local checkText_CrusaderStrike = checkButton_CrusaderStrike:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_CrusaderStrike:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_CrusaderStrike:SetTextColor(1, 1, 1)
-checkText_CrusaderStrike:SetPoint("LEFT", checkButton_CrusaderStrike, "LEFT", 34, 1)
-checkText_CrusaderStrike:SetText("开启 十字军打击")
-
+local checkButton_CrusaderStrike = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "开启 十字军打击")
 -- 设置点击事件
 checkButton_CrusaderStrike:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.CrusaderStrike = 1
+        MPPaladinTankSaved[ConfigCurrent].CrusaderStrike = 1
     else
-        MPPaladinTankSaved.CrusaderStrike = 0
+        MPPaladinTankSaved[ConfigCurrent].CrusaderStrike = 0
     end
 end)
 
 postion_y = postion_y-30
 
 -- 创建单选框 - 驱邪术
-local checkButton_Exorcism = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Exorcism:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_Exorcism:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Exorcism = checkButton_Exorcism:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Exorcism:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Exorcism:SetTextColor(1, 1, 1)
-checkText_Exorcism:SetPoint("LEFT", checkButton_Exorcism, "LEFT", 34, 1)
-checkText_Exorcism:SetText("开启 驱邪术 (亡灵,恶魔)")
-
+local checkButton_Exorcism = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "开启 驱邪术 (亡灵,恶魔)")
 -- 设置点击事件
 checkButton_Exorcism:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Exorcism = 1
+        MPPaladinTankSaved[ConfigCurrent].Exorcism = 1
     else
-        MPPaladinTankSaved.Exorcism = 0
+        MPPaladinTankSaved[ConfigCurrent].Exorcism = 0
     end
 end)
 
@@ -234,7 +155,7 @@ end)
 
 
 
-postion_y = postion_y-10
+postion_y = postion_y+10
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsPaladinTank:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -246,43 +167,23 @@ TipText1:SetJustifyH("LEFT")
 TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
-postion_y = postion_y-85
+postion_y = postion_y-75
 
 
 -- 创建单选框 - 神圣之盾
-local checkButton_HolyShieldTarget = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonHolyShieldTarget", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_HolyShieldTarget:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_HolyShieldTarget:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HolyShieldTarget = checkButton_HolyShieldTarget:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HolyShieldTarget:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HolyShieldTarget:SetTextColor(1, 1, 1)
-checkText_HolyShieldTarget:SetPoint("LEFT", checkButton_HolyShieldTarget, "LEFT", 34, 1)
-checkText_HolyShieldTarget:SetText("目标看你时 允许 神圣之盾")
-
+local checkButton_HolyShieldTarget = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "目标看你时 允许 神圣之盾")
 -- 设置点击事件
 checkButton_HolyShieldTarget:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.HolyShieldTarget = 1
+        MPPaladinTankSaved[ConfigCurrent].HolyShieldTarget = 1
     else
-        MPPaladinTankSaved.HolyShieldTarget = 0
+        MPPaladinTankSaved[ConfigCurrent].HolyShieldTarget = 0
     end
 end)
 
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HealthStone", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_HealthStone:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_HealthStone:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HealthStone = checkButton_HealthStone:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HealthStone:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HealthStone:SetTextColor(1, 1, 1)
-checkText_HealthStone:SetPoint("LEFT", checkButton_HealthStone, "LEFT", 34, 1)
-checkText_HealthStone:SetText("自动 治疗石")
-
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动 治疗石")
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -297,26 +198,23 @@ MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-_G[slider_HealthStone:GetName().."Low"]:Hide()
-_G[slider_HealthStone:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPPaladinTankSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved.HealthStone_Value .."%|r")
+    MPPaladinTankSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.HealthStone = 1
+        MPPaladinTankSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPPaladinTankSaved.HealthStone = 0
+        MPPaladinTankSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
 
@@ -325,39 +223,19 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 取消拯救
-local checkButton_UnSalvation = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonUnSalvation", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_UnSalvation:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_UnSalvation:SetScale(0.8)
-
--- 添加文字标签
-local checkText_UnSalvation = checkButton_UnSalvation:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_UnSalvation:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_UnSalvation:SetTextColor(1, 1, 1)
-checkText_UnSalvation:SetPoint("LEFT", checkButton_UnSalvation, "LEFT", 34, 1)
-checkText_UnSalvation:SetText("自动取消 拯救祝福")
-
+local checkButton_UnSalvation = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "自动取消 拯救祝福")
 -- 设置点击事件
 checkButton_UnSalvation:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.UnSalvation = 1
+        MPPaladinTankSaved[ConfigCurrent].UnSalvation = 1
     else
-        MPPaladinTankSaved.UnSalvation = 0
+        MPPaladinTankSaved[ConfigCurrent].UnSalvation = 0
     end
 end)
 
 
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTea", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_HerbalTea:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTea:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTea = checkButton_HerbalTea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTea:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTea:SetTextColor(1, 1, 1)
-checkText_HerbalTea:SetPoint("LEFT", checkButton_HerbalTea, "LEFT", 34, 1)
-checkText_HerbalTea:SetText("自动 草药茶")
-
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -372,26 +250,23 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-_G[slider_HerbalTea:GetName().."Low"]:Hide()
-_G[slider_HerbalTea:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPPaladinTankSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved.HerbalTea_Value .."%|r")
+    MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.HerbalTea = 1
+        MPPaladinTankSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPPaladinTankSaved.HerbalTea = 0
+        MPPaladinTankSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -404,23 +279,13 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 小庇护祝福
-local checkButton_Sanctuary = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonSanctuary", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Sanctuary:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
-checkButton_Sanctuary:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Sanctuary = checkButton_Sanctuary:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Sanctuary:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Sanctuary:SetTextColor(1, 1, 1)
-checkText_Sanctuary:SetPoint("LEFT", checkButton_Sanctuary, "LEFT", 34, 1)
-checkText_Sanctuary:SetText("自动 小庇护祝福")
-
+local checkButton_Sanctuary = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "自动 小庇护祝福")
 -- 设置点击事件
 checkButton_Sanctuary:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Sanctuary = 1
+        MPPaladinTankSaved[ConfigCurrent].Sanctuary = 1
     else
-        MPPaladinTankSaved.Sanctuary = 0
+        MPPaladinTankSaved[ConfigCurrent].Sanctuary = 0
     end
 end)
 
@@ -428,17 +293,7 @@ end)
 
 
 -- 创建单选框 - 草药茶 蓝量
-local checkButton_HerbalTeaMana = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTeaMana", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_HerbalTeaMana:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTeaMana:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTeaMana = checkButton_HerbalTeaMana:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTeaMana:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTeaMana:SetTextColor(1, 1, 1)
-checkText_HerbalTeaMana:SetPoint("LEFT", checkButton_HerbalTeaMana, "LEFT", 34, 1)
-checkText_HerbalTeaMana:SetText("自动 草药茶")
-
+local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTeaMana = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTeaMana", checkButton_HerbalTeaMana, "OptionsSliderTemplate")
 slider_HerbalTeaMana:SetPoint("RIGHT", checkButton_HerbalTeaMana, "RIGHT", 250, -2)
@@ -453,26 +308,23 @@ MPCatUISliderRegionHide(slider_HerbalTeaMana)
 
 local color_HerbalTeaMana = "|cFFFFD100"
 
-_G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: 20%|r")
-_G[slider_HerbalTeaMana:GetName().."Low"]:Hide()
-_G[slider_HerbalTeaMana:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTeaMana:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPPaladinTankSaved.HerbalTeaMana_Value = arg1
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved.HerbalTeaMana_Value .."%|r")
+    MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value = arg1
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTeaMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.HerbalTeaMana = 1
+        MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana = 1
         color_HerbalTeaMana = "|cFFFFD100"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     else
-        MPPaladinTankSaved.HerbalTeaMana = 0
+        MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana = 0
         color_HerbalTeaMana = "|cFF888888"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -481,41 +333,10 @@ end)
 
 postion_y = postion_y-40
 
--- 审判界限
-local slider_JudgementOutHP = CreateFrame("Slider", ADDON_NAME.."SliderJudgementOutHP", CatUISettingsPaladinTank, "OptionsSliderTemplate")
-slider_JudgementOutHP:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y+60)
-slider_JudgementOutHP:SetWidth(220) -- 拖动条长度
-slider_JudgementOutHP:SetHeight(16) -- 拖动条高度
-
-slider_JudgementOutHP:SetMinMaxValues(0, 50000)
-slider_JudgementOutHP:SetValueStep(1000)
-slider_JudgementOutHP:SetValue(5000) -- 默认值
-MPCatUISliderRegionHide(slider_JudgementOutHP)
-
-_G[slider_JudgementOutHP:GetName().."Low"]:Hide()
-_G[slider_JudgementOutHP:GetName().."High"]:Hide()
-_G[slider_JudgementOutHP:GetName().."Text"]:SetFont("Fonts\\FRIZQT__.TTF", 12, "NONE")
-
--- 值变化时的回调函数
-slider_JudgementOutHP:SetScript("OnValueChanged", function()
-    --print("Rip当前值:", arg1)
-    MPPaladinTankSaved.JudgementOutHP = arg1
-    _G[slider_JudgementOutHP:GetName().."Text"]:SetText("目标生命 <".. MPPaladinTankSaved.JudgementOutHP .." 不审判")
-end)
 
 
 -- 创建单选框 - 正义壁垒
-local checkButton_Righteous = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_Righteous", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_Righteous:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_Righteous:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Righteous = checkButton_Righteous:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Righteous:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Righteous:SetTextColor(1, 1, 1)
-checkText_Righteous:SetPoint("LEFT", checkButton_Righteous, "LEFT", 34, 1)
-checkText_Righteous:SetText("自动 正义壁垒")
-
+local checkButton_Righteous = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "自动 正义壁垒")
 
 local slider_Righteous = CreateFrame("Slider", ADDON_NAME.."Slider_Righteous", checkButton_Righteous, "OptionsSliderTemplate")
 slider_Righteous:SetPoint("RIGHT", checkButton_Righteous, "RIGHT", 250, -2)
@@ -530,32 +351,131 @@ MPCatUISliderRegionHide(slider_Righteous)
 
 local color_Righteous = "|cFFFFD100"
 
-_G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: 20%|r")
-_G[slider_Righteous:GetName().."Low"]:Hide()
-_G[slider_Righteous:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_Righteous:SetScript("OnValueChanged", function()
     --print("Frenzied当前值:", arg1)
-    MPPaladinTankSaved.Righteous_Value = arg1
+    MPPaladinTankSaved[ConfigCurrent].Righteous_Value = arg1
     _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. arg1 .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_Righteous:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Righteous = 1
+        MPPaladinTankSaved[ConfigCurrent].Righteous = 1
         color_Righteous = "|cFFFFD100"
-        _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved.Righteous_Value .."%|r")
+        _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved[ConfigCurrent].Righteous_Value .."%|r")
     else
-        MPPaladinTankSaved.Righteous = 0
+        MPPaladinTankSaved[ConfigCurrent].Righteous = 0
         color_Righteous = "|cFF888888"
-        _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved.Righteous_Value .."%|r")
+        _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved[ConfigCurrent].Righteous_Value .."%|r")
     end
 end)
 
 
+postion_y = postion_y-40
 
-postion_y = postion_y+15
+-- 创建单选框 - 圣疗术
+local checkButton_LayHands = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动 圣疗术")
+
+local slider_LayHands = CreateFrame("Slider", ADDON_NAME.."Slider_LayHands", checkButton_LayHands, "OptionsSliderTemplate")
+slider_LayHands:SetPoint("RIGHT", checkButton_LayHands, "RIGHT", 250, -2)
+slider_LayHands:SetWidth(150) -- 拖动条长度
+slider_LayHands:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_LayHands:SetMinMaxValues(0, 100)
+slider_LayHands:SetValueStep(1)
+slider_LayHands:SetValue(10) -- 默认值
+MPCatUISliderRegionHide(slider_LayHands)
+
+local color_LayHands = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_LayHands:SetScript("OnValueChanged", function()
+    --print("Frenzied当前值:", arg1)
+    MPPaladinTankSaved[ConfigCurrent].LayHands_Value = arg1
+    _G[slider_LayHands:GetName().."Text"]:SetText(color_LayHands.."血线: ".. arg1 .."%|r")
+end)
+
+-- 设置点击事件
+checkButton_LayHands:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinTankSaved[ConfigCurrent].LayHands = 1
+        color_LayHands = "|cFFFFD100"
+        _G[slider_LayHands:GetName().."Text"]:SetText(color_LayHands.."血线: ".. MPPaladinTankSaved[ConfigCurrent].LayHands_Value .."%|r")
+    else
+        MPPaladinTankSaved[ConfigCurrent].LayHands = 0
+        color_LayHands = "|cFF888888"
+        _G[slider_LayHands:GetName().."Text"]:SetText(color_LayHands.."血线: ".. MPPaladinTankSaved[ConfigCurrent].LayHands_Value .."%|r")
+    end
+end)
+
+postion_y = postion_y-40
+
+
+-- 创建单选框 - 种族天赋
+local checkButton_RacialTraits = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, postion_y, "自动 种族天赋")
+-- 设置点击事件
+checkButton_RacialTraits:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinTankSaved[ConfigCurrent].RacialTraits = 1
+    else
+        MPPaladinTankSaved[ConfigCurrent].RacialTraits = 0
+    end
+end)
+local checkButton_RacialTraitsBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RacialTraitsBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinTankSaved[ConfigCurrent].RacialTraitsBoss = 1
+    else
+        MPPaladinTankSaved[ConfigCurrent].RacialTraitsBoss = 0
+    end
+end)
+
+
+postion_y = postion_y - 40
+
+-- 魂能之速
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速")
+checkButton_Soulspeed:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinTankSaved[ConfigCurrent].Soulspeed = 1
+    else
+        MPPaladinTankSaved[ConfigCurrent].Soulspeed = 0
+    end
+end)
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinTankSaved[ConfigCurrent].SoulspeedBoss = 1
+    else
+        MPPaladinTankSaved[ConfigCurrent].SoulspeedBoss = 0
+    end
+end)
+
+
+postion_y = postion_y+150
+
+
+-- 审判界限
+local slider_JudgementOutHP = CreateFrame("Slider", ADDON_NAME.."SliderJudgementOutHP", CatUISettingsPaladinTank, "OptionsSliderTemplate")
+slider_JudgementOutHP:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 20, postion_y)
+slider_JudgementOutHP:SetWidth(220) -- 拖动条长度
+slider_JudgementOutHP:SetHeight(16) -- 拖动条高度
+
+slider_JudgementOutHP:SetMinMaxValues(0, 50000)
+slider_JudgementOutHP:SetValueStep(1000)
+slider_JudgementOutHP:SetValue(500000) -- 默认值
+MPCatUISliderRegionHide(slider_JudgementOutHP)
+
+-- 值变化时的回调函数
+slider_JudgementOutHP:SetScript("OnValueChanged", function()
+    --print("Rip当前值:", arg1)
+    MPPaladinTankSaved[ConfigCurrent].JudgementOutHP = arg1
+    _G[slider_JudgementOutHP:GetName().."Text"]:SetText("目标生命 <".. MPPaladinTankSaved[ConfigCurrent].JudgementOutHP .." 不审判")
+end)
+
+postion_y = postion_y-45
 
 -- 十字军打击时机
 local slider_CrusaderStrikeTimer = CreateFrame("Slider", ADDON_NAME.."SliderCrusaderStrikeTimer", CatUISettingsPaladinTank, "OptionsSliderTemplate")
@@ -565,18 +485,14 @@ slider_CrusaderStrikeTimer:SetHeight(16) -- 拖动条高度
 
 slider_CrusaderStrikeTimer:SetMinMaxValues(1, 180)
 slider_CrusaderStrikeTimer:SetValueStep(1)
-slider_CrusaderStrikeTimer:SetValue(10) -- 默认值
+slider_CrusaderStrikeTimer:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_CrusaderStrikeTimer)
-
-_G[slider_CrusaderStrikeTimer:GetName().."Text"]:SetText("10秒后开启 十字军打击")
-_G[slider_CrusaderStrikeTimer:GetName().."Low"]:Hide()
-_G[slider_CrusaderStrikeTimer:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_CrusaderStrikeTimer:SetScript("OnValueChanged", function()
     --print("Ferocious当前值:", arg1)
     _G[slider_CrusaderStrikeTimer:GetName().."Text"]:SetText(arg1.."秒后开启 十字军打击")
-    MPPaladinTankSaved.CrusaderStrikeTimer = arg1
+    MPPaladinTankSaved[ConfigCurrent].CrusaderStrikeTimer = arg1
 end)
 
 
@@ -591,12 +507,8 @@ slider_Consecration_Level:SetHeight(16) -- 拖动条高度
 
 slider_Consecration_Level:SetMinMaxValues(0, 5)
 slider_Consecration_Level:SetValueStep(1)
-slider_Consecration_Level:SetValue(0) -- 默认值
+slider_Consecration_Level:SetValue(10) -- 默认值
 MPCatUISliderRegionHide(slider_Consecration_Level)
-
-_G[slider_Consecration_Level:GetName().."Text"]:SetText("奉献等级: 自动|r")
-_G[slider_Consecration_Level:GetName().."Low"]:Hide()
-_G[slider_Consecration_Level:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_Consecration_Level:SetScript("OnValueChanged", function()
@@ -606,57 +518,15 @@ slider_Consecration_Level:SetScript("OnValueChanged", function()
     else
         _G[slider_Consecration_Level:GetName().."Text"]:SetText("奉献等级："..arg1)
     end
-    MPPaladinTankSaved.Consecration_Level = arg1
-end)
-
-postion_y = postion_y-140
-
-
-postion_y = postion_y-40
-
-
-postion_y = postion_y+170
-
-
--- 创建单选框 - 种族天赋
-local checkButton_RacialTraits = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPaladinTank, "UICheckButtonTemplate")
-checkButton_RacialTraits:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
-checkButton_RacialTraits:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RacialTraits = checkButton_RacialTraits:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RacialTraits:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RacialTraits:SetTextColor(1, 1, 1)
-checkText_RacialTraits:SetPoint("LEFT", checkButton_RacialTraits, "LEFT", 34, 1)
-checkText_RacialTraits:SetText("自动开启 种族天赋 (爆发类)")
-
--- 设置点击事件
-checkButton_RacialTraits:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPPaladinTankSaved.RacialTraits = 1
-    else
-        MPPaladinTankSaved.RacialTraits = 0
-    end
+    MPPaladinTankSaved[ConfigCurrent].Consecration_Level = arg1
 end)
 
 
-
-postion_y = postion_y - 40
-
--- 魂能之速
-local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速 (BOSS时)")
-checkButton_Soulspeed:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPPaladinTankSaved.Soulspeed = 1
-    else
-        MPPaladinTankSaved.Soulspeed = 0
-    end
-end)
 
 
 -- 动态控制
 local ButtonAutoSeal = CreateFrame("Button", ADDON_NAME.."ButtonAutoSeal", CatUISettingsPaladinTank, "UIPanelButtonTemplate")
-ButtonAutoSeal:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y+60)
+ButtonAutoSeal:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 340, postion_y)
 ButtonAutoSeal:SetWidth(100)
 ButtonAutoSeal:SetHeight(22)
 ButtonAutoSeal:SetFont("Fonts\\FRIZQT__.TTF", 12)
@@ -680,21 +550,9 @@ end)
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsPaladinTank, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsPaladinTank, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetPaladinTankSettings()
+    MPResetPaladinTankSettings(ConfigCurrent)
     MPInitPaladinTankSettings()
 
     MPCatPaladinSealReset()
@@ -706,6 +564,55 @@ myButton:SetScript("OnClick", function()
 end)
 
 
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsPaladinTank, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsPaladinTank, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsPaladinTank, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsPaladinTank, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitPaladinTankSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitPaladinTankSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
+    MPInitPaladinTankSettings()
+end)
+
 
 -- 添加分隔线
 MPBottomLine(CatUISettingsPaladinTank)
@@ -713,9 +620,9 @@ MPBottomLine(CatUISettingsPaladinTank)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Power = 1
+        MPPaladinTankSaved[ConfigCurrent].Power = 1
     else
-        MPPaladinTankSaved.Power = 0
+        MPPaladinTankSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -729,9 +636,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinTankSaved.Pick = 1
+        MPPaladinTankSaved[ConfigCurrent].Pick = 1
     else
-        MPPaladinTankSaved.Pick = 0
+        MPPaladinTankSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -748,201 +655,242 @@ TipText:SetPoint("BOTTOM", CatUISettingsPaladinTank, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ |cFFF58CBA/ptank|r ]")
+TipText:SetText("宏命令 |cFFF58CBA/ptank|r [ 1 | 2 | 3 ]")
 
 
 
 -- 配置文件版本号
-local PaladinTankSettingsUIVersion = 18
+local PaladinTankSettingsUIVersion = 21
 
-function MPResetPaladinTankSettings()
+function MPResetPaladinTankSettings(config)
 
     MPPaladinTankSaved.Version = PaladinTankSettingsUIVersion
 
     -- 基本配置
 
-    MPPaladinTankSaved.Trinket_Upper = 1
-    MPPaladinTankSaved.TUBoss = 0
-    MPPaladinTankSaved.Trinket_Below = 1
-    MPPaladinTankSaved.TBBoss = 0
+    MPPaladinTankSaved[config].Trinket_Upper = 1
+    MPPaladinTankSaved[config].TUBoss = 0
+    MPPaladinTankSaved[config].Trinket_Below = 1
+    MPPaladinTankSaved[config].TBBoss = 0
 
-    MPPaladinTankSaved.RighteousFury = 1
-    MPPaladinTankSaved.Consecration = 1
-    MPPaladinTankSaved.Consecration_Level = 0
+    MPPaladinTankSaved[config].RighteousFury = 1
+    MPPaladinTankSaved[config].Consecration = 1
+    MPPaladinTankSaved[config].Consecration_Level = 0
 
-    MPPaladinTankSaved.HolyShield = 1
-    MPPaladinTankSaved.Exorcism = 1
+    MPPaladinTankSaved[config].HolyShield = 1
+    MPPaladinTankSaved[config].Exorcism = 1
 
-    MPPaladinTankSaved.Target = 0
+    MPPaladinTankSaved[config].Target = 0
 
     -- 高级配置
 
     -- 治疗石、糖水茶
-    MPPaladinTankSaved.HealthStone = 1
-    MPPaladinTankSaved.HealthStone_Value = 30
-    MPPaladinTankSaved.HerbalTea = 1
-    MPPaladinTankSaved.HerbalTea_Value = 20
-    MPPaladinTankSaved.Righteous = 0
-    MPPaladinTankSaved.Righteous_Value = 20
-    MPPaladinTankSaved.HerbalTeaMana = 0
-    MPPaladinTankSaved.HerbalTeaMana_Value = 20
+    MPPaladinTankSaved[config].HealthStone = 1
+    MPPaladinTankSaved[config].HealthStone_Value = 30
+    MPPaladinTankSaved[config].HerbalTea = 1
+    MPPaladinTankSaved[config].HerbalTea_Value = 20
+    MPPaladinTankSaved[config].HerbalTeaMana = 0
+    MPPaladinTankSaved[config].HerbalTeaMana_Value = 20
+    MPPaladinTankSaved[config].Righteous = 0
+    MPPaladinTankSaved[config].Righteous_Value = 20
+    MPPaladinTankSaved[config].LayHands = 0
+    MPPaladinTankSaved[config].LayHands_Value = 10
 
-    MPPaladinTankSaved.JudgementOutHP = 5000
-    MPPaladinTankSaved.Seal = 1
-    MPPaladinTankSaved.Seal_Value = 1
+    MPPaladinTankSaved[config].JudgementOutHP = 5000
+    MPPaladinTankSaved[config].Seal = 1
+    MPPaladinTankSaved[config].Seal_Value = 1
 
 
-    MPPaladinTankSaved.CrusaderStrike = 0
-    MPPaladinTankSaved.CrusaderStrikeTimer = 15
+    MPPaladinTankSaved[config].CrusaderStrike = 0
+    MPPaladinTankSaved[config].CrusaderStrikeTimer = 15
 
 
     -- SuperWoW,UnitXP
-    MPPaladinTankSaved.SuperWoW = 1
-    MPPaladinTankSaved.UnitXP = 1
+    MPPaladinTankSaved[config].SuperWoW = 1
+    MPPaladinTankSaved[config].UnitXP = 1
 
-    MPPaladinTankSaved.UnSalvation = 0
-    MPPaladinTankSaved.HolyShieldTarget = 0
-    MPPaladinTankSaved.Sanctuary = 0
+    MPPaladinTankSaved[config].UnSalvation = 0
+    MPPaladinTankSaved[config].HolyShieldTarget = 0
+    MPPaladinTankSaved[config].Sanctuary = 0
 
-    MPPaladinTankSaved.RacialTraits = 0
-    MPPaladinTankSaved.Soulspeed = 0
-    MPPaladinTankSaved.SwipeFirst = 1
+    MPPaladinTankSaved[config].RacialTraits = 0
+    MPPaladinTankSaved[config].RacialTraitsBoss = 1
+    MPPaladinTankSaved[config].Soulspeed = 0
+    MPPaladinTankSaved[config].SoulspeedBoss = 1
+    MPPaladinTankSaved[config].SwipeFirst = 1
 
     -- 通用
-    MPPaladinTankSaved.Power = 0
-    MPPaladinTankSaved.Pick = 0
+    MPPaladinTankSaved[config].Power = 0
+    MPPaladinTankSaved[config].Pick = 0
 
 end
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
 
 function InitPaladinTankSettingsPart1()
-    checkButton_RighteousFury:SetChecked(ToBoolean(MPPaladinTankSaved.RighteousFury))
-    checkButton_Consecration:SetChecked( ToBoolean(MPPaladinTankSaved.Consecration) )
-    checkButton_HolyShield:SetChecked( ToBoolean(MPPaladinTankSaved.HolyShield) )
-    checkButton_CrusaderStrike:SetChecked(ToBoolean(MPPaladinTankSaved.CrusaderStrike))
-    checkButton_Exorcism:SetChecked(ToBoolean(MPPaladinTankSaved.Exorcism))
+    checkButton_RighteousFury:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].RighteousFury))
+    checkButton_Consecration:SetChecked( MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Consecration) )
+    checkButton_HolyShield:SetChecked( MPToBoolean(MPPaladinTankSaved[ConfigCurrent].HolyShield) )
+    checkButton_CrusaderStrike:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].CrusaderStrike))
+    checkButton_Exorcism:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Exorcism))
 
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPPaladinTankSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPPaladinTankSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPPaladinTankSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPPaladinTankSaved.TBBoss))
-    checkButton_Target:SetChecked(ToBoolean(MPPaladinTankSaved.Target))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].TBBoss))
+    checkButton_Target:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Target))
 
-    checkButton_RacialTraits:SetChecked(ToBoolean(MPPaladinTankSaved.RacialTraits))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPPaladinTankSaved.Soulspeed))
+    checkButton_RacialTraits:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].RacialTraits))
+    checkButton_RacialTraitsBoss:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].RacialTraitsBoss))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].SoulspeedBoss))
 
-    checkButton_UnSalvation:SetChecked(ToBoolean(MPPaladinTankSaved.UnSalvation))
-    checkButton_HolyShieldTarget:SetChecked(ToBoolean(MPPaladinTankSaved.HolyShieldTarget))
-    checkButton_Sanctuary:SetChecked(ToBoolean(MPPaladinTankSaved.Sanctuary))
+    checkButton_UnSalvation:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].UnSalvation))
+    checkButton_HolyShieldTarget:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].HolyShieldTarget))
+    checkButton_Sanctuary:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Sanctuary))
 
-    checkButton_Power:SetChecked(ToBoolean(MPPaladinTankSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPPaladinTankSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].Pick))
 end
 
-function MPInitPaladinTankSettings()
-    if not MPPaladinTankSaved then
-        MPPaladinTankSaved = {}
-        MPResetPaladinTankSettings()
-    end
-
-    if MPPaladinTankSaved.Version ~= PaladinTankSettingsUIVersion then
-        MPResetPaladinTankSettings()
-    end
-
-    InitPaladinTankSettingsPart1()
-
-
-    checkButton_HealthStone:SetChecked(ToBoolean(MPPaladinTankSaved.HealthStone))
-    slider_HealthStone:SetValue(MPPaladinTankSaved.HealthStone_Value)
-    if MPPaladinTankSaved.HealthStone==1 then
+function InitPaladinTankSettingsPart2()
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPPaladinTankSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPPaladinTankSaved[ConfigCurrent].HealthStone_Value)
+    if MPPaladinTankSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPPaladinTankSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPPaladinTankSaved.HerbalTea_Value)
-    if MPPaladinTankSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPPaladinTankSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value)
+    if MPPaladinTankSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_HerbalTeaMana:SetChecked(MPPaladinTankSaved.HerbalTeaMana)
-    slider_HerbalTeaMana:SetValue(MPPaladinTankSaved.HerbalTeaMana_Value)
-    if MPPaladinTankSaved.HerbalTeaMana==1 then
+    checkButton_HerbalTeaMana:SetChecked(MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana)
+    slider_HerbalTeaMana:SetValue(MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value)
+    if MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana==1 then
         color_HerbalTeaMana = "|cFFFFD100"
     else
         color_HerbalTeaMana = "|cFF888888"
     end
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved.HerbalTeaMana_Value .."%|r")
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPaladinTankSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 
 
-    checkButton_Righteous:SetChecked(MPPaladinTankSaved.Righteous)
-    slider_Righteous:SetValue(MPPaladinTankSaved.Righteous_Value)
-    if MPPaladinTankSaved.Righteous==1 then
+    checkButton_Righteous:SetChecked(MPPaladinTankSaved[ConfigCurrent].Righteous)
+    slider_Righteous:SetValue(MPPaladinTankSaved[ConfigCurrent].Righteous_Value)
+    if MPPaladinTankSaved[ConfigCurrent].Righteous==1 then
         color_Righteous = "|cFFFFD100"
     else
         color_Righteous = "|cFF888888"
     end
-    _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved.Righteous_Value .."%|r")
+    _G[slider_Righteous:GetName().."Text"]:SetText(color_Righteous.."血线: ".. MPPaladinTankSaved[ConfigCurrent].Righteous_Value .."%|r")
+
+
+    checkButton_LayHands:SetChecked(MPPaladinTankSaved[ConfigCurrent].LayHands)
+    slider_LayHands:SetValue(MPPaladinTankSaved[ConfigCurrent].LayHands_Value)
+    if MPPaladinTankSaved[ConfigCurrent].LayHands==1 then
+        color_LayHands = "|cFFFFD100"
+    else
+        color_LayHands = "|cFF888888"
+    end
+    _G[slider_LayHands:GetName().."Text"]:SetText(color_LayHands.."血线: ".. MPPaladinTankSaved[ConfigCurrent].LayHands_Value .."%|r")
 
 
     --[[ 前置审判
-    checkButton_Judgement:SetChecked(MPPaladinTankSaved.Judgement)
-    slider_Judgement:SetValue(MPPaladinTankSaved.Judgement_Value)
-    if MPPaladinTankSaved.Judgement==1 then
+    checkButton_Judgement:SetChecked(MPPaladinTankSaved[ConfigCurrent].Judgement)
+    slider_Judgement:SetValue(MPPaladinTankSaved[ConfigCurrent].Judgement_Value)
+    if MPPaladinTankSaved[ConfigCurrent].Judgement==1 then
         color_Judgement = "|cFFFFD100"
     else
         color_Judgement = "|cFF888888"
     end
-    if MPPaladinTankSaved.Judgement_Value==0 then
+    if MPPaladinTankSaved[ConfigCurrent].Judgement_Value==0 then
         _G[slider_Judgement:GetName().."Text"]:SetText(color_Judgement.."正义审判")
-    elseif MPPaladinTankSaved.Judgement_Value==1 then
+    elseif MPPaladinTankSaved[ConfigCurrent].Judgement_Value==1 then
         _G[slider_Judgement:GetName().."Text"]:SetText(color_Judgement.."智慧审判")
-    elseif MPPaladinTankSaved.Judgement_Value==2 then
+    elseif MPPaladinTankSaved[ConfigCurrent].Judgement_Value==2 then
         _G[slider_Judgement:GetName().."Text"]:SetText(color_Judgement.."十字军审判")
-    elseif MPPaladinTankSaved.Judgement_Value==3 then
+    elseif MPPaladinTankSaved[ConfigCurrent].Judgement_Value==3 then
         _G[slider_Judgement:GetName().."Text"]:SetText(color_Judgement.."光明审判")
     end
     ]]
 
-    slider_JudgementOutHP:SetValue(MPPaladinTankSaved.JudgementOutHP)
-    _G[slider_JudgementOutHP:GetName().."Text"]:SetText("目标生命 <".. MPPaladinTankSaved.JudgementOutHP .." 不审判")
+    slider_JudgementOutHP:SetValue(MPPaladinTankSaved[ConfigCurrent].JudgementOutHP)
+    _G[slider_JudgementOutHP:GetName().."Text"]:SetText("目标生命 <".. MPPaladinTankSaved[ConfigCurrent].JudgementOutHP .." 不审判")
 
 
     --[[ 中段审判
-    checkButton_MiddleJudgement:SetChecked(MPPaladinTankSaved.MiddleJudgement)
-    slider_MiddleJudgement:SetValue(MPPaladinTankSaved.MiddleJudgement_Value)
-    if MPPaladinTankSaved.MiddleJudgement==1 then
+    checkButton_MiddleJudgement:SetChecked(MPPaladinTankSaved[ConfigCurrent].MiddleJudgement)
+    slider_MiddleJudgement:SetValue(MPPaladinTankSaved[ConfigCurrent].MiddleJudgement_Value)
+    if MPPaladinTankSaved[ConfigCurrent].MiddleJudgement==1 then
         color_MiddleJudgement = "|cFFFFD100"
     else
         color_MiddleJudgement = "|cFF888888"
     end
-    if MPPaladinTankSaved.MiddleJudgement_Value==1 then
+    if MPPaladinTankSaved[ConfigCurrent].MiddleJudgement_Value==1 then
         _G[slider_MiddleJudgement:GetName().."Text"]:SetText(color_MiddleJudgement.."智慧审判")
-    elseif MPPaladinTankSaved.MiddleJudgement_Value==2 then
+    elseif MPPaladinTankSaved[ConfigCurrent].MiddleJudgement_Value==2 then
         _G[slider_MiddleJudgement:GetName().."Text"]:SetText(color_MiddleJudgement.."十字军审判")
-    elseif MPPaladinTankSaved.MiddleJudgement_Value==3 then
+    elseif MPPaladinTankSaved[ConfigCurrent].MiddleJudgement_Value==3 then
         _G[slider_MiddleJudgement:GetName().."Text"]:SetText(color_MiddleJudgement.."光明审判")
     end
-    slider_MiddleJudgementTimer:SetValue(MPPaladinTankSaved.MiddleJudgementTimer)
-    _G[slider_MiddleJudgementTimer:GetName().."Text"]:SetText(color_MiddleJudgement.."约".. MPPaladinTankSaved.MiddleJudgementTimer .."秒后 中段审判")
+    slider_MiddleJudgementTimer:SetValue(MPPaladinTankSaved[ConfigCurrent].MiddleJudgementTimer)
+    _G[slider_MiddleJudgementTimer:GetName().."Text"]:SetText(color_MiddleJudgement.."约".. MPPaladinTankSaved[ConfigCurrent].MiddleJudgementTimer .."秒后 中段审判")
     ]]
 
     -- 奉献
-    slider_Consecration_Level:SetValue(MPPaladinTankSaved.Consecration_Level)
+    slider_Consecration_Level:SetValue(MPPaladinTankSaved[ConfigCurrent].Consecration_Level)
 
-    slider_CrusaderStrikeTimer:SetValue(MPPaladinTankSaved.CrusaderStrikeTimer)
+    slider_CrusaderStrikeTimer:SetValue(MPPaladinTankSaved[ConfigCurrent].CrusaderStrikeTimer)
+
+end
+
+
+function MPInitPaladinTankSettings()
+    if not MPPaladinTankSaved then
+        MPPaladinTankSaved = {}
+
+        -- 第一套配置
+        if not MPPaladinTankSaved[1] then
+            MPPaladinTankSaved[1] = {}
+            MPResetPaladinTankSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPPaladinTankSaved[2] then
+            MPPaladinTankSaved[2] = {}
+            MPResetPaladinTankSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPPaladinTankSaved[3] then
+            MPPaladinTankSaved[3] = {}
+            MPResetPaladinTankSettings(3)
+        end
+    end
+
+    if MPPaladinTankSaved.Version ~= PaladinTankSettingsUIVersion then
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[防骑宏]当前配置，这是新版插件正常数据更新！|r")
+        MPPaladinTankSaved[1] = {}
+        MPPaladinTankSaved[2] = {}
+        MPPaladinTankSaved[3] = {}
+        MPResetPaladinTankSettings(1)
+        MPResetPaladinTankSettings(2)
+        MPResetPaladinTankSettings(3)
+    end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
+
+    InitPaladinTankSettingsPart1()
+    InitPaladinTankSettingsPart2()
 
 
 end

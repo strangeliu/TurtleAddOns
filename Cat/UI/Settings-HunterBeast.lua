@@ -1,14 +1,7 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-HunterBeast"
 
-
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
+local ConfigCurrent = 1
 
 -- 创建主框架
 CatUISettingsHunterBeast = MPCreateFrame(ADDON_NAME.."Frame", 520, 600, "|cFFABD473设置 - 兽王猎|r")
@@ -33,53 +26,33 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 local postion_y = postion_y-40
 
 -- 创建单选框 - 雄鹰守护​
-local checkButton_Hawk = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Hawk:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_Hawk:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Hawk = checkButton_Hawk:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Hawk:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Hawk:SetTextColor(1, 1, 1)
-checkText_Hawk:SetPoint("LEFT", checkButton_Hawk, "LEFT", 34, 1)
-checkText_Hawk:SetText("保持 雄鹰守护​")
-
+local checkButton_Hawk = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "保持 雄鹰守护")
 -- 设置点击事件
 checkButton_Hawk:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Hawk = 1
+        MPHunterBeastSaved[ConfigCurrent].Hawk = 1
     else
-        MPHunterBeastSaved.Hawk = 0
+        MPHunterBeastSaved[ConfigCurrent].Hawk = 0
     end
 end)
 
 
 -- 创建单选框 - 上方饰品
-local checkButton_Trinket_Upper = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Trinket_Upper:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Upper:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Upper = checkButton_Trinket_Upper:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Upper:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Upper:SetTextColor(1, 1, 1)
-checkText_Trinket_Upper:SetPoint("LEFT", checkButton_Trinket_Upper, "LEFT", 34, 1)
-checkText_Trinket_Upper:SetText("自动开启饰品(上)")
-
+local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(上)")
 -- 设置点击事件
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Trinket_Upper = 1
+        MPHunterBeastSaved[ConfigCurrent].Trinket_Upper = 1
     else
-        MPHunterBeastSaved.Trinket_Upper = 0
+        MPHunterBeastSaved[ConfigCurrent].Trinket_Upper = 0
     end
 end)
 local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.TUBoss = 1
+        MPHunterBeastSaved[ConfigCurrent].TUBoss = 1
     else
-        MPHunterBeastSaved.TUBoss = 0
+        MPHunterBeastSaved[ConfigCurrent].TUBoss = 0
     end
 end)
 
@@ -89,51 +62,32 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 强击光环
-local checkButton_Trueshot = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Trueshot:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_Trueshot:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trueshot = checkButton_Trueshot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trueshot:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trueshot:SetTextColor(1, 1, 1)
-checkText_Trueshot:SetPoint("LEFT", checkButton_Trueshot, "LEFT", 34, 1)
-checkText_Trueshot:SetText("保持 强击光环")
+local checkButton_Trueshot = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "保持 强击光环")
 checkButton_Trueshot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Trueshot = 1
+        MPHunterBeastSaved[ConfigCurrent].Trueshot = 1
     else
-        MPHunterBeastSaved.Trueshot = 0
+        MPHunterBeastSaved[ConfigCurrent].Trueshot = 0
     end
 end)
 
 
 -- 创建单选框 - 下方饰品
-local checkButton_Trinket_Below = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Trinket_Below:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Below:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Below = checkButton_Trinket_Below:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Below:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Below:SetTextColor(1, 1, 1)
-checkText_Trinket_Below:SetPoint("LEFT", checkButton_Trinket_Below, "LEFT", 34, 1)
-checkText_Trinket_Below:SetText("自动开启饰品(下)")
-
+local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
 -- 设置点击事件
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Trinket_Below = 1
+        MPHunterBeastSaved[ConfigCurrent].Trinket_Below = 1
     else
-        MPHunterBeastSaved.Trinket_Below = 0
+        MPHunterBeastSaved[ConfigCurrent].Trinket_Below = 0
     end
 end)
 local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.TBBoss = 1
+        MPHunterBeastSaved[ConfigCurrent].TBBoss = 1
     else
-        MPHunterBeastSaved.TBBoss = 0
+        MPHunterBeastSaved[ConfigCurrent].TBBoss = 0
     end
 end)
 
@@ -142,47 +96,33 @@ end)
 
 postion_y = postion_y-30
 
-
-
 -- 创建单选框 - 猎人印记
-local checkButton_Mark = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Mark:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_Mark:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Mark = checkButton_Mark:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Mark:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Mark:SetTextColor(1, 1, 1)
-checkText_Mark:SetPoint("LEFT", checkButton_Mark, "LEFT", 34, 1)
-checkText_Mark:SetText("保持 猎人印记")
-
+local checkButton_Mark = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "保持 猎人印记")
 -- 设置点击事件
 checkButton_Mark:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Mark = 1
+        MPHunterBeastSaved[ConfigCurrent].Mark = 1
     else
-        MPHunterBeastSaved.Mark = 0
+        MPHunterBeastSaved[ConfigCurrent].Mark = 0
+    end
+end)
+local checkButton_MarkBossOnly = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_MarkBossOnly:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].MarkBossOnly = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].MarkBossOnly = 0
     end
 end)
 
 -- 创建单选框 - 自动锁敌
-local checkButton_Target = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_Target:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_Target:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Target = checkButton_Target:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Target:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Target:SetTextColor(1, 1, 1)
-checkText_Target:SetPoint("LEFT", checkButton_Target, "LEFT", 34, 1)
-checkText_Target:SetText("自动锁敌 (攻击最近的敌人)")
-
+local checkButton_Target = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动锁敌 (攻击最近的敌人)")
 -- 设置点击事件
 checkButton_Target:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Target = 1
+        MPHunterBeastSaved[ConfigCurrent].Target = 1
     else
-        MPHunterBeastSaved.Target = 0
+        MPHunterBeastSaved[ConfigCurrent].Target = 0
     end
 end)
 
@@ -192,21 +132,12 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 杀戮命令
-local checkButton_KillCommand = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_KillCommand:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_KillCommand:SetScale(0.8)
-
--- 添加文字标签
-local checkText_KillCommand = checkButton_KillCommand:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_KillCommand:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_KillCommand:SetTextColor(1, 1, 1)
-checkText_KillCommand:SetPoint("LEFT", checkButton_KillCommand, "LEFT", 34, 1)
-checkText_KillCommand:SetText("开启 杀戮命令 (自动识别天赋)")
+local checkButton_KillCommand = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "开启 杀戮命令")
 checkButton_KillCommand:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.KillCommand = 1
+        MPHunterBeastSaved[ConfigCurrent].KillCommand = 1
     else
-        MPHunterBeastSaved.KillCommand = 0
+        MPHunterBeastSaved[ConfigCurrent].KillCommand = 0
     end
 end)
 
@@ -215,44 +146,24 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 瞄准射击
-local checkButton_AimedShot = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_AimedShot:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_AimedShot:SetScale(0.8)
-
--- 添加文字标签
-local checkText_AimedShot = checkButton_AimedShot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_AimedShot:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_AimedShot:SetTextColor(1, 1, 1)
-checkText_AimedShot:SetPoint("LEFT", checkButton_AimedShot, "LEFT", 34, 1)
-checkText_AimedShot:SetText("开启 瞄准射击 (自动识别天赋)")
-
+local checkButton_AimedShot = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "开启 瞄准射击")
 -- 设置点击事件
 checkButton_AimedShot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.AimedShot = 1
+        MPHunterBeastSaved[ConfigCurrent].AimedShot = 1
     else
-        MPHunterBeastSaved.AimedShot = 0
+        MPHunterBeastSaved[ConfigCurrent].AimedShot = 0
     end
 end)
 
 -- 创建单选框 - 宠物自动攻击
-local checkButton_PetAttack = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_PetAttack:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_PetAttack:SetScale(0.8)
-
--- 添加文字标签
-local checkText_PetAttack = checkButton_PetAttack:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_PetAttack:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_PetAttack:SetTextColor(1, 1, 1)
-checkText_PetAttack:SetPoint("LEFT", checkButton_PetAttack, "LEFT", 34, 1)
-checkText_PetAttack:SetText("宠物自动攻击")
-
+local checkButton_PetAttack = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "宠物自动攻击")
 -- 设置点击事件
 checkButton_PetAttack:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.PetAttack = 1
+        MPHunterBeastSaved[ConfigCurrent].PetAttack = 1
     else
-        MPHunterBeastSaved.PetAttack = 0
+        MPHunterBeastSaved[ConfigCurrent].PetAttack = 0
     end
 end)
 
@@ -260,23 +171,13 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 多重射击
-local checkButton_MultiShot = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_MultiShot:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_MultiShot:SetScale(0.8)
-
--- 添加文字标签
-local checkText_MultiShot = checkButton_MultiShot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_MultiShot:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_MultiShot:SetTextColor(1, 1, 1)
-checkText_MultiShot:SetPoint("LEFT", checkButton_MultiShot, "LEFT", 34, 1)
-checkText_MultiShot:SetText("开启 多重射击")
-
+local checkButton_MultiShot = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "开启 多重射击")
 -- 设置点击事件
 checkButton_MultiShot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.MultiShot = 1
+        MPHunterBeastSaved[ConfigCurrent].MultiShot = 1
     else
-        MPHunterBeastSaved.MultiShot = 0
+        MPHunterBeastSaved[ConfigCurrent].MultiShot = 0
     end
 end)
 
@@ -285,23 +186,13 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 奥术射击
-local checkButton_ArcaneShot = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_ArcaneShot:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_ArcaneShot:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ArcaneShot = checkButton_ArcaneShot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ArcaneShot:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ArcaneShot:SetTextColor(1, 1, 1)
-checkText_ArcaneShot:SetPoint("LEFT", checkButton_ArcaneShot, "LEFT", 34, 1)
-checkText_ArcaneShot:SetText("开启 奥术射击")
-
+local checkButton_ArcaneShot = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "开启 奥术射击")
 -- 设置点击事件
 checkButton_ArcaneShot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.ArcaneShot = 1
+        MPHunterBeastSaved[ConfigCurrent].ArcaneShot = 1
     else
-        MPHunterBeastSaved.ArcaneShot = 0
+        MPHunterBeastSaved[ConfigCurrent].ArcaneShot = 0
     end
 end)
 
@@ -310,37 +201,18 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - ​​毒蛇钉刺
-local checkButton_SerpentSting = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonSerpentSting ", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_SerpentSting:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_SerpentSting:SetScale(0.8)
-
--- 添加文字标签
-local checkText_SerpentSting = checkButton_SerpentSting:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_SerpentSting:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_SerpentSting:SetTextColor(1, 1, 1)
-checkText_SerpentSting:SetPoint("LEFT", checkButton_SerpentSting, "LEFT", 34, 1)
-checkText_SerpentSting:SetText("保持 ​​毒蛇钉刺 (钉刺仅单选)")
+local checkButton_SerpentSting = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "保持 ​​毒蛇钉刺 (钉刺单选)")
 
 
 
 -- 创建单选框 - 近身 猛禽一击
-local checkButton_RaptorStrike = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_RaptorStrike:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_RaptorStrike:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RaptorStrike = checkButton_RaptorStrike:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RaptorStrike:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RaptorStrike:SetTextColor(1, 1, 1)
-checkText_RaptorStrike:SetPoint("LEFT", checkButton_RaptorStrike, "LEFT", 34, 1)
-checkText_RaptorStrike:SetText("近身 猛禽一击 (UnitXP模组)")
-
+local checkButton_RaptorStrike = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "近身 猛禽一击 (UnitXP模组)")
 -- 设置点击事件
 checkButton_RaptorStrike:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.RaptorStrike = 1
+        MPHunterBeastSaved[ConfigCurrent].RaptorStrike = 1
     else
-        MPHunterBeastSaved.RaptorStrike = 0
+        MPHunterBeastSaved[ConfigCurrent].RaptorStrike = 0
     end
 end)
 
@@ -350,36 +222,17 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - ​​蝰蛇钉刺
-local checkButton_ViperSting = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonViperSting", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_ViperSting:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_ViperSting:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ViperSting = checkButton_ViperSting:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ViperSting:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ViperSting:SetTextColor(1, 1, 1)
-checkText_ViperSting:SetPoint("LEFT", checkButton_ViperSting, "LEFT", 34, 1)
-checkText_ViperSting:SetText("保持 ​​蝰蛇钉刺 (钉刺仅单选)")
+local checkButton_ViperSting = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "保持 ​​蝰蛇钉刺 (钉刺单选)")
 
 
 -- 创建单选框 - 近身 猫鼬撕咬
-local checkButton_MeerkatsBiting = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_MeerkatsBiting:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_MeerkatsBiting:SetScale(0.8)
-
--- 添加文字标签
-local checkText_MeerkatsBiting = checkButton_MeerkatsBiting:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_MeerkatsBiting:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_MeerkatsBiting:SetTextColor(1, 1, 1)
-checkText_MeerkatsBiting:SetPoint("LEFT", checkButton_MeerkatsBiting, "LEFT", 34, 1)
-checkText_MeerkatsBiting:SetText("近身 猫鼬撕咬 (UnitXP模组)")
-
+local checkButton_MeerkatsBiting = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "近身 猫鼬撕咬 (UnitXP模组)")
 -- 设置点击事件
 checkButton_MeerkatsBiting:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.MeerkatsBiting = 1
+        MPHunterBeastSaved[ConfigCurrent].MeerkatsBiting = 1
     else
-        MPHunterBeastSaved.MeerkatsBiting = 0
+        MPHunterBeastSaved[ConfigCurrent].MeerkatsBiting = 0
     end
 end)
 
@@ -389,25 +242,25 @@ end)
 -- 毒蛇钉刺点击事件
 checkButton_SerpentSting:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Serpent = 1
-        MPHunterBeastSaved.Viper = 0
+        MPHunterBeastSaved[ConfigCurrent].Serpent = 1
+        MPHunterBeastSaved[ConfigCurrent].Viper = 0
     else
-        MPHunterBeastSaved.Serpent = 0
+        MPHunterBeastSaved[ConfigCurrent].Serpent = 0
     end
-    checkButton_SerpentSting:SetChecked(ToBoolean(MPHunterBeastSaved.Serpent))
-    checkButton_ViperSting:SetChecked(ToBoolean(MPHunterBeastSaved.Viper))
+    checkButton_SerpentSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Serpent))
+    checkButton_ViperSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Viper))
 
 end)
 -- 蝰蛇钉刺点击事件
 checkButton_ViperSting:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Viper = 1
-        MPHunterBeastSaved.Serpent = 0
+        MPHunterBeastSaved[ConfigCurrent].Viper = 1
+        MPHunterBeastSaved[ConfigCurrent].Serpent = 0
     else
-        MPHunterBeastSaved.Viper = 0
+        MPHunterBeastSaved[ConfigCurrent].Viper = 0
     end
-    checkButton_SerpentSting:SetChecked(ToBoolean(MPHunterBeastSaved.Serpent))
-    checkButton_ViperSting:SetChecked(ToBoolean(MPHunterBeastSaved.Viper))
+    checkButton_SerpentSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Serpent))
+    checkButton_ViperSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Viper))
 
 end)
 
@@ -445,41 +298,28 @@ TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 postion_y = postion_y-120
 
 
--- 创建单选框 - 种族天赋 (爆发类)
-local checkButton_RacialTraits = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonCurseEvil", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_RacialTraits:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_RacialTraits:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RacialTraits = checkButton_RacialTraits:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RacialTraits:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RacialTraits:SetTextColor(1, 1, 1)
-checkText_RacialTraits:SetPoint("LEFT", checkButton_RacialTraits, "LEFT", 34, 1)
-checkText_RacialTraits:SetText("自动开启 种族天赋 (爆发类)")
-
--- 设置点击事件
-checkButton_RacialTraits:SetScript("OnClick", function(self)
+-- 急速射击
+local checkButton_RapidFire = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "自动 急速射击")
+checkButton_RapidFire:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.RacialTraits = 1
+        MPHunterBeastSaved[ConfigCurrent].RapidFire = 1
     else
-        MPHunterBeastSaved.RacialTraits = 0
+        MPHunterBeastSaved[ConfigCurrent].RapidFire = 0
+    end
+end)
+local checkButton_RapidFireBoss = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RapidFireBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].RapidFireBoss = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].RapidFireBoss = 0
     end
 end)
 
 
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HealthStone", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_HealthStone:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_HealthStone:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HealthStone = checkButton_HealthStone:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HealthStone:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HealthStone:SetTextColor(1, 1, 1)
-checkText_HealthStone:SetPoint("LEFT", checkButton_HealthStone, "LEFT", 34, 1)
-checkText_HealthStone:SetText("自动 治疗石")
-
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动 治疗石")
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -494,26 +334,23 @@ MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-_G[slider_HealthStone:GetName().."Low"]:Hide()
-_G[slider_HealthStone:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPHunterBeastSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved.HealthStone_Value .."%|r")
+    MPHunterBeastSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.HealthStone = 1
+        MPHunterBeastSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPHunterBeastSaved.HealthStone = 0
+        MPHunterBeastSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
 
@@ -523,17 +360,7 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 蝰蛇守护
-local checkButton_ViperGuardian = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_ViperGuardian", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_ViperGuardian:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y)
-checkButton_ViperGuardian:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ViperGuardian = checkButton_ViperGuardian:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ViperGuardian:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ViperGuardian:SetTextColor(1, 1, 1)
-checkText_ViperGuardian:SetPoint("LEFT", checkButton_ViperGuardian, "LEFT", 34, 1)
-checkText_ViperGuardian:SetText("自动 蝰蛇守护")
-
+local checkButton_ViperGuardian = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "自动 蝰蛇守护")
 
 local slider_ViperGuardian = CreateFrame("Slider", ADDON_NAME.."Slider_ViperGuardian", checkButton_ViperGuardian, "OptionsSliderTemplate")
 slider_ViperGuardian:SetPoint("RIGHT", checkButton_ViperGuardian, "RIGHT", 260, -2)
@@ -548,25 +375,22 @@ MPCatUISliderRegionHide(slider_ViperGuardian)
 
 local color_ViperGuardian = "|cFFFFD100"
 
-_G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < 1000|r")
-_G[slider_ViperGuardian:GetName().."Low"]:Hide()
-_G[slider_ViperGuardian:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_ViperGuardian:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPHunterBeastSaved.Viper_Value = arg1
-    _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved.Viper_Value .."|r")
+    MPHunterBeastSaved[ConfigCurrent].Viper_Value = arg1
+    _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved[ConfigCurrent].Viper_Value .."|r")
 end)
 -- 设置点击事件
 checkButton_ViperGuardian:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.ViperGuardian = 1
+        MPHunterBeastSaved[ConfigCurrent].ViperGuardian = 1
         color_ViperGuardian = "|cFFFFD100"
-        _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved.Viper_Value .."|r")
+        _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved[ConfigCurrent].Viper_Value .."|r")
     else
-        MPHunterBeastSaved.ViperGuardian = 0
+        MPHunterBeastSaved[ConfigCurrent].ViperGuardian = 0
         color_ViperGuardian = "|cFF888888"
-        _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved.Viper_Value .."|r")
+        _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved[ConfigCurrent].Viper_Value .."|r")
     end
 end)
 
@@ -575,17 +399,7 @@ end)
 
 
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTea", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_HerbalTea:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTea:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTea = checkButton_HerbalTea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTea:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTea:SetTextColor(1, 1, 1)
-checkText_HerbalTea:SetPoint("LEFT", checkButton_HerbalTea, "LEFT", 34, 1)
-checkText_HerbalTea:SetText("自动 草药茶")
-
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -600,26 +414,23 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-_G[slider_HerbalTea:GetName().."Low"]:Hide()
-_G[slider_HerbalTea:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPHunterBeastSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved.HerbalTea_Value .."%|r")
+    MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.HerbalTea = 1
+        MPHunterBeastSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPHunterBeastSaved.HerbalTea = 0
+        MPHunterBeastSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -630,17 +441,7 @@ postion_y = postion_y - 40
 
 
 -- 创建单选框 - 草药茶 蓝量
-local checkButton_HerbalTeaMana = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTeaMana", CatUISettingsHunterBeast, "UICheckButtonTemplate")
-checkButton_HerbalTeaMana:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTeaMana:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTeaMana = checkButton_HerbalTeaMana:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTeaMana:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTeaMana:SetTextColor(1, 1, 1)
-checkText_HerbalTeaMana:SetPoint("LEFT", checkButton_HerbalTeaMana, "LEFT", 34, 1)
-checkText_HerbalTeaMana:SetText("自动 草药茶")
-
+local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTeaMana = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTeaMana", checkButton_HerbalTeaMana, "OptionsSliderTemplate")
 slider_HerbalTeaMana:SetPoint("RIGHT", checkButton_HerbalTeaMana, "RIGHT", 250, -2)
@@ -655,26 +456,23 @@ MPCatUISliderRegionHide(slider_HerbalTeaMana)
 
 local color_HerbalTeaMana = "|cFFFFD100"
 
-_G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: 20%|r")
-_G[slider_HerbalTeaMana:GetName().."Low"]:Hide()
-_G[slider_HerbalTeaMana:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTeaMana:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPHunterBeastSaved.HerbalTeaMana_Value = arg1
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved.HerbalTeaMana_Value .."%|r")
+    MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value = arg1
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTeaMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.HerbalTeaMana = 1
+        MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana = 1
         color_HerbalTeaMana = "|cFFFFD100"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     else
-        MPHunterBeastSaved.HerbalTeaMana = 0
+        MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana = 0
         color_HerbalTeaMana = "|cFF888888"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -682,47 +480,103 @@ end)
 postion_y = postion_y - 40
 
 -- 魂能之速
-local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速 (BOSS时)")
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 魂能之速")
 checkButton_Soulspeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Soulspeed = 1
+        MPHunterBeastSaved[ConfigCurrent].Soulspeed = 1
     else
-        MPHunterBeastSaved.Soulspeed = 0
+        MPHunterBeastSaved[ConfigCurrent].Soulspeed = 0
+    end
+end)
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].SoulspeedBoss = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].SoulspeedBoss = 0
     end
 end)
 
 
 postion_y = postion_y - 40
 
--- 急速射击
-local checkButton_RapidFire = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButtonSoulspeed", 340, postion_y, "自动 急速射击")
-checkButton_RapidFire:SetScript("OnClick", function(self)
+-- 创建单选框 - 种族天赋 (爆发类)
+local checkButton_RacialTraits = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "自动 种族天赋")
+-- 设置点击事件
+checkButton_RacialTraits:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.RapidFire = 1
+        MPHunterBeastSaved[ConfigCurrent].RacialTraits = 1
     else
-        MPHunterBeastSaved.RapidFire = 0
+        MPHunterBeastSaved[ConfigCurrent].RacialTraits = 0
+    end
+end)
+local checkButton_RacialTraitsBoss = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RacialTraitsBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].RacialTraitsBoss = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].RacialTraitsBoss = 0
     end
 end)
 
 
 
 
--- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsHunterBeast, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
 
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+-- 创建按钮
+local myButton = MPCreateButton(CatUISettingsHunterBeast, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetHunterBeastSettings()
+    MPResetHunterBeastSettings(ConfigCurrent)
+    MPInitHunterBeastSettings()
+end)
+
+
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsHunterBeast, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsHunterBeast, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsHunterBeast, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitHunterBeastSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitHunterBeastSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
     MPInitHunterBeastSettings()
 end)
 
@@ -734,9 +588,9 @@ MPBottomLine(CatUISettingsHunterBeast)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Power = 1
+        MPHunterBeastSaved[ConfigCurrent].Power = 1
     else
-        MPHunterBeastSaved.Power = 0
+        MPHunterBeastSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -750,9 +604,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterBeastSaved.Pick = 1
+        MPHunterBeastSaved[ConfigCurrent].Pick = 1
     else
-        MPHunterBeastSaved.Pick = 0
+        MPHunterBeastSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -769,149 +623,185 @@ TipText:SetPoint("BOTTOM", CatUISettingsHunterBeast, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ |cFFABD473/hbdps|r ]")
+TipText:SetText("宏命令 |cFFABD473/hbdps|r [ 1 | 2 | 3 ]")
 
 
 
 -- 配置文件版本号
-local HunterBeastSettingsUIVersion = 10
+local HunterBeastSettingsUIVersion = 13
 
-function MPResetHunterBeastSettings()
+function MPResetHunterBeastSettings(config)
 
     MPHunterBeastSaved.Version = HunterBeastSettingsUIVersion
 
     -- 基本配置
 
-    MPHunterBeastSaved.Hawk = 1
-    MPHunterBeastSaved.Trueshot = 1
-    MPHunterBeastSaved.Mark = 0
-    MPHunterBeastSaved.KillCommand = 1
-    MPHunterBeastSaved.AimedShot = 1
-    MPHunterBeastSaved.BaitShot = 1
-    MPHunterBeastSaved.SteadyShot = 1
-    MPHunterBeastSaved.MultiShot = 1
-    MPHunterBeastSaved.ArcaneShot = 1
-    MPHunterBeastSaved.Serpent = 1
-    MPHunterBeastSaved.Viper = 0
+    MPHunterBeastSaved[config].Hawk = 1
+    MPHunterBeastSaved[config].Trueshot = 1
+    MPHunterBeastSaved[config].Mark = 0
+    MPHunterBeastSaved[config].MarkBossOnly = 0
+    MPHunterBeastSaved[config].KillCommand = 1
+    MPHunterBeastSaved[config].AimedShot = 1
+    MPHunterBeastSaved[config].BaitShot = 1
+    MPHunterBeastSaved[config].SteadyShot = 1
+    MPHunterBeastSaved[config].MultiShot = 1
+    MPHunterBeastSaved[config].ArcaneShot = 1
+    MPHunterBeastSaved[config].Serpent = 1
+    MPHunterBeastSaved[config].Viper = 0
 
-    MPHunterBeastSaved.Trinket_Upper = 1
-    MPHunterBeastSaved.TUBoss = 0
-    MPHunterBeastSaved.Trinket_Below = 1
-    MPHunterBeastSaved.TBBoss = 0
-    MPHunterBeastSaved.Target = 0
-    MPHunterBeastSaved.PetAttack = 0
+    MPHunterBeastSaved[config].Trinket_Upper = 1
+    MPHunterBeastSaved[config].TUBoss = 0
+    MPHunterBeastSaved[config].Trinket_Below = 1
+    MPHunterBeastSaved[config].TBBoss = 0
+    MPHunterBeastSaved[config].Target = 0
+    MPHunterBeastSaved[config].PetAttack = 0
 
-    MPHunterBeastSaved.RaptorStrike = 1
-    MPHunterBeastSaved.MeerkatsBiting = 1
+    MPHunterBeastSaved[config].RaptorStrike = 1
+    MPHunterBeastSaved[config].MeerkatsBiting = 1
 
     -- 高级配置
 
     -- 治疗石、糖水茶
-    MPHunterBeastSaved.HealthStone = 1
-    MPHunterBeastSaved.HealthStone_Value = 30
-    MPHunterBeastSaved.HerbalTea = 1
-    MPHunterBeastSaved.HerbalTea_Value = 20
-    MPHunterBeastSaved.HerbalTeaMana = 0
-    MPHunterBeastSaved.HerbalTeaMana_Value = 20
+    MPHunterBeastSaved[config].HealthStone = 1
+    MPHunterBeastSaved[config].HealthStone_Value = 30
+    MPHunterBeastSaved[config].HerbalTea = 1
+    MPHunterBeastSaved[config].HerbalTea_Value = 20
+    MPHunterBeastSaved[config].HerbalTeaMana = 0
+    MPHunterBeastSaved[config].HerbalTeaMana_Value = 20
 
     -- SuperWoW,UnitXP
-    MPHunterBeastSaved.SuperWoW = 1
-    MPHunterBeastSaved.UnitXP = 1
+    MPHunterBeastSaved[config].SuperWoW = 1
+    MPHunterBeastSaved[config].UnitXP = 1
 
-    MPHunterBeastSaved.RacialTraits = 0
-    MPHunterBeastSaved.Soulspeed = 0
-    MPHunterBeastSaved.RapidFire = 0
+    MPHunterBeastSaved[config].RacialTraits = 0
+    MPHunterBeastSaved[config].RacialTraitsBoss = 1
+    MPHunterBeastSaved[config].Soulspeed = 0
+    MPHunterBeastSaved[config].SoulspeedBoss = 1
+    MPHunterBeastSaved[config].RapidFire = 0
+    MPHunterBeastSaved[config].RapidFireBoss = 0
 
-    MPHunterBeastSaved.ViperGuardian = 0
-    MPHunterBeastSaved.Viper_Value = 1000
+    MPHunterBeastSaved[config].ViperGuardian = 0
+    MPHunterBeastSaved[config].Viper_Value = 1000
 
-    MPHunterBeastSaved.SteadyShot_Value = 1.9
+    MPHunterBeastSaved[config].SteadyShot_Value = 1.9
 
     -- 通用
-    MPHunterBeastSaved.Power = 0
-    MPHunterBeastSaved.Pick = 0
+    MPHunterBeastSaved[config].Power = 0
+    MPHunterBeastSaved[config].Pick = 0
 
 end
 
 
 local function MPInitHunterBeastSettingsPart1()
 
-    checkButton_Hawk:SetChecked(ToBoolean(MPHunterBeastSaved.Hawk))
-    checkButton_Mark:SetChecked( ToBoolean(MPHunterBeastSaved.Mark) )
-    checkButton_KillCommand:SetChecked( ToBoolean(MPHunterBeastSaved.KillCommand) )
-    checkButton_Trueshot:SetChecked(ToBoolean(MPHunterBeastSaved.Trueshot))
-    checkButton_AimedShot:SetChecked(ToBoolean(MPHunterBeastSaved.AimedShot))
-    checkButton_MultiShot:SetChecked(ToBoolean(MPHunterBeastSaved.MultiShot))
-    checkButton_ArcaneShot:SetChecked(ToBoolean(MPHunterBeastSaved.ArcaneShot))
-    checkButton_SerpentSting:SetChecked(ToBoolean(MPHunterBeastSaved.Serpent))
-    checkButton_ViperSting:SetChecked(ToBoolean(MPHunterBeastSaved.Viper))
+    checkButton_Hawk:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Hawk))
+    checkButton_Mark:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Mark) )
+    checkButton_MarkBossOnly:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].MarkBossOnly) )
+    checkButton_KillCommand:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].KillCommand) )
+    checkButton_Trueshot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trueshot))
+    checkButton_AimedShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].AimedShot))
+    checkButton_MultiShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].MultiShot))
+    checkButton_ArcaneShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].ArcaneShot))
+    checkButton_SerpentSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Serpent))
+    checkButton_ViperSting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Viper))
 
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPHunterBeastSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPHunterBeastSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPHunterBeastSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPHunterBeastSaved.TBBoss))
-    checkButton_Target:SetChecked(ToBoolean(MPHunterBeastSaved.Target))
-    checkButton_PetAttack:SetChecked(ToBoolean(MPHunterBeastSaved.PetAttack))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].TBBoss))
+    checkButton_Target:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Target))
+    checkButton_PetAttack:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].PetAttack))
 
-    checkButton_RaptorStrike:SetChecked(ToBoolean(MPHunterBeastSaved.RaptorStrike))
-    checkButton_MeerkatsBiting:SetChecked(ToBoolean(MPHunterBeastSaved.MeerkatsBiting))
+    checkButton_RaptorStrike:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RaptorStrike))
+    checkButton_MeerkatsBiting:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].MeerkatsBiting))
 
-    checkButton_RacialTraits:SetChecked(ToBoolean(MPHunterBeastSaved.RacialTraits))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPHunterBeastSaved.Soulspeed))
-    checkButton_RapidFire:SetChecked(ToBoolean(MPHunterBeastSaved.RapidFire))
+    checkButton_RacialTraits:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RacialTraits))
+    checkButton_RacialTraitsBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RacialTraitsBoss))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].SoulspeedBoss))
+    checkButton_RapidFire:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RapidFire))
+    checkButton_RapidFireBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RapidFireBoss))
 
-    checkButton_Power:SetChecked(ToBoolean(MPHunterBeastSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPHunterBeastSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Pick))
 end
 
 function MPInitHunterBeastSettings()
     if not MPHunterBeastSaved then
         MPHunterBeastSaved = {}
-        MPResetHunterBeastSettings()
+
+        -- 第一套配置
+        if not MPHunterBeastSaved[1] then
+            MPHunterBeastSaved[1] = {}
+            MPResetHunterBeastSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPHunterBeastSaved[2] then
+            MPHunterBeastSaved[2] = {}
+            MPResetHunterBeastSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPHunterBeastSaved[3] then
+            MPHunterBeastSaved[3] = {}
+            MPResetHunterBeastSettings(3)
+        end
     end
 
     if MPHunterBeastSaved.Version ~= HunterBeastSettingsUIVersion then
-        MPResetHunterBeastSettings()
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[兽王猎宏]当前配置，这是新版插件正常数据更新！|r")
+        MPHunterBeastSaved[1] = {}
+        MPHunterBeastSaved[2] = {}
+        MPHunterBeastSaved[3] = {}
+        MPResetHunterBeastSettings(1)
+        MPResetHunterBeastSettings(2)
+        MPResetHunterBeastSettings(3)
     end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
 
     MPInitHunterBeastSettingsPart1()
 
-    checkButton_HealthStone:SetChecked(ToBoolean(MPHunterBeastSaved.HealthStone))
-    slider_HealthStone:SetValue(MPHunterBeastSaved.HealthStone_Value)
-    if MPHunterBeastSaved.HealthStone==1 then
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPHunterBeastSaved[ConfigCurrent].HealthStone_Value)
+    if MPHunterBeastSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPHunterBeastSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPHunterBeastSaved.HerbalTea_Value)
-    if MPHunterBeastSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPHunterBeastSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value)
+    if MPHunterBeastSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_HerbalTeaMana:SetChecked(MPHunterBeastSaved.HerbalTeaMana)
-    slider_HerbalTeaMana:SetValue(MPHunterBeastSaved.HerbalTeaMana_Value)
-    if MPHunterBeastSaved.HerbalTeaMana==1 then
+    checkButton_HerbalTeaMana:SetChecked(MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana)
+    slider_HerbalTeaMana:SetValue(MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value)
+    if MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana==1 then
         color_HerbalTeaMana = "|cFFFFD100"
     else
         color_HerbalTeaMana = "|cFF888888"
     end
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved.HerbalTeaMana_Value .."%|r")
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterBeastSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 
 
-    checkButton_ViperGuardian:SetChecked(ToBoolean(MPHunterBeastSaved.ViperGuardian))
-    slider_ViperGuardian:SetValue(MPHunterBeastSaved.Viper_Value)
-    if MPHunterBeastSaved.ViperGuardian==1 then
+    checkButton_ViperGuardian:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].ViperGuardian))
+    slider_ViperGuardian:SetValue(MPHunterBeastSaved[ConfigCurrent].Viper_Value)
+    if MPHunterBeastSaved[ConfigCurrent].ViperGuardian==1 then
         color_ViperGuardian = "|cFFFFD100"
     else
         color_ViperGuardian = "|cFF888888"
     end
-    _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved.Viper_Value .."|r")
+    _G[slider_ViperGuardian:GetName().."Text"]:SetText(color_ViperGuardian.."蓝量 < ".. MPHunterBeastSaved[ConfigCurrent].Viper_Value .."|r")
 
 end
 

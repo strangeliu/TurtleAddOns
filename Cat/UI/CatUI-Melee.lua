@@ -5,8 +5,8 @@ local ADDON_NAME = "CatUI-Melee"
 
 
 -- 近战指示器 窗口大小
-local MELEE_WIDTH = 80
-local MELEE_HEIGHT = 80
+local MELEE_WIDTH = 100
+local MELEE_HEIGHT = 100
 
 
 
@@ -21,14 +21,20 @@ CatUIMelee:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 CatUIMelee:SetFrameLevel(1)
 CatUIMelee:SetBackdropBorderColor(0.5, 0.5, 0.5, 0.1)
 CatUIMelee:SetBackdropColor(0.1, 0.1, 0.2, 0.1)
-CatUIMelee:SetScale(0.5)
+if not MPMeleeSaved then
+    CatUIMelee:SetScale(0.5)
+else
+    CatUIMelee:SetScale(MPMeleeSaved.Scale)
+end
 
 -- 使窗口可移动
 CatUIMelee:EnableMouse(true)
 CatUIMelee:SetMovable(true)
 CatUIMelee:RegisterForDrag("LeftButton")
 CatUIMelee:SetScript("OnDragStart", function()
-    CatUIMelee:StartMoving()
+    if MPMeleeSaved.Lock==0 then
+        CatUIMelee:StartMoving()
+    end
 end)
 CatUIMelee:SetScript("OnDragStop", function()
     CatUIMelee:StopMovingOrSizing()
@@ -54,13 +60,21 @@ texture:SetTexture("Interface\\Icons\\Spell_Nature_WispSplode") -- 图片路径
 texture:SetAllPoints() -- 铺满整个父Frame
 texture:SetAlpha(1.0) 
 
-local TipText = CatUIMelee:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-TipText:SetPoint("BOTTOM", CatUIMelee, "BOTTOM", 0, -34)
-TipText:SetWidth(250)
-TipText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE") -- 使用OUTLINE参数
-TipText:SetTextColor(1.0, 1.0, 1.0)
-TipText:SetJustifyH("CENTER")
-TipText:SetText("")
+local ArmorText = CatUIMelee:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+ArmorText:SetPoint("BOTTOM", CatUIMelee, "BOTTOM", 0, -36)
+ArmorText:SetWidth(250)
+ArmorText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE") -- 使用OUTLINE参数
+ArmorText:SetTextColor(1.0, 1.0, 1.0)
+ArmorText:SetJustifyH("CENTER")
+ArmorText:SetText("")
+
+local TWTText = CatUIMelee:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+TWTText:SetPoint("BOTTOM", CatUIMelee, "BOTTOM", 0, 105)
+TWTText:SetWidth(250)
+TWTText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE") -- 使用OUTLINE参数
+TWTText:SetTextColor(1.0, 1.0, 1.0)
+TWTText:SetJustifyH("CENTER")
+TWTText:SetText("")
 
 
 -- 攻击条
@@ -92,28 +106,29 @@ function MPCatUIMeleeRun()
 
     if UnitExists("target") and UnitCanAttack("player", "target") then
         if UnitName("player") == UnitName("target") then
-            CatUIMelee:SetAlpha(0.2) 
-            texture:SetTexture("Interface\\Icons\\Spell_ChargePositive")
-            TipText:SetText("")
+            CatUIMelee:SetAlpha(0.2+(MPMeleeSaved.Alpha/2)) 
+            texture:SetTexture(MPMeleeSaved.EmpytTexture)
+            ArmorText:SetText("")
+            TWTText:SetText("")
             progressBar:Hide()
         else
             inMeleeRange = UnitXP("distanceBetween", "player", "target", "meleeAutoAttack")
             if inMeleeRange then
                 if inMeleeRange>0 then
-                    TipText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange))
-                    CatUIMelee:SetAlpha(0.5) 
+                    if MPMeleeSaved.Distance==1 then ArmorText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange)) end
+                    CatUIMelee:SetAlpha(0.5+(MPMeleeSaved.Alpha/2)) 
                 else
                     if inMeleeRange>0 then
-                        TipText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange))
-                        CatUIMelee:SetAlpha(0.5) 
+                        if MPMeleeSaved.Distance==1 then ArmorText:SetText("|cFFFF0000"..MPLanguage.UI_Melee_Distance..string.format("%.1f",inMeleeRange)) end
+                        CatUIMelee:SetAlpha(0.5+(MPMeleeSaved.Alpha/2)) 
                     else
-                        TipText:SetText("|cFFAAFFAA"..MPLanguage.UI_Melee_Armor..string.format("%.0f",UnitArmor("target")))
+                        if MPMeleeSaved.Distance==1 then ArmorText:SetText("|cFFAAFFAA"..MPLanguage.UI_Melee_Armor..string.format("%.0f",UnitArmor("target"))) end
                         CatUIMelee:SetAlpha(1.0) 
                     end
                 end
             else
-                CatUIMelee:SetAlpha(0.2) 
-                TipText:SetText("")
+                CatUIMelee:SetAlpha(0.2+(MPMeleeSaved.Alpha/2)) 
+                ArmorText:SetText("")
             end
 
             local pb = MPGetMainHandTime()/UnitAttackSpeed("player")*100
@@ -125,16 +140,32 @@ function MPCatUIMeleeRun()
             end
 
             if MPCheckBehind(1) then
-                -- 正面
-                texture:SetTexture("Interface\\Icons\\spell_cloaked_in_shadows_2") -- 图片路径
+                -- 背对敌人
+                texture:SetTexture(MPMeleeSaved.BackTexture) -- 图片路径
             else
-                texture:SetTexture("Interface\\Icons\\Ability_Parry") -- 图片路径
+                -- 面朝敌人
+                texture:SetTexture(MPMeleeSaved.FrontTexture) -- 图片路径
+            end
+
+            if MPInCombat and MPMeleeSaved.Hatred==1 then
+                local TWT = MPGetHatredFromTWT()
+                if TWT>80 then
+                    TWTText:SetText("|cFFFF0000仇恨 "..TWT)
+                elseif TWT>60 then
+                    TWTText:SetText("|cFFFF7D0A仇恨 "..TWT)
+                elseif TWT>0 then
+                    TWTText:SetText("|cFFABD473仇恨 "..TWT)
+                else
+                    TWTText:SetText("")
+                end
+            else
+                TWTText:SetText("")
             end
         end
     else
-        CatUIMelee:SetAlpha(0.2) 
-        texture:SetTexture("Interface\\Icons\\Spell_Shadow_Teleport")
-        TipText:SetText("")
+        CatUIMelee:SetAlpha(0.2+(MPMeleeSaved.Alpha/2)) 
+        texture:SetTexture(MPMeleeSaved.EmpytTexture)
+        ArmorText:SetText("")
         progressBar:Hide()
     end
 

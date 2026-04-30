@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 冰法一键宏
--- 更新日期：2026-03-14 （后面根据时间来判断版本）
+-- 更新日期：2026-04-18 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -39,6 +39,9 @@ MPMageIcicle = 0
 
 local MHP,DM,BZS,BZ,ASYD,BSXX,HBHT,HYCJ
 
+-- 默认配置
+MPMageFrostConfig = 1
+
 
 local function MageArmor()
 	CastSpellByName("魔甲术")
@@ -68,6 +71,20 @@ local function ArcaneSurge()
 	CastSpellByName("奥术涌动")
 end
 
+local function MageFrost_FireBlast()
+	if MP_UnitXP and UnitExists("target") then
+		local inRange = UnitXP("distanceBetween", "player", "target")
+		if MPMageFrostSaved[MPMageFrostConfig].FireBlast==1 and HYCJ and inRange<MPMageFireBlastDist then
+			CastSpellByName("火焰冲击")
+			return
+		end
+	else
+		if MPMageFrostSaved[MPMageFrostConfig].FireBlast==1 and HYCJ then
+			CastSpellByName("火焰冲击")
+		end
+	end
+end
+
 
 function MPMageFrostAuto()
 
@@ -84,15 +101,15 @@ function MPMageFrostAuto()
 
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPMageFrostSaved.Target, 0)
+	MPAutoSwitchTarget(MPMageFrostSaved[MPMageFrostConfig].Target, 0)
 
 	-- 自动拾取
-	if MPMageFrostSaved.Pick==1 then
+	if MPMageFrostSaved[MPMageFrostConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPMageFrostSaved.Power==1 then
+	if MPMageFrostSaved[MPMageFrostConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -103,40 +120,42 @@ function MPMageFrostAuto()
 	if MPInCombat then
 
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPMageFrostSaved.Trinket_Upper==1 then
-			if MPMageFrostSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPMageFrostSaved[MPMageFrostConfig].Trinket_Upper==1 then
+			if MPMageFrostSaved[MPMageFrostConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPMageFrostSaved.TUBoss==0 then
+			elseif MPMageFrostSaved[MPMageFrostConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPMageFrostSaved.Trinket_Below==1 then
-			if MPMageFrostSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPMageFrostSaved[MPMageFrostConfig].Trinket_Below==1 then
+			if MPMageFrostSaved[MPMageFrostConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPMageFrostSaved.TBBoss==0 then
+			elseif MPMageFrostSaved[MPMageFrostConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPMageFrostSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPMageFrostSaved[MPMageFrostConfig].Soulspeed==1 and GetMageArcaneMissiles()<=0 then
+			if MPMageFrostSaved[MPMageFrostConfig].SoulspeedBoss==0 or (MPMageFrostSaved[MPMageFrostConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
-		if percent<MPMageFrostSaved.HealthStone_Value and MPMageFrostSaved.HealthStone==1 then
+		if percent<MPMageFrostSaved[MPMageFrostConfig].HealthStone_Value and MPMageFrostSaved[MPMageFrostConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPMageFrostSaved.HerbalTea_Value and MPMageFrostSaved.HerbalTea==1 then
+		if percent<MPMageFrostSaved[MPMageFrostConfig].HerbalTea_Value and MPMageFrostSaved[MPMageFrostConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPMageFrostSaved.HerbalTeaMana_Value and MPMageFrostSaved.HerbalTeaMana==1 then
+		if percentMana<MPMageFrostSaved[MPMageFrostConfig].HerbalTeaMana_Value and MPMageFrostSaved[MPMageFrostConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPMageFrostSaved.JewelMana_Value and MPMageFrostSaved.JewelMana==1 then
+		if percentMana<MPMageFrostSaved[MPMageFrostConfig].JewelMana_Value and MPMageFrostSaved[MPMageFrostConfig].JewelMana==1 then
 			MPUseItemByName("法力红宝石")
 			MPUseItemByName("法力黄水晶")
 			MPUseItemByName("法力翡翠")
@@ -145,26 +164,26 @@ function MPMageFrostAuto()
 
 		-- 特定 种族天赋 --
 
-		if MPMageFrostSaved.RacialTraits==1 and GetMageArcaneMissiles()<=0 then
+		if MPMageFrostSaved[MPMageFrostConfig].RacialTraits==1 and GetMageArcaneMissiles()<=0 then
+			if MPMageFrostSaved[MPMageFrostConfig].RacialTraitsBoss==0 or (MPMageFrostSaved[MPMageFrostConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 	end
 
@@ -173,40 +192,49 @@ function MPMageFrostAuto()
 
 
 
-	-- buff
-	if MPMageFrostSaved.MageArmor==1 and not MPBuff("魔甲术") and GetMageArcaneMissiles()<=0 then
+	-- 魔甲术
+	if MPMageFrostSaved[MPMageFrostConfig].MageArmor==1 and not MPBuff("魔甲术") and GetMageArcaneMissiles()<=0 then
 		MageArmor()
 		return
 	end
-	if MPMageFrostSaved.IceBarrier==1 and MPMageIceBarrier==1 and HBHT and not MPBuff("寒冰护体") and GetMageArcaneMissiles()<=0 then
+
+	-- 寒冰护体
+	if MPMageFrostSaved[MPMageFrostConfig].IceBarrier==1 and MPMageIceBarrier==1 and HBHT and not MPBuff("寒冰护体") and GetMageArcaneMissiles()<=0 then
+		IceBarrier()
+		return
+	end
+
+	-- 冰冷血脉
+	if MPMageFrostSaved[MPMageFrostConfig].ColdBloodline==1 and MPMageIceBarrier==1 and HBHT and not MPBuff("冰冷血脉") and GetMageArcaneMissiles()<=0 then
 		IceBarrier()
 		return
 	end
 
 	-- 奥术涌动
-	if MPMageFrostSaved.ArcaneSurge==1 and MPGetMageArcaneSurge() and ASYD and GetMageArcaneMissiles()<=0 then
+	if MPMageFrostSaved[MPMageFrostConfig].ArcaneSurge==1 and MPGetMageArcaneSurge() and ASYD and GetMageArcaneMissiles()<=0 then
 		ArcaneSurge()
 		return
 	end
 
-	-- 火焰冲击
-	if MP_UnitXP and UnitExists("target") then
-		local inRange = UnitXP("distanceBetween", "player", "target")
-		if MPMageFrostSaved.FireBlast==1 and HYCJ and inRange<MPMageFireBlastDist then
-			CastSpellByName("火焰冲击")
-			return
+	-- 保护 点燃
+	if MPMageFrostSaved[MPMageFrostConfig].IgniteProtect==1 and GetNumRaidMembers()>5 then 
+		if MPBuff("点燃", "target") or (GetTime()-MPInCombatTime)>12 then
+			-- 火焰冲击
+			if MageFrost_FireBlast() then
+				return
+			end
 		end
 	else
-		if MPMageFrostSaved.FireBlast==1 and HYCJ then
-			CastSpellByName("火焰冲击")
+		-- 火焰冲击
+		if MageFrost_FireBlast() then
+			return
 		end
 	end
 
-
-	if MPMageFrostSaved.Frostbite==1 then
+	if MPMageFrostSaved[MPMageFrostConfig].Frostbite==1 then
 
 		-- 冰柱
-		if MPMageFrostSaved.Icicle==1 and MPMageIcicle==1 and BZ and GetMageArcaneMissiles()<=0 and MPBuff("冰霜速冻") then
+		if MPMageFrostSaved[MPMageFrostConfig].Icicle==1 and MPMageIcicle==1 and BZ and GetMageArcaneMissiles()<=0 and MPBuff("冰霜速冻") then
 			Icicle()
 			return
 		end
@@ -214,7 +242,7 @@ function MPMageFrostAuto()
 	else
 
 		-- 冰柱
-		if MPMageFrostSaved.Icicle==1 and MPMageIcicle==1 and BZ and GetMageArcaneMissiles()<=0 then
+		if MPMageFrostSaved[MPMageFrostConfig].Icicle==1 and MPMageIcicle==1 and BZ and GetMageArcaneMissiles()<=0 then
 			Icicle()
 			return
 		end
@@ -223,7 +251,7 @@ function MPMageFrostAuto()
 
 
 	-- 冰锥术
-	if MPMageFrostSaved.ConeCold==1 and BZS and GetMageArcaneMissiles()<=0 then
+	if MPMageFrostSaved[MPMageFrostConfig].ConeCold==1 and BZS and GetMageArcaneMissiles()<=0 then
 		if MP_UnitXP and UnitExists("target") then
 			local inMeleeRange = UnitXP("distanceBetween", "player", "target")
 			if inMeleeRange and inMeleeRange<=MPMageConeColdDist then
@@ -234,7 +262,7 @@ function MPMageFrostAuto()
 	end
 
 	-- 冰霜新星
-	if MPMageFrostSaved.FrostNova==1 and BSXX and GetMageArcaneMissiles()<=0 then
+	if MPMageFrostSaved[MPMageFrostConfig].FrostNova==1 and BSXX and GetMageArcaneMissiles()<=0 then
 		if MP_UnitXP and UnitExists("target") then
 			local inMeleeRange = UnitXP("distanceBetween", "player", "target")
 			if inMeleeRange and inMeleeRange<=MPMageConeColdDist then

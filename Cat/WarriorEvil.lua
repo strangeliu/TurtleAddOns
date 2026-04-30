@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 邪修战士DPS一键宏
--- 更新日期：2026-04-01（后面根据时间来判断版本）
+-- 更新日期：2026-04-18（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -42,13 +42,16 @@ local Strike,Once
 local isAOE = false
 local TargetDistance = false
 
+-- 默认配置
+MPWarriorEvilConfig = 1
+
 
 function MPEvilDPS(o)
 	Once = o or 0
 
 	NQ = UnitMana("player")
 	HPP = UnitHealth("target")/UnitHealthMax("target")*100
-	if MPWarriorEvilSaved.Whirlwind==1 then XFZ = MPSpellReadyOffset("旋风斩",1.5) else XFZ=false end
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Whirlwind==1 then XFZ = MPSpellReadyOffset("旋风斩",1.5) else XFZ=false end
 	XX = MPSpellReady("血性狂暴")
 	YZ = MPSpellReadyOffset("压制",1.5)
 	TargetDistance = MPGetTargetDistance()
@@ -61,12 +64,12 @@ function MPEvilDPS(o)
 
 	isAOE = false
 	if Once==0 then
-		if MPScanNearbyEnemiesCount(MPWarriorEvilSaved.NearbyEnemies_Value-4) > 1 then
+		if MPScanNearbyEnemiesCount(MPWarriorEvilSaved[MPWarriorEvilConfig].NearbyEnemies_Value-4) > 1 then
 			isAOE = true
 		end
 	end
 
-	if MPWarriorEvilSaved.NearbyEnemies==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].NearbyEnemies==1 then
 		if isAOE then
 			Strike = "顺劈斩"
 			YYNQOffset = MPWarriorCleave
@@ -82,18 +85,18 @@ function MPEvilDPS(o)
 
 
 	-- 确认目标的存活和转火，并开启自动攻击
-	MPAutoSwitchTarget(MPWarriorEvilSaved.Target)
+	MPAutoSwitchTarget(MPWarriorEvilSaved[MPWarriorEvilConfig].Target)
 
 	-- 开启自动攻击
 	MPStartAttack()
 
 	-- 自动拾取
-	if MPWarriorEvilSaved.Pick==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPWarriorEvilSaved.Power==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -102,76 +105,80 @@ function MPEvilDPS(o)
 	end
 
 	-- 自动打断
-	if MPWarriorEvilSaved.Interrupt==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Interrupt==1 then
 		MPINTCast()
 	end
 
 	-- 在战斗中
 	if MPInCombat then
 		-- 自动开启饰品
-		if MPWarriorEvilSaved.Trinket_Upper==1 and TargetDistance and GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_WDPS_Trinket_Delay then
-			if MPWarriorEvilSaved.TUBoss==1 and MPIsBossTarget() then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Trinket_Upper==1 and TargetDistance and GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and GetTime()-MPInCombatTime>AUTO_WDPS_Trinket_Delay then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPWarriorEvilSaved.TUBoss==0 then
+			elseif MPWarriorEvilSaved[MPWarriorEvilConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if MPWarriorEvilSaved.Trinket_Below==1 and TargetDistance and GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_WDPS_Trinket_Delay then
-			if MPWarriorEvilSaved.TBBoss==1 and MPIsBossTarget() then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Trinket_Below==1 and TargetDistance and GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and GetTime()-MPInCombatTime>AUTO_WDPS_Trinket_Delay then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPWarriorEvilSaved.TBBoss==0 then
+			elseif MPWarriorEvilSaved[MPWarriorEvilConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
-		if MPWarriorEvilSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Soulspeed==1 and TargetDistance then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].SoulspeedBoss==0 or (MPWarriorEvilSaved[MPWarriorEvilConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理
 		local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-		if MPWarriorEvilSaved.HealthStone==1 and percent<MPWarriorEvilSaved.HealthStone_Value then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].HealthStone==1 and percent<MPWarriorEvilSaved[MPWarriorEvilConfig].HealthStone_Value then
 			MPUseItemByName("特效治疗石")
 		end
-		if MPWarriorEvilSaved.HerbalTea==1 and percent<MPWarriorEvilSaved.HerbalTea_Value then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].HerbalTea==1 and percent<MPWarriorEvilSaved[MPWarriorEvilConfig].HerbalTea_Value then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
-		if MPWarriorEvilSaved.Carrot==1 and percent<MPWarriorEvilSaved.Carrot_Value then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Carrot==1 and percent<MPWarriorEvilSaved[MPWarriorEvilConfig].Carrot_Value then
 			MPUseItemByName("鞭根块茎")
 		end
 
 		-- 特定 种族天赋 --
 
-		if MPWarriorEvilSaved.RacialTraits==1 and TargetDistance then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].RacialTraits==1 and TargetDistance then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].RacialTraitsBoss==0 or (MPWarriorEvilSaved[MPWarriorEvilConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 		-- 是否自动开启死亡之愿
-		if MPWarriorEvilSaved.DeathWish==1 and MPWarriorDPSDeathWish==1 and (not XFZ or MPWarriorEvilSaved.Whirlwind==0 or Once==1) then
-			local SY = MPSpellReady("死亡之愿")
-			if SY and NQ>=MPWarriorDPSDeathWishPower then CastSpellByName("死亡之愿") return end
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].DeathWish==1 and MPWarriorDPSDeathWish==1 and TargetDistance then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].DeathWishBoss==0 or (MPWarriorEvilSaved[MPWarriorEvilConfig].DeathWishBoss==1 and MPIsBossTarget()) then
+				local SY = MPSpellReady("死亡之愿")
+				if SY and NQ>=MPWarriorDPSDeathWishPower then CastSpellByName("死亡之愿") return end
+			end
 		end
 
 		-- 是否自动开启鲁莽
-		if MPWarriorEvilSaved.Recklessness==1 then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Recklessness==1 then
 			local LM = MPSpellReady("鲁莽")
 			if LM then CastSpellByName("鲁莽") return end
 		end
@@ -187,8 +194,8 @@ function MPEvilDPS(o)
 
 
 	-- 压制
-	if MPWarriorEvilSaved.Overpower==1 and MPWarriorOverpower() and YZ and NQ>4 then --and not MPBuff("乱舞") 
-		if NQ<MPWarriorEvilSaved.Overpower_Value and not MPGetShape(1) then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Overpower==1 and MPWarriorOverpower() and YZ and NQ>4 then --and not MPBuff("乱舞") 
+		if NQ<MPWarriorEvilSaved[MPWarriorEvilConfig].Overpower_Value and not MPGetShape(1) then
 			CastSpellByName("战斗姿态")
 			waitYZ = true
 		end
@@ -210,8 +217,8 @@ function MPEvilDPS(o)
 
 	--[[
 	-- 撕裂
-	if MPWarriorEvilSaved.Rend==1 and not MPWarriorRend() and MPTargetBleed and NQ>9 and MP_SuperWoW then
-		if NQ<MPWarriorEvilSaved.Rend_Value and not MPGetShape(1) then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Rend==1 and not MPWarriorRend() and MPTargetBleed and NQ>9 and MP_SuperWoW then
+		if NQ<MPWarriorEvilSaved[MPWarriorEvilConfig].Rend_Value and not MPGetShape(1) then
 			CastSpellByName("战斗姿态")
 			waitSL = true
 		end
@@ -228,13 +235,13 @@ function MPEvilDPS(o)
 
 
 	-- 是否自动开启横扫
-	if MPWarriorEvilSaved.Sweeping==1 and MPWarriorDPSSweeping==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Sweeping==1 and MPWarriorDPSSweeping==1 then
 
 		local HS = MPSpellReady("横扫攻击")
 
 		if isAOE then
 			if Once==0 and HS then
-				if NQ>=MPWarriorDPSSweepingPower and NQ<MPWarriorEvilSaved.Sweeping_Value and not MPGetShape(1) then
+				if NQ>=MPWarriorDPSSweepingPower and NQ<MPWarriorEvilSaved[MPWarriorEvilConfig].Sweeping_Value and not MPGetShape(1) then
 
 					-- 正在猛击读条，断条
 					MPWarriorSlamStop()
@@ -258,7 +265,7 @@ function MPEvilDPS(o)
 
 
 	-- 冲锋/拦截
-	if MPWarriorEvilSaved.Charge==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].Charge==1 then
 
 		if not MPInCombat then
 			local CF = MPSpellReady("冲锋")
@@ -280,7 +287,7 @@ function MPEvilDPS(o)
 
 
 	-- 保持战斗怒吼
-	if not MPBuff("战斗怒吼") and NQ>9 and MPWarriorEvilSaved.BattleShout==1 then
+	if not MPBuff("战斗怒吼") and NQ>9 and MPWarriorEvilSaved[MPWarriorEvilConfig].BattleShout==1 then
 		if MPGetBattleShout()<5.0 then
 			CastSpellByName("战斗怒吼")
 			return
@@ -289,32 +296,32 @@ function MPEvilDPS(o)
 
 
 	-- 确保在狂暴姿态下
-	if not MPGetShape(MPWarriorBerserkerStanceID) and MPWarriorEvilSaved.BerserkerStance==1 and not waitHS and not waitSL and not waitYZ and MPInCombat then
+	if not MPGetShape(MPWarriorBerserkerStanceID) and MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==1 and not waitHS and not waitSL and not waitYZ and MPInCombat then
 		CastSpellByName("狂暴姿态")
 		return
 	end
 
 
 	-- 开启血性狂暴
-	if MPWarriorEvilSaved.BerserkerRage==1 and TargetDistance and XX and MPInCombat and (MPWarriorEvilSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerRage==1 and TargetDistance and XX and MPInCombat and (MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 		if SX and NQ<30 then MPCastWithNampower("血性狂暴") end
-		if MPWarriorEvilSaved.Whirlwind==1 and XFZ and NQ<25 then MPCastWithNampower("血性狂暴") end
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Whirlwind==1 and XFZ and NQ<25 then MPCastWithNampower("血性狂暴") end
 		--if NQ<15 then MPCastWithNampower("血性狂暴") end
 	end
 
 
 	-- 补足破甲
-	if MPWarriorEvilSaved.SunderArmor==1 then
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].SunderArmor==1 then
 
 		local allow = false
-		if MPWarriorEvilSaved.SunderArmorBOSS==1 and MPIsBossTarget() then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].SunderArmorBOSS==1 and MPIsBossTarget() then
 			allow = true
-		elseif MPWarriorEvilSaved.SunderArmorBOSS==0 then
+		elseif MPWarriorEvilSaved[MPWarriorEvilConfig].SunderArmorBOSS==0 then
 			allow = true
 		end
 
 		if allow then
-			if MPWarriorEvilSaved.SunderArmorOnce==1 then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].SunderArmorOnce==1 then
 				-- 仅一破
 				if not MPGetSunderArmorOnce() then
 					CastSpellByName("破甲攻击")
@@ -335,8 +342,8 @@ function MPEvilDPS(o)
 
 	-- 邪修流
 
-	if MPWarriorEvilSaved.HeroicStrike==1 then
-		YYNQ = MPWarriorEvilSaved.HeroicStrike_Value
+	if MPWarriorEvilSaved[MPWarriorEvilConfig].HeroicStrike==1 then
+		YYNQ = MPWarriorEvilSaved[MPWarriorEvilConfig].HeroicStrike_Value
 	else
 		-- 自动计算怒气阈值
 		if isAOE then
@@ -356,7 +363,7 @@ function MPEvilDPS(o)
 	if HPP>=20 and NQ>YYNQ then
 		MPCastWithNampower(Strike)
 	else
-		MPWarriorCancelHeroic()
+		--MPWarriorCancelHeroic()
 	end
 
 	MPFuryTwoHandOther()
@@ -378,7 +385,7 @@ function MPFuryTwoHandOther()
 	end
 
 	-- 进入斩杀线，打断猛击读条
-	if not MPIsBossTarget() and HPP<20 and MPWarriorEvilSaved.UseExecute==1 and MPWarriorEvilSaved.ExecuteWithoutMonster==1 then
+	if not MPIsBossTarget() and HPP<20 and MPWarriorEvilSaved[MPWarriorEvilConfig].UseExecute==1 and MPWarriorEvilSaved[MPWarriorEvilConfig].ExecuteWithoutMonster==1 then
 		MPWarriorSlamStop()
 		CastSpellByName("斩杀")
 		return
@@ -387,14 +394,14 @@ function MPFuryTwoHandOther()
 	if LW then
 
 		-- 卡猛击时间
-		if MPGetMainHandLeft()<MPWarriorEvilSaved.Slam_Value then --or MPGetMainHandLeft()>(UnitAttackSpeed("player")-1.7) then
+		if MPGetMainHandLeft()<MPWarriorEvilSaved[MPWarriorEvilConfig].Slam_Value then --or MPGetMainHandLeft()>(UnitAttackSpeed("player")-1.7) then
 
 			if XFZ and NQ>=MPWarriorWhirlwind and TargetDistance and Once==0 and MPGetShape(MPWarriorBerserkerStanceID) then
 				CastSpellByName("旋风斩")
 				return
 			end
 
-			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved.UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
+			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved[MPWarriorEvilConfig].UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
 				CastSpellByName("斩杀")
 				return
 			end
@@ -406,19 +413,19 @@ function MPFuryTwoHandOther()
 				return
 			end
 
-			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved.UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
+			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved[MPWarriorEvilConfig].UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
 				CastSpellByName("斩杀")
 				return
 			end
 
-			if NQ>=15 and (MPWarriorEvilSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+			if NQ>=15 and (MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 				MPCastWithoutNampower("猛击")
 				return
 			end
 
 		else
 
-			if NQ>=15 and (MPWarriorEvilSaved.BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+			if NQ>=15 and (MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
 				MPCastWithoutNampower("猛击")
 				return
 			end
@@ -432,14 +439,14 @@ function MPFuryTwoHandOther()
 			return
 		end
 
-		if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved.UseExecute==1 then
+		if HPP<20 and NQ>=MPWarriorExecute and MPWarriorEvilSaved[MPWarriorEvilConfig].UseExecute==1 then
 			CastSpellByName("斩杀")
 			return
 		end
 
-		if MPWarriorEvilSaved.Hamstring==1 then
+		if MPWarriorEvilSaved[MPWarriorEvilConfig].Hamstring==1 then
 			if MPBloodthirst==1 then SX=MPSpellReadyOffset("嗜血", 1.4) else SX=false end
-			if MPWarriorEvilSaved.Whirlwind==1 then XFZ=MPSpellReadyOffset("旋风斩", 1.4) else XFZ=false end
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].Whirlwind==1 then XFZ=MPSpellReadyOffset("旋风斩", 1.4) else XFZ=false end
 			if not SX and not XFZ and NQ>9 then
 				CastSpellByName("断筋")
 				return
@@ -450,7 +457,7 @@ function MPFuryTwoHandOther()
 		if MPGetMainHandLeft()>1.8 then
 			
 			-- 锁定狂暴姿态
-			if MPWarriorEvilSaved.BerserkerStance==1 then
+			if MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==1 then
 				if not SX and not (XFZ and Once==0) and NQ>=15 and MPGetShape(MPWarriorBerserkerStanceID) then
 					MPCastWithoutNampower("猛击")
 					return

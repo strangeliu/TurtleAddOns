@@ -746,18 +746,22 @@ function Meeting.EncodeGroupClass()
         end
     end
 
-    for i = 1, GetNumRaidMembers() do
-        raid = true
-        local _, class = UnitClass("raid" .. i)
-        arr[class] = arr[class] + 1
-    end
+	for i = 1, GetNumRaidMembers() do
+		raid = true
+		local _, class = UnitClass("raid" .. i)
+		if class then
+			arr[class] = (arr[class] or 0) + 1
+		end
+	end
 
-    if not raid then
-        for i = 1, GetNumPartyMembers() do
-            local _, class = UnitClass("party" .. i)
-            arr[class] = arr[class] + 1
-        end
-    end
+	if not raid then
+		for i = 1, GetNumPartyMembers() do
+			local _, class = UnitClass("party" .. i)
+			if class then
+				arr[class] = (arr[class] or 0) + 1
+			end
+		end
+	end
 
     local result = ""
     for _, v in ipairs(classNameMap) do

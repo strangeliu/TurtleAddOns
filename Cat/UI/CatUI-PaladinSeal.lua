@@ -251,14 +251,12 @@ JusticeButtonCrusader:SetScript("OnClick", function()
 end)
 
 ButtonConsecration:SetScript("OnClick", function()
-    if MPPaladinCJSaved.Consecration==1 or MPPaladinTankSaved.Consecration==1 then
+    if MPPaladinSealSaved.Consecration==1 then
         ButtonConsecration:SetAlpha(PopColor)
-        MPPaladinCJSaved.Consecration=0
-        MPPaladinTankSaved.Consecration = 0
+        MPPaladinSealSaved.Consecration=0
     else
         ButtonConsecration:SetAlpha(1.0)
-        MPPaladinCJSaved.Consecration=1
-        MPPaladinTankSaved.Consecration = 1
+        MPPaladinSealSaved.Consecration=1
     end
 end)
 
@@ -517,7 +515,7 @@ end)
 
 
 
-local PaladinSealSettingsUIVersion = 1
+local PaladinSealSettingsUIVersion = 2
 
 function MPCatPaladinSealReset()
 
@@ -525,6 +523,7 @@ function MPCatPaladinSealReset()
 
     MPPaladinSealSaved.Seal = 0
     MPPaladinSealSaved.Justice = 1
+    MPPaladinSealSaved.Consecration = 1
 
 end
 
@@ -576,14 +575,10 @@ function MPCatPaladinSealInit()
         SealButtonCommand:SetAlpha(1.0)
     end
 
-    if MPPaladinCJSaved.Consecration==1 or MPPaladinTankSaved.Consecration==1 then
+    if MPPaladinSealSaved.Consecration==1 then
         ButtonConsecration:SetAlpha(1.0)
-        MPPaladinCJSaved.Consecration=1
-        MPPaladinTankSaved.Consecration = 1
     else
         ButtonConsecration:SetAlpha(PopColor)
-        MPPaladinCJSaved.Consecration=0
-        MPPaladinTankSaved.Consecration = 0
     end
 
 end

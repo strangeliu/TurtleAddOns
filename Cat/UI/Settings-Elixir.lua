@@ -3,15 +3,8 @@ local ADDON_NAME = "Settings-Elixir"
 
 
 -- 创建主框架
-CatUISettingsElixir = MPCreateFrame(ADDON_NAME.."Frame", 780, 770, "|cFF007582附加 - 自动药剂|r")
-
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
+CatUISettingsElixir = MPCreateFrame(ADDON_NAME.."Frame", 780, 830, "|cFF007582附加 - 自动药剂|r")
+CatUISettingsElixir:SetScale(0.8)
 
 local function SEWarningText(pos)
     local Warning = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -126,7 +119,65 @@ slider_WindowSize:SetScript("OnValueChanged", function()
 end)
 
 
+
+
 postion_y = postion_y-30
+
+-- 添加提示内容区域
+local noCDTipText = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+noCDTipText:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 30, postion_y)
+noCDTipText:SetWidth(250)
+noCDTipText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE") -- 使用OUTLINE参数
+noCDTipText:SetTextColor(1, 0.8, 0)
+noCDTipText:SetJustifyH("LEFT")
+noCDTipText:SetText("合剂 ( 不自动使用，仅用于监控 )")
+
+
+postion_y = postion_y-45
+
+
+-- 创建单选框 - 泰坦合剂
+local checkButton_Titans = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "泰坦合剂")
+local Warning_Titans = SEWarningText(checkButton_Titans)
+checkButton_Titans:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.Titans = 1
+    else
+        MPElixirSaved.Titans = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
+-- 创建单选框 - 超级能量合剂
+local checkButton_SupremePower = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "超级能量合剂")
+local Warning_SupremePower = SEWarningText(checkButton_SupremePower)
+checkButton_SupremePower:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.SupremePower = 1
+    else
+        MPElixirSaved.SupremePower = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
+-- 创建单选框 - 精炼智慧合剂
+local checkButton_DistilledWisdom = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 660, postion_y, "精炼智慧合剂")
+local Warning_DistilledWisdom = SEWarningText(checkButton_DistilledWisdom)
+checkButton_DistilledWisdom:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.DistilledWisdom = 1
+    else
+        MPElixirSaved.DistilledWisdom = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
+
+
+postion_y = postion_y+5
 
 -- 添加提示内容区域
 local noCDTipText = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -138,14 +189,12 @@ noCDTipText:SetJustifyH("LEFT")
 noCDTipText:SetText("独特药剂")
 
 
-postion_y = postion_y-50
+postion_y = postion_y-55
 
 
 -- 创建单选框 - 赞扎之速
 local checkButton_ZanzaSpeed = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "赞扎之速 (20移速)")
 local Warning_ZanzaSpeed = SEWarningText(checkButton_ZanzaSpeed)
-
--- 赞扎之速
 checkButton_ZanzaSpeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPElixirSaved.ZanzaSpeed = 1
@@ -168,7 +217,7 @@ checkButton_ArthasGift:SetScript("OnClick", function(self)
 end)
 
 
-postion_y = postion_y+5
+postion_y = postion_y+15
 
 -- 生存药剂
 local noCDTipText = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -180,7 +229,7 @@ noCDTipText:SetJustifyH("LEFT")
 noCDTipText:SetText(MPLanguage.UI_Set_SurvivalElixir)
 
 
-postion_y = postion_y-60
+postion_y = postion_y-65
 
 
 -- 创建单选框 - 赞扎之魂
@@ -269,7 +318,7 @@ end)
 
 
 
-postion_y = postion_y+20
+postion_y = postion_y+30
 
 -- 物理药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -281,10 +330,11 @@ Text:SetJustifyH("LEFT")
 Text:SetText(MPLanguage.UI_Set_PhysicalElixir)
 
 
-postion_y = postion_y-78
+postion_y = postion_y-82
 
 -- 创建单选框 - 猫鼬药剂
 local checkButton_Mongoose = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "猫鼬药剂 (25敏+2暴击)")
+local Warning_Mongoose = SEWarningText(checkButton_Mongoose)
 checkButton_Mongoose:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPElixirSaved.Mongoose = 1
@@ -292,26 +342,23 @@ checkButton_Mongoose:SetScript("OnClick", function(self)
         MPElixirSaved.Mongoose = 0
     end
     MPCatElixirReset()
+    MPResetConflict()
 end)
 
--- 创建单选框 - 屠魔药剂
-local checkButton_Demon = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "屠魔药剂")
-checkButton_Demon:SetScript("OnClick", function(self)
+
+-- 创建单选框 - 敏捷药剂
+local checkButton_Agility = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "敏捷药剂 (15敏)")
+local Warning_Agility = SEWarningText(checkButton_Agility)
+checkButton_Agility:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPElixirSaved.Demon = 1
+        MPElixirSaved.Agility = 1
     else
-        MPElixirSaved.Demon = 0
+        MPElixirSaved.Agility = 0
     end
     MPCatElixirReset()
+    MPResetConflict()
 end)
-local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsElixir, ADDON_NAME.."CheckButton", 510, postion_y, MPLanguage.UI_Set_BossOnlyDemon)
-checkButton_DemonBoss:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPElixirSaved.DemonBoss = 1
-    else
-        MPElixirSaved.DemonBoss = 0
-    end
-end)
+
 
 -- 创建单选框 - 厚甲蝎药粉
 local checkButton_Encrusted = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 660, postion_y, "厚甲蝎药粉 (25敏捷)")
@@ -424,13 +471,48 @@ checkButton_SoulStrike:SetScript("OnClick", function(self)
 end)
 
 
+postion_y = postion_y-30
+
+-- 创建单选框 - 蛮力药剂
+local checkButton_BruteForce = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "蛮力药剂 (18力+18耐)")
+local Warning_BruteForce = SEWarningText(checkButton_BruteForce)
+
+checkButton_BruteForce:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.BruteForce = 1
+    else
+        MPElixirSaved.BruteForce = 0
+    end
+    MPCatElixirReset()
+    MPResetConflict()
+end)
+
+
+-- 创建单选框 - 屠魔药剂
+local checkButton_Demon = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 350, postion_y, "屠魔药剂")
+checkButton_Demon:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.Demon = 1
+    else
+        MPElixirSaved.Demon = 0
+    end
+    MPCatElixirReset()
+end)
+local checkButton_DemonBoss = MPCreateCheckButtonSmall(CatUISettingsElixir, ADDON_NAME.."CheckButton", 510, postion_y, MPLanguage.UI_Set_BossOnlyDemon)
+checkButton_DemonBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPElixirSaved.DemonBoss = 1
+    else
+        MPElixirSaved.DemonBoss = 0
+    end
+end)
 
 
 
 
 
 
-postion_y = postion_y+45
+postion_y = postion_y+55
 
 -- 法术药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -442,7 +524,7 @@ Text:SetJustifyH("LEFT")
 Text:SetText(MPLanguage.UI_Set_SpellElixir)
 
 
-postion_y = postion_y-100
+postion_y = postion_y-110
 
 
 -- 创建单选框 - 梦境精华药剂
@@ -611,7 +693,7 @@ end)
 
 
 
-postion_y = postion_y+80
+postion_y = postion_y+90
 
 -- 混合药剂
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -623,7 +705,7 @@ Text:SetJustifyH("LEFT")
 Text:SetText(MPLanguage.UI_Set_MixedElixir)
 
 
-postion_y = postion_y-135
+postion_y = postion_y-145
 
 -- 创建单选框 - 翡翠猫鼬药剂
 local checkButton_DreamMongoose = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "翡翠猫鼬药剂 (25敏+15法伤+2暴)")
@@ -661,7 +743,7 @@ end)
 
 
 
-postion_y = postion_y+92
+postion_y = postion_y+103
 
 -- 烹饪食物 (单选)
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -673,7 +755,7 @@ Text:SetJustifyH("LEFT")
 Text:SetText(MPLanguage.UI_Set_FoodElixir)
 
 
-postion_y = postion_y-145
+postion_y = postion_y-157
 
 -- 创建单选框 - 沙漠肉丸子
 local checkButton_DesertDumplings = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "沙漠肉丸子 (20力量)")
@@ -1171,7 +1253,7 @@ end)
 
 
 
-postion_y = postion_y+132
+postion_y = postion_y+145
 
 -- 武器临时附魔 (单选)
 local Text = CatUISettingsElixir:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -1183,7 +1265,7 @@ Text:SetJustifyH("LEFT")
 Text:SetText(MPLanguage.UI_Set_WeaponEnchant)
 
 
-postion_y = postion_y-188
+postion_y = postion_y-197
 
 -- 创建单选框 - 元素磨刀石
 local checkButton_ElementalStone = MPCreateCheckButton(CatUISettingsElixir, ADDON_NAME.."CheckButton", 30, postion_y, "元素磨刀石 (2暴击)")
@@ -1213,11 +1295,11 @@ checkButton_ElementalStone:SetScript("OnClick", function(self)
     else
         MPElixirSaved.ElementalStone = 0
     end
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
     MPCatElixirReset()
 end)
 checkButton_SacredStone:SetScript("OnClick", function(self)
@@ -1231,11 +1313,11 @@ checkButton_SacredStone:SetScript("OnClick", function(self)
     else
         MPElixirSaved.SacredStone = 0
     end
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
     MPCatElixirReset()
 end)
 checkButton_SacredOil:SetScript("OnClick", function(self)
@@ -1249,11 +1331,11 @@ checkButton_SacredOil:SetScript("OnClick", function(self)
     else
         MPElixirSaved.SacredOil = 0
     end
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
     MPCatElixirReset()
 end)
 checkButton_WizardOil:SetScript("OnClick", function(self)
@@ -1267,11 +1349,11 @@ checkButton_WizardOil:SetScript("OnClick", function(self)
     else
         MPElixirSaved.WizardOil = 0
     end
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
     MPCatElixirReset()
 end)
 checkButton_ManaOil:SetScript("OnClick", function(self)
@@ -1285,11 +1367,11 @@ checkButton_ManaOil:SetScript("OnClick", function(self)
     else
         MPElixirSaved.ManaOil = 0
     end
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
     MPCatElixirReset()
 end)
 
@@ -1299,19 +1381,7 @@ end)
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsElixir, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsElixir, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsElixir, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
     MPResetElixirSettings()
     MPInitElixirSettings()
@@ -1332,7 +1402,7 @@ TipText:SetText(MPLanguage.UI_Set_ElixirMacroTip)
 
 
 -- 配置文件版本号
-local ElixirSettingsUIVersion = 12
+local ElixirSettingsUIVersion = 15
 
 function MPResetElixirSettings()
 
@@ -1359,8 +1429,7 @@ function MPResetElixirSettings()
 
     -- 物理
     MPElixirSaved.Mongoose = 0
-    MPElixirSaved.Demon = 0
-    MPElixirSaved.DemonBoss = 1
+    MPElixirSaved.Agility = 0
     MPElixirSaved.Encrusted = 0
     MPElixirSaved.Giants = 0
     MPElixirSaved.SoulEnergy = 0
@@ -1368,6 +1437,9 @@ function MPResetElixirSettings()
     MPElixirSaved.HerbalBrew = 0
     MPElixirSaved.SoulStrike = 0
     MPElixirSaved.HyenaStimulant = 0
+    MPElixirSaved.BruteForce = 0
+    MPElixirSaved.Demon = 0
+    MPElixirSaved.DemonBoss = 1
 
     -- 法伤
     MPElixirSaved.DreamEssence = 0
@@ -1428,10 +1500,33 @@ function MPResetElixirSettings()
     MPElixirSaved.WizardOil = 0
     MPElixirSaved.ManaOil = 0
 
+    -- 合剂
+    MPElixirSaved.Titans = 0
+    MPElixirSaved.SupremePower = 0
+    MPElixirSaved.DistilledWisdom = 0
+
 end
 
 
 function MPResetConflict()
+
+    -- 泰坦合剂
+    Warning_Titans:Hide()
+    if MPElixirSaved.Titans==1 and (MPElixirSaved.SupremePower==1 or MPElixirSaved.DistilledWisdom==1) then
+        Warning_Titans:Show()
+    end
+
+    -- 超级能量合剂
+    Warning_SupremePower:Hide()
+    if MPElixirSaved.SupremePower==1 and (MPElixirSaved.Titans==1 or MPElixirSaved.DistilledWisdom==1) then
+        Warning_SupremePower:Show()
+    end
+
+    -- 精炼智慧合剂
+    Warning_DistilledWisdom:Hide()
+    if MPElixirSaved.DistilledWisdom==1 and (MPElixirSaved.Titans==1 or MPElixirSaved.SupremePower==1) then
+        Warning_DistilledWisdom:Show()
+    end
 
     -- 赞扎之速
     Warning_ZanzaSpeed:Hide()
@@ -1445,6 +1540,12 @@ function MPResetConflict()
         Warning_ZanzaSpirit:Show()
     end
 
+    -- 猫鼬药剂
+    Warning_Mongoose:Hide()
+    if MPElixirSaved.Mongoose==1 and MPElixirSaved.Agility==1 then
+        Warning_Mongoose:Show()
+    end
+
     -- 肺片鸡尾酒
     Warning_Cocktail:Hide()
     if MPElixirSaved.Cocktail==1 and (MPElixirSaved.ZanzaSpirit==1 or MPElixirSaved.HyenaStimulant==1 or MPElixirSaved.Encrusted==1 or MPElixirSaved.CortexPotion==1) then
@@ -1453,13 +1554,25 @@ function MPResetConflict()
 
     -- 巨人药剂
     Warning_Giants:Hide()
-    if MPElixirSaved.Giants==1 and MPElixirSaved.SoulEnergy==1 then
+    if MPElixirSaved.Giants==1 and (MPElixirSaved.SoulEnergy==1 or MPElixirSaved.BruteForce==1) then
         Warning_Giants:Show()
+    end
+
+    -- 蛮力药剂
+    Warning_BruteForce:Hide()
+    if MPElixirSaved.BruteForce==1 and (MPElixirSaved.Giants==1 or MPElixirSaved.SoulEnergy==1) then
+        Warning_BruteForce:Show()
+    end
+
+    -- 敏捷药剂
+    Warning_Agility:Hide()
+    if MPElixirSaved.Agility==1 and MPElixirSaved.Mongoose==1 then
+        Warning_Agility:Show()
     end
 
     -- 魂能之力
     Warning_SoulEnergy:Hide()
-    if MPElixirSaved.SoulEnergy==1 and MPElixirSaved.Giants==1 then
+    if MPElixirSaved.SoulEnergy==1 and (MPElixirSaved.Giants==1 or MPElixirSaved.BruteForce==1) then
         Warning_SoulEnergy:Show()
     end
 
@@ -1514,83 +1627,84 @@ function MPResetConflict()
 end
 
 function MPInitElixirSettingsPart1()
-    --checkButton_Use:SetChecked(ToBoolean(MPElixirSaved.Use))
-    --checkButton_Combat:SetChecked(ToBoolean(MPElixirSaved.Combat))
-    checkButton_Msg:SetChecked(ToBoolean(MPElixirSaved.Msg))
+    --checkButton_Use:SetChecked(MPToBoolean(MPElixirSaved.Use))
+    --checkButton_Combat:SetChecked(MPToBoolean(MPElixirSaved.Combat))
+    checkButton_Msg:SetChecked(MPToBoolean(MPElixirSaved.Msg))
 
     -- 独特
-    checkButton_ZanzaSpeed:SetChecked(ToBoolean(MPElixirSaved.ZanzaSpeed))
-    checkButton_ArthasGift:SetChecked(ToBoolean(MPElixirSaved.ArthasGift))
+    checkButton_ZanzaSpeed:SetChecked(MPToBoolean(MPElixirSaved.ZanzaSpeed))
+    checkButton_ArthasGift:SetChecked(MPToBoolean(MPElixirSaved.ArthasGift))
 
     -- 生存
-    checkButton_ZanzaSpirit:SetChecked(ToBoolean(MPElixirSaved.ZanzaSpirit))
-    checkButton_Fortitude:SetChecked(ToBoolean(MPElixirSaved.Fortitude))
-    checkButton_MedivhWine:SetChecked(ToBoolean(MPElixirSaved.MedivhWine))
-    checkButton_Cocktail:SetChecked(ToBoolean(MPElixirSaved.Cocktail))
-    checkButton_TrollBlood:SetChecked(ToBoolean(MPElixirSaved.TrollBlood))
-    checkButton_Stoneshield:SetChecked(ToBoolean(MPElixirSaved.Stoneshield))
+    checkButton_ZanzaSpirit:SetChecked(MPToBoolean(MPElixirSaved.ZanzaSpirit))
+    checkButton_Fortitude:SetChecked(MPToBoolean(MPElixirSaved.Fortitude))
+    checkButton_MedivhWine:SetChecked(MPToBoolean(MPElixirSaved.MedivhWine))
+    checkButton_Cocktail:SetChecked(MPToBoolean(MPElixirSaved.Cocktail))
+    checkButton_TrollBlood:SetChecked(MPToBoolean(MPElixirSaved.TrollBlood))
+    checkButton_Stoneshield:SetChecked(MPToBoolean(MPElixirSaved.Stoneshield))
 
 
 
     -- 物理
-    checkButton_Mongoose:SetChecked(ToBoolean(MPElixirSaved.Mongoose))
-    checkButton_Demon:SetChecked(ToBoolean(MPElixirSaved.Demon))
-    checkButton_DemonBoss:SetChecked(ToBoolean(MPElixirSaved.DemonBoss))
-    checkButton_Encrusted:SetChecked(ToBoolean(MPElixirSaved.Encrusted))
-    checkButton_Giants:SetChecked(ToBoolean(MPElixirSaved.Giants))
-    checkButton_SoulEnergy:SetChecked(ToBoolean(MPElixirSaved.SoulEnergy))
-    checkButton_Firewater:SetChecked(ToBoolean(MPElixirSaved.Firewater))
-    checkButton_HerbalBrew:SetChecked(ToBoolean(MPElixirSaved.HerbalBrew))
-    checkButton_SoulStrike:SetChecked(ToBoolean(MPElixirSaved.SoulStrike))
-    checkButton_HyenaStimulant:SetChecked(ToBoolean(MPElixirSaved.HyenaStimulant))
-
+    checkButton_Mongoose:SetChecked(MPToBoolean(MPElixirSaved.Mongoose))
+    checkButton_Agility:SetChecked(MPToBoolean(MPElixirSaved.Agility))
+    checkButton_Encrusted:SetChecked(MPToBoolean(MPElixirSaved.Encrusted))
+    checkButton_Giants:SetChecked(MPToBoolean(MPElixirSaved.Giants))
+    checkButton_SoulEnergy:SetChecked(MPToBoolean(MPElixirSaved.SoulEnergy))
+    checkButton_Firewater:SetChecked(MPToBoolean(MPElixirSaved.Firewater))
+    checkButton_HerbalBrew:SetChecked(MPToBoolean(MPElixirSaved.HerbalBrew))
+    checkButton_SoulStrike:SetChecked(MPToBoolean(MPElixirSaved.SoulStrike))
+    checkButton_HyenaStimulant:SetChecked(MPToBoolean(MPElixirSaved.HyenaStimulant))
+    checkButton_BruteForce:SetChecked(MPToBoolean(MPElixirSaved.BruteForce))
+    checkButton_Demon:SetChecked(MPToBoolean(MPElixirSaved.Demon))
+    checkButton_DemonBoss:SetChecked(MPToBoolean(MPElixirSaved.DemonBoss))
 
 end
 
 function MPInitElixirSettingsPart2()
     -- 法伤
-    checkButton_DreamEssence:SetChecked(ToBoolean(MPElixirSaved.DreamEssence))
-    checkButton_ArcanePower:SetChecked(ToBoolean(MPElixirSaved.ArcanePower))
-    checkButton_Dreamshire:SetChecked(ToBoolean(MPElixirSaved.Dreamshire))
-    checkButton_CortexPotion:SetChecked(ToBoolean(MPElixirSaved.CortexPotion))
-    checkButton_Intellect:SetChecked(ToBoolean(MPElixirSaved.Intellect))
-    checkButton_SoulTrickery:SetChecked(ToBoolean(MPElixirSaved.SoulTrickery))
+    checkButton_DreamEssence:SetChecked(MPToBoolean(MPElixirSaved.DreamEssence))
+    checkButton_ArcanePower:SetChecked(MPToBoolean(MPElixirSaved.ArcanePower))
+    checkButton_Dreamshire:SetChecked(MPToBoolean(MPElixirSaved.Dreamshire))
+    checkButton_CortexPotion:SetChecked(MPToBoolean(MPElixirSaved.CortexPotion))
+    checkButton_Intellect:SetChecked(MPToBoolean(MPElixirSaved.Intellect))
+    checkButton_SoulTrickery:SetChecked(MPToBoolean(MPElixirSaved.SoulTrickery))
 
-    checkButton_Firepower:SetChecked(ToBoolean(MPElixirSaved.Firepower))
-    checkButton_ShadowPower:SetChecked(ToBoolean(MPElixirSaved.ShadowPower))
-    checkButton_FrostPower:SetChecked(ToBoolean(MPElixirSaved.FrostPower))
-    checkButton_GreaterArcanePower:SetChecked(ToBoolean(MPElixirSaved.GreaterArcanePower))
-    checkButton_NaturePower:SetChecked(ToBoolean(MPElixirSaved.NaturePower))
-    checkButton_FelMana:SetChecked(ToBoolean(MPElixirSaved.FelMana))
-    checkButton_MedivhBlue:SetChecked(ToBoolean(MPElixirSaved.MedivhBlue))
+    checkButton_Firepower:SetChecked(MPToBoolean(MPElixirSaved.Firepower))
+    checkButton_ShadowPower:SetChecked(MPToBoolean(MPElixirSaved.ShadowPower))
+    checkButton_FrostPower:SetChecked(MPToBoolean(MPElixirSaved.FrostPower))
+    checkButton_GreaterArcanePower:SetChecked(MPToBoolean(MPElixirSaved.GreaterArcanePower))
+    checkButton_NaturePower:SetChecked(MPToBoolean(MPElixirSaved.NaturePower))
+    checkButton_FelMana:SetChecked(MPToBoolean(MPElixirSaved.FelMana))
+    checkButton_MedivhBlue:SetChecked(MPToBoolean(MPElixirSaved.MedivhBlue))
 
 
 end
 
 function MPInitElixirSettingsPart3()
     -- 烹饪
-    checkButton_DesertDumplings:SetChecked(ToBoolean(MPElixirSaved.DesertDumplings))
-    checkButton_Nutritious:SetChecked(ToBoolean(MPElixirSaved.Nutritious))
-    checkButton_BigFish:SetChecked(ToBoolean(MPElixirSaved.BigFish))
+    checkButton_DesertDumplings:SetChecked(MPToBoolean(MPElixirSaved.DesertDumplings))
+    checkButton_Nutritious:SetChecked(MPToBoolean(MPElixirSaved.Nutritious))
+    checkButton_BigFish:SetChecked(MPToBoolean(MPElixirSaved.BigFish))
 
-    checkButton_GrilledSquid:SetChecked(ToBoolean(MPElixirSaved.GrilledSquid))
-    checkButton_SweetBerries:SetChecked(ToBoolean(MPElixirSaved.SweetBerries))
-    checkButton_Skewers:SetChecked(ToBoolean(MPElixirSaved.Skewers))
+    checkButton_GrilledSquid:SetChecked(MPToBoolean(MPElixirSaved.GrilledSquid))
+    checkButton_SweetBerries:SetChecked(MPToBoolean(MPElixirSaved.SweetBerries))
+    checkButton_Skewers:SetChecked(MPToBoolean(MPElixirSaved.Skewers))
 
-    checkButton_TerrabeMood:SetChecked(ToBoolean(MPElixirSaved.TerrabeMood))
-    checkButton_TerrabeFun:SetChecked(ToBoolean(MPElixirSaved.TerrabeFun))
-    checkButton_TerrabeSurprise:SetChecked(ToBoolean(MPElixirSaved.TerrabeSurprise))
+    checkButton_TerrabeMood:SetChecked(MPToBoolean(MPElixirSaved.TerrabeMood))
+    checkButton_TerrabeFun:SetChecked(MPToBoolean(MPElixirSaved.TerrabeFun))
+    checkButton_TerrabeSurprise:SetChecked(MPToBoolean(MPElixirSaved.TerrabeSurprise))
 
-    checkButton_NightfinSoup:SetChecked(ToBoolean(MPElixirSaved.NightfinSoup))
-    checkButton_SmokedPerch:SetChecked(ToBoolean(MPElixirSaved.SmokedPerch))
-    checkButton_HerbSalad:SetChecked(ToBoolean(MPElixirSaved.HerbSalad))
+    checkButton_NightfinSoup:SetChecked(MPToBoolean(MPElixirSaved.NightfinSoup))
+    checkButton_SmokedPerch:SetChecked(MPToBoolean(MPElixirSaved.SmokedPerch))
+    checkButton_HerbSalad:SetChecked(MPToBoolean(MPElixirSaved.HerbSalad))
 
-    checkButton_Crispy:SetChecked(ToBoolean(MPElixirSaved.Crispy))
-    checkButton_Chimera:SetChecked(ToBoolean(MPElixirSaved.Chimera))
-    checkButton_Seafood:SetChecked(ToBoolean(MPElixirSaved.Seafood))
+    checkButton_Crispy:SetChecked(MPToBoolean(MPElixirSaved.Crispy))
+    checkButton_Chimera:SetChecked(MPToBoolean(MPElixirSaved.Chimera))
+    checkButton_Seafood:SetChecked(MPToBoolean(MPElixirSaved.Seafood))
 
-    checkButton_CookedFish:SetChecked(ToBoolean(MPElixirSaved.CookedFish))
-    checkButton_Dragonbreath:SetChecked(ToBoolean(MPElixirSaved.Dragonbreath))
+    checkButton_CookedFish:SetChecked(MPToBoolean(MPElixirSaved.CookedFish))
+    checkButton_Dragonbreath:SetChecked(MPToBoolean(MPElixirSaved.Dragonbreath))
 end
 
 
@@ -1602,6 +1716,7 @@ function MPInitElixirSettings()
     end
 
     if MPElixirSaved.Version ~= ElixirSettingsUIVersion then
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[自动药剂宏]当前配置，这是新版插件正常数据更新！|r")
         MPResetElixirSettings()
     end
 
@@ -1612,17 +1727,17 @@ function MPInitElixirSettings()
     MPResetConflict()
 
     -- 混合
-    checkButton_DreamMongoose:SetChecked(ToBoolean(MPElixirSaved.DreamMongoose))
-    checkButton_ArcaneGiants:SetChecked(ToBoolean(MPElixirSaved.ArcaneGiants))
-    checkButton_DreamFirewater:SetChecked(ToBoolean(MPElixirSaved.DreamFirewater))
+    checkButton_DreamMongoose:SetChecked(MPToBoolean(MPElixirSaved.DreamMongoose))
+    checkButton_ArcaneGiants:SetChecked(MPToBoolean(MPElixirSaved.ArcaneGiants))
+    checkButton_DreamFirewater:SetChecked(MPToBoolean(MPElixirSaved.DreamFirewater))
 
 
     -- 附魔
-    checkButton_ElementalStone:SetChecked(ToBoolean(MPElixirSaved.ElementalStone))
-    checkButton_SacredStone:SetChecked(ToBoolean(MPElixirSaved.SacredStone))
-    checkButton_SacredOil:SetChecked(ToBoolean(MPElixirSaved.SacredOil))
-    checkButton_WizardOil:SetChecked(ToBoolean(MPElixirSaved.WizardOil))
-    checkButton_ManaOil:SetChecked(ToBoolean(MPElixirSaved.ManaOil))
+    checkButton_ElementalStone:SetChecked(MPToBoolean(MPElixirSaved.ElementalStone))
+    checkButton_SacredStone:SetChecked(MPToBoolean(MPElixirSaved.SacredStone))
+    checkButton_SacredOil:SetChecked(MPToBoolean(MPElixirSaved.SacredOil))
+    checkButton_WizardOil:SetChecked(MPToBoolean(MPElixirSaved.WizardOil))
+    checkButton_ManaOil:SetChecked(MPToBoolean(MPElixirSaved.ManaOil))
 
     slider_LeftTime:SetValue(MPElixirSaved.LeftTime)
 

@@ -1,6 +1,6 @@
 -- -------------------------------------
 -- 乌龟服 - 自动药剂一键宏
--- 发布日期：2026-03-29 （后面根据时间来判断版本）
+-- 发布日期：2026-04-23 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -88,6 +88,10 @@ function MPCatElixir()
 		MPElixirMsg("使用：猫鼬药剂")
 		MPUseItemByName("猫鼬药剂")
 	end
+	if MPElixirSaved.Agility==1 and MPBuffTime("敏捷")<min then
+		MPElixirMsg("使用：敏捷药剂")
+		MPUseItemByName("敏捷药剂")
+	end
 
 	-- 屠魔药剂
 	if MPElixirSaved.Demon==1 and UnitExists("target") and not MPBuff("屠魔药剂") then
@@ -109,10 +113,23 @@ function MPCatElixir()
 		MPElixirMsg("使用：巨人药剂")
 		MPUseItemByName("巨人药剂")
 	end
+	if MPElixirSaved.BruteForce==1 and MPBuffTime("蛮力药剂")<min then
+		MPElixirMsg("使用：蛮力药剂")
+		MPUseItemByName("蛮力药剂")
+	end
 	if MPElixirSaved.SoulEnergy==1 and MPBuffTime("魂能之力")<min then
 		if MPGetItemByNameCD("魂能之力") then
 			MPElixirMsg("使用：魂能之力")
+            local target,guid = UnitExists("target")
+
+            TargetUnit("player")
 			MPUseItemByName("魂能之力")
+
+            if not target then
+                ClearTarget()
+            else
+                TargetUnit(guid)
+            end
 		else
 			MPElixirMsg("使用：魂能之力 |cFFEE2222失败 - 物品尚未冷却")
 		end
@@ -128,7 +145,16 @@ function MPCatElixir()
 	if MPElixirSaved.SoulStrike==1 and MPBuffTime("魂能之击")<min then
 		if MPGetItemByNameCD("魂能之击") then
 			MPElixirMsg("使用：魂能之击")
+            local target,guid = UnitExists("target")
+
+            TargetUnit("player")
 			MPUseItemByName("魂能之击")
+
+            if not target then
+                ClearTarget()
+            else
+                TargetUnit(guid)
+            end
 		else
 			MPElixirMsg("使用：魂能之击 |cFFEE2222失败 - 物品尚未冷却")
 		end
@@ -168,7 +194,16 @@ function MPCatElixir()
 	if MPElixirSaved.SoulTrickery==1 and MPBuffTime("魂能之诈")<min then
 		if MPGetItemByNameCD("魂能之诈") then
 			MPElixirMsg("使用：魂能之诈")
+            local target,guid = UnitExists("target")
+
+            TargetUnit("player")
 			MPUseItemByName("魂能之诈")
+
+            if not target then
+                ClearTarget()
+            else
+                TargetUnit(guid)
+            end
 		else
 			MPElixirMsg("使用：魂能之诈 |cFFEE2222失败 - 物品尚未冷却")
 		end

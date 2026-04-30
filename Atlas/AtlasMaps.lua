@@ -146,7 +146,7 @@ AtlasMaps = {
 	TimbermawHold = {
 		ZoneName = { AL["Timbermaw Hold"],  };
 		Acronym = "TMH";
-		Location = { AL["Felwood"], 361 };
+		Location = { AL["Azshara"], 31 };
 		LevelRange = "60";
 		MinLevel = "60";
 		PlayerLimit = "20";
@@ -161,6 +161,7 @@ AtlasMaps = {
 		{ GREY.."7) "..AL["Selenaxx Foulheart"], NPC, -1 };
 		{ GREY.."8) "..AL["Archdruid Kronn"], NPC, -1 };
 		{ GREY.."9) "..AL["Ursol"], NPC, -1 };
+		{ GREY.."10) "..AL["Perotharn"].." (".."隐藏BOSS"..")", NPC, -1 };
 		{ GREY..INDENT..AL["Trash Mobs"] };
 		{ BLUE.."B) "..AL["Entrance"] };
 	};

@@ -23,18 +23,7 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 local postion_y = postion_y-40
 
 -- 创建单选框 - 战士
-local checkButton_Warrior = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Warrior:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 20, postion_y)
-checkButton_Warrior:SetScale(0.8)
-checkButton_Warrior:Disable()
-
--- 添加文字标签
-local checkText_Warrior = checkButton_Warrior:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Warrior:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Warrior:SetTextColor(1, 1, 1)
-checkText_Warrior:SetPoint("LEFT", checkButton_Warrior, "LEFT", 34, 1)
-checkText_Warrior:SetText(MPLanguage.UI_Set_WarriorInterrupt)
-
+local checkButton_Warrior = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_WarriorInterrupt)
 -- 设置点击事件
 checkButton_Warrior:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -46,19 +35,7 @@ end)
 
 
 -- 创建单选框 - 法师
-
-local checkButton_Mage = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Mage:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 340, postion_y)
-checkButton_Mage:SetScale(0.8)
-checkButton_Mage:Disable()
-
--- 添加文字标签
-local checkText_Mage = checkButton_Mage:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Mage:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Mage:SetTextColor(1, 1, 1)
-checkText_Mage:SetPoint("LEFT", checkButton_Mage, "LEFT", 34, 1)
-checkText_Mage:SetText(MPLanguage.UI_Set_MageInterrupt)
-
+local checkButton_Mage = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_MageInterrupt)
 -- 设置点击事件
 checkButton_Mage:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -74,18 +51,7 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 盗贼
-local checkButton_Rogue = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Rogue:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 20, postion_y)
-checkButton_Rogue:SetScale(0.8)
-checkButton_Rogue:Disable()
-
--- 添加文字标签
-local checkText_Rogue = checkButton_Rogue:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Rogue:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Rogue:SetTextColor(1, 1, 1)
-checkText_Rogue:SetPoint("LEFT", checkButton_Rogue, "LEFT", 34, 1)
-checkText_Rogue:SetText(MPLanguage.UI_Set_RogueInterrupt)
-
+local checkButton_Rogue = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_RogueInterrupt)
 -- 设置点击事件
 checkButton_Rogue:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -98,18 +64,7 @@ end)
 
 
 -- 创建单选框 - 萨满
-local checkButton_Shaman = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_Shaman", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Shaman:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 340, postion_y)
-checkButton_Shaman:SetScale(0.8)
-checkButton_Shaman:Disable()
-
--- 添加文字标签
-local checkText_Shaman = checkButton_Shaman:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Shaman:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Shaman:SetTextColor(1, 1, 1)
-checkText_Shaman:SetPoint("LEFT", checkButton_Shaman, "LEFT", 34, 1)
-checkText_Shaman:SetText(MPLanguage.UI_Set_ShamanInterrupt)
-
+local checkButton_Shaman = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_ShamanInterrupt)
 
 local slider_Shaman = CreateFrame("Slider", ADDON_NAME.."Slider_Shaman", checkButton_Shaman, "OptionsSliderTemplate")
 slider_Shaman:SetPoint("RIGHT", checkButton_Shaman, "RIGHT", 265, -2)
@@ -123,9 +78,6 @@ MPCatUISliderRegionHide(slider_Shaman)
 
 local color_Shaman = "|cFFFFD100"
 
-_G[slider_Shaman:GetName().."Text"]:SetText(color_Shaman..MPLanguage.UI_Set_LevelLabel.."1|r")
-_G[slider_Shaman:GetName().."Low"]:Hide()
-_G[slider_Shaman:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_Shaman:SetScript("OnValueChanged", function()
     MPInterruptCastSaved.Shaman_Value = arg1
@@ -151,18 +103,7 @@ postion_y = postion_y-30
 
 
 -- 创建单选框 - 术士
-local checkButton_Warlock = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Warlock:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 20, postion_y)
-checkButton_Warlock:SetScale(0.8)
-checkButton_Warlock:Disable()
-
--- 添加文字标签
-local checkText_Warlock = checkButton_Warlock:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Warlock:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Warlock:SetTextColor(1, 1, 1)
-checkText_Warlock:SetPoint("LEFT", checkButton_Warlock, "LEFT", 34, 1)
-checkText_Warlock:SetText(MPLanguage.UI_Set_WarlockInterrupt)
-
+local checkButton_Warlock = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_WarlockInterrupt)
 -- 设置点击事件
 checkButton_Warlock:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -175,18 +116,7 @@ end)
 
 
 -- 创建单选框 - 牧师
-local checkButton_Priest = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_Priest:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 340, postion_y)
-checkButton_Priest:SetScale(0.8)
-checkButton_Priest:Disable()
-
--- 添加文字标签
-local checkText_Priest = checkButton_Priest:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Priest:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Priest:SetTextColor(1, 1, 1)
-checkText_Priest:SetPoint("LEFT", checkButton_Priest, "LEFT", 34, 1)
-checkText_Priest:SetText(MPLanguage.UI_Set_PriestInterrupt)
-
+local checkButton_Priest = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 340, postion_y, MPLanguage.UI_Set_PriestInterrupt)
 -- 设置点击事件
 checkButton_Priest:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -203,17 +133,7 @@ postion_y = postion_y-60
 
 
 -- 创建单选框 - 断条
-local checkButton_StopCasting = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsInterrupt, "UICheckButtonTemplate")
-checkButton_StopCasting:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 20, postion_y)
-checkButton_StopCasting:SetScale(0.8)
-
--- 添加文字标签
-local checkText_StopCasting = checkButton_StopCasting:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_StopCasting:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_StopCasting:SetTextColor(1, 1, 1)
-checkText_StopCasting:SetPoint("LEFT", checkButton_StopCasting, "LEFT", 34, 1)
-checkText_StopCasting:SetText(MPLanguage.UI_Set_StopOwnCast)
-
+local checkButton_StopCasting = MPCreateCheckButton(CatUISettingsInterrupt, ADDON_NAME.."CheckButton", 20, postion_y, MPLanguage.UI_Set_StopOwnCast)
 -- 设置点击事件
 checkButton_StopCasting:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -234,19 +154,7 @@ checkText_SuperWoW:SetText(MPLanguage.UI_Set_InterruptNote)
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsInterrupt, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsInterrupt, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsInterrupt, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
     MPResetInterruptSettings()
     MPInitInterruptSettings()
@@ -285,15 +193,6 @@ function MPResetInterruptSettings()
 
 end
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
-
-
 
 function MPInitInterruptSettings()
 
@@ -306,15 +205,15 @@ function MPInitInterruptSettings()
         MPResetInterruptSettings()
     end
 
-    checkButton_Warrior:SetChecked(ToBoolean(MPInterruptCastSaved.Warrior))
-    checkButton_Rogue:SetChecked(ToBoolean(MPInterruptCastSaved.Rogue))
-    checkButton_Mage:SetChecked(ToBoolean(MPInterruptCastSaved.Mage))
-    checkButton_Warlock:SetChecked(ToBoolean(MPInterruptCastSaved.Warlock))
-    checkButton_Priest:SetChecked(ToBoolean(MPInterruptCastSaved.Priest))
-    checkButton_StopCasting:SetChecked(ToBoolean(MPInterruptCastSaved.StopCasting))
+    checkButton_Warrior:SetChecked(MPToBoolean(MPInterruptCastSaved.Warrior))
+    checkButton_Rogue:SetChecked(MPToBoolean(MPInterruptCastSaved.Rogue))
+    checkButton_Mage:SetChecked(MPToBoolean(MPInterruptCastSaved.Mage))
+    checkButton_Warlock:SetChecked(MPToBoolean(MPInterruptCastSaved.Warlock))
+    checkButton_Priest:SetChecked(MPToBoolean(MPInterruptCastSaved.Priest))
+    checkButton_StopCasting:SetChecked(MPToBoolean(MPInterruptCastSaved.StopCasting))
 
     --[[
-    checkButton_Mage:SetChecked(ToBoolean(MPInterruptCastSaved.Mage))
+    checkButton_Mage:SetChecked(MPToBoolean(MPInterruptCastSaved.Mage))
     slider_Mage:SetValue(MPInterruptCastSaved.Mage_Value)
     if MPInterruptCastSaved.Mage==1 then
         color_Mage = "|cFFFFD100"
@@ -324,7 +223,7 @@ function MPInitInterruptSettings()
     _G[slider_Mage:GetName().."Text"]:SetText(color_Mage.."等级: ".. MPInterruptCastSaved.Mage_Value .."|r")
     ]]
 
-    checkButton_Shaman:SetChecked(ToBoolean(MPInterruptCastSaved.Shaman))
+    checkButton_Shaman:SetChecked(MPToBoolean(MPInterruptCastSaved.Shaman))
     slider_Shaman:SetValue(MPInterruptCastSaved.Shaman_Value)
     if MPInterruptCastSaved.Shaman==1 then
         color_Shaman = "|cFFFFD100"

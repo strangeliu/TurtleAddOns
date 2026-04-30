@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 火毁术一键宏
--- 更新日期：2026-02-03 （后面根据时间来判断版本）
+-- 更新日期：2026-04-12 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -16,6 +16,9 @@ end
 
 
 local MHP,DM,AYZS,RS,LHZH,CYZL,EYZZ
+
+-- 默认配置
+MPWarlockFDConfig = 1
 
 
 local function MPCastCurseAgony()
@@ -129,21 +132,21 @@ function MPWarlockFD()
 	local percent = UnitHealth("player") / UnitHealthMax("player") * 100
 	local percentMana = UnitMana("player") / UnitManaMax("player") * 100
 	if MPWarlockShadowburn==1 then AYZS = MPSpellReady("暗影灼烧") else AYZS=false end
-	RS = MPSpellReadyOffset("燃烧")
-	LHZH = MPSpellReady("灵魂之火")
+	RS = MPSpellReadyOffset("燃烧",1.0)
+	LHZH = MPSpellReadyOffset("灵魂之火",1.0)
 	EYZZ = MPSpellReady("厄运诅咒")
 	if MPWarlockOverpowering==1 then CYZL = MPSpellReady("超越之力") else CYZL=false end
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPWarlockFDSaved.Target, 0)
+	MPAutoSwitchTarget(MPWarlockFDSaved[MPWarlockFDConfig].Target, 0)
 
 	-- 自动拾取
-	if MPWarlockFDSaved.Pick==1 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPWarlockFDSaved.Power==1 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -151,7 +154,7 @@ function MPWarlockFD()
 	if not UnitExists("target") then return end
 
 	-- 宠物攻击
-	if MPWarlockFDSaved.PetAttack==1 and UnitAffectingCombat("target") then
+	if MPWarlockFDSaved[MPWarlockFDConfig].PetAttack==1 and UnitAffectingCombat("target") then
 		PetAttack()
 	end
 
@@ -160,68 +163,70 @@ function MPWarlockFD()
 	if MPInCombat then
 
 		-- 自动开启饰品
-		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPWarlockFDSaved.Trinket_Upper==1 then
-			if MPWarlockFDSaved.TUBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 and MPWarlockFDSaved[MPWarlockFDConfig].Trinket_Upper==1 then
+			if MPWarlockFDSaved[MPWarlockFDConfig].TUBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(13)
-			elseif MPWarlockFDSaved.TUBoss==0 then
+			elseif MPWarlockFDSaved[MPWarlockFDConfig].TUBoss==0 then
 				UseInventoryItem(13)
 			end
 		end
-		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPWarlockFDSaved.Trinket_Below==1 then
-			if MPWarlockFDSaved.TBBoss==1 and MPIsBossTarget() then
+		if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 and MPWarlockFDSaved[MPWarlockFDConfig].Trinket_Below==1 then
+			if MPWarlockFDSaved[MPWarlockFDConfig].TBBoss==1 and MPIsBossTarget() then
 				UseInventoryItem(14)
-			elseif MPWarlockFDSaved.TBBoss==0 then
+			elseif MPWarlockFDSaved[MPWarlockFDConfig].TBBoss==0 then
 				UseInventoryItem(14)
 			end
 		end
 
-		if MPWarlockFDSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPWarlockFDSaved[MPWarlockFDConfig].Soulspeed==1 then
+			if MPWarlockFDSaved[MPWarlockFDConfig].SoulspeedBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理，潜行下不吃药
-		if percent<MPWarlockFDSaved.HealthStone_Value and MPWarlockFDSaved.HealthStone==1 then
+		if percent<MPWarlockFDSaved[MPWarlockFDConfig].HealthStone_Value and MPWarlockFDSaved[MPWarlockFDConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPWarlockFDSaved.HerbalTea_Value and MPWarlockFDSaved.HerbalTea==1 then
+		if percent<MPWarlockFDSaved[MPWarlockFDConfig].HerbalTea_Value and MPWarlockFDSaved[MPWarlockFDConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPWarlockFDSaved.HerbalTeaMana_Value and MPWarlockFDSaved.HerbalTeaMana==1 then
+		if percentMana<MPWarlockFDSaved[MPWarlockFDConfig].HerbalTeaMana_Value and MPWarlockFDSaved[MPWarlockFDConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
 		-- 特定 种族天赋 --
 
-		if MPWarlockFDSaved.RacialTraits==1 then
+		if MPWarlockFDSaved[MPWarlockFDConfig].RacialTraits==1 then
+			if MPWarlockFDSaved[MPWarlockFDConfig].RacialTraitsBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 
 	end
 
 	-- 生命分流
-	if MPWarlockFDSaved.LifeTap==1 and percent>MPWarlockFDSaved.LifeTap_Value and percentMana<=MPWarlockFDSaved.LifeTap_Mana then
+	if MPWarlockFDSaved[MPWarlockFDConfig].LifeTap==1 and percent>MPWarlockFDSaved[MPWarlockFDConfig].LifeTap_Value and percentMana<=MPWarlockFDSaved[MPWarlockFDConfig].LifeTap_Mana then
 		local dec = UnitManaMax("player") - UnitMana("player")
 		if dec > 2000 then
 			CastSpellByName("生命分流")
@@ -231,154 +236,149 @@ function MPWarlockFD()
 
 
 	-- 未进入战斗
-	if not MPInCombat and MPWarlockFDSaved.First==1 and LHZH then
+	if not MPInCombat and MPWarlockFDSaved[MPWarlockFDConfig].First==1 and LHZH then
 		MPCastSoulFire()
 		return
 	end
 
 	-- 超越之力
-	if MPWarlockFDSaved.Overpowering==1 and CYZL then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Overpowering==1 and CYZL then
 		if UnitExists("pet") and not UnitIsDead("pet") then
 			CastSpellByName("超越之力")
 			return
 		end
 	end
 
-	local dot = false
-	if MPWarlockFDSaved.BOSS==0 then
-		dot = true
-	else
-		if MPIsBossTarget() then
-			dot = true
-		end
-	end
 
-	if MPWarlockFDSaved.CurseFatigue==1 and not MPBuff("疲劳诅咒","target") then
+	if MPWarlockFDSaved[MPWarlockFDConfig].CurseFatigue==1 and not MPBuff("疲劳诅咒","target") then
 		MPCastCurseFatigue()
 		return
 	end
 
 	-- 厄运诅咒
-	if MPWarlockFDSaved.CurseDoom==1 and EYZZ then
+	if MPWarlockFDSaved[MPWarlockFDConfig].CurseDoom==1 and EYZZ then
 		MPCastCurseDoom()
 		return
 	end
 
-	if dot then
 
-		-- 大诅咒
+	-- 大诅咒
 	
-		local bigdot = false
-		if MPWarlockFDSaved.CurseBOSS==0 then
+	local bigdot = false
+	if MPWarlockFDSaved[MPWarlockFDConfig].CurseBOSS==0 then
+		bigdot = true
+	else
+		if MPIsBossTarget() then
 			bigdot = true
-		else
-			if MPIsBossTarget() then
-				bigdot = true
-			end
 		end
+	end
 
-		-- 腐蚀术
-		if MPWarlockFDSaved.Corruption==1 and not MPGetCorruptionDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+
+	-- 腐蚀术
+	if MPWarlockFDSaved[MPWarlockFDConfig].Corruption==1 and not MPGetCorruptionDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+		if MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==1 and MPIsBossTarget()) then
 			MPCastCorruption()
 			return
 		end
+	end
 
-		if bigdot then
+	if bigdot then
 
 
-			if MPWarlockFDSaved.CurseRecklessness==1 and not MPBuff("鲁莽诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-				MPCastCurseRecklessness()
-				if MP_UnitXP then
-					return
-				end
-			end
-
-			if MPWarlockFDSaved.CurseElements==1 and not MPBuff("元素诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-				MPCastCurseCurseElements()
-				if MP_UnitXP then
-					return
-				end
-			end
-
-			if MPWarlockFDSaved.CurseShadow==1 and not MPBuff("暗影诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-				MPCastCurseShadow()
-				if MP_UnitXP then
-					return
-				end
-			end
-
-			if MPWarlockFDSaved.CurseTongues==1 and not MPBuff("语言诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-				MPCastCurseTongues()
-				if MP_UnitXP then
-					return
-				end
-			end
-
-			if MPWarlockFDSaved.CurseWeakness==1 and not MPBuff("虚弱诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-				MPCastCurseWeakness()
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseRecklessness==1 and not MPBuff("鲁莽诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+			MPCastCurseRecklessness()
+			if MP_UnitXP then
 				return
 			end
-
 		end
 
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseElements==1 and not MPBuff("元素诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+			MPCastCurseCurseElements()
+			if MP_UnitXP then
+				return
+			end
+		end
 
-		-- 痛苦诅咒
-		if MPWarlockFDSaved.CurseAgony==1 and not MPGetCurseAgonyDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-			MPCastCurseAgony()
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseShadow==1 and not MPBuff("暗影诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+			MPCastCurseShadow()
+			if MP_UnitXP then
+				return
+			end
+		end
+
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseTongues==1 and not MPBuff("语言诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+			MPCastCurseTongues()
+			if MP_UnitXP then
+				return
+			end
+		end
+
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseWeakness==1 and not MPBuff("虚弱诅咒","target") and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+			MPCastCurseWeakness()
 			return
 		end
 
-
-
-
 	end
+
+
+
+	-- 痛苦诅咒
+	if MPWarlockFDSaved[MPWarlockFDConfig].CurseAgony==1 and not MPGetCurseAgonyDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+		if MPWarlockFDSaved[MPWarlockFDConfig].CurseAgonyBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].CurseAgonyBoss==1 and MPIsBossTarget()) then
+			MPCastCurseAgony()
+			return
+		end
+	end
+
+
+
+
 
 
 
 
 	-- 燃烧
-	if MPWarlockFDSaved.Conflagrate==1 and RS and MPGetImmolateDot("target", 3.2) then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Conflagrate==1 and MPWarlockConflagrate==1 and RS and MPGetImmolateDot("target", 4) then
 		MPCastConflagrate()
 		return
 	end
 
 	-- 灵魂之火
-	if MPWarlockFDSaved.SoulFireBOSS==1 and not MPIsBossTarget() then
+	if MPWarlockFDSaved[MPWarlockFDConfig].SoulFireBoss==1 and not MPIsBossTarget() then
 	else
-		if MPWarlockFDSaved.SoulFire==1 and LHZH then
+		if MPWarlockFDSaved[MPWarlockFDConfig].SoulFire==1 and LHZH then
 			MPCastSoulFire()
 			return
 		end
 	end
 
 	-- 献祭
-	if MPWarlockFDSaved.Immolate==1 and not MPGetImmolateDot("target", 3.0) and GetTime()-MPImmolateTimer>2 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Immolate==1 and not MPGetImmolateDot("target", 2) and GetTime()-MPImmolateTimer>2 then
 		MPCastImmolate()
 		return
 	end
 
 
-
 	-- 暗影灼烧
-	if MPWarlockFDSaved.Shadowburn==1 and MPWarlockShadowburn==1 and AYZS then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Shadowburn==1 and MPWarlockShadowburn==1 and AYZS then
 		local SoulShards = MPGetItemByNameID("灵魂碎片")
 		if DM>=MPWarlockShadowburnMana[6] and SoulShards>0 then
 			local t = UnitExists("target")
 			if t and MP_UnitXP then
 				local rang = UnitXP("distanceBetween", "player", "target")
 				if rang and rang<=(20+MPWarlockDestructionExtend) then
-					if MPWarlockFDSaved.ShadowburnBOSS==1 and MPIsBossTarget() then
+					if MPWarlockFDSaved[MPWarlockFDConfig].ShadowburnBoss==1 and MPIsBossTarget() then
 						MPCastShadowburn()
 						return
-					elseif MPWarlockFDSaved.ShadowburnBOSS==0 then
+					elseif MPWarlockFDSaved[MPWarlockFDConfig].ShadowburnBoss==0 then
 						MPCastShadowburn()
 						return
 					end
 				end
 			else
-				if MPWarlockFDSaved.ShadowburnBOSS==1 and MPIsBossTarget() then
+				if MPWarlockFDSaved[MPWarlockFDConfig].ShadowburnBoss==1 and MPIsBossTarget() then
 					MPCastShadowburn()
-				elseif MPWarlockFDSaved.ShadowburnBOSS==0 then
+				elseif MPWarlockFDSaved[MPWarlockFDConfig].ShadowburnBoss==0 then
 					MPCastShadowburn()
 				end
 			end
@@ -387,12 +387,12 @@ function MPWarlockFD()
 
 
 	-- 灼热之痛
-	if MPWarlockFDSaved.SearingPain==1 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].SearingPain==1 then
 		MPCastSearingPain()
 	end
 
 	-- 暗影箭
-	if MPWarlockFDSaved.ShadowBolt==1 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].ShadowBolt==1 then
 		MPCastShadowBolt()
 	end
 

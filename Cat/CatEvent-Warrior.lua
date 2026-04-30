@@ -330,7 +330,7 @@ frame:SetScript("OnEvent", OnEvent)
 -- 战士撕裂状态
 function MPWarriorRend()
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("撕裂","target")
     end
 
@@ -362,7 +362,7 @@ end
 -- 获取反击、复仇状态
 function MPWarriorCounterAttack()
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         if GetTime()-CounterTimerNoSW<4 then
             return true
         end
@@ -394,7 +394,7 @@ function MPWarriorOverpower(LeftTime)
     LeftTime = LeftTime or 4
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         if GetTime()-OverpowerTimerNoSW<LeftTime then
             return true
         end
@@ -422,7 +422,7 @@ end
 
 function MPGetBattleShout()
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         if MPBuff("战斗怒吼") then
             return MPWarriorBattleShoutDuration
         else

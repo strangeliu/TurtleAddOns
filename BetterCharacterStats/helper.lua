@@ -21,7 +21,7 @@ local L_HIT = BCS["L_HIT"]
 local L_BLOCKVALUE = BCS["L_BLOCKVALUE"]
 local L_ARMORPENETRATION = BCS["L_ARMORPENETRATION"]
 local L_WEAPONTYPE = BCS["L_WEAPONTYPE"]
-
+local L_RANGECRIT = BCS["L_RANGECRIT"]
 
 local strfind = strfind
 local tonumber = tonumber
@@ -33,10 +33,10 @@ local faction, _ = UnitFactionGroup("player")  --Alliance,Horde
 
 local BCS_USE_CACHE = 1
 local BCS_GET_ON_DEMAND = 1
-local VERSION = "1.0.11-SNAPSHOT"
+local VERSION = "1.0.12-SNAPSHOT"
 
-local MELEE_HIT = 0
-local GET_MELEE_HIT_TIME =0
+local MELEE_HIT = nil
+local GET_MELEE_HIT_TIME = 0
 local HASTE_CACHE = 0
 local GET_HASTE_CACHE_TIME = 0
 local SPELL_CRIT = 0
@@ -50,7 +50,7 @@ local SPELL_HIT_ARCANE = 0
 local SPELL_HIT_SHADOW = 0
 local SPELL_HIT_HOLY = 0
 local GET_SPELL_HIT_TIME = 0
-local MELEE_CRIT = 0
+local MELEE_CRIT = nil
 local GET_MELEE_CRIT_TIME = 0
 local RANGE_CRIT = 0
 local GET_RANGE_CRIT_TIME =0
@@ -154,12 +154,15 @@ function BCS:GetHitRating(hitOnly)
 		end
 	end
 	if BCS_USE_CACHE == 1 then
-		if MELEE_HIT and (GetTime() - GET_MELEE_HIT_TIME) < 2 then
+		if MELEE_HIT ~= nil and GET_MELEE_HIT_TIME and (GetTime() - GET_MELEE_HIT_TIME) < 2 then
 			return MELEE_HIT
 		else 
-			MELEE_HIT = BCS:GetLiveHitRating(hitOnly)
-			GET_MELEE_HIT_TIME = GetTime()
-			return MELEE_HIT
+			local value = BCS:GetLiveHitRating(hitOnly)
+			if value ~= nil then
+				MELEE_HIT = value
+				GET_MELEE_HIT_TIME = GetTime()
+			end
+			return value
 		end
 	else
 		return BCS:GetLiveHitRating(hitOnly)
@@ -175,6 +178,7 @@ function BCS:GetLiveHitRating(hitOnly)
 	for slot=0, MAX_INVENTORY_SLOTS do
 		local hasItem = BCS_Tooltip:SetInventoryItem("player", slot)
 		if hasItem then
+
 			local MAX_LINES = BCS_Tooltip:NumLines()
 			local SET_NAME = nil
 			
@@ -587,12 +591,15 @@ function BCS:GetCritChance()
 	]]
 
 	if BCS_USE_CACHE == 1 and (class ~= 'HUNTER') then 
-		if  GET_MELEE_CRIT_TIME and (GetTime() - GET_MELEE_CRIT_TIME <2 ) then
+		if MELEE_CRIT ~= nil and GET_MELEE_CRIT_TIME and (GetTime() - GET_MELEE_CRIT_TIME <2 ) then
 			return MELEE_CRIT
 		else 
-			MELEE_CRIT = BCS:GetLiveCritChance()
-			GET_MELEE_CRIT_TIME = GetTime()
-			return MELEE_CRIT
+			local value =BCS:GetLiveCritChance()
+			if value ~= nil then
+				MELEE_CRIT = value
+				GET_MELEE_CRIT_TIME = GetTime()
+			end
+			return value
 		end
 	else
 		return BCS:GetLiveCritChance()
@@ -601,30 +608,6 @@ end
 
 function BCS:GetLiveCritChance()
 	local crit = 0
-	
-	local MAX_TABS = GetNumTalentTabs()
-	
-	if class == 'HUNTER' then
-		for tab=1, MAX_TABS do
-			local MAX_TALENTS = GetNumTalents(tab)
-			for talent=1, MAX_TALENTS do
-				BCS_Tooltip:SetTalent(tab, talent)
-				local MAX_LINES = BCS_Tooltip:NumLines()
-				
-				for line=1, MAX_LINES do
-					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-					if left:GetText() then
-						local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with all attacks by (%d)%%."])
-						local _, _, _, _, rank = GetTalentInfo(tab, talent)
-						if value and rank > 0 then
-							crit = crit + tonumber(value)
-						end
-					end	
-				end
-				
-			end
-		end
-	end
 	
 	--修改by狗血编剧男
 	local iCritInfo = 0
@@ -647,7 +630,6 @@ function BCS:GetLiveCritChance()
 	return crit
 end
 
-local Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent, Cache_GetRangedCritChance_Line
 
 function BCS:GetRangedCritChance()
 
@@ -665,7 +647,6 @@ function BCS:GetRangedCritChance()
 		end
 	end
 
-
 	if BCS_USE_CACHE == 1 then 
 		if  GET_RANGE_CRIT_TIME and (GetTime() - GET_RANGE_CRIT_TIME <2 ) then
 			return RANGE_CRIT
@@ -682,48 +663,32 @@ end
 function BCS:GetLiveRangedCritChance()
 	local crit = BCS:GetCritChance()
 	
-	if Cache_GetRangedCritChance_Tab and Cache_GetRangedCritChance_Talent and Cache_GetRangedCritChance_Line then
-		BCS_Tooltip:SetTalent(Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent)
-		local left = getglobal(BCS_Prefix .. "TextLeft" .. Cache_GetRangedCritChance_Line)
-		
-		if left:GetText() then
-			local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with ranged weapons by (%d)%%."])
-			local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(Cache_GetRangedCritChance_Tab, Cache_GetRangedCritChance_Talent)
-			if value and rank > 0 then
-				crit = crit + tonumber(value)
-			end
-		end
-	
-		return crit
-	end
-	
-	local MAX_TABS = GetNumTalentTabs()
-	
-	for tab=1, MAX_TABS do
-		local MAX_TALENTS = GetNumTalents(tab)
-		
-		for talent=1, MAX_TALENTS do
-			BCS_Tooltip:SetTalent(tab, talent)
-			local MAX_LINES = BCS_Tooltip:NumLines()
-			
-			for line=1, MAX_LINES do
-				local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
-				if left:GetText() then
-					local _,_, value = strfind(left:GetText(), L["Increases your critical strike chance with ranged weapons by (%d)%%."])
-					local name, iconTexture, tier, column, rank, maxRank, isExceptional, meetsPrereq = GetTalentInfo(tab, talent)
-					if value and rank > 0 then
-						crit = crit + tonumber(value)
-						
-						line = MAX_LINES
-						talent = MAX_TALENTS
-						tab = MAX_TABS
+	local MAX_INVENTORY_SLOTS = 19
+	for slot=0, MAX_INVENTORY_SLOTS do
+		if slot == 18 then  --远程武器处理专用
+			local hasItem = BCS_Tooltip:SetInventoryItem("player", slot)
+			if hasItem then
+				for line=1, BCS_Tooltip:NumLines() do
+					local left = getglobal(BCS_Prefix .. "TextLeft" .. line)
+					if left and left:GetText() then
+						local _,_, value = strfind(left:GetText(), L_RANGECRIT["RANGECRIT_1"])
+						if value then
+							crit = crit + tonumber(value)
+						end
 					end
 				end
 			end
-			
 		end
 	end
 	
+	--from talent
+	if class == "HUNTER" then 
+		local talentname, _, _, _, crank, _ = GetTalentInfo(L_TALENT.HUNTER_LETHAL_SHOOTS.tab, L_TALENT.HUNTER_LETHAL_SHOOTS.number)
+		if talentname == L_TALENT.HUNTER_LETHAL_SHOOTS.name then 
+			crit = crit + crank
+		end
+	end
+
 	return crit
 end
 
@@ -1136,6 +1101,10 @@ function BCS:GetLiveSpellPower(school)
 					if value then
 						spellPower = spellPower + tonumber(value)
 					end
+					_,_, value = strfind(left:GetText(), L_SPELLPOWER["fm_12_spell_damage"])
+					if value then
+						spellPower = spellPower + tonumber(value)
+					end
 					
 					_,_, value = strfind(left:GetText(), L_SPELLPOWER["Wizard_Oil"])
 					if value then
@@ -1210,7 +1179,7 @@ function BCS:GetLiveSpellPower(school)
 					if value then
 						naturePower = naturePower + tonumber(value)
 					end
-					
+				
 						
 					_,_, value = strfind(left:GetText(), L_SPELL_SCHOOL["Equip: Increases damage done by Shadow spells and effects by up to (%d+)."])
 					if value then
@@ -1503,6 +1472,12 @@ function BCS:GetLiveHealingPower()
 						healPower = healPower + tonumber(value)
 					end
 					
+					--[[
+					_,_, value = strfind(left:GetText(), L_HEALPOWER["fm_12_spell_damage"])
+					if value then
+						healPower = healPower + tonumber(value)
+					end
+					]]
 					_,_, value = strfind(left:GetText(), L_HEALPOWER["Brilliant_Mana_Oil"])
 					if value then
 						healPower = healPower + 25
@@ -2514,13 +2489,13 @@ function BCS:LiveEstimateHaste()
 	if class == "WARLOCK" then
 		local ctime = self:GetSpellCastTime("吸取灵魂")
 		if ctime then
-			estimateHaste = (1 - ctime / spells["吸取灵魂"].baseTime) * 100
+			estimateHaste = (spells["吸取灵魂"].baseTime / ctime - 1) * 100
 		else
 			errMsg = "can not get spell cast time for 吸取灵魂"
 		end
 		local ctime2 = self:GetSpellCastTime("召唤仪式")
 		if ctime2 then
-			estimateHaste2 = (1 - ctime2 / spells["召唤仪式"].baseTime) * 100
+			estimateHaste2 = (spells["召唤仪式"].baseTime / ctime2 - 1) * 100
 		else
 			errMsg = errMsg .."can not get spell cast time for 召唤仪式\n"
 		end
@@ -2543,7 +2518,7 @@ function BCS:LiveEstimateHaste()
 	if class == "SHAMAN" then
 		local ctime = self:GetSpellCastTime("星界传送")
 		if ctime then
-			estimateHaste = (1 - ctime / spells["星界传送"].baseTime) * 100
+			estimateHaste = (spells["星界传送"].baseTime / ctime - 1) * 100
 			return estimateHaste, spells["星界传送"].school
 		else 
 			errMsg = "can not get spell cast time for 星界传送\n"
@@ -2553,7 +2528,7 @@ function BCS:LiveEstimateHaste()
 	if class == "PRIEST" then 
 		local ctime = self:GetSpellCastTime("复活术")
 		if ctime then
-			estimateHaste = (1 - ctime / spells["复活术"].baseTime) * 100
+			estimateHaste = (spells["复活术"].baseTime / ctime - 1) * 100
 			return estimateHaste, spells["复活术"].school
 		else 
 			errMsg = "can not get spell cast time for 复活术\n"
@@ -2563,7 +2538,7 @@ function BCS:LiveEstimateHaste()
 	if class == "DRUID" then 
 		local ctime = self:GetSpellCastTime("传送：月光林地")
 		if ctime then
-			estimateHaste = (1 - ctime / spells["传送：月光林地"].baseTime) * 100
+			estimateHaste = (spells["传送：月光林地"].baseTime / ctime - 1) * 100
 			return estimateHaste, spells["传送：月光林地"].school
 		else 
 			errMsg = "can not get spell cast time for 传送：月光林地\n"
@@ -2573,7 +2548,7 @@ function BCS:LiveEstimateHaste()
 	if class == "PALADIN" then 
 		local ctime = self:GetSpellCastTime("救赎")
 		if ctime then
-			estimateHaste = (1 - ctime / spells["救赎"].baseTime) * 100
+			estimateHaste = (spells["救赎"].baseTime / ctime - 1) * 100
 			return estimateHaste, spells["救赎"].school
 		else 
 			errMsg = "can not get spell cast time for 救赎\n"
@@ -2583,6 +2558,10 @@ function BCS:LiveEstimateHaste()
 	if class == "MAGE" then
 		local ctime
 		local mageArcaneTestSpell
+		
+		if not faction then
+			faction, _ = UnitFactionGroup("player")  --Alliance,Horde
+		end
 		
 		if faction == "Alliance" then
 			mageArcaneTestSpell = "传送：暴风城"
@@ -2594,14 +2573,14 @@ function BCS:LiveEstimateHaste()
 		
 		ctime = self:GetSpellCastTime(mageArcaneTestSpell)
 		if ctime then
-			estimateHaste = (1 - ctime / spells[mageArcaneTestSpell].baseTime) * 100
+			estimateHaste = (spells[mageArcaneTestSpell].baseTime / ctime - 1) * 100
 		else
 			errMsg = "can not get spell cast time for "..mageArcaneTestSpell
 		end
 		
 		local ctime2 = self:GetSpellCastTime("烈焰风暴")
 		if ctime2 then
-			estimateHaste2 = (1 - ctime2 / spells["烈焰风暴"].baseTime) * 100
+			estimateHaste2 = (spells["烈焰风暴"].baseTime / ctime2 - 1) * 100
 		else
 			errMsg = errMsg .."can not get spell cast time for 烈焰风暴\n"
 		end

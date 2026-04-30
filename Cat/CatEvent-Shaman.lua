@@ -631,7 +631,7 @@ end
 function MPGetFlameShockDot()
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("烈焰震击","target")
     end
 

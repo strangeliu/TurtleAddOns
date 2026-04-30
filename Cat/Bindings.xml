@@ -8,9 +8,6 @@
 	<Binding name="德鲁伊-熊德" header="CAT_PLUGINNAME">
 		MPBearCommand()
 	</Binding>
-	<Binding name="德鲁伊-熊德-单体" header="CAT_PLUGINNAME">
-		MPBearOneCommand()
-	</Binding>
 	<Binding name="德鲁伊-鸟德" header="CAT_PLUGINNAME">
 		MPCooCommand()
 	</Binding>
@@ -29,7 +26,7 @@
 	<Binding name="战士-防御" header="CAT_PLUGINNAME">
 		MPWarriorTankCommand()
 	</Binding>
-	<Binding name="圣骑士-惩戒-自动" header="CAT_PLUGINNAME">
+	<Binding name="圣骑士-惩戒" header="CAT_PLUGINNAME">
 		MPPaladinDPSSpellCommand()
 	</Binding>
 	<Binding name="圣骑士-防骑" header="CAT_PLUGINNAME">

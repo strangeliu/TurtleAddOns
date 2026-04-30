@@ -1461,4 +1461,5 @@ Dependencies: AceLibrary, AceLocale-2.2
 	["Selenaxx Foulheart"] = "塞雷纳克斯·腐心",
 	["Archdruid Kronn"] = "大德鲁伊科罗恩",
 	["Ursol"] = "乌索尔",
+	["Perotharn"] = "佩罗萨恩",
 } end)

@@ -29,6 +29,7 @@ local battlegroundZones = {
     ["阿拉希盆地"] = true,
     ["阳光林地"] = true,
     ["血环竞技场"] = true,
+    ["荆棘峡谷"] = true,
     -- 可以根据需要添加更多战场区域名称
 }
 
@@ -100,8 +101,8 @@ ChatFrameEditBox:SetScript("OnTabPressed", function()
         return
     end
 
-    local channel = { ["世界"] = 0, ["中国"] = 0, ["World"] = 0, ["China"] = 0 }
-    local keys = { "世界", "中国", "World", "China" }
+    local channel = { ["世界频道"] = 0, ["世界"] = 0,["中国"] = 0, ["World"] = 0, ["China"] = 0 }
+    local keys = { "世界频道", "世界","中国", "World", "China" }
     local JoinedChannel = false
     for channelName, channelID in pairs(channel) do
         local id, _ = GetChannelName(channelName)

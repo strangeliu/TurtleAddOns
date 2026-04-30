@@ -237,7 +237,7 @@ function MPGetPainDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("暗言术：痛",unit)
     end
 
@@ -289,7 +289,7 @@ function MPGetVampiricDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("吸血鬼的拥抱",unit)
     end
 
@@ -341,7 +341,7 @@ function MPGetHolyFireDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("神圣之火",unit)
     end
 

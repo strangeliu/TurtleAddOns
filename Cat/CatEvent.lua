@@ -38,6 +38,9 @@ frame:RegisterEvent("BUFF_REMOVED_SELF")
 frame:RegisterEvent("DEBUFF_ADDED_SELF")
 frame:RegisterEvent("DEBUFF_REMOVED_SELF")
 frame:RegisterEvent("AURA_CAST_ON_SELF")
+--frame:RegisterEvent("BUFF_UPDATE_DURATION_SELF")
+--frame:RegisterEvent("DEBUFF_UPDATE_DURATION_SELF")
+frame:RegisterEvent("AUTO_ATTACK_SELF")
 
 
 MP_UnitXP = pcall(UnitXP, "nop", "nop");
@@ -123,6 +126,10 @@ function MPPushObject(inGUID)
 end
 
 local function CheckSpellLog(str)
+
+    if not str then
+        return
+    end
 
     -- 通过日志收集周围目标
     local objectGUID = MPMatchGUID(str) 
@@ -259,6 +266,7 @@ local function OnEvent()
 
         MPtextSystemInfo = MPtextSystemInfo .. "\n"
 
+        MPCatSettingsCloseAll()
 
     elseif event == "ADDON_LOADED" then
 
@@ -281,7 +289,6 @@ local function OnEvent()
 
         -- 初始化界面相关参数
         MPInitMiniButton()
-        MPCatSettingsCloseAll()
 
 
     -- 进入游戏世界刷新常量值
@@ -292,15 +299,19 @@ local function OnEvent()
 
         if MP_Nampower4 then
             local data = GetUnitData("player")
-            for i=1,48 do
-                --MPMsg(data.aura[i])
-                if data.aura[i]>0 then
-                    local spellname = GetSpellRecField(data.aura[i], "name")
-                    MPPlayerAurasSpellID[data.aura[i]] = true
-                    MPPlayerAurasSpellSlot[spellname] = i
-                    MPPlayerAurasSpellName[spellname] = true
-                    MPPlayerAurasSpellStacks[spellname] = 1
-                    MPPlayerAurasSpellDuration[spellname] = 0
+            if data and data.aura then
+                local slot = 0
+                for i=1,48 do
+                    --MPMsg(data.aura[i])
+                    if data.aura[i]>0 then
+                        local spellname = GetSpellRecField(data.aura[i], "name")
+                        MPPlayerAurasSpellID[data.aura[i]] = true
+                        MPPlayerAurasSpellSlot[spellname] = slot
+                        MPPlayerAurasSpellName[spellname] = true
+                        MPPlayerAurasSpellStacks[spellname] = 1
+                        MPPlayerAurasSpellDuration[spellname] = 0
+                        slot = slot + 1
+                    end
                 end
             end
         end
@@ -514,8 +525,12 @@ local function OnEvent()
 
         elseif arg3 == "MAINHAND" then
 
-            if arg1 == MP_PLAYER_GUID then
-                BeginHit()
+            if not MP_Nampower4 then
+
+                if arg1==MP_PLAYER_GUID then
+                    BeginHit()
+                end
+
             end
 
         end
@@ -528,7 +543,12 @@ local function OnEvent()
         CheckSpellLog(arg2)
 
 
+
     -- Nampower专有事件
+
+    elseif event == "AUTO_ATTACK_SELF" then
+        --MPMsg("attack")
+        BeginHit()
 
     elseif event == "SPELL_FAILED_SELF" then
 
@@ -597,6 +617,17 @@ local function OnEvent()
             end
 
         end
+    --[[
+    elseif event == "BUFF_UPDATE_DURATION_SELF" or event == "DEBUFF_UPDATE_DURATION_SELF" then
+
+        MPMsg(arg1.." - "..arg2)
+        for key, value in pairs(MPPlayerAurasSpellSlot) do
+            MPMsg( key .. " - ".. value)
+            if value == arg1 then
+                MPPlayerAurasSpellDuration[key] = arg2
+            end
+        end
+    ]]
 
     end
 
@@ -609,7 +640,7 @@ function MPPrintAuras()
     MPMsg("=== Auras ===")
     for key, value in pairs(MPPlayerAurasSpellName) do
         if value then
-            MPMsg(count.." Auras: "..key.."   Layer: "..MPPlayerAurasSpellStacks[key])
+            MPMsg(count.." Auras:"..key.." Layer:"..MPPlayerAurasSpellStacks[key].." Slot:"..MPPlayerAurasSpellSlot[key].." Dru:"..MPPlayerAurasSpellDuration[key])
             count = count + 1
         else
             MPMsg("空 Auras")

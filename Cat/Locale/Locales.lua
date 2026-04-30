@@ -990,7 +990,7 @@ MPLanguage.UI_DPS = "输出"
 MPLanguage.UI_ArmsWarrior = "武器"
 MPLanguage.UI_FuryWarrior = "狂暴"
 MPLanguage.UI_EvilWarrior = "邪修"
-MPLanguage.UI_ProtWarrior = "防战"
+MPLanguage.UI_ProtWarrior = "战士坦"
 MPLanguage.UI_RetPaladin = "惩戒"
 MPLanguage.UI_ProtPaladin = "防骑"
 MPLanguage.UI_HolyPaladin = "奶骑"
@@ -1782,7 +1782,7 @@ MPLanguage.UI_Mon_NoMatchingMacro = "暂未有与之匹配的宏参数"
 ----------------------------------------------------------------
 -- UI Melee (CatUI-Melee)
 ----------------------------------------------------------------
-MPLanguage.UI_Set_MeleeTitle = "附加 - 近战距离"
+MPLanguage.UI_Set_MeleeTitle = "附加 - 近战指示器"
 MPLanguage.UI_Melee_Distance = "距离: "
 MPLanguage.UI_Melee_Armor = "护甲: "
 

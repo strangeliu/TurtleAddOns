@@ -73,13 +73,6 @@ TipText:SetText(MPLanguage.UI_Set_AutoLootMacroTip)
 local AutoLootSettingsUIVersion = 2
 
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
 
 function MPResetAutoLootSettings()
     MPPublicSaved.AutoLoot = 1
@@ -90,7 +83,7 @@ function MPInitAutoLootSettings()
     if not MPPublicSaved.AutoLoot then
         MPPublicSaved.AutoLoot = 0
     end
-    checkButton_AutoLoot:SetChecked(ToBoolean(MPPublicSaved.AutoLoot))
+    checkButton_AutoLoot:SetChecked(MPToBoolean(MPPublicSaved.AutoLoot))
 
 end
 

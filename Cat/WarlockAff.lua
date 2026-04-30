@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 痛苦术一键宏
--- 更新日期：2026-03-23 （后面根据时间来判断版本）
+-- 更新日期：2026-04-12 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -18,6 +18,9 @@ end
 local MHP,DM,AYZS,AYSG,EYZZ
 
 MPShadowTwilightTimer = 0
+
+-- 默认配置
+MPWarlockAffConfig = 1
 
 
 local function MPCastCurseAgony()
@@ -111,15 +114,15 @@ function MPWarlockAff()
 	EYZZ = MPSpellReady("厄运诅咒")
 
 	-- 确认目标的存活和转火
-	MPAutoSwitchTarget(MPWarlockAffSaved.Target, 0)
+	MPAutoSwitchTarget(MPWarlockAffSaved[MPWarlockAffConfig].Target, 0)
 
 	-- 自动拾取
-	if MPWarlockAffSaved.Pick==1 then
+	if MPWarlockAffSaved[MPWarlockAffConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPWarlockAffSaved.Power==1 then
+	if MPWarlockAffSaved[MPWarlockAffConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -127,19 +130,19 @@ function MPWarlockAff()
 	if not UnitExists("target") then return end
 
 	-- 宠物攻击
-	if MPWarlockAffSaved.PetAttack==1 and UnitAffectingCombat("target") then
+	if MPWarlockAffSaved[MPWarlockAffConfig].PetAttack==1 and UnitAffectingCombat("target") then
 		PetAttack()
 	end
 
 	-- 未进入战斗
-	if not MPInCombat and MPWarlockAffSaved.FirstShadowBolt==1 then
+	if not MPInCombat and MPWarlockAffSaved[MPWarlockAffConfig].FirstShadowBolt==1 then
 		MPCastShadowBolt()
 		return
 	end
 
 	-- 防护读条
 	if MPGetWarlockChanneled()>0 then
-		if MPWarlockAffSaved.ClipDrainSoul==1 then
+		if MPWarlockAffSaved[MPWarlockAffConfig].ClipDrainSoul==1 then
 			-- 保护暗影收割
 			if MPGetWarlockChanneledSpellID()==52550 or MPGetWarlockChanneledSpellID()==52551 or MPGetWarlockChanneledSpellID()==52552 then
 				return
@@ -154,66 +157,68 @@ function MPWarlockAff()
 	if MPInCombat then
 
 		-- 自动开启饰品
-		if MPWarlockAffSaved.Trinket_Upper==1 then
+		if MPWarlockAffSaved[MPWarlockAffConfig].Trinket_Upper==1 then
 			if GetInventoryItemCooldown("player",13)==0 and MP_Trinket_Upper==1 then
-				if MPWarlockAffSaved.TUBoss==1 and MPIsBossTarget() then
+				if MPWarlockAffSaved[MPWarlockAffConfig].TUBoss==1 and MPIsBossTarget() then
 					UseInventoryItem(13)
-				elseif MPWarlockAffSaved.TUBoss==0 then
+				elseif MPWarlockAffSaved[MPWarlockAffConfig].TUBoss==0 then
 					UseInventoryItem(13)
 				end
 			end
 		end
 
-		if MPWarlockAffSaved.Trinket_Below==1 then
+		if MPWarlockAffSaved[MPWarlockAffConfig].Trinket_Below==1 then
 			if GetInventoryItemCooldown("player",14)==0 and MP_Trinket_Below==1 then
-				if MPWarlockAffSaved.TBBoss==1 and MPIsBossTarget() then
+				if MPWarlockAffSaved[MPWarlockAffConfig].TBBoss==1 and MPIsBossTarget() then
 					UseInventoryItem(14)
-				elseif MPWarlockAffSaved.TBBoss==0 then
+				elseif MPWarlockAffSaved[MPWarlockAffConfig].TBBoss==0 then
 					UseInventoryItem(14)
 				end
 			end
 		end
 
-		if MPWarlockAffSaved.Soulspeed==1 and MPIsBossTarget() then
-			MPUseItemByName("魂能之速")
+		if MPWarlockAffSaved[MPWarlockAffConfig].Soulspeed==1 then
+			if MPWarlockAffSaved[MPWarlockAffConfig].SoulspeedBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
+				MPUseItemByName("魂能之速")
+			end
 		end
 
 		-- 血量危险时处理，潜行下不吃药
-		if percent<MPWarlockAffSaved.HealthStone_Value and MPWarlockAffSaved.HealthStone==1 then
+		if percent<MPWarlockAffSaved[MPWarlockAffConfig].HealthStone_Value and MPWarlockAffSaved[MPWarlockAffConfig].HealthStone==1 then
 			MPUseItemByName("特效治疗石")
 		end
-		if percent<MPWarlockAffSaved.HerbalTea_Value and MPWarlockAffSaved.HerbalTea==1 then
+		if percent<MPWarlockAffSaved[MPWarlockAffConfig].HerbalTea_Value and MPWarlockAffSaved[MPWarlockAffConfig].HerbalTea==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
-		if percentMana<MPWarlockAffSaved.HerbalTeaMana_Value and MPWarlockAffSaved.HerbalTeaMana==1 then
+		if percentMana<MPWarlockAffSaved[MPWarlockAffConfig].HerbalTeaMana_Value and MPWarlockAffSaved[MPWarlockAffConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
 
 		-- 特定 种族天赋 --
 
-		if MPWarlockAffSaved.RacialTraits==1 then
+		if MPWarlockAffSaved[MPWarlockAffConfig].RacialTraits==1 then
+			if MPWarlockAffSaved[MPWarlockAffConfig].RacialTraitsBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].RacialTraitsBoss==1 and MPIsBossTarget()) then
+				-- 是否自动开启 人类-感知
+				if MPPlayerRace=="Human" then
+					local TF = MPSpellReady("感知")
+					if TF then CastSpellByName("感知") end
+				end
 
-			-- 是否自动开启 人类-感知
-			if MPPlayerRace=="Human" then
-				local TF = MPSpellReady("感知")
-				if TF then CastSpellByName("感知") end
-			end
-
-			-- 是否自动开启 兽人-血性狂怒
-			if MPPlayerRace=="Orc" then
-				local TF = MPSpellReady("血性狂怒")
-				if TF then CastSpellByName("血性狂怒") end
-			end
+				-- 是否自动开启 兽人-血性狂怒
+				if MPPlayerRace=="Orc" then
+					local TF = MPSpellReady("血性狂怒")
+					if TF then CastSpellByName("血性狂怒") end
+				end
 		
-			-- 是否自动开启 巨魔-狂暴
-			if MPPlayerRace=="Troll" then
-				local TF = MPSpellReady("狂暴")
-				if TF then CastSpellByName("狂暴") end
+				-- 是否自动开启 巨魔-狂暴
+				if MPPlayerRace=="Troll" then
+					local TF = MPSpellReady("狂暴")
+					if TF then CastSpellByName("狂暴") end
+				end
 			end
-
 		end
 
 	end
@@ -237,90 +242,79 @@ function MPWarlockAff()
 	end
 
 
-	local dot = false
-	if MPWarlockAffSaved.BOSS==0 then
-		dot = true
-	else
-		if MPIsBossTarget() then
-			dot = true
-		end
-	end
-
-	if MPWarlockAffSaved.CurseFatigue==1 and not MPBuff("疲劳诅咒","target") then
+	-- 疲劳诅咒
+	if MPWarlockAffSaved[MPWarlockAffConfig].CurseFatigue==1 and not MPBuff("疲劳诅咒","target") then
 		MPCastCurseFatigue()
 		return
 	end
 
 	-- 厄运诅咒
-	if MPWarlockAffSaved.CurseDoom==1 and EYZZ then
+	if MPWarlockAffSaved[MPWarlockAffConfig].CurseDoom==1 and EYZZ then
 		MPCastCurseDoom()
 		return
 	end
 
-	if dot then
 
-		-- 大诅咒
-	
-		local bigdot = false
-		if MPWarlockAffSaved.CurseBOSS==0 then
+	local bigdot = false
+	if MPWarlockAffSaved[MPWarlockAffConfig].CurseBOSS==0 then
+		bigdot = true
+	else
+		if MPIsBossTarget() then
 			bigdot = true
-		else
-			if MPIsBossTarget() then
-				bigdot = true
-			end
+		end
+	end
+
+	-- 大诅咒 BOSS
+	if bigdot then
+
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseRecklessness==1 and not MPBuff("鲁莽诅咒","target") then
+			MPCastCurseRecklessness()
+			return
 		end
 
-
-		if bigdot then
-
-			if MPWarlockAffSaved.CurseRecklessness==1 and not MPBuff("鲁莽诅咒","target") then
-				MPCastCurseRecklessness()
-				return
-			end
-
-			if MPWarlockAffSaved.CurseElements==1 and not MPBuff("元素诅咒","target") then
-				MPCastCurseCurseElements()
-				return
-			end
-
-			if MPWarlockAffSaved.CurseShadow==1 and not MPBuff("暗影诅咒","target") then
-				MPCastCurseShadow()
-				return
-			end
-
-			if MPWarlockAffSaved.CurseTongues==1 and not MPBuff("语言诅咒","target") then
-				MPCastCurseTongues()
-				return
-			end
-
-			if MPWarlockAffSaved.CurseWeakness==1 and not MPBuff("虚弱诅咒","target") then
-				MPCastCurseWeakness()
-				return
-			end
-
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseElements==1 and not MPBuff("元素诅咒","target") then
+			MPCastCurseCurseElements()
+			return
 		end
 
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseShadow==1 and not MPBuff("暗影诅咒","target") then
+			MPCastCurseShadow()
+			return
+		end
+
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseTongues==1 and not MPBuff("语言诅咒","target") then
+			MPCastCurseTongues()
+			return
+		end
+
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseWeakness==1 and not MPBuff("虚弱诅咒","target") then
+			MPCastCurseWeakness()
+			return
+		end
+
+	end
 
 
-		-- 痛苦诅咒、腐蚀术、生命虹吸
-		if MPWarlockAffSaved.CurseAgony==1 and not MPGetCurseAgonyDot("target", 0) then
 
+	-- 痛苦诅咒、腐蚀术、生命虹吸
+	if MPWarlockAffSaved[MPWarlockAffConfig].CurseAgony==1 and not MPGetCurseAgonyDot("target", 0) then
+		if MPWarlockAffSaved[MPWarlockAffConfig].CurseAgonyBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].CurseAgonyBoss==1 and MPIsBossTarget()) then
 			-- 是否有大诅咒设定
-			local count = MPWarlockAffSaved.CurseRecklessness+MPWarlockAffSaved.CurseElements+MPWarlockAffSaved.CurseShadow
-			if count > 0 and MPWarlockAffSaved.CurseEvil==1 and MPWarlockCurseEvil==1 then
+			local count = MPWarlockAffSaved[MPWarlockAffConfig].CurseRecklessness+MPWarlockAffSaved[MPWarlockAffConfig].CurseElements+MPWarlockAffSaved[MPWarlockAffConfig].CurseShadow
+			if count > 0 and MPWarlockAffSaved[MPWarlockAffConfig].CurseEvil==1 and MPWarlockCurseEvil==1 then
 
 				-- 邪咒 启动
-				if MPWarlockAffSaved.CurseRecklessness==1 then
+				if MPWarlockAffSaved[MPWarlockAffConfig].CurseRecklessness==1 then
 					MPCastCurseRecklessness()
 					return
 				end
 
-				if MPWarlockAffSaved.CurseElements==1 then
+				if MPWarlockAffSaved[MPWarlockAffConfig].CurseElements==1 then
 					MPCastCurseCurseElements()
 					return
 				end
 
-				if MPWarlockAffSaved.CurseShadow==1 then
+				if MPWarlockAffSaved[MPWarlockAffConfig].CurseShadow==1 then
 					--print("替代痛苦")
 					MPCastCurseShadow()
 					return
@@ -332,25 +326,30 @@ function MPWarlockAff()
 			MPCastCurseAgony()
 			return
 		end
+	end
 
-		-- 腐蚀术
-		if MPWarlockAffSaved.Corruption==1 and not MPGetCorruptionDot("target", 0) then
+	-- 腐蚀术
+	if MPWarlockAffSaved[MPWarlockAffConfig].Corruption==1 and not MPGetCorruptionDot("target", 0) then
+		if MPWarlockAffSaved[MPWarlockAffConfig].CorruptionBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].CorruptionBoss==1 and MPIsBossTarget()) then
 			MPCastCorruption()
 			return
 		end
+	end
 
-		-- 生命虹吸
-		if MPWarlockAffSaved.SiphonLife==1 and MPWarlockSiphonLife==1 and not MPGetSiphonLifeDot("target", 0) and MPIsDrain() then 
+	-- 生命虹吸
+	if MPWarlockAffSaved[MPWarlockAffConfig].SiphonLife==1 and MPWarlockSiphonLife==1 and not MPGetSiphonLifeDot("target", 0) and MPIsDrain() then 
+		if MPWarlockAffSaved[MPWarlockAffConfig].SiphonLifeBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].SiphonLifeBoss==1 and MPIsBossTarget()) then
 			MPCastSiphonLife()
 			return
 		end
-
-		-- 献祭
-		if MPWarlockAffSaved.Immolate==1 and not MPGetImmolateDot() and GetTime()-MPImmolateTimer>2 then
-			MPCastImmolate()
-			return
-		end
 	end
+
+	-- 献祭
+	if MPWarlockAffSaved[MPWarlockAffConfig].Immolate==1 and not MPGetImmolateDot() and GetTime()-MPImmolateTimer>2 then
+		MPCastImmolate()
+		return
+	end
+
 
 
 	-- 防护读条
@@ -359,7 +358,7 @@ function MPWarlockAff()
 	end
 
 	-- 生命分流
-	if MPWarlockAffSaved.LifeTap==1 and percent>MPWarlockAffSaved.LifeTap_Value and percentMana<=MPWarlockAffSaved.LifeTap_Mana then
+	if MPWarlockAffSaved[MPWarlockAffConfig].LifeTap==1 and percent>MPWarlockAffSaved[MPWarlockAffConfig].LifeTap_Value and percentMana<=MPWarlockAffSaved[MPWarlockAffConfig].LifeTap_Mana then
 		local dec = UnitManaMax("player") - UnitMana("player")
 		if dec > 2000 then
 			CastSpellByName("生命分流")
@@ -368,30 +367,30 @@ function MPWarlockAff()
 	end
 
 	-- 暗影灼烧
-	if MPWarlockAffSaved.Shadowburn==1 and MPWarlockShadowburn==1 and AYZS and DM>=MPWarlockShadowburnMana[6] then
-		if MPWarlockAffSaved.ShadowburnBOSS==1 and MPIsBossTarget() then
+	if MPWarlockAffSaved[MPWarlockAffConfig].Shadowburn==1 and MPWarlockShadowburn==1 and AYZS and DM>=MPWarlockShadowburnMana[6] then
+		if MPWarlockAffSaved[MPWarlockAffConfig].ShadowburnBoss==1 and MPIsBossTarget() then
 			MPCastShadowburn()
 			return
-		elseif MPWarlockAffSaved.ShadowburnBOSS==0 then
+		elseif MPWarlockAffSaved[MPWarlockAffConfig].ShadowburnBoss==0 then
 			MPCastShadowburn()
 			return
 		end
 	end
 
 	-- 暗影收割
-	if MPWarlockAffSaved.ShadowHarvest==1 and MPWarlockShadowHarvest==1 and AYSG then
+	if MPWarlockAffSaved[MPWarlockAffConfig].ShadowHarvest==1 and MPWarlockShadowHarvest==1 and AYSG then
 		MPCast("暗影收割")
 		return
 	end
 
 	-- 吸取生命
-	if MPWarlockAffSaved.DrainLife==1 and MPIsDrain() then
+	if MPWarlockAffSaved[MPWarlockAffConfig].DrainLife==1 and MPIsDrain() then
 		CastSpellByName("吸取生命")
 		return
 	end
 
 	-- 吸取灵魂
-	if MPWarlockAffSaved.DrainSoul==1 then
+	if MPWarlockAffSaved[MPWarlockAffConfig].DrainSoul==1 then
 		CastSpellByName("吸取灵魂")
 		return
 	end

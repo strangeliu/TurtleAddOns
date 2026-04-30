@@ -7,6 +7,7 @@ local greenFont = "|cFF22dd22"
 
 CatElixir = CreateFrame("Frame", ADDON_NAME.."Frame", UIParent)
 CatElixir:Hide()
+CatElixir:RegisterForDrag("RightButton")
 
 -- 设置窗口基本属性
 CatElixir:SetWidth(150)
@@ -92,7 +93,7 @@ local function MPCreateBuff()
     MPCatElixirButton[count].bufficon = nil
     MPCatElixirButton[count].buffid = -1
 
-    MPCatElixirButton[count]:SetWidth(36)  -- 标准技能按钮大小
+    MPCatElixirButton[count]:SetWidth(122)  -- 标准技能按钮大小
     MPCatElixirButton[count]:SetHeight(36)
     MPCatElixirButton[count]:SetPoint("TOPLEFT", CatElixir, "TOPLEFT", 12, postion)
 
@@ -103,8 +104,28 @@ local function MPCreateBuff()
         defaultIcon:Hide()  -- 或者直接隐藏
     end
 
+    -- 添加按下效果
+    local texture_pushed = MPCatElixirButton[count]:CreateTexture(nil, "BACKGROUND")
+    texture_pushed:SetTexture("Interface\\Buttons\\WHITE8X8")
+    texture_pushed:SetAllPoints()
+    texture_pushed:SetVertexColor(1, 1, 1, 0.1)
+    MPCatElixirButton[count]:SetPushedTexture(texture_pushed) --"Interface\\Buttons\\ButtonHilight-Square","ALPHAKEY")
+    MPCatElixirButton[count]:SetNormalTexture("")
+    MPCatElixirButton[count]:SetAlpha(1.0)
+    MPCatElixirButton[count]:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+
+    -- 添加高亮效果
+    local texture_highlight = MPCatElixirButton[count]:CreateTexture(nil, "BACKGROUND")
+    texture_highlight:SetTexture("Interface\\Buttons\\WHITE8X8")
+    texture_highlight:SetAllPoints()
+    texture_highlight:SetVertexColor(0.5, 0.5, 0.5, 0.2)
+    MPCatElixirButton[count]:SetHighlightTexture(texture_highlight)--"Interface\\Buttons\\ButtonHilight-Square", "ADD")
+
+
     MPCatElixirButton[count].icon = MPCatElixirButton[count]:CreateTexture("MySkillButtonIcon", "ARTWORK")
-    MPCatElixirButton[count].icon:SetAllPoints(true)
+    MPCatElixirButton[count].icon:SetWidth(36)
+    MPCatElixirButton[count].icon:SetHeight(36)
+    MPCatElixirButton[count].icon:SetPoint("TOPLEFT", MPCatElixirButton[count], "TOPLEFT", 2, 0)
     local tex = MPGetItemTexByName("null")
     if tex then
         MPCatElixirButton[count].icon:SetTexture(tex)
@@ -118,7 +139,7 @@ local function MPCreateBuff()
     -- 添加按钮文本
     MPCatElixirButton[count].name = MPCatElixirButton[count]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     MPCatElixirButton[count].name:SetWidth(100)
-    MPCatElixirButton[count].name:SetPoint("TOPLEFT", MPCatElixirButton[count], "TOPLEFT", 38, -2)
+    MPCatElixirButton[count].name:SetPoint("TOPLEFT", MPCatElixirButton[count], "TOPLEFT", 38, -3)
     MPCatElixirButton[count].name:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
     MPCatElixirButton[count].name:SetTextColor(1, 1, 1)
     MPCatElixirButton[count].name:SetText("null")
@@ -126,7 +147,7 @@ local function MPCreateBuff()
 
     MPCatElixirButton[count].time = MPCatElixirButton[count]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     MPCatElixirButton[count].time:SetWidth(100)
-    MPCatElixirButton[count].time:SetPoint("LEFT", MPCatElixirButton[count], "LEFT", 38, -8)
+    MPCatElixirButton[count].time:SetPoint("LEFT", MPCatElixirButton[count], "LEFT", 38, -9)
     MPCatElixirButton[count].time:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
     MPCatElixirButton[count].time:SetTextColor(1, 1, 1)
     MPCatElixirButton[count].time:SetText("20:00")
@@ -163,7 +184,20 @@ local function MPAddBuff(buff, item, text, bufficon)
 
     MPCatElixirButton[count]:SetScript("OnClick", function(self)
         DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor..MPLanguage.UI_Use..item)
-        MPUseItemByName(item)
+        if string.find(item, "魂能") then
+            local target,guid = UnitExists("target")
+
+            TargetUnit("player")
+            MPUseItemByName(item)
+
+            if not target then
+                ClearTarget()
+            else
+                TargetUnit(guid)
+            end
+        else
+            MPUseItemByName(item)
+        end
     end)
 
     local tex = MPGetItemTexByName(item)
@@ -208,6 +242,9 @@ function MPCatElixirReset()
     MPClearBuff()
 
 
+    if MPElixirSaved.Titans==1 then MPAddBuff("泰坦合剂", "泰坦合剂", "泰坦合剂") end
+    if MPElixirSaved.SupremePower==1 then MPAddBuff("超级能量合剂", "超级能量合剂", "超级能量合剂") end
+    if MPElixirSaved.DistilledWisdom==1 then MPAddBuff("精炼智慧合剂", "精炼智慧合剂", "精炼智慧合剂") end
 
     if MPElixirSaved.ZanzaSpeed==1 then MPAddBuff("赞扎之速", "赞扎之速", "赞扎之速") end
 
@@ -226,6 +263,8 @@ function MPCatElixirReset()
 
     if MPElixirSaved.Mongoose==1 then MPAddBuff("猫鼬药剂", "猫鼬药剂", "猫鼬药剂") end
     if MPElixirSaved.Giants==1 then MPAddBuff("巨人药剂", "巨人药剂", "巨人药剂") end
+    if MPElixirSaved.BruteForce==1 then MPAddBuff("蛮力药剂", "蛮力药剂", "蛮力药剂") end
+    if MPElixirSaved.Agility==1 then MPAddBuff("敏捷", "敏捷药剂", "敏捷药剂") end
     if MPElixirSaved.HyenaStimulant==1 then MPAddBuff("远古之怒", "土狼兴奋剂", "土狼兴奋剂") end
     if MPElixirSaved.Encrusted==1 then MPAddBuff("厚甲蝎之击", "厚甲蝎药粉", "厚甲蝎药粉") end
     if MPElixirSaved.SoulEnergy==1 then MPAddBuff("魂能之力", "魂能之力", "魂能之力") end

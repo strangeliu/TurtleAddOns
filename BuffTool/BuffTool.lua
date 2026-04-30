@@ -1242,16 +1242,16 @@ BuffTool:SetScript('OnEvent', function()
                 end
             end
             
-            -- 术士自身暴击刷新释放潜能
-            if PlayerClass == "WARLOCK" then
-                local critMatch = string.find(arg1, "^Your .- crits ") or 
-                                 string.find(arg1, "致命一击") or 
-                                 string.find(arg1, "暴击") or
-                                 string.find(arg1, "对你的.*造成了暴击")
-                if critMatch and not string.find(arg1, "Shoot") and not string.find(arg1, "射击") then
-                    if currentUPStacks > 0 then
-                        RefreshUPTimer()
-                    end
+            -- 释放潜能：直接法术命中刷新（包括暴击，排除抵抗和物理攻击）
+            if PlayerClass == "WARLOCK" and hasUnleashedPotential and isDemonologySpec and currentUPStacks > 0 then
+                local isHit = string.find(arg1, " hits ") or string.find(arg1, "击中")
+                local isCrit = string.find(arg1, " crits ") or string.find(arg1, "致命一击") or string.find(arg1, "暴击")
+                local isResisted = string.find(arg1, L["resisted"])
+                local isShoot = string.find(arg1, "Shoot") or string.find(arg1, "射击")
+                
+                -- 如果是命中（包括暴击）且未被抵抗且不是远程物理攻击，则刷新
+                if (isHit or isCrit) and not isResisted and not isShoot then
+                    RefreshUPTimer()
                 end
             end
         end

@@ -44,6 +44,7 @@
 ## SavedVariablesPerCharacter: MPMultilineDotSaved
 ## SavedVariablesPerCharacter: MPPowerSaved
 ## SavedVariablesPerCharacter: MPElixirSaved
+## SavedVariablesPerCharacter: MPMeleeSaved
 
 CatLib.lua
 Locale\Locales.lua
@@ -99,11 +100,12 @@ Power.lua
 Elixir.lua
 AutoLoot.lua
 
+UI\CatUI-Base.lua
 UI\CatUI-Monitor.lua
 UI\CatUI-PaladinSeal.lua
 UI\CatUI-PaladinHeal.lua
 UI\CatUI-Elixir.lua
-UI\Settings-Public.lua
+UI\Settings-Melee.lua
 UI\Settings-Menu.lua
 UI\Settings-AutoLoot.lua
 UI\Settings-DriudCat.lua
@@ -142,6 +144,7 @@ UI\Settings-InterruptCast.lua
 UI\Settings-MultilineDot.lua
 UI\Settings-Power.lua
 UI\Settings-Elixir.lua
+
 UI\CatUI-Melee.lua
 UI\CatUIMiniButton.lua
 UI\Command.lua

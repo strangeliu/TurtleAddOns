@@ -250,10 +250,14 @@ chatbar:SetScript("OnEvent", function()
 print("PLAYER_LOGIN 事件开始")
     -- 如果默认是显示状态,那么根据对应插件加载状态设置
     for k, btnName in ipairs(BUTTON_ORDER) do
-        if k >= 15 and btnName ~= "Tracking" and btnName ~= "Emote" and S_ChatBarDB.buttons[btnName] then
+    if k >= 15 and btnName ~= "Tracking" and btnName ~= "Emote" and S_ChatBarDB.buttons[btnName] then
+        if btnName == "AtlasLoot" then
+            S_ChatBarDB.buttons[btnName] = IsAddOnLoaded("AtlasLoot") or IsAddOnLoaded("InstanceJournal")
+        else
             S_ChatBarDB.buttons[btnName] = IsAddOnLoaded(btnName)
         end
     end
+end
     
     -- 初始化离开频道标记
     S_ChatBarDB.leftWorldChannel = S_ChatBarDB.leftWorldChannel or false
@@ -414,11 +418,37 @@ local function ChannelXyTracker_OnClick()
 end
 
 local function AtlasLoot_OnClick()
-    if AtlasLoot_ShowMenu then
-        if not AtlasLootDefaultFrame:IsShown() then
-            AtlasLootDefaultFrame:Show()
+    local button = arg1
+    if button == "LeftButton" then
+        -- 左键：优先 AtlasLoot，若未加载则尝试 InstanceJournal
+        if IsAddOnLoaded("AtlasLoot") and AtlasLootDefaultFrame then
+            if not AtlasLootDefaultFrame:IsShown() then
+                AtlasLootDefaultFrame:Show()
+            else
+                AtlasLootDefaultFrame:Hide()
+            end
+        elseif IsAddOnLoaded("InstanceJournal") and _G["IJ_InstanceJournalFrame"] then
+            -- 备选：切换到 InstanceJournal
+            local frame = _G["IJ_InstanceJournalFrame"]
+            if frame:IsShown() then
+                frame:Hide()
+            else
+                frame:Show()
+            end
         else
-            AtlasLootDefaultFrame:Hide()
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000未找到 AtlasLoot 或 InstanceJournal 插件|r")
+        end
+    elseif button == "RightButton" then
+        -- 右键：始终尝试打开 InstanceJournal（若已加载）
+        if IsAddOnLoaded("InstanceJournal") and _G["IJ_InstanceJournalFrame"] then
+            local frame = _G["IJ_InstanceJournalFrame"]
+            if frame:IsShown() then
+                frame:Hide()
+            else
+                frame:Show()
+            end
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000InstanceJournal 插件未加载或界面不存在|r")
         end
     end
 end
@@ -697,6 +727,8 @@ local function ChannelWorld_OnClick()
         else
             -- 未加入任何世界频道，尝试加入
             JoinChannelByName("世界", nil, 3)
+			JoinChannelByName("世界频道", nil, 3)
+			JoinChannelByName("world", nil, 3)
             ChatFrame_OpenChat("/世界 ", chatFrame)
         end
         
@@ -867,6 +899,26 @@ roll:SetScript("OnDragStop", function()
 end)
 roll:RegisterForDrag("LeftButton")
 
+-- 修改 AtlasLoot 按钮的鼠标提示，根据加载的插件动态显示
+local atlasButton = buttonFrames["AtlasLoot"]
+if atlasButton then
+    atlasButton:SetScript("OnEnter", function()
+        local hasAtlas = IsAddOnLoaded("AtlasLoot")
+        local hasIJ = IsAddOnLoaded("InstanceJournal")
+        GameTooltip:SetOwner(this, "ANCHOR_TOP", 0, 6)
+        if hasAtlas and hasIJ then
+            GameTooltip:AddLine("左键 掉落查询，右键 副本手册")
+        elseif hasAtlas then
+            GameTooltip:AddLine("掉落查询")
+        elseif hasIJ then
+            GameTooltip:AddLine("副本手册")
+        else
+            GameTooltip:AddLine("未加载 AtlasLoot 或 InstanceJournal")
+        end
+        GameTooltip:Show()
+    end)
+end
+
 --是否乌龟服
 local function IsTurtleServer()
     local _, build = GetBuildInfo()
@@ -901,6 +953,11 @@ UIDropDownMenu_Initialize(S_ChatBar_Menu, function()
                 -- 插件按钮：如果插件已加载或按钮名称为Emote/Tracking则显示
                 if btnName == "Emote" or btnName == "Tracking" then
                     shouldShow = true  -- Emote和Tracking总是显示
+                elseif btnName == "AtlasLoot" then
+                    -- 特殊处理：AtlasLoot或InstanceJournal任一加载即显示
+                    if IsAddOnLoaded("AtlasLoot") or IsAddOnLoaded("InstanceJournal") then
+                        shouldShow = true
+                    end
                 elseif IsAddOnLoaded(btnName) then
                     shouldShow = true
                 end
@@ -946,4 +1003,3 @@ UIDropDownMenu_Initialize(S_ChatBar_Menu, function()
         end
     end
 end, "MENU")
-

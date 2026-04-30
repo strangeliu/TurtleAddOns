@@ -15,34 +15,40 @@ local function HasEntries(tbl)
     end
     return nil
 end
+
 local size = 24 -- 默认尺寸
 local pulse = true -- 默认启用脉冲效果
+
 local knownTrackingSpellTextures = {
     any = {
         "Racial_Dwarf_FindTreasure", -- 寻找财宝
         "Spell_Nature_Earthquake",   -- 寻找矿物
-        "INV_Misc_Flower_02"         -- 寻找草药
+        "INV_Misc_Flower_02",        -- 寻找草药
+        "inv_tradeskillitem_03",     -- 寻找树木 (乌龟服生存)
+        "INV_Misc_Fish_01",          -- 寻找鱼点 (常见)
+        "Ability_Fishing",           -- 寻找鱼点 (备选纹理)
     },
     HUNTER = {
-        "Ability_Tracking", -- 追踪野兽
-        "Spell_Holy_PrayerOfHealing", -- 追踪人型生物
-        "Spell_Shadow_DarkSummoning", -- 追踪亡灵
-        "Ability_Stealth", -- 追踪隐藏生物
+        "Ability_Tracking",          -- 追踪野兽
+        "Spell_Holy_PrayerOfHealing",-- 追踪人型生物
+        "Spell_Shadow_DarkSummoning",-- 追踪亡灵
+        "Ability_Stealth",           -- 追踪隐藏生物
         "Spell_Frost_SummonWaterElemental", -- 追踪元素生物
-        "Spell_Shadow_SummonFelHunter", -- 追踪恶魔
-        "Ability_Racial_Avatar", -- 追踪巨人
-        "INV_Misc_Head_Dragon_01" -- 追踪龙类
+        "Spell_Shadow_SummonFelHunter",     -- 追踪恶魔
+        "Ability_Racial_Avatar",     -- 追踪巨人
+        "INV_Misc_Head_Dragon_01"    -- 追踪龙类
     },
     PALADIN = {
-        "Spell_Holy_SenseUndead" -- 感知亡灵
+        "Spell_Holy_SenseUndead"     -- 感知亡灵
     },
     WARLOCK = {
         "Spell_Shadow_Metamorphosis" -- 感知恶魔
     },
     DRUID = {
-        "Ability_Tracking" -- 追踪人型生物（猎豹形态）
+        "Ability_Tracking"           -- 追踪人型生物（猎豹形态）
     }
 }
+
 local state = {
     texture = nil,
     spells = {}
@@ -182,10 +188,10 @@ function TrackingFrame:RefreshSpells()
         local name, texture, offset, numSpells = GetSpellTabInfo(tabIndex)
         for spellIndex = offset + 1, offset + numSpells do
             local spellTexture = GetSpellTexture(spellIndex, BOOKTYPE_SPELL)
-            if name=="综合" then
-                for _, texture in pairs(knownTrackingSpellTextures.any) do
-                    if spellTexture and strfind(spellTexture, texture) then
-                        state.spells[texture] = {
+            if name == "综合" then
+                for _, textureKey in pairs(knownTrackingSpellTextures.any) do
+                    if spellTexture and strfind(spellTexture, textureKey) then
+                        state.spells[textureKey] = {
                             index = spellIndex,
                             name = GetSpellName(spellIndex, BOOKTYPE_SPELL),
                             texture = spellTexture
@@ -194,9 +200,9 @@ function TrackingFrame:RefreshSpells()
                 end
             end
             if knownTrackingSpellTextures[playerClass] then
-                for _, texture in pairs(knownTrackingSpellTextures[playerClass]) do
-                    if spellTexture and strfind(spellTexture, texture) then
-                        state.spells[texture] = {
+                for _, textureKey in pairs(knownTrackingSpellTextures[playerClass]) do
+                    if spellTexture and strfind(spellTexture, textureKey) then
+                        state.spells[textureKey] = {
                             index = spellIndex,
                             name = GetSpellName(spellIndex, BOOKTYPE_SPELL),
                             texture = spellTexture

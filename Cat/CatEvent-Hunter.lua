@@ -99,25 +99,31 @@ local function OnEvent()
         elseif string.find( arg1, ".*奥术射击.*免疫.*" ) then
 
             local targetName = UnitName("target")
-            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫奥术射击。")
-            -- 将该目标加入表（临时，重登后丢失）
-            MPHunterArcaneShotBlcokList[targetName] = true
+            if targetName then
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫奥术射击。")
+                -- 将该目标加入表（临时，重登后丢失）
+                MPHunterArcaneShotBlcokList[targetName] = true
+            end
 
         -- 猎人印记 - 异常免疫目标记录
         elseif string.find( arg1, ".*猎人印记.*免疫.*" ) then
 
             local targetName = UnitName("target")
-            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫猎人印记。")
-            -- 将该目标加入表（临时，重登后丢失）
-            MPHunterMarkBlcokList[targetName] = true
+            if targetName then
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫猎人印记。")
+                -- 将该目标加入表（临时，重登后丢失）
+                MPHunterMarkBlcokList[targetName] = true
+            end
 
         -- 毒蛇钉刺 - 异常免疫目标记录
         elseif string.find( arg1, ".*毒蛇钉刺.*免疫.*" ) then
 
             local targetName = UnitName("target")
-            DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫毒蛇钉刺。")
-            -- 将该目标加入表（临时，重登后丢失）
-            MPPosionBlcokList[targetName] = true
+            if targetName then
+                DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]免疫毒蛇钉刺。")
+                -- 将该目标加入表（临时，重登后丢失）
+                MPPosionBlcokList[targetName] = true
+            end
 
         end
 
@@ -255,7 +261,7 @@ function MPGetSerpentStingDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("毒蛇钉刺","target")
     end
 
@@ -309,7 +315,7 @@ function MPGetViperStingDot(unit)
     unit = unit or "target"
 
     -- 检测是否有SuperWow模组
-    if not MP_SuperWoW then
+    if not MP_SuperWoW or MPPlayerLevel<60 then
         return MPBuff("蝰蛇钉刺","target")
     end
 

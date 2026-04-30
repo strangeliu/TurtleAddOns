@@ -584,6 +584,7 @@ AtlasLoot_TableNames = {
 	["TMHChieftainPartath"] = { AL["Timbermaw Hold"].." - "..AL["Chieftain Partath"], "AtlasLootItems" },
 	["TMHSelenaxxFoulheart"] = { AL["Timbermaw Hold"].." - "..AL["Selenaxx Foulheart"], "AtlasLootItems" },
 	["TMHUrsol"] = { AL["Timbermaw Hold"].." - "..AL["Ursol"], "AtlasLootItems" },
+	["TMHPerotharn"] = { AL["Timbermaw Hold"].." - "..AL["Perotharn"], "AtlasLootItems" },
 	["TMHTrash"] = { AL["Timbermaw Hold"].." - "..AL["Trash Mobs"], "AtlasLootItems" },
 	------------
 	--- Sets ---
@@ -608,6 +609,7 @@ AtlasLoot_TableNames = {
 	["PrimalBlessing"] = { AL["Zul'Gurub"] .. AL["Primal Blessing"], "AtlasLootSetItems" },
 	["ScourgeInvasion"] = { AL["Scourge Invasion"], "AtlasLootSetItems" },
 	["Legendaries"] = { AL["Legendary Items"], "AtlasLootSetItems" },
+	["TimbermawSET"] = { AL["Timbermaw Hold Sets"], "AtlasLootSetItems" },
 	["RareMounts"] = { AL["Rare Mounts"], "AtlasLootSetItems" },
 	["PvPMountsSets"] = { AL["PvP Mounts"], "AtlasLootSetItems" },
 	["Tabards"] = { AL["Tabards"], "AtlasLootSetItems" },
@@ -852,6 +854,8 @@ AtlasLoot_TableNames = {
 	["Dalaran"] = { AL["Dalaran"], "AtlasLootRepItems" },
 	["Wildhammer"] = { AL["Wildhammer Clan"], "AtlasLootRepItems" },
 	["Shendralar"] = { AL["Shen'dralar"], "AtlasLootRepItems" },
+	["EarthenRing"] = { AL["Earthen Ring"], "AtlasLootRepItems" },
+	["DraeneiExiles"] = { AL["Draenei Exiles"], "AtlasLootRepItems" },
 	--------------
 	--- Trades ---
 	--------------
@@ -1084,15 +1088,15 @@ AtlasLoot_TableNames = {
 	["PVPWeapons2"] = { AL["PvP"].." "..AL["Rank 14"], "AtlasLootGeneralPvPItems" },
 	["PvPMountsPvP"] = { AL["PvP"].." "..AL["Rank 11"], "AtlasLootGeneralPvPItems" },
 	--Level 60 PvP Sets
-	["PVPDruid"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPHunter"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPMage"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPPaladin"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPPriest"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPRogue"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPShaman"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPWarlock"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
-	["PVPWarrior"] = { AL["PvP"].." "..AL["Rank 7-13"], "AtlasLootGeneralPvPItems" },
+	["PVPDruid"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPHunter"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPMage"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPPaladin"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPPriest"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPRogue"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPShaman"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPWarlock"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
+	["PVPWarrior"] = { AL["PvP"], "AtlasLootGeneralPvPItems" },
 	-------------
 	--- Other ---
 	-------------
@@ -1770,6 +1774,7 @@ AtlasLoot_TableNamesBoss = {
 		["TMHChieftainPartath"] = { AL["Chieftain Partath"], "AtlasLootItems" },
 		["TMHSelenaxxFoulheart"] = { AL["Selenaxx Foulheart"], "AtlasLootItems" },
 		["TMHUrsol"] = { AL["Ursol"], "AtlasLootItems" },
+		["TMHPerotharn"] = { AL["Perotharn"], "AtlasLootItems" },
 		["TMHTrash"] = { AL["Trash Mobs"], "AtlasLootItems" },
 	},
 	------------
@@ -1795,6 +1800,7 @@ AtlasLoot_TableNamesBoss = {
 		["PrimalBlessing"] = { AL["Set: "] .. AL["Primal Blessing"], "AtlasLootSetItems" },
 		["ScourgeInvasion"] = { AL["Set: "] .. AL["Scourge Invasion"], "AtlasLootSetItems" },
 		["Legendaries"] = { AL["Set: "] .. AL["Legendary Items"], "AtlasLootSetItems" },
+		["TimbermawSET"] = { AL["Set: "] .. AL["Timbermaw Hold Sets"], "AtlasLootSetItems" },
 		["RareMounts"] = { AL["Rare Mounts"], "AtlasLootSetItems" },
 		["PvPMountsSets"] = { AL["PvP Mounts"], "AtlasLootSetItems" },
 		["Tabards"] = { AL["Tabards"], "AtlasLootSetItems" },
@@ -2072,6 +2078,8 @@ AtlasLoot_TableNamesBoss = {
 		["Dalaran"] = { AL["Dalaran"], "AtlasLootRepItems" },
 		["Wildhammer"] = { AL["Wildhammer Clan"], "AtlasLootRepItems" },
 		["Shendralar"] = { AL["Shen'dralar"], "AtlasLootRepItems" },
+		["EarthenRing"] = { AL["Earthen Ring"], "AtlasLootRepItems" },
+		["DraeneiExiles"] = { AL["Draenei Exiles"], "AtlasLootRepItems" },
 	},
 	--------------
 	--- Trades ---

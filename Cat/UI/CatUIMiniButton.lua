@@ -124,227 +124,305 @@ function MPCatSettingsCloseAll()
     end
 
 
-    MPInitAutoLootSettings()
-    CatUISettingAutoLoot:Hide()
-    CatUISettingAutoLoot:ClearAllPoints()
-    CatUISettingAutoLoot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitCatSettings()
-    MPInitBearSettings()
-    MPInitCOOSettings()
-    MPInitDriudHealSettings()
-    CatUISettingsCatWindow:Hide()
-    CatUISettingsCatWindow:ClearAllPoints()
-    CatUISettingsCatWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsBearWindow:Hide()
-    CatUISettingsBearWindow:ClearAllPoints()
-    CatUISettingsBearWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsCOOWindow:Hide()
-    CatUISettingsCOOWindow:ClearAllPoints()
-    CatUISettingsCOOWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsDriudHealWindow:Hide()
-    CatUISettingsDriudHealWindow:ClearAllPoints()
-    CatUISettingsDriudHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitWarriorArmsSettings()
-    MPInitWarriorFurySettings()
-    MPInitWarriorEvilSettings()
-    MPInitWarriorTankSettings()
-
-    CatUISettingsWarriorArms:Hide()
-    CatUISettingsWarriorArms:ClearAllPoints()
-    CatUISettingsWarriorArms:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsWarriorFury:Hide()
-    CatUISettingsWarriorFury:ClearAllPoints()
-    CatUISettingsWarriorFury:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsWarriorEvil:Hide()
-    CatUISettingsWarriorEvil:ClearAllPoints()
-    CatUISettingsWarriorEvil:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsWarriorTank:Hide()
-    CatUISettingsWarriorTank:ClearAllPoints()
-    CatUISettingsWarriorTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitPaladinCJSettings()
-    MPInitPaladinHealSettings()
-    MPInitPaladinMeleeHealSettings()
-    MPInitPaladinTankSettings()
-    MPCatPaladinControlHealInit()
-    CatUISettingsPaladinCJ:Hide()
-    CatUISettingsPaladinCJ:ClearAllPoints()
-    CatUISettingsPaladinCJ:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPaladinHealWindow:Hide()
-    CatUISettingsPaladinHealWindow:ClearAllPoints()
-    CatUISettingsPaladinHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPaladinMeleeHeal:Hide()
-    CatUISettingsPaladinMeleeHeal:ClearAllPoints()
-    CatUISettingsPaladinMeleeHeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPaladinTank:Hide()
-    CatUISettingsPaladinTank:ClearAllPoints()
-    CatUISettingsPaladinTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPCatPaladinSealInit()
-
-    if MPPublicSaved and MPPublicSaved.PaladinSealDisplay and MPPublicSaved.PaladinSealDisplay==1 then
-        CatPaladinSeal:Show()
+    if type(MPInitCatSettings)=="function" then
+        MPInitCatSettings()
+        CatUISettingsCatWindow:Hide()
+        CatUISettingsCatWindow:ClearAllPoints()
+        CatUISettingsCatWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     end
 
-    if MPPublicSaved and MPPublicSaved.PaladinHealDisplay and MPPublicSaved.PaladinHealDisplay==1 then
-        CatPaladinHeal:Show()
+    if type(MPInitBearSettings)=="function" then
+        MPInitBearSettings()
+        CatUISettingsBearWindow:Hide()
+        CatUISettingsBearWindow:ClearAllPoints()
+        CatUISettingsBearWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitCOOSettings)=="function" then
+        MPInitCOOSettings()
+        CatUISettingsCOOWindow:Hide()
+        CatUISettingsCOOWindow:ClearAllPoints()
+        CatUISettingsCOOWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitDriudHealSettings)=="function" then
+        MPInitDriudHealSettings()
+        CatUISettingsDriudHealWindow:Hide()
+        CatUISettingsDriudHealWindow:ClearAllPoints()
+        CatUISettingsDriudHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     end
 
 
-    MPInitRogueSettings()
-    MPInitRogueCombatSettings()
-    MPInitRogueEnvenomSettings()
-    MPInitRogueArmorSettings()
-    CatUISettingsRogue:Hide()
-    CatUISettingsRogue:ClearAllPoints()
-    CatUISettingsRogue:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsRogueCombat:Hide()
-    CatUISettingsRogueCombat:ClearAllPoints()
-    CatUISettingsRogueCombat:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsRogueEnvenom:Hide()
-    CatUISettingsRogueEnvenom:ClearAllPoints()
-    CatUISettingsRogueEnvenom:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsRogueArmor:Hide()
-    CatUISettingsRogueArmor:ClearAllPoints()
-    CatUISettingsRogueArmor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-
-    MPInitShamanHealSettings()
-    MPInitShamanEnhanceSettings()
-    MPInitShamanElementalSettings()
-    CatUISettingsShamanHealWindow:Hide()
-    CatUISettingsShamanHealWindow:ClearAllPoints()
-    CatUISettingsShamanHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsShamanEnhanceWindow:Hide()
-    CatUISettingsShamanEnhanceWindow:ClearAllPoints()
-    CatUISettingsShamanEnhanceWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsShamanElementalWindow:Hide()
-    CatUISettingsShamanElementalWindow:ClearAllPoints()
-    CatUISettingsShamanElementalWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitWarlockSDSettings()
-    CatUISettingsWarlockSD:Hide()
-    CatUISettingsWarlockSD:ClearAllPoints()
-    CatUISettingsWarlockSD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPInitWarlockFDSettings()
-    CatUISettingsWarlockFD:Hide()
-    CatUISettingsWarlockFD:ClearAllPoints()
-    CatUISettingsWarlockFD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPInitWarlockAffSettings()
-    CatUISettingsWarlockAff:Hide()
-    CatUISettingsWarlockAff:ClearAllPoints()
-    CatUISettingsWarlockAff:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPInitWarlockDemoSettings()
-    CatUISettingsWarlockDemo:Hide()
-    CatUISettingsWarlockDemo:ClearAllPoints()
-    CatUISettingsWarlockDemo:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitMageArcaneSettings()
-    MPInitMageFireSettings()
-    MPInitMageFrostSettings()
-    CatUISettingsMageArcane:Hide()
-    CatUISettingsMageArcane:ClearAllPoints()
-    CatUISettingsMageArcane:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsMageFire:Hide()
-    CatUISettingsMageFire:ClearAllPoints()
-    CatUISettingsMageFire:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsMageFrost:Hide()
-    CatUISettingsMageFrost:ClearAllPoints()
-    CatUISettingsMageFrost:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitPriestHealSettings()
-    MPInitPriestShadowSettings()
-    MPInitPriestDisciplineSettings()
-    CatUISettingsPriestHealWindow:Hide()
-    CatUISettingsPriestHealWindow:ClearAllPoints()
-    CatUISettingsPriestHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPriestShadow:Hide()
-    CatUISettingsPriestShadow:ClearAllPoints()
-    CatUISettingsPriestShadow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPriestDiscipline:Hide()
-    CatUISettingsPriestDiscipline:ClearAllPoints()
-    CatUISettingsPriestDiscipline:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitHunterShotSettings()
-    CatUISettingsHunterShot:Hide()
-    CatUISettingsHunterShot:ClearAllPoints()
-    CatUISettingsHunterShot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPInitHunterBeastSettings()
-    CatUISettingsHunterBeast:Hide()
-    CatUISettingsHunterBeast:ClearAllPoints()
-    CatUISettingsHunterBeast:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    MPInitHunterMeleeSettings()
-    CatUISettingsHunterMelee:Hide()
-    CatUISettingsHunterMelee:ClearAllPoints()
-    CatUISettingsHunterMelee:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-
-    MPInitInterruptSettings()
-    MPInitMultilineDotSettings()
-    MPInitPowerSettings()
-    MPInitElixirSettings()
-    CatUISettingsInterrupt:Hide()
-    CatUISettingsInterrupt:ClearAllPoints()
-    CatUISettingsInterrupt:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsMultilineDot:Hide()
-    CatUISettingsMultilineDot:ClearAllPoints()
-    CatUISettingsMultilineDot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsPower:Hide()
-    CatUISettingsPower:ClearAllPoints()
-    CatUISettingsPower:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    CatUISettingsElixir:Hide()
-    CatUISettingsElixir:ClearAllPoints()
-    CatUISettingsElixir:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-
-    if MPPublicSaved and MPPublicSaved.MeleeWindowDisplay and MPPublicSaved.MeleeWindowDisplay==1 then
-        CatUIMelee:Show()
-    end
-    if MPPublicSaved and MPPublicSaved.ElixirWindowDisplay and MPPublicSaved.ElixirWindowDisplay==1 then
-        MPCatElixirReset()
-        CatElixir:Show()
+    if type(MPInitWarriorArmsSettings)=="function" then
+        MPInitWarriorArmsSettings()
+        CatUISettingsWarriorArms:Hide()
+        CatUISettingsWarriorArms:ClearAllPoints()
+        CatUISettingsWarriorArms:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     end
 
-    CatUISettingsCatMenu:Hide()
-    CatUISettingsCatMenu:ClearAllPoints()
-    CatUISettingsCatMenu:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    if type(MPInitWarriorFurySettings)=="function" then
+        MPInitWarriorFurySettings()
+        CatUISettingsWarriorFury:Hide()
+        CatUISettingsWarriorFury:ClearAllPoints()
+        CatUISettingsWarriorFury:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
 
-    MPInitMenuSettings()
+    if type(MPInitWarriorEvilSettings)=="function" then
+        MPInitWarriorEvilSettings()
+        CatUISettingsWarriorEvil:Hide()
+        CatUISettingsWarriorEvil:ClearAllPoints()
+        CatUISettingsWarriorEvil:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitWarriorTankSettings)=="function" then
+        MPInitWarriorTankSettings()
+        CatUISettingsWarriorTank:Hide()
+        CatUISettingsWarriorTank:ClearAllPoints()
+        CatUISettingsWarriorTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitPaladinCJSettings)=="function" then
+        MPInitPaladinCJSettings()
+        CatUISettingsPaladinCJ:Hide()
+        CatUISettingsPaladinCJ:ClearAllPoints()
+        CatUISettingsPaladinCJ:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPaladinHealSettings)=="function" then
+        MPInitPaladinHealSettings()
+        CatUISettingsPaladinHealWindow:Hide()
+        CatUISettingsPaladinHealWindow:ClearAllPoints()
+        CatUISettingsPaladinHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPaladinMeleeHealSettings)=="function" then
+        MPInitPaladinMeleeHealSettings()
+        CatUISettingsPaladinMeleeHeal:Hide()
+        CatUISettingsPaladinMeleeHeal:ClearAllPoints()
+        CatUISettingsPaladinMeleeHeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPaladinTankSettings)=="function" and type(MPCatPaladinControlHealInit)=="function" then
+        MPInitPaladinTankSettings()
+        CatUISettingsPaladinTank:Hide()
+        CatUISettingsPaladinTank:ClearAllPoints()
+        CatUISettingsPaladinTank:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        MPCatPaladinControlHealInit()
+        if MPPublicSaved and MPPublicSaved.PaladinHealDisplay and MPPublicSaved.PaladinHealDisplay==1 then
+            CatPaladinHeal:Show()
+        end
+    end
+
+    if type(MPCatPaladinSealInit)=="function" then
+        MPCatPaladinSealInit()
+        if MPPublicSaved and MPPublicSaved.PaladinSealDisplay and MPPublicSaved.PaladinSealDisplay==1 then
+            CatPaladinSeal:Show()
+        end
+    end
+
+
+    if type(MPInitRogueSettings)=="function" then
+        MPInitRogueSettings()
+        CatUISettingsRogue:Hide()
+        CatUISettingsRogue:ClearAllPoints()
+        CatUISettingsRogue:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitRogueCombatSettings)=="function" then
+        MPInitRogueCombatSettings()
+        CatUISettingsRogueCombat:Hide()
+        CatUISettingsRogueCombat:ClearAllPoints()
+        CatUISettingsRogueCombat:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitRogueEnvenomSettings)=="function" then
+        MPInitRogueEnvenomSettings()
+        CatUISettingsRogueEnvenom:Hide()
+        CatUISettingsRogueEnvenom:ClearAllPoints()
+        CatUISettingsRogueEnvenom:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitRogueArmorSettings)=="function" then
+        MPInitRogueArmorSettings()
+        CatUISettingsRogueArmor:Hide()
+        CatUISettingsRogueArmor:ClearAllPoints()
+        CatUISettingsRogueArmor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitShamanHealSettings)=="function" then
+        MPInitShamanHealSettings()
+        CatUISettingsShamanHealWindow:Hide()
+        CatUISettingsShamanHealWindow:ClearAllPoints()
+        CatUISettingsShamanHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitShamanEnhanceSettings)=="function" then
+        MPInitShamanEnhanceSettings()
+        CatUISettingsShamanEnhanceWindow:Hide()
+        CatUISettingsShamanEnhanceWindow:ClearAllPoints()
+        CatUISettingsShamanEnhanceWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitShamanElementalSettings)=="function" then
+        MPInitShamanElementalSettings()
+        CatUISettingsShamanElementalWindow:Hide()
+        CatUISettingsShamanElementalWindow:ClearAllPoints()
+        CatUISettingsShamanElementalWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitWarlockSDSettings)=="function" then
+        MPInitWarlockSDSettings()
+        CatUISettingsWarlockSD:Hide()
+        CatUISettingsWarlockSD:ClearAllPoints()
+        CatUISettingsWarlockSD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitWarlockFDSettings)=="function" then
+        MPInitWarlockFDSettings()
+        CatUISettingsWarlockFD:Hide()
+        CatUISettingsWarlockFD:ClearAllPoints()
+        CatUISettingsWarlockFD:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitWarlockAffSettings)=="function" then
+        MPInitWarlockAffSettings()
+        CatUISettingsWarlockAff:Hide()
+        CatUISettingsWarlockAff:ClearAllPoints()
+        CatUISettingsWarlockAff:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitWarlockDemoSettings)=="function" then
+        MPInitWarlockDemoSettings()
+        CatUISettingsWarlockDemo:Hide()
+        CatUISettingsWarlockDemo:ClearAllPoints()
+        CatUISettingsWarlockDemo:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitMageArcaneSettings)=="function" then
+        MPInitMageArcaneSettings()
+        CatUISettingsMageArcane:Hide()
+        CatUISettingsMageArcane:ClearAllPoints()
+        CatUISettingsMageArcane:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitMageFireSettings)=="function" then
+        MPInitMageFireSettings()
+        CatUISettingsMageFire:Hide()
+        CatUISettingsMageFire:ClearAllPoints()
+        CatUISettingsMageFire:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitMageFrostSettings)=="function" then
+        MPInitMageFrostSettings()
+        CatUISettingsMageFrost:Hide()
+        CatUISettingsMageFrost:ClearAllPoints()
+        CatUISettingsMageFrost:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitPriestHealSettings)=="function" then
+        MPInitPriestHealSettings()
+        CatUISettingsPriestHealWindow:Hide()
+        CatUISettingsPriestHealWindow:ClearAllPoints()
+        CatUISettingsPriestHealWindow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPriestShadowSettings)=="function" then
+        MPInitPriestShadowSettings()
+        CatUISettingsPriestShadow:Hide()
+        CatUISettingsPriestShadow:ClearAllPoints()
+        CatUISettingsPriestShadow:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPriestDisciplineSettings)=="function" then
+        MPInitPriestDisciplineSettings()
+        CatUISettingsPriestDiscipline:Hide()
+        CatUISettingsPriestDiscipline:ClearAllPoints()
+        CatUISettingsPriestDiscipline:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitHunterShotSettings)=="function" then
+        MPInitHunterShotSettings()
+        CatUISettingsHunterShot:Hide()
+        CatUISettingsHunterShot:ClearAllPoints()
+        CatUISettingsHunterShot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitHunterBeastSettings)=="function" then
+        MPInitHunterBeastSettings()
+        CatUISettingsHunterBeast:Hide()
+        CatUISettingsHunterBeast:ClearAllPoints()
+        CatUISettingsHunterBeast:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitHunterMeleeSettings)=="function" then
+        MPInitHunterMeleeSettings()
+        CatUISettingsHunterMelee:Hide()
+        CatUISettingsHunterMelee:ClearAllPoints()
+        CatUISettingsHunterMelee:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+
+    if type(MPInitAutoLootSettings)=="function" then
+        MPInitAutoLootSettings()
+        CatUISettingAutoLoot:Hide()
+        CatUISettingAutoLoot:ClearAllPoints()
+        CatUISettingAutoLoot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitInterruptSettings)=="function" then
+        MPInitInterruptSettings()
+        CatUISettingsInterrupt:Hide()
+        CatUISettingsInterrupt:ClearAllPoints()
+        CatUISettingsInterrupt:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitMultilineDotSettings)=="function" then
+        MPInitMultilineDotSettings()
+        CatUISettingsMultilineDot:Hide()
+        CatUISettingsMultilineDot:ClearAllPoints()
+        CatUISettingsMultilineDot:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitPowerSettings)=="function" then
+        MPInitPowerSettings()
+        CatUISettingsPower:Hide()
+        CatUISettingsPower:ClearAllPoints()
+        CatUISettingsPower:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitElixirSettings)=="function" then
+        MPInitElixirSettings()
+        CatUISettingsElixir:Hide()
+        CatUISettingsElixir:ClearAllPoints()
+        CatUISettingsElixir:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
+    if type(MPInitMeleeSettings)=="function" then
+        MPInitMeleeSettings()
+        CatUISettingMelee:Hide()
+        CatUISettingMelee:ClearAllPoints()
+        CatUISettingMelee:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        if MPPublicSaved and MPPublicSaved.MeleeWindowDisplay and MPPublicSaved.MeleeWindowDisplay==1 then
+            CatUIMelee:Show()
+        end
+        if MPPublicSaved and MPPublicSaved.ElixirWindowDisplay and MPPublicSaved.ElixirWindowDisplay==1 then
+            MPCatElixirReset()
+            CatElixir:Show()
+        end
+    end
+
+    if type(MPInitMenuSettings)=="function" then
+        MPInitMenuSettings()
+        CatUISettingsCatMenu:Hide()
+        CatUISettingsCatMenu:ClearAllPoints()
+        CatUISettingsCatMenu:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
 
 end
 
@@ -447,7 +525,7 @@ function MPCreateMiniButtonMenu()
         info.func = function() MPCatSettingsCloseAll() CatUISettingsElixir:Show() end
         UIDropDownMenu_AddButton(info)
 
-        -- 打开近战距离
+        -- 打开近战指示器
         info = {}
         info.text = "|cFF007582"..MPLanguage.UI_Set_MeleeTitle.."|r"
         info.notCheckable = 1
@@ -457,6 +535,7 @@ function MPCreateMiniButtonMenu()
             else
                 MPCatSettingsCloseAll() 
                 CatUIMelee:Show() 
+                CatUISettingMelee:Show()
                 MPPublicSaved.MeleeWindowDisplay=1 
             end
         end

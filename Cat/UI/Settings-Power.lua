@@ -19,14 +19,6 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
-
 
 local postion_y = postion_y-40
 
@@ -550,18 +542,7 @@ end)
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsPower, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsPower, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
+local myButton = MPCreateButton(CatUISettingsPower, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 -- 按钮点击事件
 myButton:SetScript("OnClick", function()
     MPResetPowerSettings()
@@ -635,32 +616,32 @@ end
 
 
 function MPInitPowerSettingsPart1()
-    checkButton_Use:SetChecked(ToBoolean(MPPowerSaved.Use))
-    checkButton_Combat:SetChecked(ToBoolean(MPPowerSaved.Combat))
+    checkButton_Use:SetChecked(MPToBoolean(MPPowerSaved.Use))
+    checkButton_Combat:SetChecked(MPToBoolean(MPPowerSaved.Combat))
 
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPPowerSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPPowerSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPPowerSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPPowerSaved.TBBoss))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPPowerSaved.Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPPowerSaved.TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPPowerSaved.Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPPowerSaved.TBBoss))
 
 
-    checkButton_HerbalTea:SetChecked(ToBoolean(MPPowerSaved.HerbalTea))
+    checkButton_HerbalTea:SetChecked(MPToBoolean(MPPowerSaved.HerbalTea))
     slider_HerbalTea:SetValue(MPPowerSaved.HerbalTea_Value)
-    checkButton_HerbalTeaMana:SetChecked(ToBoolean(MPPowerSaved.HerbalTeaMana))
+    checkButton_HerbalTeaMana:SetChecked(MPToBoolean(MPPowerSaved.HerbalTeaMana))
     slider_HerbalTeaMana:SetValue(MPPowerSaved.HerbalTeaMana_Value)
 
-    checkButton_Rejuven:SetChecked(ToBoolean(MPPowerSaved.Rejuven))
+    checkButton_Rejuven:SetChecked(MPToBoolean(MPPowerSaved.Rejuven))
     slider_Rejuven:SetValue(MPPowerSaved.Rejuven_Value)
-    checkButton_RejuvenMana:SetChecked(ToBoolean(MPPowerSaved.RejuvenMana))
+    checkButton_RejuvenMana:SetChecked(MPToBoolean(MPPowerSaved.RejuvenMana))
     slider_RejuvenMana:SetValue(MPPowerSaved.RejuvenMana_Value)
 
-    checkButton_HealthStone:SetChecked(ToBoolean(MPPowerSaved.HealthStone))
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPPowerSaved.HealthStone))
     slider_HealthStone:SetValue(MPPowerSaved.HealthStone_Value)
-    checkButton_Carrot:SetChecked(ToBoolean(MPPowerSaved.Carrot))
+    checkButton_Carrot:SetChecked(MPToBoolean(MPPowerSaved.Carrot))
     slider_Carrot:SetValue(MPPowerSaved.Carrot_Value)
-    checkButton_Healing:SetChecked(ToBoolean(MPPowerSaved.Healing))
+    checkButton_Healing:SetChecked(MPToBoolean(MPPowerSaved.Healing))
     slider_Healing:SetValue(MPPowerSaved.Healing_Value)
-    checkButton_Mana:SetChecked(ToBoolean(MPPowerSaved.Mana))
+    checkButton_Mana:SetChecked(MPToBoolean(MPPowerSaved.Mana))
     slider_Mana:SetValue(MPPowerSaved.Mana_Value)
 
 end
@@ -673,26 +654,27 @@ function MPInitPowerSettings()
     end
 
     if MPPowerSaved.Version ~= PowerSettingsUIVersion then
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[药水宏]当前配置，这是新版插件正常数据更新！|r")
         MPResetPowerSettings()
     end
 
     MPInitPowerSettingsPart1()
 
 
-    checkButton_Powerful:SetChecked(ToBoolean(MPPowerSaved.Powerful))
-    checkButton_PowerfulBoss:SetChecked(ToBoolean(MPPowerSaved.PowerfulBoss))
-    checkButton_Swiftness:SetChecked(ToBoolean(MPPowerSaved.Swiftness))
-    checkButton_SwiftnessBoss:SetChecked(ToBoolean(MPPowerSaved.SwiftnessBoss))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPPowerSaved.Soulspeed))
-    checkButton_SoulspeedBoss:SetChecked(ToBoolean(MPPowerSaved.SoulspeedBoss))
-    checkButton_Sacrificial:SetChecked(ToBoolean(MPPowerSaved.Sacrificial))
+    checkButton_Powerful:SetChecked(MPToBoolean(MPPowerSaved.Powerful))
+    checkButton_PowerfulBoss:SetChecked(MPToBoolean(MPPowerSaved.PowerfulBoss))
+    checkButton_Swiftness:SetChecked(MPToBoolean(MPPowerSaved.Swiftness))
+    checkButton_SwiftnessBoss:SetChecked(MPToBoolean(MPPowerSaved.SwiftnessBoss))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPPowerSaved.Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPPowerSaved.SoulspeedBoss))
+    checkButton_Sacrificial:SetChecked(MPToBoolean(MPPowerSaved.Sacrificial))
 
-    checkButton_Demon:SetChecked(ToBoolean(MPPowerSaved.Demon))
-    checkButton_DemonBoss:SetChecked(ToBoolean(MPPowerSaved.DemonBoss))
+    checkButton_Demon:SetChecked(MPToBoolean(MPPowerSaved.Demon))
+    checkButton_DemonBoss:SetChecked(MPToBoolean(MPPowerSaved.DemonBoss))
 
-    checkButton_Invincible:SetChecked(ToBoolean(MPPowerSaved.Invincible))
-    checkButton_InvincibleBoss:SetChecked(ToBoolean(MPPowerSaved.InvincibleBoss))
-    checkButton_Detoxify:SetChecked(ToBoolean(MPPowerSaved.Detoxify))
+    checkButton_Invincible:SetChecked(MPToBoolean(MPPowerSaved.Invincible))
+    checkButton_InvincibleBoss:SetChecked(MPToBoolean(MPPowerSaved.InvincibleBoss))
+    checkButton_Detoxify:SetChecked(MPToBoolean(MPPowerSaved.Detoxify))
 
 
 end

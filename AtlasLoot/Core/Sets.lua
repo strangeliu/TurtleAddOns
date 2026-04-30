@@ -78,24 +78,30 @@ function AtlasLootSetMenu()
 	AtlasLootMenuItem_6_Icon:SetTexture("Interface\\Icons\\INV_Staff_Medivh");
 	AtlasLootMenuItem_6.lootpage = "KARASET";
 	AtlasLootMenuItem_6:Show();
+	--木喉要塞
+	AtlasLootMenuItem_7_Name:SetText(AL["Timbermaw Hold"] .. " " .. AL["Sets"]);
+	AtlasLootMenuItem_7_Extra:SetText("");
+	AtlasLootMenuItem_7_Icon:SetTexture("Interface\\Icons\\INV_Staff_29");
+	AtlasLootMenuItem_7.lootpage = "TimbermawSET";
+	AtlasLootMenuItem_7:Show();
 	--Legendaries
-	AtlasLootMenuItem_8_Name:SetText(AL["Legendary Items"]);
-	AtlasLootMenuItem_8_Extra:SetText("");
-	AtlasLootMenuItem_8_Icon:SetTexture("Interface\\Icons\\INV_Hammer_Unique_Sulfuras");
-	AtlasLootMenuItem_8.lootpage = "Legendaries";
-	AtlasLootMenuItem_8:Show();
-	--Rare Pets
-	AtlasLootMenuItem_9_Name:SetText(AL["Rare Pets"]);
+	AtlasLootMenuItem_9_Name:SetText(AL["Legendary Items"]);
 	AtlasLootMenuItem_9_Extra:SetText("");
-	AtlasLootMenuItem_9_Icon:SetTexture("Interface\\Icons\\Ability_Seal");
-	AtlasLootMenuItem_9.lootpage = "RarePets1";
+	AtlasLootMenuItem_9_Icon:SetTexture("Interface\\Icons\\INV_Hammer_Unique_Sulfuras");
+	AtlasLootMenuItem_9.lootpage = "Legendaries";
 	AtlasLootMenuItem_9:Show();
-	--Rare Mounts
-	AtlasLootMenuItem_10_Name:SetText(AL["Rare Mounts"]);
+	--Rare Pets
+	AtlasLootMenuItem_10_Name:SetText(AL["Rare Pets"]);
 	AtlasLootMenuItem_10_Extra:SetText("");
-	AtlasLootMenuItem_10_Icon:SetTexture("Interface\\Icons\\INV_Misc_QirajiCrystal_05");
-	AtlasLootMenuItem_10.lootpage = "RareMounts";
+	AtlasLootMenuItem_10_Icon:SetTexture("Interface\\Icons\\Ability_Seal");
+	AtlasLootMenuItem_10.lootpage = "RarePets1";
 	AtlasLootMenuItem_10:Show();
+	--Rare Mounts
+	AtlasLootMenuItem_11_Name:SetText(AL["Rare Mounts"]);
+	AtlasLootMenuItem_11_Extra:SetText("");
+	AtlasLootMenuItem_11_Icon:SetTexture("Interface\\Icons\\INV_Misc_QirajiCrystal_05");
+	AtlasLootMenuItem_11.lootpage = "RareMounts";
+	AtlasLootMenuItem_11:Show();
 	--Sets
 	AtlasLootMenuItem_2_Name:SetText(AL["Sets"]);
 	AtlasLootMenuItem_2_Extra:SetText("");
@@ -103,17 +109,17 @@ function AtlasLootSetMenu()
 	AtlasLootMenuItem_2.lootpage = "PRE60SET";
 	AtlasLootMenuItem_2:Show();
 	--World Epics
-	AtlasLootMenuItem_23_Name:SetText(AL["World Epics"]);
-	AtlasLootMenuItem_23_Extra:SetText("");
-	AtlasLootMenuItem_23_Icon:SetTexture("Interface\\Icons\\INV_Gauntlets_30");
-	AtlasLootMenuItem_23.lootpage = "WorldEpics1";
-	AtlasLootMenuItem_23:Show();
-	--Tabards
-	AtlasLootMenuItem_24_Name:SetText(AL["Tabards"]);
+	AtlasLootMenuItem_24_Name:SetText(AL["World Epics"]);
 	AtlasLootMenuItem_24_Extra:SetText("");
-	AtlasLootMenuItem_24_Icon:SetTexture("Interface\\Icons\\INV_Shirt_GuildTabard_01");
-	AtlasLootMenuItem_24.lootpage = "Tabards";
+	AtlasLootMenuItem_24_Icon:SetTexture("Interface\\Icons\\INV_Gauntlets_30");
+	AtlasLootMenuItem_24.lootpage = "WorldEpics1";
 	AtlasLootMenuItem_24:Show();
+	--Tabards
+	AtlasLootMenuItem_25_Name:SetText(AL["Tabards"]);
+	AtlasLootMenuItem_25_Extra:SetText("");
+	AtlasLootMenuItem_25_Icon:SetTexture("Interface\\Icons\\INV_Shirt_GuildTabard_01");
+	AtlasLootMenuItem_25.lootpage = "Tabards";
+	AtlasLootMenuItem_25:Show();
 	--Dungeon Set 1/2
 	AtlasLootMenuItem_17_Name:SetText(AL["Dungeon 1/2 Sets"]);
 	AtlasLootMenuItem_17_Extra:SetText("");
@@ -940,3 +946,4 @@ function AtlasLoot_Kara40SetMenu()
 		end
 	end
 end
+

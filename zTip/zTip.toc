@@ -5,7 +5,7 @@
 ## Notes-zhCN: zTip 显示目标的各项基本信息，新增显示目标抗性及专业技能提示。|n输入/ztip打开设置面板
 ## Version: 1.19
 ## Author: Zero Fire
-## Author-zhCN: 炽火 Zero ℃, 狗血编剧男, 迷茫灬
+## Author-zhCN: 炽火 Zero ℃, 狗血编剧男, Sunelegy
 ## OptionalDeps: Warmup
 ## SavedVariablesPerCharacter: zTip_Saved
 zTip.lua

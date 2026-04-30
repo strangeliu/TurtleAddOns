@@ -2,10 +2,11 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-PriestHeal"
 
+local ConfigCurrent = 1
 
 
 -- 创建主框架
-CatUISettingsPriestHealWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 650, "|cFFFFFFFF设置 - 神牧|r")
+CatUISettingsPriestHealWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 680, "|cFFFFFFFF设置 - 神牧|r")
 
 local postion_y = -50
 
@@ -20,15 +21,6 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
-
-
 
 local postion_y = postion_y-40
 
@@ -36,32 +28,22 @@ local postion_y = postion_y-40
 local checkButton_PrayerHealing = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 治疗祷言")
 checkButton_PrayerHealing:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.PrayerHealing = 1
+        MPPriestHealSaved[ConfigCurrent].PrayerHealing = 1
     else
-        MPPriestHealSaved.PrayerHealing = 0
+        MPPriestHealSaved[ConfigCurrent].PrayerHealing = 0
     end
 end)
 
 
 
 -- 创建单选框 - 优先治疗目标
-local checkButton_TargetFirst = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_TargetFirst:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_TargetFirst:SetScale(0.8)
-
--- 添加文字标签
-local checkText_TargetFirst = checkButton_TargetFirst:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_TargetFirst:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_TargetFirst:SetTextColor(1, 1, 1)
-checkText_TargetFirst:SetPoint("LEFT", checkButton_TargetFirst, "LEFT", 34, 1)
-checkText_TargetFirst:SetText("优先治疗 目标")
-
+local checkButton_TargetFirst = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "优先治疗 目标")
 -- 设置点击事件
 checkButton_TargetFirst:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.TargetFirst = 1
+        MPPriestHealSaved[ConfigCurrent].TargetFirst = 1
     else
-        MPPriestHealSaved.TargetFirst = 0
+        MPPriestHealSaved[ConfigCurrent].TargetFirst = 0
     end
 end)
 
@@ -71,45 +53,25 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 强效治疗术
-local checkButton_GreaterHeal = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_GreaterHeal:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_GreaterHeal:SetScale(0.8)
-
--- 添加文字标签
-local checkText_GreaterHeal = checkButton_GreaterHeal:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_GreaterHeal:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_GreaterHeal:SetTextColor(1, 1, 1)
-checkText_GreaterHeal:SetPoint("LEFT", checkButton_GreaterHeal, "LEFT", 34, 1)
-checkText_GreaterHeal:SetText("开启 强效治疗术")
-
+local checkButton_GreaterHeal = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 强效治疗术")
 -- 设置点击事件
 checkButton_GreaterHeal:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.GreaterHeal = 1
+        MPPriestHealSaved[ConfigCurrent].GreaterHeal = 1
     else
-        MPPriestHealSaved.GreaterHeal = 0
+        MPPriestHealSaved[ConfigCurrent].GreaterHeal = 0
     end
 end)
 
 
 -- 创建单选框 - 优先治疗目标 的 目标
-local checkButton_TargetTarget = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_TargetTarget:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_TargetTarget:SetScale(0.8)
-
--- 添加文字标签
-local checkText_TargetTarget = checkButton_TargetTarget:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_TargetTarget:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_TargetTarget:SetTextColor(1, 1, 1)
-checkText_TargetTarget:SetPoint("LEFT", checkButton_TargetTarget, "LEFT", 34, 1)
-checkText_TargetTarget:SetText("优先治疗 目标 的 目标")
-
+local checkButton_TargetTarget = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "优先治疗 目标 的 目标")
 -- 设置点击事件
 checkButton_TargetTarget:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.TargetTarget = 1
+        MPPriestHealSaved[ConfigCurrent].TargetTarget = 1
     else
-        MPPriestHealSaved.TargetTarget = 0
+        MPPriestHealSaved[ConfigCurrent].TargetTarget = 0
     end
 end)
 
@@ -119,47 +81,26 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 快速治疗
-local checkButton_FlashHeal = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_FlashHeal:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_FlashHeal:SetScale(0.8)
---checkButton_FlashHeal:Disable()
-
--- 添加文字标签
-local checkText_FlashHeal = checkButton_FlashHeal:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_FlashHeal:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_FlashHeal:SetTextColor(1, 1, 1)
-checkText_FlashHeal:SetPoint("LEFT", checkButton_FlashHeal, "LEFT", 34, 1)
-checkText_FlashHeal:SetText("开启 快速治疗")
-
+local checkButton_FlashHeal = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 快速治疗")
 -- 设置点击事件
 checkButton_FlashHeal:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.FlashHeal = 1
+        MPPriestHealSaved[ConfigCurrent].FlashHeal = 1
     else
-        MPPriestHealSaved.FlashHeal = 0
+        MPPriestHealSaved[ConfigCurrent].FlashHeal = 0
     end
 end)
 
 
 
 -- 创建单选框 - 优先治疗自己
-local checkButton_SelfFirst = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_SelfFirst:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_SelfFirst:SetScale(0.8)
-
--- 添加文字标签
-local checkText_SelfFirst = checkButton_SelfFirst:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_SelfFirst:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_SelfFirst:SetTextColor(1, 1, 1)
-checkText_SelfFirst:SetPoint("LEFT", checkButton_SelfFirst, "LEFT", 34, 1)
-checkText_SelfFirst:SetText("优先治疗 自己 (谨慎开启)")
-
+local checkButton_SelfFirst = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "优先治疗 自己 (谨慎开启)")
 -- 设置点击事件
 checkButton_SelfFirst:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.SelfFirst = 1
+        MPPriestHealSaved[ConfigCurrent].SelfFirst = 1
     else
-        MPPriestHealSaved.SelfFirst = 0
+        MPPriestHealSaved[ConfigCurrent].SelfFirst = 0
     end
 end)
 
@@ -169,23 +110,13 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 绝望祷言
-local checkButton_DesperatePrayer = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_DesperatePrayer:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_DesperatePrayer:SetScale(0.8)
-
--- 添加文字标签
-local checkText_DesperatePrayer = checkButton_DesperatePrayer:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_DesperatePrayer:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_DesperatePrayer:SetTextColor(1, 1, 1)
-checkText_DesperatePrayer:SetPoint("LEFT", checkButton_DesperatePrayer, "LEFT", 34, 1)
-checkText_DesperatePrayer:SetText("开启 绝望祷言")
-
+local checkButton_DesperatePrayer = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 绝望祷言")
 -- 设置点击事件
 checkButton_DesperatePrayer:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.DesperatePrayer = 1
+        MPPriestHealSaved[ConfigCurrent].DesperatePrayer = 1
     else
-        MPPriestHealSaved.DesperatePrayer = 0
+        MPPriestHealSaved[ConfigCurrent].DesperatePrayer = 0
     end
 end)
 
@@ -194,9 +125,9 @@ end)
 local checkButton_ScanTeam = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "治疗大团")
 checkButton_ScanTeam:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.ScanTeam = 1
+        MPPriestHealSaved[ConfigCurrent].ScanTeam = 1
     else
-        MPPriestHealSaved.ScanTeam = 0
+        MPPriestHealSaved[ConfigCurrent].ScanTeam = 0
     end
 end)
 
@@ -205,25 +136,25 @@ local checkButton_ScanTeam_Rand = MPCreateCheckButtonSmall(CatUISettingsPriestHe
 
 checkButton_ScanTeam_Low:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.ScanTeam_Low = 1
-        MPPriestHealSaved.ScanTeam_Rand = 0
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Low = 1
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand = 0
     else
-        MPPriestHealSaved.ScanTeam_Low = 0
-        MPPriestHealSaved.ScanTeam_Rand = 1
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Low = 0
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand = 1
     end
-    checkButton_ScanTeam_Low:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Low))
-    checkButton_ScanTeam_Rand:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Rand))
+    checkButton_ScanTeam_Low:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Low))
+    checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand))
 end)
 checkButton_ScanTeam_Rand:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.ScanTeam_Rand = 1
-        MPPriestHealSaved.ScanTeam_Low = 0
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand = 1
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Low = 0
     else
-        MPPriestHealSaved.ScanTeam_Rand = 0
-        MPPriestHealSaved.ScanTeam_Low = 1
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand = 0
+        MPPriestHealSaved[ConfigCurrent].ScanTeam_Low = 1
     end
-    checkButton_ScanTeam_Low:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Low))
-    checkButton_ScanTeam_Rand:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Rand))
+    checkButton_ScanTeam_Low:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Low))
+    checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand))
 end)
 
 
@@ -232,69 +163,38 @@ postion_y = postion_y-30
 
 
 -- 创建单选框 - 移动恢复
-local checkButton_MoveRenew = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_MoveRenew:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_MoveRenew:SetScale(0.8)
-
--- 添加文字标签
-local checkText_MoveRenew = checkButton_MoveRenew:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_MoveRenew:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_MoveRenew:SetTextColor(1, 1, 1)
-checkText_MoveRenew:SetPoint("LEFT", checkButton_MoveRenew, "LEFT", 34, 1)
-checkText_MoveRenew:SetText("开启 恢复 (移动时)")
-
+local checkButton_MoveRenew = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 恢复 (移动时)")
 -- 设置点击事件
 checkButton_MoveRenew:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.MoveRenew = 1
+        MPPriestHealSaved[ConfigCurrent].MoveRenew = 1
     else
-        MPPriestHealSaved.MoveRenew = 0
+        MPPriestHealSaved[ConfigCurrent].MoveRenew = 0
     end
 end)
 
 
 -- 创建单选框 - Tip
-local checkButton_Tip = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_Tip:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_Tip:SetScale(0.8)
-checkButton_Tip:Hide()
-
--- 添加文字标签
-local checkText_Tip = checkButton_Tip:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Tip:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Tip:SetTextColor(1, 1, 1)
-checkText_Tip:SetPoint("LEFT", checkButton_Tip, "LEFT", 34, 1)
-checkText_Tip:SetText("开启 提示信息")
-
+local checkButton_Tip = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "开启 提示信息")
 -- 设置点击事件
 checkButton_Tip:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.Tip = 1
+        MPPriestHealSaved[ConfigCurrent].Tip = 1
     else
-        MPPriestHealSaved.Tip = 0
+        MPPriestHealSaved[ConfigCurrent].Tip = 0
     end
 end)
 
 postion_y = postion_y-30
 
 -- 创建单选框 - 真言术：盾
-local checkButton_Shield = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_Shield:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_Shield:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Shield = checkButton_Shield:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Shield:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Shield:SetTextColor(1, 1, 1)
-checkText_Shield:SetPoint("LEFT", checkButton_Shield, "LEFT", 34, 1)
-checkText_Shield:SetText("开启 真言术：盾")
-
+local checkButton_Shield = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 真言术：盾")
 -- 设置点击事件
 checkButton_Shield:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.Shield = 1
+        MPPriestHealSaved[ConfigCurrent].Shield = 1
     else
-        MPPriestHealSaved.Shield = 0
+        MPPriestHealSaved[ConfigCurrent].Shield = 0
     end
 end)
 
@@ -308,17 +208,13 @@ slider_Begin_Value:SetHeight(16) -- 拖动条高度
 
 slider_Begin_Value:SetMinMaxValues(80, 100)
 slider_Begin_Value:SetValueStep(0.5)
-slider_Begin_Value:SetValue(99.5) -- 默认值
+slider_Begin_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_Begin_Value)
-
-_G[slider_Begin_Value:GetName().."Text"]:SetText("起始治疗 血线：99.5%")
-_G[slider_Begin_Value:GetName().."Low"]:Hide()
-_G[slider_Begin_Value:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_Begin_Value:SetScript("OnValueChanged", function()
     _G[slider_Begin_Value:GetName().."Text"]:SetText("起始治疗 血线："..arg1.."%")
-    MPPriestHealSaved.Begin_Value = arg1
+    MPPriestHealSaved[ConfigCurrent].Begin_Value = arg1
 end)
 
 
@@ -344,40 +240,20 @@ postion_y = postion_y-90
 
 
 -- 创建单选框 - 溢出治疗
-local checkButton_Overflow = CreateFrame("CheckButton", ADDON_NAME.."CheckButtonForce", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_Overflow:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
-checkButton_Overflow:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Overflow = checkButton_Overflow:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Overflow:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Overflow:SetTextColor(1, 1, 1)
-checkText_Overflow:SetPoint("LEFT", checkButton_Overflow, "LEFT", 34, 1)
-checkText_Overflow:SetText("启用 溢出治疗时打断施法")
-
+local checkButton_Overflow = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "启用 溢出治疗时打断施法")
 -- 设置点击事件
 checkButton_Overflow:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.Overflow = 1
+        MPPriestHealSaved[ConfigCurrent].Overflow = 1
     else
-        MPPriestHealSaved.Overflow = 0
+        MPPriestHealSaved[ConfigCurrent].Overflow = 0
     end
 end)
 
 
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HealthStone", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_HealthStone:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_HealthStone:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HealthStone = checkButton_HealthStone:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HealthStone:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HealthStone:SetTextColor(1, 1, 1)
-checkText_HealthStone:SetPoint("LEFT", checkButton_HealthStone, "LEFT", 34, 1)
-checkText_HealthStone:SetText("自动 治疗石")
-
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 治疗石")
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -387,53 +263,38 @@ slider_HealthStone:SetHeight(16) -- 拖动条高度
 -- 设置数值范围（最小值0，最大值100，步长1）
 slider_HealthStone:SetMinMaxValues(0, 100)
 slider_HealthStone:SetValueStep(1)
-slider_HealthStone:SetValue(30) -- 默认值
+slider_HealthStone:SetValue(300) -- 默认值
 MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-_G[slider_HealthStone:GetName().."Low"]:Hide()
-_G[slider_HealthStone:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPPriestHealSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved.HealthStone_Value .."%|r")
+    MPPriestHealSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.HealthStone = 1
+        MPPriestHealSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPPriestHealSaved.HealthStone = 0
+        MPPriestHealSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
+
 
 
 postion_y = postion_y-40
 
 
-
-
-
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTea", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_HerbalTea:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTea:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTea = checkButton_HerbalTea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTea:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTea:SetTextColor(1, 1, 1)
-checkText_HerbalTea:SetPoint("LEFT", checkButton_HerbalTea, "LEFT", 34, 1)
-checkText_HerbalTea:SetText("自动 草药茶")
-
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -443,31 +304,28 @@ slider_HerbalTea:SetHeight(16) -- 拖动条高度
 -- 设置数值范围（最小值0，最大值100，步长1）
 slider_HerbalTea:SetMinMaxValues(0, 100)
 slider_HerbalTea:SetValueStep(1)
-slider_HerbalTea:SetValue(20) -- 默认值
+slider_HerbalTea:SetValue(200) -- 默认值
 MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-_G[slider_HerbalTea:GetName().."Low"]:Hide()
-_G[slider_HerbalTea:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPPriestHealSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved.HerbalTea_Value .."%|r")
+    MPPriestHealSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.HerbalTea = 1
+        MPPriestHealSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPPriestHealSaved.HerbalTea = 0
+        MPPriestHealSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -478,17 +336,7 @@ postion_y = postion_y - 40
 
 
 -- 创建单选框 - 草药茶 蓝量
-local checkButton_HerbalTeaMana = CreateFrame("CheckButton", ADDON_NAME.."CheckButton_HerbalTeaMana", CatUISettingsPriestHealWindow, "UICheckButtonTemplate")
-checkButton_HerbalTeaMana:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTeaMana:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTeaMana = checkButton_HerbalTeaMana:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTeaMana:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTeaMana:SetTextColor(1, 1, 1)
-checkText_HerbalTeaMana:SetPoint("LEFT", checkButton_HerbalTeaMana, "LEFT", 34, 1)
-checkText_HerbalTeaMana:SetText("自动 草药茶")
-
+local checkButton_HerbalTeaMana = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTeaMana = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTeaMana", checkButton_HerbalTeaMana, "OptionsSliderTemplate")
 slider_HerbalTeaMana:SetPoint("RIGHT", checkButton_HerbalTeaMana, "RIGHT", 250, -2)
@@ -498,31 +346,28 @@ slider_HerbalTeaMana:SetHeight(16) -- 拖动条高度
 -- 设置数值范围（最小值0，最大值100，步长1）
 slider_HerbalTeaMana:SetMinMaxValues(0, 100)
 slider_HerbalTeaMana:SetValueStep(1)
-slider_HerbalTeaMana:SetValue(20) -- 默认值
+slider_HerbalTeaMana:SetValue(200) -- 默认值
 MPCatUISliderRegionHide(slider_HerbalTeaMana)
 
 local color_HerbalTeaMana = "|cFFFFD100"
 
-_G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: 20%|r")
-_G[slider_HerbalTeaMana:GetName().."Low"]:Hide()
-_G[slider_HerbalTeaMana:GetName().."High"]:Hide()
 -- 值变化时的回调函数
 slider_HerbalTeaMana:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPPriestHealSaved.HerbalTeaMana_Value = arg1
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved.HerbalTeaMana_Value .."%|r")
+    MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value = arg1
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTeaMana:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.HerbalTeaMana = 1
+        MPPriestHealSaved[ConfigCurrent].HerbalTeaMana = 1
         color_HerbalTeaMana = "|cFFFFD100"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     else
-        MPPriestHealSaved.HerbalTeaMana = 0
+        MPPriestHealSaved[ConfigCurrent].HerbalTeaMana = 0
         color_HerbalTeaMana = "|cFF888888"
-        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved.HerbalTeaMana_Value .."%|r")
+        _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
     end
 end)
 
@@ -534,9 +379,9 @@ local checkButton_PrayerBook = MPCreateCheckButton(CatUISettingsPriestHealWindow
 checkButton_PrayerBook:Disable()
 checkButton_PrayerBook:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.PrayerBook = 1
+        MPPriestHealSaved[ConfigCurrent].PrayerBook = 1
     else
-        MPPriestHealSaved.PrayerBook = 0
+        MPPriestHealSaved[ConfigCurrent].PrayerBook = 0
     end
 end)
 
@@ -548,9 +393,9 @@ postion_y = postion_y - 40
 local checkButton_PrayerHealingPartyFirst = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "治疗祷言 本队优先")
 checkButton_PrayerHealingPartyFirst:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.PrayerHealingPartyFirst = 1
+        MPPriestHealSaved[ConfigCurrent].PrayerHealingPartyFirst = 1
     else
-        MPPriestHealSaved.PrayerHealingPartyFirst = 0
+        MPPriestHealSaved[ConfigCurrent].PrayerHealingPartyFirst = 0
     end
 end)
 
@@ -562,18 +407,14 @@ slider_PrayerHealing_Value:SetHeight(16) -- 拖动条高度
 
 slider_PrayerHealing_Value:SetMinMaxValues(2, 14)
 slider_PrayerHealing_Value:SetValueStep(1)
-slider_PrayerHealing_Value:SetValue(7) -- 默认值
+slider_PrayerHealing_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_PrayerHealing_Value)
-
---_G[slider_PrayerHealing_Value:GetName().."Text"]:SetText("强效治疗术​ 血线：50%")
-_G[slider_PrayerHealing_Value:GetName().."Low"]:Hide()
-_G[slider_PrayerHealing_Value:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_PrayerHealing_Value:SetScript("OnValueChanged", function()
     --print("Ferocious当前值:", arg1)
     _G[slider_PrayerHealing_Value:GetName().."Text"]:SetText("治疗祷言 权重："..arg1)
-    MPPriestHealSaved.PrayerHealing_Value = arg1
+    MPPriestHealSaved[ConfigCurrent].PrayerHealing_Value = arg1
 end)
 
 
@@ -589,18 +430,14 @@ slider_GreaterHeal_Value:SetHeight(16) -- 拖动条高度
 
 slider_GreaterHeal_Value:SetMinMaxValues(10, 99)
 slider_GreaterHeal_Value:SetValueStep(1)
-slider_GreaterHeal_Value:SetValue(50) -- 默认值
+slider_GreaterHeal_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_GreaterHeal_Value)
-
---_G[slider_GreaterHeal_Value:GetName().."Text"]:SetText("强效治疗术​ 血线：50%")
-_G[slider_GreaterHeal_Value:GetName().."Low"]:Hide()
-_G[slider_GreaterHeal_Value:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_GreaterHeal_Value:SetScript("OnValueChanged", function()
     --print("Ferocious当前值:", arg1)
     _G[slider_GreaterHeal_Value:GetName().."Text"]:SetText("强效治疗术​ 血线："..arg1.."%")
-    MPPriestHealSaved.GreaterHeal_Value = arg1
+    MPPriestHealSaved[ConfigCurrent].GreaterHeal_Value = arg1
 end)
 
 
@@ -615,18 +452,14 @@ slider_Desperate_Value:SetHeight(16) -- 拖动条高度
 
 slider_Desperate_Value:SetMinMaxValues(10, 99)
 slider_Desperate_Value:SetValueStep(1)
-slider_Desperate_Value:SetValue(20) -- 默认值
+slider_Desperate_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_Desperate_Value)
-
-_G[slider_Desperate_Value:GetName().."Text"]:SetText("绝望祷言​ 血线：20%")
-_G[slider_Desperate_Value:GetName().."Low"]:Hide()
-_G[slider_Desperate_Value:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_Desperate_Value:SetScript("OnValueChanged", function()
     --print("Ferocious当前值:", arg1)
     _G[slider_Desperate_Value:GetName().."Text"]:SetText("绝望祷言​ 血线："..arg1.."%")
-    MPPriestHealSaved.Desperate_Value = arg1
+    MPPriestHealSaved[ConfigCurrent].Desperate_Value = arg1
 end)
 
 
@@ -640,18 +473,14 @@ slider_Shield_Value:SetHeight(16) -- 拖动条高度
 
 slider_Shield_Value:SetMinMaxValues(10, 99)
 slider_Shield_Value:SetValueStep(1)
-slider_Shield_Value:SetValue(30) -- 默认值
+slider_Shield_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_Shield_Value)
-
-_G[slider_Shield_Value:GetName().."Text"]:SetText("真言术：盾 血线：30%")
-_G[slider_Shield_Value:GetName().."Low"]:Hide()
-_G[slider_Shield_Value:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_Shield_Value:SetScript("OnValueChanged", function()
     --print("Ferocious当前值:", arg1)
     _G[slider_Shield_Value:GetName().."Text"]:SetText("真言术：盾​ 血线："..arg1.."%")
-    MPPriestHealSaved.Shield_Value = arg1
+    MPPriestHealSaved[ConfigCurrent].Shield_Value = arg1
 end)
 
 
@@ -665,14 +494,12 @@ slider_RenewMinLevel:SetHeight(16) -- 拖动条高度
 
 slider_RenewMinLevel:SetMinMaxValues(1, 10)
 slider_RenewMinLevel:SetValueStep(1)
-slider_RenewMinLevel:SetValue(1) -- 默认值
+slider_RenewMinLevel:SetValue(100) -- 默认值
 MPCatUISliderRegionHide(slider_RenewMinLevel)
-
-_G[slider_RenewMinLevel:GetName().."Text"]:SetText("恢复最低1级")
 
 slider_RenewMinLevel:SetScript("OnValueChanged", function()
     _G[slider_RenewMinLevel:GetName().."Text"]:SetText("恢复最低"..arg1.."级")
-    MPPriestHealSaved.RenewMinLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].RenewMinLevel = arg1
 end)
 
 -- 恢复最高等级
@@ -683,14 +510,12 @@ slider_RenewMaxLevel:SetHeight(16) -- 拖动条高度
 
 slider_RenewMaxLevel:SetMinMaxValues(1, 10)
 slider_RenewMaxLevel:SetValueStep(1)
-slider_RenewMaxLevel:SetValue(10) -- 默认值
+slider_RenewMaxLevel:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_RenewMaxLevel)
-
-_G[slider_RenewMaxLevel:GetName().."Text"]:SetText("恢复最高10级")
 
 slider_RenewMaxLevel:SetScript("OnValueChanged", function()
     _G[slider_RenewMaxLevel:GetName().."Text"]:SetText("恢复最高"..arg1.."级")
-    MPPriestHealSaved.RenewMaxLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].RenewMaxLevel = arg1
 end)
 
 
@@ -704,14 +529,12 @@ slider_FlashHealMinLevel:SetHeight(16) -- 拖动条高度
 
 slider_FlashHealMinLevel:SetMinMaxValues(1, 7)
 slider_FlashHealMinLevel:SetValueStep(1)
-slider_FlashHealMinLevel:SetValue(1) -- 默认值
+slider_FlashHealMinLevel:SetValue(100) -- 默认值
 MPCatUISliderRegionHide(slider_FlashHealMinLevel)
-
-_G[slider_FlashHealMinLevel:GetName().."Text"]:SetText("快速治疗​最低1级")
 
 slider_FlashHealMinLevel:SetScript("OnValueChanged", function()
     _G[slider_FlashHealMinLevel:GetName().."Text"]:SetText("快速治疗最低"..arg1.."级")
-    MPPriestHealSaved.FlashHealMinLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].FlashHealMinLevel = arg1
 end)
 
 -- 快速治疗​最高等级
@@ -722,14 +545,12 @@ slider_FlashHealMaxLevel:SetHeight(16) -- 拖动条高度
 
 slider_FlashHealMaxLevel:SetMinMaxValues(1, 7)
 slider_FlashHealMaxLevel:SetValueStep(1)
-slider_FlashHealMaxLevel:SetValue(7) -- 默认值
+slider_FlashHealMaxLevel:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_FlashHealMaxLevel)
-
-_G[slider_FlashHealMaxLevel:GetName().."Text"]:SetText("快速治疗​最高7级")
 
 slider_FlashHealMaxLevel:SetScript("OnValueChanged", function()
     _G[slider_FlashHealMaxLevel:GetName().."Text"]:SetText("快速治疗最高"..arg1.."级")
-    MPPriestHealSaved.FlashHealMaxLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].FlashHealMaxLevel = arg1
 end)
 
 
@@ -743,14 +564,12 @@ slider_GreaterHealMinLevel:SetHeight(16) -- 拖动条高度
 
 slider_GreaterHealMinLevel:SetMinMaxValues(1, 5)
 slider_GreaterHealMinLevel:SetValueStep(1)
-slider_GreaterHealMinLevel:SetValue(1) -- 默认值
+slider_GreaterHealMinLevel:SetValue(100) -- 默认值
 MPCatUISliderRegionHide(slider_GreaterHealMinLevel)
-
-_G[slider_GreaterHealMinLevel:GetName().."Text"]:SetText("强效治疗​最低1级")
 
 slider_GreaterHealMinLevel:SetScript("OnValueChanged", function()
     _G[slider_GreaterHealMinLevel:GetName().."Text"]:SetText("强效治疗最低"..arg1.."级")
-    MPPriestHealSaved.GreaterHealMinLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].GreaterHealMinLevel = arg1
 end)
 
 -- 强效治疗​最高等级
@@ -761,40 +580,108 @@ slider_GreaterHealMaxLevel:SetHeight(16) -- 拖动条高度
 
 slider_GreaterHealMaxLevel:SetMinMaxValues(1, 5)
 slider_GreaterHealMaxLevel:SetValueStep(1)
-slider_GreaterHealMaxLevel:SetValue(5) -- 默认值
+slider_GreaterHealMaxLevel:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_GreaterHealMaxLevel)
-
-_G[slider_GreaterHealMaxLevel:GetName().."Text"]:SetText("强效治疗​最高5级")
 
 slider_GreaterHealMaxLevel:SetScript("OnValueChanged", function()
     _G[slider_GreaterHealMaxLevel:GetName().."Text"]:SetText("强效治疗最高"..arg1.."级")
-    MPPriestHealSaved.GreaterHealMaxLevel = arg1
+    MPPriestHealSaved[ConfigCurrent].GreaterHealMaxLevel = arg1
 end)
 
 
+postion_y = postion_y-40
+
+-- 治疗祷言最低等级
+local slider_PrayerHealingMinLevel = CreateFrame("Slider", ADDON_NAME.."SliderPrayerHealingMinLevel", CatUISettingsPriestHealWindow, "OptionsSliderTemplate")
+slider_PrayerHealingMinLevel:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 20, postion_y)
+slider_PrayerHealingMinLevel:SetWidth(105) -- 拖动条长度
+slider_PrayerHealingMinLevel:SetHeight(16) -- 拖动条高度
+
+slider_PrayerHealingMinLevel:SetMinMaxValues(1, 3)
+slider_PrayerHealingMinLevel:SetValueStep(1)
+slider_PrayerHealingMinLevel:SetValue(100) -- 默认值
+MPCatUISliderRegionHide(slider_PrayerHealingMinLevel)
+
+slider_PrayerHealingMinLevel:SetScript("OnValueChanged", function()
+    _G[slider_PrayerHealingMinLevel:GetName().."Text"]:SetText("治疗祷言最低"..arg1.."级")
+    MPPriestHealSaved[ConfigCurrent].PrayerHealingMinLevel = arg1
+end)
+
+-- 强效治疗​最高等级
+local slider_PrayerHealingMaxLevel = CreateFrame("Slider", ADDON_NAME.."SliderPrayerHealingMaxLevel", CatUISettingsPriestHealWindow, "OptionsSliderTemplate")
+slider_PrayerHealingMaxLevel:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 135, postion_y)
+slider_PrayerHealingMaxLevel:SetWidth(105) -- 拖动条长度
+slider_PrayerHealingMaxLevel:SetHeight(16) -- 拖动条高度
+
+slider_PrayerHealingMaxLevel:SetMinMaxValues(1, 5)
+slider_PrayerHealingMaxLevel:SetValueStep(1)
+slider_PrayerHealingMaxLevel:SetValue(0) -- 默认值
+MPCatUISliderRegionHide(slider_PrayerHealingMaxLevel)
+
+slider_PrayerHealingMaxLevel:SetScript("OnValueChanged", function()
+    _G[slider_PrayerHealingMaxLevel:GetName().."Text"]:SetText("治疗祷言最高"..arg1.."级")
+    MPPriestHealSaved[ConfigCurrent].PrayerHealingMaxLevel = arg1
+end)
 
 
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsPriestHealWindow, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsPriestHealWindow, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetPriestHealSettings()
+    MPResetPriestHealSettings(ConfigCurrent)
     MPInitPriestHealSettings()
 end)
 
+
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsPriestHealWindow, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsPriestHealWindow, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsPriestHealWindow, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitPriestHealSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitPriestHealSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
+    MPInitPriestHealSettings()
+end)
 
 
 
@@ -804,9 +691,9 @@ MPBottomLine(CatUISettingsPriestHealWindow)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.Power = 1
+        MPPriestHealSaved[ConfigCurrent].Power = 1
     else
-        MPPriestHealSaved.Power = 0
+        MPPriestHealSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -820,9 +707,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPriestHealSaved.Pick = 1
+        MPPriestHealSaved[ConfigCurrent].Pick = 1
     else
-        MPPriestHealSaved.Pick = 0
+        MPPriestHealSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -839,160 +726,193 @@ TipText:SetPoint("BOTTOM", CatUISettingsPriestHealWindow, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ |cFFFFFFFF/mheal|r ]")
+TipText:SetText("宏命令 |cFFFFFFFF/mheal|r [ 1 | 2 | 3 ]")
 
 
 
 -- 配置文件版本号
-local PriestHealSettingsUIVersion = 16
+local PriestHealSettingsUIVersion = 18
 
-function MPResetPriestHealSettings()
+function MPResetPriestHealSettings(config)
 
     MPPriestHealSaved.Version = PriestHealSettingsUIVersion
 
     -- 基本配置
 
-    MPPriestHealSaved.GreaterHeal = 0
-    MPPriestHealSaved.PrayerHealing = 1
-    MPPriestHealSaved.MoveRenew = 1
-    MPPriestHealSaved.FlashHeal = 1
-    MPPriestHealSaved.DesperatePrayer = 0
-    MPPriestHealSaved.Shield = 0
-    MPPriestHealSaved.Tip = 1
-    MPPriestHealSaved.TargetFirst = 1
-    MPPriestHealSaved.TargetTarget = 1
-    MPPriestHealSaved.SelfFirst = 0
-    MPPriestHealSaved.ScanTeam = 1
-    MPPriestHealSaved.ScanTeam_Low = 1
-    MPPriestHealSaved.ScanTeam_Rand = 0
+    MPPriestHealSaved[config].GreaterHeal = 0
+    MPPriestHealSaved[config].PrayerHealing = 1
+    MPPriestHealSaved[config].MoveRenew = 1
+    MPPriestHealSaved[config].FlashHeal = 1
+    MPPriestHealSaved[config].DesperatePrayer = 0
+    MPPriestHealSaved[config].Shield = 0
+    MPPriestHealSaved[config].Tip = 1
+    MPPriestHealSaved[config].TargetFirst = 1
+    MPPriestHealSaved[config].TargetTarget = 1
+    MPPriestHealSaved[config].SelfFirst = 0
+    MPPriestHealSaved[config].ScanTeam = 1
+    MPPriestHealSaved[config].ScanTeam_Low = 1
+    MPPriestHealSaved[config].ScanTeam_Rand = 0
 
-    MPPriestHealSaved.Begin_Value = 99.5
+    MPPriestHealSaved[config].Begin_Value = 99.5
 
     -- 高级配置
 
     -- 治疗石、糖水茶
-    MPPriestHealSaved.HealthStone = 1
-    MPPriestHealSaved.HealthStone_Value = 30
-    MPPriestHealSaved.HerbalTea = 1
-    MPPriestHealSaved.HerbalTea_Value = 20
-    MPPriestHealSaved.HerbalTeaMana = 0
-    MPPriestHealSaved.HerbalTeaMana_Value = 20
+    MPPriestHealSaved[config].HealthStone = 1
+    MPPriestHealSaved[config].HealthStone_Value = 30
+    MPPriestHealSaved[config].HerbalTea = 1
+    MPPriestHealSaved[config].HerbalTea_Value = 20
+    MPPriestHealSaved[config].HerbalTeaMana = 0
+    MPPriestHealSaved[config].HerbalTeaMana_Value = 20
 
     -- SuperWoW,UnitXP
-    MPPriestHealSaved.SuperWoW = 1
-    MPPriestHealSaved.UnitXP = 1
+    MPPriestHealSaved[config].SuperWoW = 1
+    MPPriestHealSaved[config].UnitXP = 1
 
-    MPPriestHealSaved.Overflow = 0
-    MPPriestHealSaved.PrayerBook = 0
+    MPPriestHealSaved[config].Overflow = 0
+    MPPriestHealSaved[config].PrayerBook = 0
+    MPPriestHealSaved[config].PrayerBook_Value = 0
 
-    MPPriestHealSaved.Desperate_Value = 20
-    MPPriestHealSaved.GreaterHeal_Value = 50
-    MPPriestHealSaved.Shield_Value = 30
-    MPPriestHealSaved.PrayerHealingPartyFirst = 1
-    MPPriestHealSaved.PrayerHealing_Value = 5
+    MPPriestHealSaved[config].Desperate_Value = 20
+    MPPriestHealSaved[config].GreaterHeal_Value = 50
+    MPPriestHealSaved[config].Shield_Value = 30
+    MPPriestHealSaved[config].PrayerHealingPartyFirst = 1
+    MPPriestHealSaved[config].PrayerHealing_Value = 5
 
-    MPPriestHealSaved.RenewMinLevel = 1
-    MPPriestHealSaved.RenewMaxLevel = 10
-    MPPriestHealSaved.FlashHealMinLevel = 1
-    MPPriestHealSaved.FlashHealMaxLevel = 7
-    MPPriestHealSaved.GreaterHealMinLevel = 1
-    MPPriestHealSaved.GreaterHealMaxLevel = 5
+    MPPriestHealSaved[config].RenewMinLevel = 1
+    MPPriestHealSaved[config].RenewMaxLevel = 10
+    MPPriestHealSaved[config].FlashHealMinLevel = 1
+    MPPriestHealSaved[config].FlashHealMaxLevel = 7
+    MPPriestHealSaved[config].GreaterHealMinLevel = 1
+    MPPriestHealSaved[config].GreaterHealMaxLevel = 5
+    MPPriestHealSaved[config].PrayerHealingMinLevel = 1
+    MPPriestHealSaved[config].PrayerHealingMaxLevel = 5
 
     -- 通用
-    MPPriestHealSaved.Power = 0
-    MPPriestHealSaved.Pick = 0
+    MPPriestHealSaved[config].Power = 0
+    MPPriestHealSaved[config].Pick = 0
 
 end
 
 
 function MPInitPriestHealSettingsPart1()
-    checkButton_GreaterHeal:SetChecked(ToBoolean(MPPriestHealSaved.GreaterHeal))
-    checkButton_PrayerHealing:SetChecked(ToBoolean(MPPriestHealSaved.PrayerHealing))
-    checkButton_MoveRenew:SetChecked( ToBoolean(MPPriestHealSaved.MoveRenew) )
-    checkButton_FlashHeal:SetChecked( ToBoolean(MPPriestHealSaved.FlashHeal) )
-    checkButton_DesperatePrayer:SetChecked(ToBoolean(MPPriestHealSaved.DesperatePrayer))
-    checkButton_Shield:SetChecked(ToBoolean(MPPriestHealSaved.Shield))
+    checkButton_GreaterHeal:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].GreaterHeal))
+    checkButton_PrayerHealing:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].PrayerHealing))
+    checkButton_MoveRenew:SetChecked( MPToBoolean(MPPriestHealSaved[ConfigCurrent].MoveRenew) )
+    checkButton_FlashHeal:SetChecked( MPToBoolean(MPPriestHealSaved[ConfigCurrent].FlashHeal) )
+    checkButton_DesperatePrayer:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].DesperatePrayer))
+    checkButton_Shield:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].Shield))
 
-    checkButton_TargetFirst:SetChecked(ToBoolean(MPPriestHealSaved.TargetFirst))
-    checkButton_TargetTarget:SetChecked(ToBoolean(MPPriestHealSaved.TargetTarget))
-    checkButton_SelfFirst:SetChecked(ToBoolean(MPPriestHealSaved.SelfFirst))
-    checkButton_ScanTeam:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam))
-    checkButton_ScanTeam_Low:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Low))
-    checkButton_ScanTeam_Rand:SetChecked(ToBoolean(MPPriestHealSaved.ScanTeam_Rand))
-    checkButton_Tip:SetChecked(ToBoolean(MPPriestHealSaved.Tip))
+    checkButton_TargetFirst:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].TargetFirst))
+    checkButton_TargetTarget:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].TargetTarget))
+    checkButton_SelfFirst:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].SelfFirst))
+    checkButton_ScanTeam:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam))
+    checkButton_ScanTeam_Low:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Low))
+    checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].ScanTeam_Rand))
+    checkButton_Tip:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].Tip))
 
-    checkButton_Overflow:SetChecked(ToBoolean(MPPriestHealSaved.Overflow))
-    checkButton_PrayerBook:SetChecked(ToBoolean(MPPriestHealSaved.PrayerBook))
-    checkButton_PrayerHealingPartyFirst:SetChecked(ToBoolean(MPPriestHealSaved.PrayerHealingPartyFirst))
+    checkButton_Overflow:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].Overflow))
+    checkButton_PrayerBook:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].PrayerBook))
+    checkButton_PrayerHealingPartyFirst:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].PrayerHealingPartyFirst))
 
-    checkButton_Power:SetChecked(ToBoolean(MPPriestHealSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPPriestHealSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].Pick))
 end
 
 
 function MPInitPriestHealSettings()
     if not MPPriestHealSaved then
         MPPriestHealSaved = {}
-        MPResetPriestHealSettings()
+
+        -- 第一套配置
+        if not MPPriestHealSaved[1] then
+            MPPriestHealSaved[1] = {}
+            MPResetPriestHealSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPPriestHealSaved[2] then
+            MPPriestHealSaved[2] = {}
+            MPResetPriestHealSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPPriestHealSaved[3] then
+            MPPriestHealSaved[3] = {}
+            MPResetPriestHealSettings(3)
+        end
     end
 
     if MPPriestHealSaved.Version ~= PriestHealSettingsUIVersion then
-        MPResetPriestHealSettings()
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[神牧宏]当前配置，这是新版插件正常数据更新！|r")
+        MPPriestHealSaved[1] = {}
+        MPPriestHealSaved[2] = {}
+        MPPriestHealSaved[3] = {}
+        MPResetPriestHealSettings(1)
+        MPResetPriestHealSettings(2)
+        MPResetPriestHealSettings(3)
     end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
 
     MPInitPriestHealSettingsPart1()
 
 
-    checkButton_HealthStone:SetChecked(ToBoolean(MPPriestHealSaved.HealthStone))
-    slider_HealthStone:SetValue(MPPriestHealSaved.HealthStone_Value)
-    if MPPriestHealSaved.HealthStone==1 then
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPPriestHealSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPPriestHealSaved[ConfigCurrent].HealthStone_Value)
+    if MPPriestHealSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPPriestHealSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPPriestHealSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPPriestHealSaved.HerbalTea_Value)
-    if MPPriestHealSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPPriestHealSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPPriestHealSaved[ConfigCurrent].HerbalTea_Value)
+    if MPPriestHealSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_HerbalTea:SetChecked(MPPriestHealSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPPriestHealSaved.HerbalTea_Value)
-    if MPPriestHealSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPPriestHealSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPPriestHealSaved[ConfigCurrent].HerbalTea_Value)
+    if MPPriestHealSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPPriestHealSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
-    checkButton_HerbalTeaMana:SetChecked(MPPriestHealSaved.HerbalTeaMana)
-    slider_HerbalTeaMana:SetValue(MPPriestHealSaved.HerbalTeaMana_Value)
-    if MPPriestHealSaved.HerbalTeaMana==1 then
+    checkButton_HerbalTeaMana:SetChecked(MPPriestHealSaved[ConfigCurrent].HerbalTeaMana)
+    slider_HerbalTeaMana:SetValue(MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value)
+    if MPPriestHealSaved[ConfigCurrent].HerbalTeaMana==1 then
         color_HerbalTeaMana = "|cFFFFD100"
     else
         color_HerbalTeaMana = "|cFF888888"
     end
-    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved.HerbalTeaMana_Value .."%|r")
+    _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPPriestHealSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 
-    slider_GreaterHeal_Value:SetValue(MPPriestHealSaved.GreaterHeal_Value)
-    slider_Desperate_Value:SetValue(MPPriestHealSaved.Desperate_Value)
+    slider_GreaterHeal_Value:SetValue(MPPriestHealSaved[ConfigCurrent].GreaterHeal_Value)
+    slider_Desperate_Value:SetValue(MPPriestHealSaved[ConfigCurrent].Desperate_Value)
 
-    slider_Begin_Value:SetValue(MPPriestHealSaved.Begin_Value)
-    slider_Shield_Value:SetValue(MPPriestHealSaved.Shield_Value)
+    slider_Begin_Value:SetValue(MPPriestHealSaved[ConfigCurrent].Begin_Value)
+    slider_Shield_Value:SetValue(MPPriestHealSaved[ConfigCurrent].Shield_Value)
 
-    slider_RenewMinLevel:SetValue(MPPriestHealSaved.RenewMinLevel)
-    slider_RenewMaxLevel:SetValue(MPPriestHealSaved.RenewMaxLevel)
-    slider_FlashHealMinLevel:SetValue(MPPriestHealSaved.FlashHealMinLevel)
-    slider_FlashHealMaxLevel:SetValue(MPPriestHealSaved.FlashHealMaxLevel)
-    slider_GreaterHealMinLevel:SetValue(MPPriestHealSaved.GreaterHealMinLevel)
-    slider_GreaterHealMaxLevel:SetValue(MPPriestHealSaved.GreaterHealMaxLevel)
+    slider_RenewMinLevel:SetValue(MPPriestHealSaved[ConfigCurrent].RenewMinLevel)
+    slider_RenewMaxLevel:SetValue(MPPriestHealSaved[ConfigCurrent].RenewMaxLevel)
+    slider_FlashHealMinLevel:SetValue(MPPriestHealSaved[ConfigCurrent].FlashHealMinLevel)
+    slider_FlashHealMaxLevel:SetValue(MPPriestHealSaved[ConfigCurrent].FlashHealMaxLevel)
+    slider_GreaterHealMinLevel:SetValue(MPPriestHealSaved[ConfigCurrent].GreaterHealMinLevel)
+    slider_GreaterHealMaxLevel:SetValue(MPPriestHealSaved[ConfigCurrent].GreaterHealMaxLevel)
+    slider_PrayerHealingMinLevel:SetValue(MPPriestHealSaved[ConfigCurrent].PrayerHealingMinLevel)
+    slider_PrayerHealingMaxLevel:SetValue(MPPriestHealSaved[ConfigCurrent].PrayerHealingMaxLevel)
 
-    slider_PrayerHealing_Value:SetValue(MPPriestHealSaved.PrayerHealing_Value)
+    slider_PrayerHealing_Value:SetValue(MPPriestHealSaved[ConfigCurrent].PrayerHealing_Value)
 
 end
 

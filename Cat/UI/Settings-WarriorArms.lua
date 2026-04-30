@@ -2,9 +2,10 @@
 -- 定义插件名称
 local ADDON_NAME = "Settings-WarriorArms"
 
+local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsWarriorArms = MPCreateFrame(ADDON_NAME.."Frame", 520, 600, "|cFFC79C6E设置 - 武器战|r")
+CatUISettingsWarriorArms = MPCreateFrame(ADDON_NAME.."Frame", 520, 640, "|cFFC79C6E设置 - 武器战|r")
 
 local postion_y = -50
 
@@ -19,30 +20,17 @@ TipText:SetText(MPLanguage.UI_Set_BasicConfig)
 
 
 
-
-
-
 local postion_y = postion_y-40
 
 
 -- 创建单选框 - 狂暴姿态
-local checkButton_BerserkerStance = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_BerserkerStance:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_BerserkerStance:SetScale(0.8)
-
--- 添加文字标签
-local checkText_BerserkerStance = checkButton_BerserkerStance:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_BerserkerStance:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_BerserkerStance:SetTextColor(1, 1, 1)
-checkText_BerserkerStance:SetPoint("LEFT", checkButton_BerserkerStance, "LEFT", 34, 1)
-checkText_BerserkerStance:SetText("保持 狂暴姿态")
-
+local checkButton_BerserkerStance = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "保持 狂暴姿态")
 -- 设置点击事件
 checkButton_BerserkerStance:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.BerserkerStance = 1
+        MPWarriorArmsSaved[ConfigCurrent].BerserkerStance = 1
     else
-        MPWarriorArmsSaved.BerserkerStance = 0
+        MPWarriorArmsSaved[ConfigCurrent].BerserkerStance = 0
     end
 end)
 
@@ -51,32 +39,21 @@ end)
 
 
 -- 创建单选框 - 上方饰品
-local checkButton_Trinket_Upper = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Trinket_Upper:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Upper:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Upper = checkButton_Trinket_Upper:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Upper:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Upper:SetTextColor(1, 1, 1)
-checkText_Trinket_Upper:SetPoint("LEFT", checkButton_Trinket_Upper, "LEFT", 34, 1)
-checkText_Trinket_Upper:SetText("自动开启饰品(上)")
-
+local checkButton_Trinket_Upper = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(上)")
 -- 设置点击事件
 checkButton_Trinket_Upper:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Trinket_Upper = 1
+        MPWarriorArmsSaved[ConfigCurrent].Trinket_Upper = 1
     else
-        MPWarriorArmsSaved.Trinket_Upper = 0
+        MPWarriorArmsSaved[ConfigCurrent].Trinket_Upper = 0
     end
 end)
-
 local checkButton_TUBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TUBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.TUBoss = 1
+        MPWarriorArmsSaved[ConfigCurrent].TUBoss = 1
     else
-        MPWarriorArmsSaved.TUBoss = 0
+        MPWarriorArmsSaved[ConfigCurrent].TUBoss = 0
     end
 end)
 
@@ -86,54 +63,33 @@ postion_y = postion_y-30
 
 
 -- 创建单选框 - 战斗怒吼
-local checkButton_BattleShout = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_BattleShout:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_BattleShout:SetScale(0.8)
-
--- 添加文字标签
-local checkText_BattleShout = checkButton_BattleShout:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_BattleShout:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_BattleShout:SetTextColor(1, 1, 1)
-checkText_BattleShout:SetPoint("LEFT", checkButton_BattleShout, "LEFT", 34, 1)
-checkText_BattleShout:SetText("保持 战斗怒吼")
-
+local checkButton_BattleShout = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "保持 战斗怒吼")
 -- 设置点击事件
 checkButton_BattleShout:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.BattleShout = 1
+        MPWarriorArmsSaved[ConfigCurrent].BattleShout = 1
     else
-        MPWarriorArmsSaved.BattleShout = 0
+        MPWarriorArmsSaved[ConfigCurrent].BattleShout = 0
     end
 end)
 
 
 -- 创建单选框 - 下方饰品
-local checkButton_Trinket_Below = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Trinket_Below:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Trinket_Below:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Trinket_Below = checkButton_Trinket_Below:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Trinket_Below:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Trinket_Below:SetTextColor(1, 1, 1)
-checkText_Trinket_Below:SetPoint("LEFT", checkButton_Trinket_Below, "LEFT", 34, 1)
-checkText_Trinket_Below:SetText("自动开启饰品(下)")
-
+local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
 -- 设置点击事件
 checkButton_Trinket_Below:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Trinket_Below = 1
+        MPWarriorArmsSaved[ConfigCurrent].Trinket_Below = 1
     else
-        MPWarriorArmsSaved.Trinket_Below = 0
+        MPWarriorArmsSaved[ConfigCurrent].Trinket_Below = 0
     end
 end)
-
 local checkButton_TBBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_TBBoss:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.TBBoss = 1
+        MPWarriorArmsSaved[ConfigCurrent].TBBoss = 1
     else
-        MPWarriorArmsSaved.TBBoss = 0
+        MPWarriorArmsSaved[ConfigCurrent].TBBoss = 0
     end
 end)
 
@@ -142,69 +98,39 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 血性狂暴
-local checkButton_BerserkerRage = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_BerserkerRage:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_BerserkerRage:SetScale(0.8)
-
--- 添加文字标签
-local checkText_BerserkerRage = checkButton_BerserkerRage:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_BerserkerRage:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_BerserkerRage:SetTextColor(1, 1, 1)
-checkText_BerserkerRage:SetPoint("LEFT", checkButton_BerserkerRage, "LEFT", 34, 1)
-checkText_BerserkerRage:SetText("开启 血性狂暴")
-
+local checkButton_BerserkerRage = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 血性狂暴")
 -- 设置点击事件
 checkButton_BerserkerRage:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.BerserkerRage = 1
+        MPWarriorArmsSaved[ConfigCurrent].BerserkerRage = 1
     else
-        MPWarriorArmsSaved.BerserkerRage = 0
+        MPWarriorArmsSaved[ConfigCurrent].BerserkerRage = 0
     end
 end)
 
 
 
 -- 创建单选框 - 自动锁敌
-local checkButton_Target = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Target:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Target:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Target = checkButton_Target:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Target:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Target:SetTextColor(1, 1, 1)
-checkText_Target:SetPoint("LEFT", checkButton_Target, "LEFT", 34, 1)
-checkText_Target:SetText("自动锁敌 (攻击最近的敌人)")
-
+local checkButton_Target = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动锁敌 (攻击最近的敌人)")
 -- 设置点击事件
 checkButton_Target:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Target = 1
+        MPWarriorArmsSaved[ConfigCurrent].Target = 1
     else
-        MPWarriorArmsSaved.Target = 0
+        MPWarriorArmsSaved[ConfigCurrent].Target = 0
     end
 end)
 
 postion_y = postion_y-30
 
 -- 创建单选框 - 旋风斩
-local checkButton_Whirlwind = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Whirlwind:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_Whirlwind:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Whirlwind = checkButton_Whirlwind:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Whirlwind:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Whirlwind:SetTextColor(1, 1, 1)
-checkText_Whirlwind:SetPoint("LEFT", checkButton_Whirlwind, "LEFT", 34, 1)
-checkText_Whirlwind:SetText("开启 旋风斩")
-
+local checkButton_Whirlwind = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 旋风斩")
 -- 设置点击事件
 checkButton_Whirlwind:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Whirlwind = 1
+        MPWarriorArmsSaved[ConfigCurrent].Whirlwind = 1
     else
-        MPWarriorArmsSaved.Whirlwind = 0
+        MPWarriorArmsSaved[ConfigCurrent].Whirlwind = 0
     end
 end)
 
@@ -212,16 +138,7 @@ end)
 
 
 -- 创建单选框 - 单体/群体
-local checkButton_NearbyEnemies = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_NearbyEnemies:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_NearbyEnemies:SetScale(0.8)
-
--- 添加文字标签
-local checkText_NearbyEnemies = checkButton_NearbyEnemies:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_NearbyEnemies:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_NearbyEnemies:SetTextColor(1, 1, 1)
-checkText_NearbyEnemies:SetPoint("LEFT", checkButton_NearbyEnemies, "LEFT", 34, 1)
-checkText_NearbyEnemies:SetText("自动 单体/群体")
+local checkButton_NearbyEnemies = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 单体/群体")
 
 local slider_NearbyEnemies_Value = CreateFrame("Slider", ADDON_NAME.."Slider_NearbyEnemies_Value", checkButton_NearbyEnemies, "OptionsSliderTemplate")
 slider_NearbyEnemies_Value:SetPoint("RIGHT", checkButton_NearbyEnemies, "RIGHT", 250, -2)
@@ -236,26 +153,23 @@ MPCatUISliderRegionHide(slider_NearbyEnemies_Value)
 
 local color_NearbyEnemies = "|cFFFFD100"
 
-_G[slider_NearbyEnemies_Value:GetName().."Low"]:Hide()
-_G[slider_NearbyEnemies_Value:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_NearbyEnemies_Value:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPWarriorArmsSaved.NearbyEnemies_Value = arg1
-    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved.NearbyEnemies_Value .."码|r")
+    MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value = arg1
+    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value .."码|r")
 end)
 
 -- 设置点击事件
 checkButton_NearbyEnemies:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.NearbyEnemies = 1
+        MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies = 1
         color_NearbyEnemies = "|cFFFFD100"
-        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved.NearbyEnemies_Value .."码|r")
+        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value .."码|r")
     else
-        MPWarriorArmsSaved.NearbyEnemies = 0
+        MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies = 0
         color_NearbyEnemies = "|cFF888888"
-        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved.NearbyEnemies_Value .."码|r")
+        _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value .."码|r")
     end
 end)
 
@@ -264,23 +178,13 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 斩杀
-local checkButton_UseExecute = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_UseExecute:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_UseExecute:SetScale(0.8)
-
--- 添加文字标签
-local checkText_UseExecute = checkButton_UseExecute:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_UseExecute:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_UseExecute:SetTextColor(1, 1, 1)
-checkText_UseExecute:SetPoint("LEFT", checkButton_UseExecute, "LEFT", 34, 1)
-checkText_UseExecute:SetText("开启 斩杀")
-
+local checkButton_UseExecute = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 斩杀")
 -- 设置点击事件
 checkButton_UseExecute:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.UseExecute = 1
+        MPWarriorArmsSaved[ConfigCurrent].UseExecute = 1
     else
-        MPWarriorArmsSaved.UseExecute = 0
+        MPWarriorArmsSaved[ConfigCurrent].UseExecute = 0
     end
 end)
 
@@ -288,23 +192,13 @@ end)
 postion_y = postion_y-30
 
 -- 创建单选框 - 冲锋/拦截
-local checkButton_Charge = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Charge:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_Charge:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Charge = checkButton_Charge:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Charge:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Charge:SetTextColor(1, 1, 1)
-checkText_Charge:SetPoint("LEFT", checkButton_Charge, "LEFT", 34, 1)
-checkText_Charge:SetText("开启 冲锋/拦截 (谨慎使用)")
-
+local checkButton_Charge = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 冲锋/拦截 (谨慎使用)")
 -- 设置点击事件
 checkButton_Charge:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Charge = 1
+        MPWarriorArmsSaved[ConfigCurrent].Charge = 1
     else
-        MPWarriorArmsSaved.Charge = 0
+        MPWarriorArmsSaved[ConfigCurrent].Charge = 0
     end
 end)
 
@@ -330,17 +224,7 @@ postion_y = postion_y-85
 
 
 -- 创建单选框 - 横扫
-local checkButton_Sweeping = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Sweeping:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_Sweeping:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Sweeping = checkButton_Sweeping:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Sweeping:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-checkText_Sweeping:SetTextColor(1, 1, 1)
-checkText_Sweeping:SetPoint("LEFT", checkButton_Sweeping, "LEFT", 34, 1)
-checkText_Sweeping:SetText("自动 横扫 \n(SuperWoW)")
-
+local checkButton_Sweeping = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "自动 横扫 \n(SuperWoW)")
 
 local slider_Sweeping = CreateFrame("Slider", ADDON_NAME.."Slider_Sweeping", checkButton_Sweeping, "OptionsSliderTemplate")
 slider_Sweeping:SetPoint("RIGHT", checkButton_Sweeping, "RIGHT", 244, -2)
@@ -355,44 +239,30 @@ MPCatUISliderRegionHide(slider_Sweeping)
 
 local color_Sweeping = "|cFFFFD100"
 
-_G[slider_Sweeping:GetName().."Text"]:SetText("")
-_G[slider_Sweeping:GetName().."Low"]:Hide()
-_G[slider_Sweeping:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_Sweeping:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPWarriorArmsSaved.Sweeping_Value = arg1
+    MPWarriorArmsSaved[ConfigCurrent].Sweeping_Value = arg1
     _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. arg1)
 end)
 
 -- 设置点击事件
 checkButton_Sweeping:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Sweeping = 1
+        MPWarriorArmsSaved[ConfigCurrent].Sweeping = 1
         color_Sweeping = "|cFFFFD100"
-        _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved.Sweeping_Value)
+        _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Sweeping_Value)
     else
-        MPWarriorArmsSaved.Sweeping = 0
+        MPWarriorArmsSaved[ConfigCurrent].Sweeping = 0
         color_Sweeping = "|cFF888888"
-        _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved.Sweeping_Value)
+        _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Sweeping_Value)
     end
 end)
 
 
 
 -- 创建单选框 - 治疗石
-local checkButton_HealthStone = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_HealthStone:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_HealthStone:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HealthStone = checkButton_HealthStone:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HealthStone:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HealthStone:SetTextColor(1, 1, 1)
-checkText_HealthStone:SetPoint("LEFT", checkButton_HealthStone, "LEFT", 34, 1)
-checkText_HealthStone:SetText("自动 治疗石")
-
+local checkButton_HealthStone = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 治疗石")
 
 local slider_HealthStone = CreateFrame("Slider", ADDON_NAME.."Slider_HealthStone", checkButton_HealthStone, "OptionsSliderTemplate")
 slider_HealthStone:SetPoint("RIGHT", checkButton_HealthStone, "RIGHT", 250, -2)
@@ -407,27 +277,23 @@ MPCatUISliderRegionHide(slider_HealthStone)
 
 local color_HealthStone = "|cFFFFD100"
 
-_G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: 30%|r")
-_G[slider_HealthStone:GetName().."Low"]:Hide()
-_G[slider_HealthStone:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_HealthStone:SetScript("OnValueChanged", function()
     --print("HealthStone当前值:", arg1)
-    MPWarriorArmsSaved.HealthStone_Value = arg1
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved.HealthStone_Value .."%|r")
+    MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value = arg1
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HealthStone:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.HealthStone = 1
+        MPWarriorArmsSaved[ConfigCurrent].HealthStone = 1
         color_HealthStone = "|cFFFFD100"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value .."%|r")
     else
-        MPWarriorArmsSaved.HealthStone = 0
+        MPWarriorArmsSaved[ConfigCurrent].HealthStone = 0
         color_HealthStone = "|cFF888888"
-        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved.HealthStone_Value .."%|r")
+        _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value .."%|r")
     end
 end)
 
@@ -437,17 +303,7 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 压制
-local checkButton_Overpower = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Overpower:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_Overpower:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Overpower = checkButton_Overpower:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Overpower:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Overpower:SetTextColor(1, 1, 1)
-checkText_Overpower:SetPoint("LEFT", checkButton_Overpower, "LEFT", 34, 1)
-checkText_Overpower:SetText("自动 压制")
-
+local checkButton_Overpower = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "自动 压制")
 
 local slider_Overpower = CreateFrame("Slider", ADDON_NAME.."Slider_Overpower", checkButton_Overpower, "OptionsSliderTemplate")
 slider_Overpower:SetPoint("RIGHT", checkButton_Overpower, "RIGHT", 244, -2)
@@ -462,43 +318,29 @@ MPCatUISliderRegionHide(slider_Overpower)
 
 local color_Overpower = "|cFFFFD100"
 
-_G[slider_Overpower:GetName().."Text"]:SetText("")
-_G[slider_Overpower:GetName().."Low"]:Hide()
-_G[slider_Overpower:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_Overpower:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPWarriorArmsSaved.Overpower_Value = arg1
+    MPWarriorArmsSaved[ConfigCurrent].Overpower_Value = arg1
     _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. arg1)
 end)
 
 -- 设置点击事件
 checkButton_Overpower:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Overpower = 1
+        MPWarriorArmsSaved[ConfigCurrent].Overpower = 1
         color_Overpower = "|cFFFFD100"
-        _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved.Overpower_Value)
+        _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Overpower_Value)
     else
-        MPWarriorArmsSaved.Overpower = 0
+        MPWarriorArmsSaved[ConfigCurrent].Overpower = 0
         color_Overpower = "|cFF888888"
-        _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved.Overpower_Value)
+        _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Overpower_Value)
     end
 end)
 
 
 -- 创建单选框 - 草药茶
-local checkButton_HerbalTea = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_HerbalTea:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_HerbalTea:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HerbalTea = checkButton_HerbalTea:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HerbalTea:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HerbalTea:SetTextColor(1, 1, 1)
-checkText_HerbalTea:SetPoint("LEFT", checkButton_HerbalTea, "LEFT", 34, 1)
-checkText_HerbalTea:SetText("自动 草药茶")
-
+local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
 
 local slider_HerbalTea = CreateFrame("Slider", ADDON_NAME.."Slider_HerbalTea", checkButton_HerbalTea, "OptionsSliderTemplate")
 slider_HerbalTea:SetPoint("RIGHT", checkButton_HerbalTea, "RIGHT", 250, -2)
@@ -513,27 +355,23 @@ MPCatUISliderRegionHide(slider_HerbalTea)
 
 local color_HerbalTea = "|cFFFFD100"
 
-_G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: 20%|r")
-_G[slider_HerbalTea:GetName().."Low"]:Hide()
-_G[slider_HerbalTea:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_HerbalTea:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPWarriorArmsSaved.HerbalTea_Value = arg1
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved.HerbalTea_Value .."%|r")
+    MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value = arg1
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_HerbalTea:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.HerbalTea = 1
+        MPWarriorArmsSaved[ConfigCurrent].HerbalTea = 1
         color_HerbalTea = "|cFFFFD100"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     else
-        MPWarriorArmsSaved.HerbalTea = 0
+        MPWarriorArmsSaved[ConfigCurrent].HerbalTea = 0
         color_HerbalTea = "|cFF888888"
-        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved.HerbalTea_Value .."%|r")
+        _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value .."%|r")
     end
 end)
 
@@ -548,58 +386,38 @@ postion_y = postion_y -40
 
 
 -- 破甲
-local checkButton_SunderArmor = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_SunderArmor:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_SunderArmor:SetScale(0.8)
-
--- 添加文字标签
-local checkText_SunderArmor = checkButton_SunderArmor:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_SunderArmor:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_SunderArmor:SetTextColor(1, 1, 1)
-checkText_SunderArmor:SetPoint("LEFT", checkButton_SunderArmor, "LEFT", 34, 1)
-checkText_SunderArmor:SetText("自动 破甲")
-
+local checkButton_SunderArmor = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "自动 破甲")
 -- 设置点击事件
 checkButton_SunderArmor:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.SunderArmor = 1
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmor = 1
     else
-        MPWarriorArmsSaved.SunderArmor = 0
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmor = 0
     end
 end)
 
 local checkButton_SunderArmorBOSS = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 140, postion_y, MPLanguage.UI_Set_BossOnly)
 checkButton_SunderArmorBOSS:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.SunderArmorBOSS = 1
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmorBOSS = 1
     else
-        MPWarriorArmsSaved.SunderArmorBOSS = 0
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmorBOSS = 0
     end
 end)
 
 local checkButton_SunderArmorOnce = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 240, postion_y, "一破")
 checkButton_SunderArmorOnce:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.SunderArmorOnce = 1
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmorOnce = 1
     else
-        MPWarriorArmsSaved.SunderArmorOnce = 0
+        MPWarriorArmsSaved[ConfigCurrent].SunderArmorOnce = 0
     end
 end)
 
 
 
 -- 创建单选框 - 鞭根块茎
-local checkButton_Carrot = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Carrot:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Carrot:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Carrot = checkButton_Carrot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Carrot:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Carrot:SetTextColor(1, 1, 1)
-checkText_Carrot:SetPoint("LEFT", checkButton_Carrot, "LEFT", 34, 1)
-checkText_Carrot:SetText("自动 鞭根块茎")
-
+local checkButton_Carrot = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 鞭根块茎")
 
 local slider_Carrot = CreateFrame("Slider", ADDON_NAME.."Slider_Carrot", checkButton_Carrot, "OptionsSliderTemplate")
 slider_Carrot:SetPoint("RIGHT", checkButton_Carrot, "RIGHT", 250, -2)
@@ -614,27 +432,23 @@ MPCatUISliderRegionHide(slider_Carrot)
 
 local color_Carrot = "|cFFFFD100"
 
-_G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: 20%|r")
-_G[slider_Carrot:GetName().."Low"]:Hide()
-_G[slider_Carrot:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_Carrot:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPWarriorArmsSaved.Carrot_Value = arg1
-    _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved.Carrot_Value .."%|r")
+    MPWarriorArmsSaved[ConfigCurrent].Carrot_Value = arg1
+    _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].Carrot_Value .."%|r")
 end)
 
 -- 设置点击事件
 checkButton_Carrot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Carrot = 1
+        MPWarriorArmsSaved[ConfigCurrent].Carrot = 1
         color_Carrot = "|cFFFFD100"
-        _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].Carrot_Value .."%|r")
     else
-        MPWarriorArmsSaved.Carrot = 0
+        MPWarriorArmsSaved[ConfigCurrent].Carrot = 0
         color_Carrot = "|cFF888888"
-        _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved.Carrot_Value .."%|r")
+        _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].Carrot_Value .."%|r")
     end
 end)
 
@@ -651,68 +465,33 @@ end)
 postion_y = postion_y-40
 
 -- 创建单选框 - 斩杀嵌入主技能
-local checkButton_ExecuteWithMortal = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_ExecuteWithMortal:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_ExecuteWithMortal:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ExecuteWithMortal = checkButton_ExecuteWithMortal:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ExecuteWithMortal:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ExecuteWithMortal:SetTextColor(1, 1, 1)
-checkText_ExecuteWithMortal:SetPoint("LEFT", checkButton_ExecuteWithMortal, "LEFT", 34, 1)
-checkText_ExecuteWithMortal:SetText("开启 斩杀期嵌入主技能")
-
+local checkButton_ExecuteWithMortal = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 斩杀期嵌入猛击")
 -- 设置点击事件
 checkButton_ExecuteWithMortal:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.ExecuteWithMortal = 1
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteWithMortal = 1
     else
-        MPWarriorArmsSaved.ExecuteWithMortal = 0
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteWithMortal = 0
     end
 end)
 
---[[
--- 创建单选框 - 断筋
-local checkButton_Hamstring = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Hamstring:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_Hamstring:SetScale(0.8)
-checkButton_Hamstring:Hide()
-
--- 添加文字标签
-local checkText_Hamstring = checkButton_Hamstring:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Hamstring:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Hamstring:SetTextColor(1, 1, 1)
-checkText_Hamstring:SetPoint("LEFT", checkButton_Hamstring, "LEFT", 34, 1)
-checkText_Hamstring:SetText("开启 断筋加入循环 (狂暴系)")
-
--- 设置点击事件
-checkButton_Hamstring:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPWarriorArmsSaved.Hamstring = 1
-    else
-        MPWarriorArmsSaved.Hamstring = 0
-    end
-end)
-]]
 
 -- 魂能之速
-local checkButton_Soulspeed = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Soulspeed:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Soulspeed:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Soulspeed = checkButton_Soulspeed:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Soulspeed:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Soulspeed:SetTextColor(1, 1, 1)
-checkText_Soulspeed:SetPoint("LEFT", checkButton_Soulspeed, "LEFT", 34, 1)
-checkText_Soulspeed:SetText("自动 魂能之速 (BOSS时)")
-
+local checkButton_Soulspeed = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 魂能之速")
 -- 设置点击事件
 checkButton_Soulspeed:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Soulspeed = 1
+        MPWarriorArmsSaved[ConfigCurrent].Soulspeed = 1
     else
-        MPWarriorArmsSaved.Soulspeed = 0
+        MPWarriorArmsSaved[ConfigCurrent].Soulspeed = 0
+    end
+end)
+local checkButton_SoulspeedBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_SoulspeedBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPWarriorArmsSaved[ConfigCurrent].SoulspeedBoss = 1
+    else
+        MPWarriorArmsSaved[ConfigCurrent].SoulspeedBoss = 0
     end
 end)
 
@@ -723,46 +502,32 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 斩杀周围目标
-local checkButton_ExecuteOtherTarget = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_ExecuteOtherTarget:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_ExecuteOtherTarget:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ExecuteOtherTarget = checkButton_ExecuteOtherTarget:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ExecuteOtherTarget:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ExecuteOtherTarget:SetTextColor(1, 1, 1)
-checkText_ExecuteOtherTarget:SetPoint("LEFT", checkButton_ExecuteOtherTarget, "LEFT", 34, 1)
-checkText_ExecuteOtherTarget:SetText("开启 斩杀周围目标 (SuperWoW)")
-
+local checkButton_ExecuteOtherTarget = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 斩杀周围目标 (SuperWoW)")
 -- 设置点击事件
 checkButton_ExecuteOtherTarget:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.ExecuteOtherTarget = 1
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteOtherTarget = 1
     else
-        MPWarriorArmsSaved.ExecuteOtherTarget = 0
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteOtherTarget = 0
     end
 end)
 
-
--- 创建单选框 - 死亡之愿
-local checkButton_DeathWish = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_DeathWish:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_DeathWish:SetScale(0.8)
-checkButton_DeathWish:Hide()
-
--- 添加文字标签
-local checkText_DeathWish = checkButton_DeathWish:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_DeathWish:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_DeathWish:SetTextColor(1, 1, 1)
-checkText_DeathWish:SetPoint("LEFT", checkButton_DeathWish, "LEFT", 34, 1)
-checkText_DeathWish:SetText("自动 死亡之愿")
-
+-- 创建单选框 - 种族天赋
+local checkButton_RacialTraits = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 种族天赋")
 -- 设置点击事件
-checkButton_DeathWish:SetScript("OnClick", function(self)
+checkButton_RacialTraits:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.DeathWish = 1
+        MPWarriorArmsSaved[ConfigCurrent].RacialTraits = 1
     else
-        MPWarriorArmsSaved.DeathWish = 0
+        MPWarriorArmsSaved[ConfigCurrent].RacialTraits = 0
+    end
+end)
+local checkButton_RacialTraitsBoss = MPCreateCheckButtonSmall(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 520, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_RacialTraitsBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPWarriorArmsSaved[ConfigCurrent].RacialTraitsBoss = 1
+    else
+        MPWarriorArmsSaved[ConfigCurrent].RacialTraitsBoss = 0
     end
 end)
 
@@ -771,25 +536,27 @@ postion_y = postion_y-40
 
 
 -- 创建单选框 - 小怪断条猛击斩杀
-local checkButton_ExecuteWithoutMonster = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_ExecuteWithoutMonster:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_ExecuteWithoutMonster:SetScale(0.8)
-
--- 添加文字标签
-local checkText_ExecuteWithoutMonster = checkButton_ExecuteWithoutMonster:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_ExecuteWithoutMonster:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_ExecuteWithoutMonster:SetTextColor(1, 1, 1)
-checkText_ExecuteWithoutMonster:SetPoint("LEFT", checkButton_ExecuteWithoutMonster, "LEFT", 34, 1)
-checkText_ExecuteWithoutMonster:SetText("开启 小怪断猛击 打斩杀")
-
+local checkButton_ExecuteWithoutMonster = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "开启 小怪断猛击 打斩杀")
 -- 设置点击事件
 checkButton_ExecuteWithoutMonster:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.ExecuteWithoutMonster = 1
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteWithoutMonster = 1
     else
-        MPWarriorArmsSaved.ExecuteWithoutMonster = 0
+        MPWarriorArmsSaved[ConfigCurrent].ExecuteWithoutMonster = 0
     end
 end)
+
+-- 创建单选框 - 自动打断
+local checkButton_Interrupt = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, postion_y, "自动 打断读条 (SuperWoW)")
+-- 设置点击事件
+checkButton_Interrupt:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPWarriorArmsSaved[ConfigCurrent].Interrupt = 1
+    else
+        MPWarriorArmsSaved[ConfigCurrent].Interrupt = 0
+    end
+end)
+
 
 
 postion_y = postion_y - 40
@@ -797,52 +564,38 @@ postion_y = postion_y - 40
 
 
 -- 创建单选框 - 英勇/顺劈
-local checkButton_HeroicStrike = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_HeroicStrike:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
-checkButton_HeroicStrike:SetScale(0.8)
-
--- 添加文字标签
-local checkText_HeroicStrike = checkButton_HeroicStrike:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_HeroicStrike:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_HeroicStrike:SetTextColor(1, 1, 1)
-checkText_HeroicStrike:SetPoint("LEFT", checkButton_HeroicStrike, "LEFT", 34, 1)
-checkText_HeroicStrike:SetText("英勇/顺劈")
-
+local checkButton_HeroicStrike = MPCreateCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, postion_y, "强制英勇怒气")
 
 local slider_HeroicStrike = CreateFrame("Slider", ADDON_NAME.."Slider_HeroicStrike", checkButton_HeroicStrike, "OptionsSliderTemplate")
-slider_HeroicStrike:SetPoint("RIGHT", checkButton_HeroicStrike, "RIGHT", 244, -2)
-slider_HeroicStrike:SetWidth(160) -- 拖动条长度
+slider_HeroicStrike:SetPoint("RIGHT", checkButton_HeroicStrike, "RIGHT", 254, -2)
+slider_HeroicStrike:SetWidth(140) -- 拖动条长度
 slider_HeroicStrike:SetHeight(16) -- 拖动条高度
 
 -- 设置数值范围（最小值0，最大值100，步长1）
-slider_HeroicStrike:SetMinMaxValues(10, 100)
+slider_HeroicStrike:SetMinMaxValues(10, 90)
 slider_HeroicStrike:SetValueStep(1)
 slider_HeroicStrike:SetValue(50) -- 默认值
 MPCatUISliderRegionHide(slider_HeroicStrike)
 
 local color_HeroicStrike = "|cFFFFD100"
 
-_G[slider_HeroicStrike:GetName().."Text"]:SetText("")
-_G[slider_HeroicStrike:GetName().."Low"]:Hide()
-_G[slider_HeroicStrike:GetName().."High"]:Hide()
-
 -- 值变化时的回调函数
 slider_HeroicStrike:SetScript("OnValueChanged", function()
     --print("HerbalTea当前值:", arg1)
-    MPWarriorArmsSaved.HeroicStrike_Value = arg1
+    MPWarriorArmsSaved[ConfigCurrent].HeroicStrike_Value = arg1
     _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. arg1)
 end)
 
 -- 设置点击事件
 checkButton_HeroicStrike:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.HeroicStrike = 1
+        MPWarriorArmsSaved[ConfigCurrent].HeroicStrike = 1
         color_HeroicStrike = "|cFFFFD100"
-        _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved.HeroicStrike_Value)
+        _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved[ConfigCurrent].HeroicStrike_Value)
     else
-        MPWarriorArmsSaved.HeroicStrike = 0
+        MPWarriorArmsSaved[ConfigCurrent].HeroicStrike = 0
         color_HeroicStrike = "|cFF888888"
-        _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved.HeroicStrike_Value)
+        _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved[ConfigCurrent].HeroicStrike_Value)
     end
 end)
 
@@ -857,91 +610,39 @@ slider_Slam:SetHeight(16) -- 拖动条高度
 
 slider_Slam:SetMinMaxValues(0.5, 3)
 slider_Slam:SetValueStep(0.1)
-slider_Slam:SetValue(1.1) -- 默认值
+slider_Slam:SetValue(5) -- 默认值
 MPCatUISliderRegionHide(slider_Slam)
-
-_G[slider_Slam:GetName().."Text"]:SetText("")
-_G[slider_Slam:GetName().."Low"]:Hide()
-_G[slider_Slam:GetName().."High"]:Hide()
 
 -- 值变化时的回调函数
 slider_Slam:SetScript("OnValueChanged", function()
-    MPWarriorArmsSaved.Slam_Value = arg1
+    MPWarriorArmsSaved[ConfigCurrent].Slam_Value = arg1
 
     _G[slider_Slam:GetName().."Text"]:SetText("猛击 >"..string.format("%.1f", arg1).."秒 下一次普攻前")
 end)
 
 
 
+postion_y = postion_y-60
 
+-- 猛击节点
+local slider_ExecutePower = CreateFrame("Slider", ADDON_NAME.."SliderExecutePower", CatUISettingsWarriorArms, "OptionsSliderTemplate")
+slider_ExecutePower:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 20, postion_y)
+slider_ExecutePower:SetWidth(220) -- 拖动条长度
+slider_ExecutePower:SetHeight(16) -- 拖动条高度
 
+slider_ExecutePower:SetMinMaxValues(15, 130)
+slider_ExecutePower:SetValueStep(1)
+slider_ExecutePower:SetValue(200) -- 默认值
+MPCatUISliderRegionHide(slider_ExecutePower)
 
-postion_y = postion_y + 60 -55 -40
+-- 值变化时的回调函数
+slider_ExecutePower:SetScript("OnValueChanged", function()
+    MPWarriorArmsSaved[ConfigCurrent].ExecutePower = arg1
 
-
-
-
-
-
-
-
-
-
-
--- 创建单选框 - 种族天赋
-local checkButton_RacialTraits = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_RacialTraits:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_RacialTraits:SetScale(0.8)
-
--- 添加文字标签
-local checkText_RacialTraits = checkButton_RacialTraits:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_RacialTraits:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_RacialTraits:SetTextColor(1, 1, 1)
-checkText_RacialTraits:SetPoint("LEFT", checkButton_RacialTraits, "LEFT", 34, 1)
-checkText_RacialTraits:SetText("自动开启 种族天赋 (爆发类)")
-
--- 设置点击事件
-checkButton_RacialTraits:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPWarriorArmsSaved.RacialTraits = 1
-    else
-        MPWarriorArmsSaved.RacialTraits = 0
-    end
-end)
-
-postion_y = postion_y - 40
-
--- 创建单选框 - 自动打断
-local checkButton_Interrupt = CreateFrame("CheckButton", ADDON_NAME.."CheckButton", CatUISettingsWarriorArms, "UICheckButtonTemplate")
-checkButton_Interrupt:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 340, postion_y)
-checkButton_Interrupt:SetScale(0.8)
-
--- 添加文字标签
-local checkText_Interrupt = checkButton_Interrupt:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Interrupt:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
-checkText_Interrupt:SetTextColor(1, 1, 1)
-checkText_Interrupt:SetPoint("LEFT", checkButton_Interrupt, "LEFT", 34, 1)
-checkText_Interrupt:SetText("自动 打断读条 (SuperWoW)")
-
--- 设置点击事件
-checkButton_Interrupt:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPWarriorArmsSaved.Interrupt = 1
-    else
-        MPWarriorArmsSaved.Interrupt = 0
-    end
+    _G[slider_ExecutePower:GetName().."Text"]:SetText("斩杀 > "..arg1.."怒")
 end)
 
 
-postion_y = postion_y - 40
-
-
---[[
-postion_y = postion_y - 40
-
-]]
-
---postion_y = postion_y - 40
 
 
 
@@ -950,23 +651,62 @@ postion_y = postion_y - 40
 
 
 -- 创建按钮
-local myButton = CreateFrame("Button", ADDON_NAME.."ButtonReset", CatUISettingsWarriorArms, "UIPanelButtonTemplate")
-myButton:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 120, -44)
-myButton:SetWidth(100)
-myButton:SetHeight(22)
-myButton:SetFont("Fonts\\FRIZQT__.TTF", 12)
-myButton:SetText(MPLanguage.UI_Set_ResetDefaults)
-
--- 调整按钮纹理
-myButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-Button-Up")
-myButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-Button-Highlight")
-myButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-Button-Down")
-myButton:SetDisabledTexture("Interface\\Buttons\\UI-Panel-Button-Disabled")
--- 按钮点击事件
+local myButton = MPCreateButton(CatUISettingsWarriorArms, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
-    MPResetWarriorArmsSettings()
+    MPResetWarriorArmsSettings(ConfigCurrent)
     MPInitWarriorArmsSettings()
 end)
+
+
+local ConfigButton = {}
+
+-- 创建单选按钮
+ConfigButton[1] = CreateFrame("CheckButton", ADDON_NAME.."radio1", CatUISettingsWarriorArms, "UIRadioButtonTemplate")
+ConfigButton[1]:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 300, -44)
+ConfigButton[1].text = ConfigButton[1]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[1].text:SetPoint("LEFT", ConfigButton[1], "RIGHT", 0, 0)
+ConfigButton[1].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[1].text:SetText(" 配置 1")
+
+ConfigButton[2] = CreateFrame("CheckButton", ADDON_NAME.."radio2", CatUISettingsWarriorArms, "UIRadioButtonTemplate")
+ConfigButton[2]:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 370, -44)
+ConfigButton[2].text = ConfigButton[2]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[2].text:SetPoint("LEFT", ConfigButton[2], "RIGHT", 0, 0)
+ConfigButton[2].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[2].text:SetText(" 配置 2")
+
+ConfigButton[3] = CreateFrame("CheckButton", ADDON_NAME.."radio3", CatUISettingsWarriorArms, "UIRadioButtonTemplate")
+ConfigButton[3]:SetPoint("TOPLEFT", CatUISettingsWarriorArms, "TOPLEFT", 440, -44)
+ConfigButton[3].text = ConfigButton[3]:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+ConfigButton[3].text:SetPoint("LEFT", ConfigButton[3], "RIGHT", 0, 0)
+ConfigButton[3].text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+ConfigButton[3].text:SetText(" 配置 3")
+
+ConfigButton[1]:SetScript("OnClick", function()
+    ConfigButton[1]:SetChecked(true)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 1]|r")
+    ConfigCurrent = 1
+    MPInitWarriorArmsSettings()
+end)
+ConfigButton[2]:SetScript("OnClick", function()
+    ConfigButton[2]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 2]|r")
+    ConfigCurrent = 2
+    MPInitWarriorArmsSettings()
+end)
+ConfigButton[3]:SetScript("OnClick", function()
+    ConfigButton[3]:SetChecked(true)
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."切换到 [配置 3]|r")
+    ConfigCurrent = 3
+    MPInitWarriorArmsSettings()
+end)
+
 
 
 
@@ -976,9 +716,9 @@ MPBottomLine(CatUISettingsWarriorArms)
 local checkButton_Power = MPPublicCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 20, 40, MPLanguage.UI_Set_EnablePowerPotion)
 checkButton_Power:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Power = 1
+        MPWarriorArmsSaved[ConfigCurrent].Power = 1
     else
-        MPWarriorArmsSaved.Power = 0
+        MPWarriorArmsSaved[ConfigCurrent].Power = 0
     end
 end)
 
@@ -992,9 +732,9 @@ end)
 local checkButton_Pick = MPPublicCheckButton(CatUISettingsWarriorArms, ADDON_NAME.."CheckButton", 340, 40, MPLanguage.UI_Set_EnableAutoLoot)
 checkButton_Pick:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPWarriorArmsSaved.Pick = 1
+        MPWarriorArmsSaved[ConfigCurrent].Pick = 1
     else
-        MPWarriorArmsSaved.Pick = 0
+        MPWarriorArmsSaved[ConfigCurrent].Pick = 0
     end
 end)
 
@@ -1011,173 +751,169 @@ TipText:SetPoint("BOTTOM", CatUISettingsWarriorArms, "BOTTOM", 0, 9)
 TipText:SetWidth(450)
 TipText:SetTextColor(0.6, 0.6, 0.6)
 TipText:SetJustifyH("CENTER")
-TipText:SetText("宏命令 -  [ 全自动 |cFFC79C6E/arms|r ]  [ 纯单体(防ADD) |cFFC79C6E/armso|r ]")
+TipText:SetText("宏命令 |cFFC79C6E/arms|r [ 1 | 2 | 3 ]")
 
 
 
 -- 配置文件版本号
-local WarriorArmsSettingsUIVersion = 22
+local WarriorArmsSettingsUIVersion = 26
 
-function MPResetWarriorArmsSettings()
+function MPResetWarriorArmsSettings(config)
 
     MPWarriorArmsSaved.Version = WarriorArmsSettingsUIVersion
 
     -- 基本配置
-    MPWarriorArmsSaved.BerserkerStance = 1
-    MPWarriorArmsSaved.BerserkerRage = 1
-    MPWarriorArmsSaved.BattleShout = 1
-    MPWarriorArmsSaved.Whirlwind = 1
-    MPWarriorArmsSaved.UseExecute = 1
-    MPWarriorArmsSaved.Charge = 0
-    MPWarriorArmsSaved.Trinket_Upper = 1
-    MPWarriorArmsSaved.TUBoss = 0
-    MPWarriorArmsSaved.Trinket_Below = 1
-    MPWarriorArmsSaved.TBBoss = 0
-    MPWarriorArmsSaved.Target = 0
-    MPWarriorArmsSaved.NearbyEnemies = 1
-    MPWarriorArmsSaved.NearbyEnemies_Value = 8
+    MPWarriorArmsSaved[config].BerserkerStance = 1
+    MPWarriorArmsSaved[config].BerserkerRage = 1
+    MPWarriorArmsSaved[config].BattleShout = 1
+    MPWarriorArmsSaved[config].Whirlwind = 1
+    MPWarriorArmsSaved[config].UseExecute = 1
+    MPWarriorArmsSaved[config].Charge = 0
+    MPWarriorArmsSaved[config].Trinket_Upper = 1
+    MPWarriorArmsSaved[config].TUBoss = 0
+    MPWarriorArmsSaved[config].Trinket_Below = 1
+    MPWarriorArmsSaved[config].TBBoss = 0
+    MPWarriorArmsSaved[config].Target = 0
+    MPWarriorArmsSaved[config].NearbyEnemies = 1
+    MPWarriorArmsSaved[config].NearbyEnemies_Value = 8
 
     -- 高级配置
-    MPWarriorArmsSaved.HeroicStrike = 0
-    MPWarriorArmsSaved.HeroicStrike_Value = 50
+    MPWarriorArmsSaved[config].HeroicStrike = 0
+    MPWarriorArmsSaved[config].HeroicStrike_Value = 50
 
-    MPWarriorArmsSaved.Sweeping = 0
-    MPWarriorArmsSaved.Sweeping_Value = 50
-    MPWarriorArmsSaved.Overpower = 0
-    MPWarriorArmsSaved.Overpower_Value = 30
-    MPWarriorArmsSaved.Rend = 0
-    MPWarriorArmsSaved.Rend_Value = 30
-    MPWarriorArmsSaved.Slam_Value = 1.5
-    MPWarriorArmsSaved.Hamstring = 1
-    MPWarriorArmsSaved.SunderArmor = 0
-    MPWarriorArmsSaved.SunderArmorBOSS = 0
-    MPWarriorArmsSaved.SunderArmorOnce = 0
+    MPWarriorArmsSaved[config].Sweeping = 0
+    MPWarriorArmsSaved[config].Sweeping_Value = 50
+    MPWarriorArmsSaved[config].Overpower = 0
+    MPWarriorArmsSaved[config].Overpower_Value = 30
+    MPWarriorArmsSaved[config].Rend = 0
+    MPWarriorArmsSaved[config].Rend_Value = 30
+    MPWarriorArmsSaved[config].Slam_Value = 1.5
+    MPWarriorArmsSaved[config].Hamstring = 1
+    MPWarriorArmsSaved[config].SunderArmor = 0
+    MPWarriorArmsSaved[config].SunderArmorBOSS = 0
+    MPWarriorArmsSaved[config].SunderArmorOnce = 0
 
-    MPWarriorArmsSaved.Soulspeed = 0
-    MPWarriorArmsSaved.Interrupt = 0
-    MPWarriorArmsSaved.DeathWish = 0
-    MPWarriorArmsSaved.Recklessness = 0
-    MPWarriorArmsSaved.RacialTraits = 0
-    MPWarriorArmsSaved.Execute = 0
-    MPWarriorArmsSaved.ExecuteWithMortal = 0
-    MPWarriorArmsSaved.ExecuteOtherTarget = 0
-    MPWarriorArmsSaved.ExecuteWithoutMonster = 1
+    MPWarriorArmsSaved[config].RacialTraits = 0
+    MPWarriorArmsSaved[config].RacialTraitsBoss = 1
+    MPWarriorArmsSaved[config].Soulspeed = 0
+    MPWarriorArmsSaved[config].SoulspeedBoss = 1
+    MPWarriorArmsSaved[config].Interrupt = 0
+    MPWarriorArmsSaved[config].Recklessness = 0
+    MPWarriorArmsSaved[config].ExecuteWithMortal = 1
+    MPWarriorArmsSaved[config].ExecuteOtherTarget = 0
+    MPWarriorArmsSaved[config].ExecuteWithoutMonster = 1
+    MPWarriorArmsSaved[config].ExecutePower = 50
 
     -- 治疗石、糖水茶
-    MPWarriorArmsSaved.HealthStone = 1
-    MPWarriorArmsSaved.HealthStone_Value = 30
-    MPWarriorArmsSaved.HerbalTea = 1
-    MPWarriorArmsSaved.HerbalTea_Value = 20
-    MPWarriorArmsSaved.Carrot = 0
-    MPWarriorArmsSaved.Carrot_Value = 20
+    MPWarriorArmsSaved[config].HealthStone = 1
+    MPWarriorArmsSaved[config].HealthStone_Value = 30
+    MPWarriorArmsSaved[config].HerbalTea = 1
+    MPWarriorArmsSaved[config].HerbalTea_Value = 20
+    MPWarriorArmsSaved[config].Carrot = 0
+    MPWarriorArmsSaved[config].Carrot_Value = 20
 
     -- SuperWoW,UnitXP
-    MPWarriorArmsSaved.SuperWoW = 1
-    MPWarriorArmsSaved.UnitXP = 1
+    MPWarriorArmsSaved[config].SuperWoW = 1
+    MPWarriorArmsSaved[config].UnitXP = 1
 
     -- 通用
-    MPWarriorArmsSaved.Power = 0
-    MPWarriorArmsSaved.Pick = 0
+    MPWarriorArmsSaved[config].Power = 0
+    MPWarriorArmsSaved[config].Pick = 0
 
 
 end
 
-local function ToBoolean(value)
-    if value==1 then
-        return true
-    end
-
-    return false
-end
 
 local function InitWarriorArmsSettingsPart1()
-    checkButton_BerserkerStance:SetChecked(ToBoolean(MPWarriorArmsSaved.BerserkerStance))
-    checkButton_BerserkerRage:SetChecked(ToBoolean(MPWarriorArmsSaved.BerserkerRage))
-    checkButton_BattleShout:SetChecked( ToBoolean(MPWarriorArmsSaved.BattleShout) )
-    checkButton_Whirlwind:SetChecked( ToBoolean(MPWarriorArmsSaved.Whirlwind) )
-    checkButton_UseExecute:SetChecked( ToBoolean(MPWarriorArmsSaved.UseExecute) )
-    checkButton_Charge:SetChecked( ToBoolean(MPWarriorArmsSaved.Charge) )
+    checkButton_BerserkerStance:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].BerserkerStance))
+    checkButton_BerserkerRage:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].BerserkerRage))
+    checkButton_BattleShout:SetChecked( MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].BattleShout) )
+    checkButton_Whirlwind:SetChecked( MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Whirlwind) )
+    checkButton_UseExecute:SetChecked( MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].UseExecute) )
+    checkButton_Charge:SetChecked( MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Charge) )
 
-    checkButton_Trinket_Upper:SetChecked(ToBoolean(MPWarriorArmsSaved.Trinket_Upper))
-    checkButton_TUBoss:SetChecked(ToBoolean(MPWarriorArmsSaved.TUBoss))
-    checkButton_Trinket_Below:SetChecked(ToBoolean(MPWarriorArmsSaved.Trinket_Below))
-    checkButton_TBBoss:SetChecked(ToBoolean(MPWarriorArmsSaved.TBBoss))
+    checkButton_Trinket_Upper:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Trinket_Upper))
+    checkButton_TUBoss:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].TUBoss))
+    checkButton_Trinket_Below:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Trinket_Below))
+    checkButton_TBBoss:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].TBBoss))
 
-    checkButton_Target:SetChecked(ToBoolean(MPWarriorArmsSaved.Target))
-    checkButton_NearbyEnemies:SetChecked(ToBoolean(MPWarriorArmsSaved.NearbyEnemies))
-    slider_NearbyEnemies_Value:SetValue(MPWarriorArmsSaved.NearbyEnemies_Value)
-    if MPWarriorArmsSaved.NearbyEnemies==1 then
+    checkButton_Target:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Target))
+    checkButton_NearbyEnemies:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies))
+    slider_NearbyEnemies_Value:SetValue(MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies==1 then
         color_NearbyEnemies = "|cFFFFD100"
     else
         color_NearbyEnemies = "|cFF888888"
     end
-    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved.NearbyEnemies_Value .."码|r")
+    _G[slider_NearbyEnemies_Value:GetName().."Text"]:SetText(color_NearbyEnemies.."感应范围".. MPWarriorArmsSaved[ConfigCurrent].NearbyEnemies_Value .."码|r")
 
 
 
 end
 
 local function InitWarriorArmsSettingsPart2()
-    checkButton_HealthStone:SetChecked(ToBoolean(MPWarriorArmsSaved.HealthStone))
-    slider_HealthStone:SetValue(MPWarriorArmsSaved.HealthStone_Value)
-    if MPWarriorArmsSaved.HealthStone==1 then
+    checkButton_HealthStone:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].HealthStone))
+    slider_HealthStone:SetValue(MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].HealthStone==1 then
         color_HealthStone = "|cFFFFD100"
     else
         color_HealthStone = "|cFF888888"
     end
-    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved.HealthStone_Value .."%|r")
+    _G[slider_HealthStone:GetName().."Text"]:SetText(color_HealthStone.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HealthStone_Value .."%|r")
 
 
-    checkButton_HerbalTea:SetChecked(MPWarriorArmsSaved.HerbalTea)
-    slider_HerbalTea:SetValue(MPWarriorArmsSaved.HerbalTea_Value)
-    if MPWarriorArmsSaved.HerbalTea==1 then
+    checkButton_HerbalTea:SetChecked(MPWarriorArmsSaved[ConfigCurrent].HerbalTea)
+    slider_HerbalTea:SetValue(MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].HerbalTea==1 then
         color_HerbalTea = "|cFFFFD100"
     else
         color_HerbalTea = "|cFF888888"
     end
-    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved.HerbalTea_Value .."%|r")
+    _G[slider_HerbalTea:GetName().."Text"]:SetText(color_HerbalTea.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].HerbalTea_Value .."%|r")
 
 
-    checkButton_Carrot:SetChecked(MPWarriorArmsSaved.Carrot)
-    slider_Carrot:SetValue(MPWarriorArmsSaved.Carrot_Value)
-    if MPWarriorArmsSaved.Carrot==1 then
+    checkButton_Carrot:SetChecked(MPWarriorArmsSaved[ConfigCurrent].Carrot)
+    slider_Carrot:SetValue(MPWarriorArmsSaved[ConfigCurrent].Carrot_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].Carrot==1 then
         color_Carrot = "|cFFFFD100"
     else
         color_Carrot = "|cFF888888"
     end
-    _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved.Carrot_Value .."%|r")
+    _G[slider_Carrot:GetName().."Text"]:SetText(color_Carrot.."血线: ".. MPWarriorArmsSaved[ConfigCurrent].Carrot_Value .."%|r")
 
-    checkButton_HeroicStrike:SetChecked(MPWarriorArmsSaved.HeroicStrike)
-    slider_HeroicStrike:SetValue(MPWarriorArmsSaved.HeroicStrike_Value)
-    if MPWarriorArmsSaved.HeroicStrike==1 then
+    checkButton_HeroicStrike:SetChecked(MPWarriorArmsSaved[ConfigCurrent].HeroicStrike)
+    slider_HeroicStrike:SetValue(MPWarriorArmsSaved[ConfigCurrent].HeroicStrike_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].HeroicStrike==1 then
         color_HeroicStrike = "|cFFFFD100"
     else
         color_HeroicStrike = "|cFF888888"
     end
-    _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved.HeroicStrike_Value)
+    _G[slider_HeroicStrike:GetName().."Text"]:SetText(color_HeroicStrike.."怒气 > ".. MPWarriorArmsSaved[ConfigCurrent].HeroicStrike_Value)
 
 
-    slider_Slam:SetValue(MPWarriorArmsSaved.Slam_Value)
-    _G[slider_Slam:GetName().."Text"]:SetText("猛击 >"..string.format("%.1f", MPWarriorArmsSaved.Slam_Value).."秒 下一次普攻")
+    slider_Slam:SetValue(MPWarriorArmsSaved[ConfigCurrent].Slam_Value)
+    --_G[slider_Slam:GetName().."Text"]:SetText("猛击 >"..string.format("%.1f", MPWarriorArmsSaved[ConfigCurrent].Slam_Value).."秒 下一次普攻")
+
+    slider_ExecutePower:SetValue(MPWarriorArmsSaved[ConfigCurrent].ExecutePower)
 
     -- 横扫
-    checkButton_Sweeping:SetChecked(MPWarriorArmsSaved.Sweeping)
-    slider_Sweeping:SetValue(MPWarriorArmsSaved.Sweeping_Value)
-    if MPWarriorArmsSaved.Sweeping==1 then
+    checkButton_Sweeping:SetChecked(MPWarriorArmsSaved[ConfigCurrent].Sweeping)
+    slider_Sweeping:SetValue(MPWarriorArmsSaved[ConfigCurrent].Sweeping_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].Sweeping==1 then
         color_Sweeping = "|cFFFFD100"
     else
         color_Sweeping = "|cFF888888"
     end
-    _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved.Sweeping_Value)
+    _G[slider_Sweeping:GetName().."Text"]:SetText(color_Sweeping.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Sweeping_Value)
 
-    checkButton_Overpower:SetChecked(MPWarriorArmsSaved.Overpower)
-    slider_Overpower:SetValue(MPWarriorArmsSaved.Overpower_Value)
-    if MPWarriorArmsSaved.Overpower==1 then
+    checkButton_Overpower:SetChecked(MPWarriorArmsSaved[ConfigCurrent].Overpower)
+    slider_Overpower:SetValue(MPWarriorArmsSaved[ConfigCurrent].Overpower_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].Overpower==1 then
         color_Overpower = "|cFFFFD100"
     else
         color_Overpower = "|cFF888888"
     end
-    _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved.Overpower_Value)
+    _G[slider_Overpower:GetName().."Text"]:SetText(color_Overpower.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Overpower_Value)
 
 end
 
@@ -1185,49 +921,79 @@ end
 function MPInitWarriorArmsSettings()
     if not MPWarriorArmsSaved then
         MPWarriorArmsSaved = {}
-        MPResetWarriorArmsSettings()
+
+        -- 第一套配置
+        if not MPWarriorArmsSaved[1] then
+            MPWarriorArmsSaved[1] = {}
+            MPResetWarriorArmsSettings(1)
+        end
+
+        -- 第二套配置
+        if not MPWarriorArmsSaved[2] then
+            MPWarriorArmsSaved[2] = {}
+            MPResetWarriorArmsSettings(2)
+        end
+
+        -- 第三套配置
+        if not MPWarriorArmsSaved[3] then
+            MPWarriorArmsSaved[3] = {}
+            MPResetWarriorArmsSettings(3)
+        end
     end
 
     if MPWarriorArmsSaved.Version ~= WarriorArmsSettingsUIVersion then
-        MPResetWarriorArmsSettings()
+        DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."重置[武器战宏]当前配置，这是新版插件正常数据更新！|r")
+        MPWarriorArmsSaved[1] = {}
+        MPWarriorArmsSaved[2] = {}
+        MPWarriorArmsSaved[3] = {}
+        MPResetWarriorArmsSettings(1)
+        MPResetWarriorArmsSettings(2)
+        MPResetWarriorArmsSettings(3)
     end
+
+    ConfigButton[1]:SetChecked(false)
+    ConfigButton[2]:SetChecked(false)
+    ConfigButton[3]:SetChecked(false)
+    ConfigButton[ConfigCurrent]:SetChecked(true)
 
     InitWarriorArmsSettingsPart1()
     InitWarriorArmsSettingsPart2()
 
     --[[
-    slider_Arms_HeroicStrike:SetValue(MPWarriorArmsSaved.Arms_HeroicStrike)
-    _G[slider_Arms_HeroicStrike:GetName().."Text"]:SetText("武器 英勇/顺劈 >"..MPWarriorArmsSaved.Arms_HeroicStrike.." 怒气")
+    slider_Arms_HeroicStrike:SetValue(MPWarriorArmsSaved[ConfigCurrent].Arms_HeroicStrike)
+    _G[slider_Arms_HeroicStrike:GetName().."Text"]:SetText("武器 英勇/顺劈 >"..MPWarriorArmsSaved[ConfigCurrent].Arms_HeroicStrike.." 怒气")
     ]]
 
 
     --[[
-    checkButton_Rend:SetChecked(MPWarriorArmsSaved.Rend)
-    slider_Rend:SetValue(MPWarriorArmsSaved.Rend_Value)
-    if MPWarriorArmsSaved.Rend==1 then
+    checkButton_Rend:SetChecked(MPWarriorArmsSaved[ConfigCurrent].Rend)
+    slider_Rend:SetValue(MPWarriorArmsSaved[ConfigCurrent].Rend_Value)
+    if MPWarriorArmsSaved[ConfigCurrent].Rend==1 then
         color_Rend = "|cFFFFD100"
     else
         color_Rend = "|cFF888888"
     end
-    _G[slider_Rend:GetName().."Text"]:SetText(color_Rend.."怒气 < ".. MPWarriorArmsSaved.Rend_Value)
+    _G[slider_Rend:GetName().."Text"]:SetText(color_Rend.."怒气 < ".. MPWarriorArmsSaved[ConfigCurrent].Rend_Value)
     ]]
 
-    --checkButton_Hamstring:SetChecked(ToBoolean(MPWarriorArmsSaved.Hamstring))
+    --checkButton_Hamstring:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Hamstring))
 
 
-    checkButton_Interrupt:SetChecked(ToBoolean(MPWarriorArmsSaved.Interrupt))
-    checkButton_Soulspeed:SetChecked(ToBoolean(MPWarriorArmsSaved.Soulspeed))
-    checkButton_DeathWish:SetChecked(ToBoolean(MPWarriorArmsSaved.DeathWish))
-    --checkButton_Recklessness:SetChecked(ToBoolean(MPWarriorArmsSaved.Recklessness))
-    checkButton_RacialTraits:SetChecked(ToBoolean(MPWarriorArmsSaved.RacialTraits))
-    checkButton_ExecuteWithMortal:SetChecked(ToBoolean(MPWarriorArmsSaved.ExecuteWithMortal))
-    checkButton_ExecuteOtherTarget:SetChecked(ToBoolean(MPWarriorArmsSaved.ExecuteOtherTarget))
-    checkButton_ExecuteWithoutMonster:SetChecked(ToBoolean(MPWarriorArmsSaved.ExecuteWithoutMonster))
-    checkButton_SunderArmor:SetChecked(ToBoolean(MPWarriorArmsSaved.SunderArmor))
-    checkButton_SunderArmorBOSS:SetChecked(ToBoolean(MPWarriorArmsSaved.SunderArmorBOSS))
-    checkButton_SunderArmorOnce:SetChecked(ToBoolean(MPWarriorArmsSaved.SunderArmorOnce))
+    checkButton_Interrupt:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Interrupt))
+    checkButton_RacialTraits:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].RacialTraits))
+    checkButton_RacialTraitsBoss:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].RacialTraitsBoss))
+    checkButton_Soulspeed:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Soulspeed))
+    checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].SoulspeedBoss))
+    --checkButton_DeathWish:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].DeathWish))
+    --checkButton_Recklessness:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Recklessness))
+    checkButton_ExecuteWithMortal:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].ExecuteWithMortal))
+    checkButton_ExecuteOtherTarget:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].ExecuteOtherTarget))
+    checkButton_ExecuteWithoutMonster:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].ExecuteWithoutMonster))
+    checkButton_SunderArmor:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].SunderArmor))
+    checkButton_SunderArmorBOSS:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].SunderArmorBOSS))
+    checkButton_SunderArmorOnce:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].SunderArmorOnce))
 
-    checkButton_Power:SetChecked(ToBoolean(MPWarriorArmsSaved.Power))
-    checkButton_Pick:SetChecked(ToBoolean(MPWarriorArmsSaved.Pick))
+    checkButton_Power:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Power))
+    checkButton_Pick:SetChecked(MPToBoolean(MPWarriorArmsSaved[ConfigCurrent].Pick))
 end
 

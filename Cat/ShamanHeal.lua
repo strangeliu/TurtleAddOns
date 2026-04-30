@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奶萨一键宏
--- 更新日期：2026-01-26 （后面根据时间来判断版本）
+-- 更新日期：2026-04-10 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -95,19 +95,23 @@ MPAirTotemName = ""
 MPAirTotemX = 0
 MPAirTotemY = 0
 
+-- 默认配置
+MPShamanHealConfig = 1
+
+
 local function HealEarthTotemManager()
 
     -- 检测开关
-    if MPShamanHealSaved.EarthTotem==0 then
+    if MPShamanHealSaved[MPShamanHealConfig].EarthTotem==0 then
         return
     end
 
     -- 图腾是否存在
-    if MPEarthTotem() and MPShamanHealSaved.ForceTotem==0 then
-    elseif MPEarthTotem() and MPEarthTotemName==MPShamanHealSaved.EarthTotem_Value and MPShamanHealSaved.ForceTotem==1 then
+    if MPEarthTotem() and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==0 then
+    elseif MPEarthTotem() and MPEarthTotemName==MPShamanHealSaved[MPShamanHealConfig].EarthTotem_Value and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==1 then
 
     else
-        CastSpellByName(MPShamanHealSaved.EarthTotem_Value)
+        CastSpellByName(MPShamanHealSaved[MPShamanHealConfig].EarthTotem_Value)
         MPEarthTotemX, MPEarthTotemY = GetPlayerMapPosition("player")
     end
 
@@ -117,16 +121,16 @@ end
 local function HealFireTotemManager()
 
     -- 检测开关
-    if MPShamanHealSaved.FireTotem==0 then
+    if MPShamanHealSaved[MPShamanHealConfig].FireTotem==0 then
         return
     end
 
     -- 图腾是否存在
-    if MPFireTotem() and MPShamanHealSaved.ForceTotem==0 then
-    elseif MPFireTotem() and MPFireTotemName==MPShamanHealSaved.FireTotem_Value and MPShamanHealSaved.ForceTotem==1 then
+    if MPFireTotem() and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==0 then
+    elseif MPFireTotem() and MPFireTotemName==MPShamanHealSaved[MPShamanHealConfig].FireTotem_Value and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==1 then
 
     else
-        CastSpellByName(MPShamanHealSaved.FireTotem_Value)
+        CastSpellByName(MPShamanHealSaved[MPShamanHealConfig].FireTotem_Value)
         MPFireTotemX, MPFireTotemY = GetPlayerMapPosition("player")
     end
 
@@ -135,16 +139,16 @@ end
 local function HealWaterTotemManager()
 
     -- 检测开关
-    if MPShamanHealSaved.WaterTotem==0 then
+    if MPShamanHealSaved[MPShamanHealConfig].WaterTotem==0 then
         return
     end
 
     -- 图腾是否存在
-    if MPWaterTotem() and MPShamanHealSaved.ForceTotem==0 then
-    elseif MPWaterTotem() and MPWaterTotemName==MPShamanHealSaved.WaterTotem_Value and MPShamanHealSaved.ForceTotem==1 then
+    if MPWaterTotem() and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==0 then
+    elseif MPWaterTotem() and MPWaterTotemName==MPShamanHealSaved[MPShamanHealConfig].WaterTotem_Value and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==1 then
 
     else
-        CastSpellByName(MPShamanHealSaved.WaterTotem_Value)
+        CastSpellByName(MPShamanHealSaved[MPShamanHealConfig].WaterTotem_Value)
         MPWaterTotemX, MPWaterTotemY = GetPlayerMapPosition("player")
     end
 
@@ -154,16 +158,16 @@ end
 local function HealAirTotemManager()
 
     -- 检测开关
-    if MPShamanHealSaved.AirTotem==0 then
+    if MPShamanHealSaved[MPShamanHealConfig].AirTotem==0 then
         return
     end
 
     -- 图腾是否存在
-    if MPAirTotem() and MPShamanHealSaved.ForceTotem==0 then
-    elseif MPAirTotem() and MPAirTotemName==MPShamanHealSaved.AirTotem_Value and MPShamanHealSaved.ForceTotem==1 then
+    if MPAirTotem() and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==0 then
+    elseif MPAirTotem() and MPAirTotemName==MPShamanHealSaved[MPShamanHealConfig].AirTotem_Value and MPShamanHealSaved[MPShamanHealConfig].ForceTotem==1 then
 
     else
-        CastSpellByName(MPShamanHealSaved.AirTotem_Value)
+        CastSpellByName(MPShamanHealSaved[MPShamanHealConfig].AirTotem_Value)
         MPAirTotemX, MPAirTotemY = GetPlayerMapPosition("player")
     end
 
@@ -182,10 +186,10 @@ function MPShamanAutoHealth()
     if GetTime()-MPShamanCastHeal<3 then
 
         -- 是否有治疗目标
-        if MPHealthUnit and MPShamanHealSaved.Overflow==1 then
+        if MPHealthUnit and MPShamanHealSaved[MPShamanHealConfig].Overflow==1 then
             -- 被治疗目标状态
             local target_percent = UnitHealth(MPHealthUnit) / UnitHealthMax(MPHealthUnit) * 100
-            if target_percent > MPShamanHealSaved.Begin_Value then
+            if target_percent > MPShamanHealSaved[MPShamanHealConfig].Begin_Value then
                 SpellStopCasting()
             end
         end
@@ -194,12 +198,12 @@ function MPShamanAutoHealth()
     end
 
 	-- 自动拾取
-	if MPShamanHealSaved.Pick==1 then
+	if MPShamanHealSaved[MPShamanHealConfig].Pick==1 then
 		MPAutoLoot()
 	end
 
 	-- 功能药水
-	if MPShamanHealSaved.Power==1 then
+	if MPShamanHealSaved[MPShamanHealConfig].Power==1 then
 		MPCatPower()
 	end
 
@@ -209,29 +213,33 @@ function MPShamanAutoHealth()
 	if MPInCombat then
 	    -- 血量危险时处理，潜行下不吃药
 	    local percent = UnitHealth("player") / UnitHealthMax("player") * 100
-	    if percent<MPShamanHealSaved.HealthStone_Value and MPShamanHealSaved.HealthStone==1 then
+	    if percent<MPShamanHealSaved[MPShamanHealConfig].HealthStone_Value and MPShamanHealSaved[MPShamanHealConfig].HealthStone==1 then
 		    MPUseItemByName("特效治疗石")
 	    end
-	    if percent<MPShamanHealSaved.HerbalTea_Value and MPShamanHealSaved.HerbalTea==1 then
+	    if percent<MPShamanHealSaved[MPShamanHealConfig].HerbalTea_Value and MPShamanHealSaved[MPShamanHealConfig].HerbalTea==1 then
 		    MPUseItemByName("糖水茶")
 		    MPUseItemByName("诺达纳尔草药茶")
 	    end
 		local percentMana = UnitMana("player") / UnitManaMax("player") * 100
-		if percentMana<MPShamanHealSaved.HerbalTeaMana_Value and MPShamanHealSaved.HerbalTeaMana==1 then
+		if percentMana<MPShamanHealSaved[MPShamanHealConfig].HerbalTeaMana_Value and MPShamanHealSaved[MPShamanHealConfig].HerbalTeaMana==1 then
 			MPUseItemByName("糖水茶")
 			MPUseItemByName("诺达纳尔草药茶")
 		end
     end
 
-    -- 图腾召回
     --[[
-    if MPShamanHealSaved.RecallTotems==1 then
+    -- 图腾召回
+    if MPShamanHealSaved[MPShamanHealConfig].RecallTotems==1 and MPSpellReady("图腾召回") then
         local recall = 0
         local x, y = GetPlayerMapPosition("player")
-        if MPEarthTotem() and MPCalculateDistance(x,y, MPEarthTotemX, MPEarthTotemY)>MPShamanHealSaved.RecallTotems_Value then recall = recall+1 end
-        if MPFireTotem() and MPCalculateDistance(x,y, MPFireTotemX, MPFireTotemY)>MPShamanHealSaved.RecallTotems_Value  then recall = recall+1 end
-        if MPWaterTotem() and MPCalculateDistance(x,y, MPWaterTotemX, MPWaterTotemY)>MPShamanHealSaved.RecallTotems_Value  then recall = recall+1 end
-        if MPAirTotem() and MPCalculateDistance(x,y, MPAirTotemX, MPAirTotemY)>MPShamanHealSaved.RecallTotems_Value  then recall = recall+1 end
+        local EarthTotemDist = MPCalculateTotemDistance(x,y, MPEarthTotemX, MPEarthTotemY)
+        local FireTotemDist = MPCalculateTotemDistance(x,y, MPFireTotemX, MPFireTotemY)
+        local WaterTotemDist = MPCalculateTotemDistance(x,y, MPWaterTotemX, MPWaterTotemY)
+        local AirTotemDist = MPCalculateTotemDistance(x,y, MPAirTotemX, MPAirTotemY)
+        if MPEarthTotem() and EarthTotemDist>MPShamanHealSaved[MPShamanHealConfig].RecallTotems_Value then recall = recall+1 end
+        if MPFireTotem() and FireTotemDist>MPShamanHealSaved[MPShamanHealConfig].RecallTotems_Value  then recall = recall+1 end
+        if MPWaterTotem() and WaterTotemDist>MPShamanHealSaved[MPShamanHealConfig].RecallTotems_Value  then recall = recall+1 end
+        if MPAirTotem() and AirTotemDist>MPShamanHealSaved[MPShamanHealConfig].RecallTotems_Value  then recall = recall+1 end
         if recall > 0 then
             CastSpellByName("图腾召回")
             return
@@ -251,17 +259,17 @@ function MPShamanAutoHealth()
 
 
         -- 图腾是否存在
-        if MPShamanHealSaved.EarthTotem==0 or (MPShamanHealSaved.EarthTotem==1 and MPEarthTotem() and MPEarthTotemName==MPShamanHealSaved.EarthTotem_Value) then
-        if MPShamanHealSaved.FireTotem==0 or (MPShamanHealSaved.FireTotem==1 and MPFireTotem() and MPFireTotemName==MPShamanHealSaved.FireTotem_Value) then
-        if MPShamanHealSaved.WaterTotem==0 or (MPShamanHealSaved.WaterTotem==1 and MPWaterTotem() and MPWaterTotemName==MPShamanHealSaved.WaterTotem_Value) then
-        if MPShamanHealSaved.AirTotem==0 or (MPShamanHealSaved.AirTotem==1 and MPAirTotem() and MPAirTotemName==MPShamanHealSaved.AirTotem_Value) then
+        if MPShamanHealSaved[MPShamanHealConfig].EarthTotem==0 or (MPShamanHealSaved[MPShamanHealConfig].EarthTotem==1 and MPEarthTotem() and MPEarthTotemName==MPShamanHealSaved[MPShamanHealConfig].EarthTotem_Value) then
+        if MPShamanHealSaved[MPShamanHealConfig].FireTotem==0 or (MPShamanHealSaved[MPShamanHealConfig].FireTotem==1 and MPFireTotem() and MPFireTotemName==MPShamanHealSaved[MPShamanHealConfig].FireTotem_Value) then
+        if MPShamanHealSaved[MPShamanHealConfig].WaterTotem==0 or (MPShamanHealSaved[MPShamanHealConfig].WaterTotem==1 and MPWaterTotem() and MPWaterTotemName==MPShamanHealSaved[MPShamanHealConfig].WaterTotem_Value) then
+        if MPShamanHealSaved[MPShamanHealConfig].AirTotem==0 or (MPShamanHealSaved[MPShamanHealConfig].AirTotem==1 and MPAirTotem() and MPAirTotemName==MPShamanHealSaved[MPShamanHealConfig].AirTotem_Value) then
 
-            if MPShamanHealSaved.WaterShieldLevel==1 and MPShamanHealSaved.WaterShield==1 then
+            if MPShamanHealSaved[MPShamanHealConfig].WaterShieldLevel==1 and MPShamanHealSaved[MPShamanHealConfig].WaterShield==1 then
                 if MPGetBuffApplications("Interface\\Icons\\Ability_Shaman_WaterShield")<MPShamanWaterApplications then
                     CastSpellByName("水之护盾")
                     --return
                 end
-            elseif MPShamanHealSaved.WaterShield==1 then
+            elseif MPShamanHealSaved[MPShamanHealConfig].WaterShield==1 then
                 if not MPBuff("水之护盾") then
                     CastSpellByName("水之护盾")
                     --return
@@ -279,41 +287,41 @@ function MPShamanAutoHealth()
     local sortedMembers = MPShamanGetSortedGroupByHealth()
 
     -- 目标
-    if UnitExists("target") and MPShamanHealSaved.TargetFirst==1 then
+    if UnitExists("target") and MPShamanHealSaved[MPShamanHealConfig].TargetFirst==1 then
         if MPShamanHealth("target") then
             return
         end
     end
 
     -- 目标的目标
-    if UnitExists("target") and UnitExists("targettarget") and MPShamanHealSaved.TargetTarget==1 then
+    if UnitExists("target") and UnitExists("targettarget") and MPShamanHealSaved[MPShamanHealConfig].TargetTarget==1 then
         if MPShamanHealth("targettarget") then
             return
         end
     end
 
     -- 自己
-    if MPShamanHealSaved.SelfFirst==1 then
+    if MPShamanHealSaved[MPShamanHealConfig].SelfFirst==1 then
         if MPShamanHealth("player") then
             return
         end
     end
 
     -- 水之护盾
-    if MPShamanHealSaved.WaterShieldLevel==1 and MPShamanHealSaved.WaterShield==1 then
+    if MPShamanHealSaved[MPShamanHealConfig].WaterShieldLevel==1 and MPShamanHealSaved[MPShamanHealConfig].WaterShield==1 then
         if MPGetBuffApplications("Interface\\Icons\\Ability_Shaman_WaterShield")<MPShamanWaterApplications then
             CastSpellByName("水之护盾")
         end
-    elseif MPShamanHealSaved.WaterShield==1 then
+    elseif MPShamanHealSaved[MPShamanHealConfig].WaterShield==1 then
         if not MPBuff("水之护盾") then
             CastSpellByName("水之护盾")
         end
     end
 
     -- 队伍里的其他人
-    if MPShamanHealSaved.ScanTeam==1 then
+    if MPShamanHealSaved[MPShamanHealConfig].ScanTeam==1 then
 
-        if MPShamanHealSaved.ScanTeam_Low==1 then
+        if MPShamanHealSaved[MPShamanHealConfig].ScanTeam_Low==1 then
             for i, member in ipairs(sortedMembers) do
                 if MPShamanHealth(member.unit) then
                     return
@@ -364,7 +372,7 @@ function MPShamanHealth(unit)
     percentHealth = health/maxHealth*100
     HealthDec = maxHealth - health
 
-    if MPShamanHealSaved.Begin_Value <= percentHealth then
+    if MPShamanHealSaved[MPShamanHealConfig].Begin_Value <= percentHealth then
         return false
     end
 
@@ -399,17 +407,17 @@ function MPShamanHealth(unit)
     MPHealthUnit = unit
 
     -- 开启治疗链 + 群体掉血，优先级最高
-    if MPShamanHealSaved.Chain==1 and GroupHealthCount>1 and MPShamanChainMaxLevel>0 then
+    if MPShamanHealSaved[MPShamanHealConfig].Chain==1 and GroupHealthCount>1 and MPShamanChainMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local ChainMaxLevel = MPShamanChainMaxLevel
-        if MPShamanHealSaved.ChainMaxLevel < MPShamanChainMaxLevel then
-            ChainMaxLevel = MPShamanHealSaved.ChainMaxLevel
+        if MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel < MPShamanChainMaxLevel then
+            ChainMaxLevel = MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel
         end
 
-        for i = ChainMaxLevel, MPShamanHealSaved.ChainMinLevel, -1 do
+        for i = ChainMaxLevel, MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel, -1 do
             if MPShamanChainEffect[i] < HealthDec then
 
                 if DM >= MPShamanChain[i] then
@@ -421,22 +429,22 @@ function MPShamanHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved.ChainMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel..")", unit, 1)
 
     end
 
     -- 仅仅开启治疗链， 治疗波和次级治疗波都没开
-    if MPShamanHealSaved.Chain==1 and MPShamanHealSaved.Wave==0 and MPShamanHealSaved.SecondaryWave==0 and MPShamanChainMaxLevel>0 then
+    if MPShamanHealSaved[MPShamanHealConfig].Chain==1 and MPShamanHealSaved[MPShamanHealConfig].Wave==0 and MPShamanHealSaved[MPShamanHealConfig].SecondaryWave==0 and MPShamanChainMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local ChainMaxLevel = MPShamanChainMaxLevel
-        if MPShamanHealSaved.ChainMaxLevel < MPShamanChainMaxLevel then
-            ChainMaxLevel = MPShamanHealSaved.ChainMaxLevel
+        if MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel < MPShamanChainMaxLevel then
+            ChainMaxLevel = MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel
         end
 
-        for i = ChainMaxLevel, MPShamanHealSaved.ChainMinLevel, -1 do
+        for i = ChainMaxLevel, MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel, -1 do
             if MPShamanChainEffect[i] < HealthDec then
 
                 if DM >= MPShamanChain[i] then
@@ -448,22 +456,22 @@ function MPShamanHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved.ChainMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel..")", unit, 1)
 
     end
 
 
     -- 治疗波
-    if percentHealth < MPShamanHealSaved.Wave_Value and MPShamanHealSaved.Wave==1 and MPShamanWaveMaxLevel>0 then
+    if percentHealth < MPShamanHealSaved[MPShamanHealConfig].Wave_Value and MPShamanHealSaved[MPShamanHealConfig].Wave==1 and MPShamanWaveMaxLevel>0 then
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local WaveMaxLevel = MPShamanWaveMaxLevel
-        if MPShamanHealSaved.WaveMaxLevel < MPShamanWaveMaxLevel then
-            WaveMaxLevel = MPShamanHealSaved.WaveMaxLevel
+        if MPShamanHealSaved[MPShamanHealConfig].WaveMaxLevel < MPShamanWaveMaxLevel then
+            WaveMaxLevel = MPShamanHealSaved[MPShamanHealConfig].WaveMaxLevel
         end
 
-        for i = WaveMaxLevel, MPShamanHealSaved.WaveMinLevel, -1 do
+        for i = WaveMaxLevel, MPShamanHealSaved[MPShamanHealConfig].WaveMinLevel, -1 do
             if MPShamanWaveEffect[i] < HealthDec then
 
                 if DM >= MPShamanWave[i] then
@@ -475,20 +483,20 @@ function MPShamanHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("治疗波(等级 "..MPShamanHealSaved.WaveMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("治疗波(等级 "..MPShamanHealSaved[MPShamanHealConfig].WaveMinLevel..")", unit, 1)
     end
 
     -- 次级治疗波
-    if percentHealth < MPShamanHealSaved.SecondaryWave_Value and MPShamanHealSaved.SecondaryWave==1 and MPShamanSecondaryWaveMaxLevel>0 then
+    if percentHealth < MPShamanHealSaved[MPShamanHealConfig].SecondaryWave_Value and MPShamanHealSaved[MPShamanHealConfig].SecondaryWave==1 and MPShamanSecondaryWaveMaxLevel>0 then
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local SecondaryWaveMaxLevel = MPShamanSecondaryWaveMaxLevel
-        if MPShamanHealSaved.SecondaryWaveMaxLevel < MPShamanSecondaryWaveMaxLevel then
-            SecondaryWaveMaxLevel = MPShamanHealSaved.SecondaryWaveMaxLevel
+        if MPShamanHealSaved[MPShamanHealConfig].SecondaryWaveMaxLevel < MPShamanSecondaryWaveMaxLevel then
+            SecondaryWaveMaxLevel = MPShamanHealSaved[MPShamanHealConfig].SecondaryWaveMaxLevel
         end
 
-        for i = SecondaryWaveMaxLevel, MPShamanHealSaved.SecondaryWaveMinLevel, -1 do
+        for i = SecondaryWaveMaxLevel, MPShamanHealSaved[MPShamanHealConfig].SecondaryWaveMinLevel, -1 do
             if MPShamanSecondaryWaveEffect[i] < HealthDec then
 
                 if DM >= MPShamanSecondaryWave[i] then
@@ -500,21 +508,21 @@ function MPShamanHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("次级治疗波(等级 "..MPShamanHealSaved.SecondaryWaveMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("次级治疗波(等级 "..MPShamanHealSaved[MPShamanHealConfig].SecondaryWaveMinLevel..")", unit, 1)
     end
 
     -- 开启治疗链
-    if MPShamanHealSaved.Chain==1 and MPShamanChainMaxLevel>0 then
+    if MPShamanHealSaved[MPShamanHealConfig].Chain==1 and MPShamanChainMaxLevel>0 then
 
         MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local ChainMaxLevel = MPShamanChainMaxLevel
-        if MPShamanHealSaved.ChainMaxLevel < MPShamanChainMaxLevel then
-            ChainMaxLevel = MPShamanHealSaved.ChainMaxLevel
+        if MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel < MPShamanChainMaxLevel then
+            ChainMaxLevel = MPShamanHealSaved[MPShamanHealConfig].ChainMaxLevel
         end
 
-        for i = ChainMaxLevel, MPShamanHealSaved.ChainMinLevel, -1 do
+        for i = ChainMaxLevel, MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel, -1 do
             if MPShamanChainEffect[i] < HealthDec then
 
                 if DM >= MPShamanChain[i] then
@@ -526,7 +534,7 @@ function MPShamanHealth(unit)
             end
         end
 
-        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved.ChainMinLevel..")", unit, 1)
+        return MPCastSpellWithoutTarget("治疗链(等级 "..MPShamanHealSaved[MPShamanHealConfig].ChainMinLevel..")", unit, 1)
 
     end
 
@@ -590,7 +598,7 @@ function MPShamanGetGroupHealthList()
     local Health = UnitHealth("player")
     if Health and Health>0 then
         local percentHealth = UnitHealth("player")/UnitHealthMax("player")*100
-        if percentHealth < MPShamanHealSaved.SecondaryWave_Value then
+        if percentHealth < MPShamanHealSaved[MPShamanHealConfig].SecondaryWave_Value then
             GroupHealthCount = GroupHealthCount + 1
         end
     end
@@ -606,7 +614,7 @@ function MPShamanGetGroupHealthList()
                 Health = UnitHealth(unit)
                 if Health and Health>0 then
                     local percentHealth = UnitHealth(unit)/UnitHealthMax(unit)*100
-                    if percentHealth < MPShamanHealSaved.SecondaryWave_Value then
+                    if percentHealth < MPShamanHealSaved[MPShamanHealConfig].SecondaryWave_Value then
                         GroupHealthCount = GroupHealthCount + 1
                     end
                 end
@@ -643,7 +651,7 @@ function MPShamanGetGroupHealthList()
                     Health = UnitHealth(unit)
                     if Health and Health>0 then
                         local percentHealth = UnitHealth(unit)/UnitHealthMax(unit)*100
-                        if percentHealth < MPShamanHealSaved.SecondaryWave_Value then
+                        if percentHealth < MPShamanHealSaved[MPShamanHealConfig].SecondaryWave_Value then
                             GroupHealthCount = GroupHealthCount + 1
                         end
                     end

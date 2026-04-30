@@ -2243,6 +2243,7 @@ AtlasLoot_HewdropDown = {
 			{{ AL["Ruins of Ahn'Qiraj Sets"], "AQ20SET", "Table" },},
 			{{ AL["Temple of Ahn'Qiraj Sets"], "AQ40SET", "Table" },},
 			{{ AL["Karazhan Sets"], "KARASET", "Table" },},
+			{{ AL["Timbermaw Hold Sets"], "TimbermawSET", "Table" },},
 			{{ AL["Dungeon 1/2 Sets"], "T0SET", "Table" },},
 			{{ AL["Tier 1 Sets"], "T1SET", "Table" },},
 			{{ AL["Tier 2 Sets"], "T2SET", "Table" },},
@@ -2935,6 +2936,7 @@ AtlasLoot_HewdropDown_SubTables = {
 		{ AL["Chieftain Partath"], "TMHChieftainPartath" },
 		{ AL["Selenaxx Foulheart"], "TMHSelenaxxFoulheart" },
 		{ AL["Ursol"], "TMHUrsol" },
+		{ AL["Perotharn"], "TMHPerotharn" },
 		{ AL["Trash Mobs"], "TMHTrash" },
 	},
 	["FrostmaneHollow"] = {--1.18.1新增副本 霜鬃谷

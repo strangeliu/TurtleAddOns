@@ -7,12 +7,13 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757476800},
         [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
         [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1757476800},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
         [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1757476800}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1757476800},
+        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1757476800},		
         
         -- 3天冷却副本
         [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1757476800},
@@ -26,8 +27,9 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1760673600},
         [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1760673600},
         [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1760673600},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1760673600},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1760673600},
         [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1760673600},
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1760673600}, 
@@ -45,8 +47,9 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1752724800},
         [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1752724800},
         [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1752724800},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1752724800},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1752724800},
         [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1752638400}, -- 2025年7月16日中午12点
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1752724800}, 
@@ -64,12 +67,12 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761537600},
         -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757044800},
         -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757044800},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1761537600},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1761537600},
         -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757044800},
         
         -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1761624000}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1761624000}, --2025年10月28日中午12点
+        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1774065600}, 
+        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1774065600}, --2026年3月21日中午12点
         
         -- -- 3天冷却副本
         [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1769486400}, --2026年1月27日中午12点
@@ -83,8 +86,9 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757476800},
         [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
         [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1757476800},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
         [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1749441600}, -- 2025年6月9日中午12点
@@ -102,12 +106,13 @@ local SERVER_CONFIGS = {
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761796800},
         [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1761796800},
         [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1761796800},
-        [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1761796800},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1761796800},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1761796800},
+        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1761796800}, 
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1761796800}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1761796800}, 
+        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1761796800},
         
         -- 3天冷却副本
         [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1761796800}, 
@@ -118,10 +123,10 @@ local SERVER_CONFIGS = {
 	["Ambershire"] = {       
 		-- 7天冷却副本
         [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1761710400},  -- 2025年10月29日中午12点
-        -- [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757476800},
+        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761710400},
         -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
         -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        -- [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1757476800},
+        -- [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
         -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
         
         -- 5天冷却副本
@@ -143,7 +148,7 @@ local SERVER_CONFIGS = {
         -- [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757044800},
         -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757044800},
         -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757044800},
-        -- [5] = {name = "翡翠圣地", resetDays = 7, baseResetTime = 1757044800},
+        -- [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757044800},
         -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757044800},
         
         -- -- 5天冷却副本
@@ -161,7 +166,7 @@ local RAID_GROUPS = {
     {
         name = "7天CD副本",
         color = "|cFFFF8000", -- 橙色
-        raids = {1, 2, 3, 4, 5, 6}
+        raids = {1, 2, 3, 4, 5, 6, 11}
     },
     {
         name = "5天CD副本",
@@ -187,7 +192,7 @@ local DARKMOON_FAIRE_CONFIG = {
 
 -- 祖格隐藏boss配置
 local ZG_HIDDEN_BOSS_CONFIG = {
-    baseResetTime = 1763510400, -- 基准时间：2025年11月19日上午8点（北京时间），此时是雷纳塔基
+    baseResetTime = 1773100800, -- 基准时间：2026年3月10日上午8点（北京时间），此时是雷纳塔基
     resetDays = 14, -- 14天轮换一次（两周）
     bosses = {
         [0] = "雷纳塔基",
@@ -355,12 +360,13 @@ local function CreateRaidNameToIDMap()
             elseif config.name == "黑翼之巢" then map["Blackwing Lair"] = id
             elseif config.name == "安其拉神殿" then map["Ahn'Qiraj Temple"] = id
             elseif config.name == "纳克萨玛斯" then map["Naxxramas"] = id
-            elseif config.name == "翡翠圣地" then map["Emerald Sanctum"] = id
+            elseif config.name == "翡翠圣殿" then map["Emerald Sanctum"] = id
             elseif config.name == "卡拉赞之塔" then map["Tower of Karazhan"] = id
             elseif config.name == "卡拉赞下层大厅" then map["Lower Karazhan Halls"] = id
             elseif config.name == "奥妮克希亚的巢穴" then map["Onyxia's Lair"] = id
             elseif config.name == "祖尔格拉布" then map["Zul'Gurub"] = id
             elseif config.name == "安其拉废墟" then map["Ruins of Ahn'Qiraj"] = id
+			elseif config.name == "木喉要塞" then map["Timbermaw Hold"] = id
             end
         end
     end
@@ -522,15 +528,15 @@ local function ShowRaidCDTooltip()
         -- 添加暗月马戏团信息
         local currentLocation, nextLocation, timeLeft = GetDarkmoonFaireInfo()
         GameTooltip:AddLine("|cffff0000暗月马戏团|r")
-        GameTooltip:AddLine("  当前位置: |cff00ff00" .. currentLocation .. "|r")
-        GameTooltip:AddLine("  下次轮换: |cff00ff00" .. nextLocation .. " (" .. FormatTimeLeft(timeLeft) .. ")|r")
+        GameTooltip:AddLine("  当前: |cff00ff00" .. currentLocation .. "|r")
+        GameTooltip:AddLine("  下次: |cff00ff00" .. nextLocation .. " (" .. FormatTimeLeft(timeLeft) .. ")|r")
         GameTooltip:AddLine(" ")
         
         -- 添加双倍战场信息
         local currentBG, nextBG, bgTimeLeft = GetBattlegroundBonusInfo()
         GameTooltip:AddLine("|cffff0000双倍战场|r")
-        GameTooltip:AddLine("  今日战场: |cff00ff00" .. currentBG .. "|r")
-        GameTooltip:AddLine("  明日战场: |cff00ff00" .. nextBG .. " (" .. FormatTimeLeft(bgTimeLeft) .. ")|r")
+        GameTooltip:AddLine("  今日: |cff00ff00" .. currentBG .. "|r")
+        GameTooltip:AddLine("  明日: |cff00ff00" .. nextBG .. " (" .. FormatTimeLeft(bgTimeLeft) .. ")|r")
         GameTooltip:AddLine(" ")
         
         -- 添加提示信息
@@ -572,22 +578,22 @@ local function ShowRaidCDTooltip()
     -- 添加暗月马戏团信息
     local currentLocation, nextLocation, timeLeft = GetDarkmoonFaireInfo()
     GameTooltip:AddLine("|cffff0000暗月马戏团|r")
-    GameTooltip:AddLine("  当前位置: |cff00ff00" .. currentLocation .. "|r")
-    GameTooltip:AddLine("  下次轮换: |cff00ff00" .. nextLocation .. " (" .. FormatTimeLeft(timeLeft) .. ")|r")
+    GameTooltip:AddLine("  当前: |cff00ff00" .. currentLocation .. "|r    下次: |cff00ff00" .. nextLocation .. " (" .. FormatTimeLeft(timeLeft) .. ")|r"  )
+    --GameTooltip:AddLine("  下次轮换: |cff00ff00" .. nextLocation .. " (" .. FormatTimeLeft(timeLeft) .. ")|r")
     GameTooltip:AddLine(" ")
     
     -- 添加祖格隐藏boss信息
     local currentBoss, nextBoss, zgTimeLeft = GetZGHiddenBossInfo()
     GameTooltip:AddLine("|cffff0000祖格隐藏BOSS|r")
-    GameTooltip:AddLine("  本轮BOSS: |cff00ff00" .. currentBoss .. "|r")
-    GameTooltip:AddLine("  下轮BOSS: |cff00ff00" .. nextBoss .. " (" .. FormatTimeLeft(zgTimeLeft) .. ")|r")
+    GameTooltip:AddLine("  本轮: |cff00ff00" .. currentBoss .. "|r    下轮: |cff00ff00" .. nextBoss .. " (" .. FormatTimeLeft(zgTimeLeft) .. ")|r")
+    --GameTooltip:AddLine("  下轮BOSS: |cff00ff00" .. nextBoss .. " (" .. FormatTimeLeft(zgTimeLeft) .. ")|r")
     GameTooltip:AddLine(" ")
     
     -- 添加双倍战场信息
     local currentBG, nextBG, bgTimeLeft = GetBattlegroundBonusInfo()
     GameTooltip:AddLine("|cffff0000双倍战场|r")
-    GameTooltip:AddLine("  今日战场: |cff00ff00" .. currentBG .. "|r")
-    GameTooltip:AddLine("  明日战场: |cff00ff00" .. nextBG .. " (" .. FormatTimeLeft(bgTimeLeft) .. ")|r")
+    GameTooltip:AddLine("  今日: |cff00ff00" .. currentBG .. "|r    明日: |cff00ff00" .. nextBG .. " (" .. FormatTimeLeft(bgTimeLeft) .. ")|r")
+    --GameTooltip:AddLine("  明日战场: |cff00ff00" .. nextBG .. " (" .. FormatTimeLeft(bgTimeLeft) .. ")|r")
     GameTooltip:AddLine(" ")
     
     -- 添加最后更新时间
