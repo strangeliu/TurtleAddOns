@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 邪修战士DPS一键宏
--- 更新日期：2026-04-18（后面根据时间来判断版本）
+-- 更新日期：2026-05-07（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -458,12 +458,12 @@ function MPFuryTwoHandOther()
 			
 			-- 锁定狂暴姿态
 			if MPWarriorEvilSaved[MPWarriorEvilConfig].BerserkerStance==1 then
-				if not SX and not (XFZ and Once==0) and NQ>=15 and MPGetShape(MPWarriorBerserkerStanceID) then
+				if NQ>=15 and MPGetShape(MPWarriorBerserkerStanceID) then
 					MPCastWithoutNampower("猛击")
 					return
 				end
 			else
-				if not SX and not (XFZ and Once==0) and NQ>=15 then
+				if NQ>=15 then
 					MPCastWithoutNampower("猛击")
 					return
 				end

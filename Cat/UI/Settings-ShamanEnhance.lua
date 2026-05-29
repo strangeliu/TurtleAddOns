@@ -783,6 +783,7 @@ local dropdown_LightningStrikeTotem = CreateFrame("Button", ADDON_NAME.."dropdow
 dropdown_LightningStrikeTotem:SetPoint("TOPLEFT", checkButton_LightningStrikeTotem, "TOPLEFT", 155, 0)
 local modes_LightningStrikeTotem = {
     [1] = {text = "|cFF9D38C8裂雷图腾|r", item="裂雷图腾", value = 1},
+    [2] = {text = "|cFF0070DD潮汐图腾|r", item="潮汐图腾", value = 2},
 }
 local function Dropdown_LST()
     for idx, data in pairs(modes_LightningStrikeTotem) do

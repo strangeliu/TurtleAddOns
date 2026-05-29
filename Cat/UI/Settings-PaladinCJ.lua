@@ -63,15 +63,52 @@ postion_y = postion_y-30
 
 -- 创建单选框 - 奉献
 local checkButton_Consecration = MPCreateCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 20, postion_y, "开启 奉献")
+
+local slider_Consecration = CreateFrame("Slider", ADDON_NAME.."slider_Consecration", checkButton_Consecration, "OptionsSliderTemplate")
+slider_Consecration:SetPoint("RIGHT", checkButton_Consecration, "RIGHT", 270, -2)
+slider_Consecration:SetWidth(120) -- 拖动条长度
+slider_Consecration:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_Consecration:SetMinMaxValues(1, 3)
+slider_Consecration:SetValueStep(1)
+slider_Consecration:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_Consecration)
+
+local color_Consecration = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_Consecration:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPPaladinCJSaved[ConfigCurrent].Consecration_Priority = arg1
+    if MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
+    end
+end)
+
 -- 设置点击事件
 checkButton_Consecration:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinCJSaved[ConfigCurrent].Consecration=1
+        MPPaladinCJSaved[ConfigCurrent].Consecration = 1
+        color_Consecration = "|cFFFFD100"
     else
-        MPPaladinCJSaved[ConfigCurrent].Consecration=0
+        color_Consecration = "|cFF888888"
+        MPPaladinCJSaved[ConfigCurrent].Consecration = 0
+    end
+    if MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
     end
     MPCatPaladinSealInit()
 end)
+
 
 -- 创建单选框 - 下方饰品
 local checkButton_Trinket_Below = MPCreateCheckButton(CatUISettingsPaladinCJ, ADDON_NAME.."CheckButton", 340, postion_y, "自动开启饰品(下)")
@@ -851,7 +888,7 @@ TipText:SetText("宏命令 |cFFF58CBA/pdps|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local PaladinCJSettingsUIVersion = 17
+local PaladinCJSettingsUIVersion = 19
 
 function MPResetPaladinCJSettings(config)
 
@@ -861,6 +898,7 @@ function MPResetPaladinCJSettings(config)
     MPPaladinCJSaved[config].HolinessAura = 1
     MPPaladinCJSaved[config].Consecration = 1
     MPPaladinCJSaved[config].Consecration_Level = 0
+    MPPaladinCJSaved[config].Consecration_Priority = 1
     MPPaladinCJSaved[config].Repentance = 1
     MPPaladinCJSaved[config].RepentanceBoss = 1
     MPPaladinCJSaved[config].Exorcism = 1
@@ -1043,6 +1081,19 @@ function InitPaladinCJSetPart2()
     checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPPaladinCJSaved[ConfigCurrent].SoulspeedBoss))
 
     slider_Consecration_Level:SetValue(MPPaladinCJSaved[ConfigCurrent].Consecration_Level)
+    slider_Consecration:SetValue(MPPaladinCJSaved[ConfigCurrent].Consecration_Priority)
+    if MPPaladinCJSaved[ConfigCurrent].Consecration==1 then
+        color_Consecration = "|cFFFFD100"
+    else
+        color_Consecration = "|cFF888888"
+    end
+    if MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinCJSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
+    end
 
     checkButton_Power:SetChecked(MPToBoolean(MPPaladinCJSaved[ConfigCurrent].Power))
     checkButton_Pick:SetChecked(MPToBoolean(MPPaladinCJSaved[ConfigCurrent].Pick))

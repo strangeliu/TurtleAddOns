@@ -508,6 +508,12 @@ local function OnEvent()
             -- 仅监控自己放出的技能
             if arg1 == MP_PLAYER_GUID then
                 isCast = false
+
+                -- 献祭之油
+                if arg4 == 11350 then
+                    MPSacrificialTimer = GetTime()+15
+                end
+
             end
 
 

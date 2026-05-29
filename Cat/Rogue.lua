@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 盗贼自配置一键宏
--- 发布日期：2026-04-12 （后面根据时间来判断版本）
+-- 发布日期：2026-05-08 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -367,9 +367,16 @@ function MPRogueDPS()
 
 		-- 背刺
 		if BEHIND then
-			if myPower>59 then
-				CastSpellByName("背刺")
-				return
+			if MPRogueMainHand==2 then
+				if myPower>59 then
+					CastSpellByName("背刺")
+					return
+				end
+			else
+				if MPRogueSaved[MPRogueConfig].SinisterStrike==1 and myPower>39 then
+					CastSpellByName("邪恶攻击")
+					return
+				end
 			end
 		else
 

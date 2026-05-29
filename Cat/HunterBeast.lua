@@ -88,16 +88,26 @@ function MPHunterBeastDPS()
 		return
 	end
 
+	-- 宠物攻击
+	if MPHunterBeastSaved[MPHunterBeastConfig].PetAttack==1 then
+		PetAttack()
+	end
+
+	-- 目标没有猎人印记时：施放猎人印记并返回
+	if not MPBuff("猎人印记","target") then
+		if MPHunterBeastSaved[MPHunterBeastConfig].Mark==1 and MPIsHunterMark() then
+			if MPHunterBeastSaved[MPHunterBeastConfig].MarkBossOnly==0 or (MPHunterBeastSaved[MPHunterBeastConfig].MarkBossOnly==1 and MPIsBossTarget()) then
+				CastSpellByName("猎人印记")
+			end
+		end
+		return
+	end
+
 	-- 自动攻击/自动射击
 	if MPGetTargetDistance() then
 		MPStartAttack()
 	else
 		MPAutoShot()
-	end
-
-	-- 宠物攻击
-	if MPHunterBeastSaved[MPHunterBeastConfig].PetAttack==1 and UnitAffectingCombat("target") then
-		PetAttack()
 	end
 
 	-- 在战斗中
@@ -206,12 +216,6 @@ function MPHunterBeastDPS()
 		CastSpellByName("强击光环")
 	end
 
-	if MPHunterBeastSaved[MPHunterBeastConfig].Mark==1 and not MPBuff("猎人印记","target") and MPIsHunterMark() then
-		if MPHunterBeastSaved[MPHunterBeastConfig].MarkBossOnly==0 or (MPHunterBeastSaved[MPHunterBeastConfig].MarkBossOnly==1 and MPIsBossTarget()) then
-			CastSpellByName("猎人印记")
-		end
-	end
-
 	-- 杀戮命令
 	if MPHunterBeastSaved[MPHunterBeastConfig].KillCommand==1 and MPHunterKillCommand==1 and KC and MPGetHunterGoreAllow() then
 		CastSpellByName("杀戮命令")
@@ -244,18 +248,18 @@ function MPHunterBeastDPS()
 			end
 		end
 
-		-- 瞄准射击->奥术弹药
-		if MPHunterBeastSaved[MPHunterBeastConfig].ArcaneShot==1 then
-			if MPBuff("魔力弹药") and ASSJ and MPIsHunterArcaneShot() then
-				CastSpellByName("奥术射击")
-				return
-			end
-		end
-
 		-- 瞄准射击->自然弹药
 		if MPHunterBeastSaved[MPHunterBeastConfig].Serpent==1 then
 			if MPBuff("剧毒弹药") and not MPGetSerpentStingDot() and MPIsPosion() then
 				CastSpellByName("毒蛇钉刺")
+				return
+			end
+		end
+
+		-- 瞄准射击->奥术弹药
+		if MPHunterBeastSaved[MPHunterBeastConfig].ArcaneShot==1 then
+			if MPBuff("魔力弹药") and ASSJ and MPIsHunterArcaneShot() then
+				CastSpellByName("奥术射击")
 				return
 			end
 		end
@@ -270,15 +274,15 @@ function MPHunterBeastDPS()
 			return
 		end
 
-		-- 瞄准射击->奥术弹药
-		if MPHunterBeastSaved[MPHunterBeastConfig].ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
-			CastSpellByName("奥术射击")
-			return
-		end
-
 		-- 瞄准射击->自然弹药
 		if MPHunterBeastSaved[MPHunterBeastConfig].Serpent==1 and not MPGetSerpentStingDot() and MPIsPosion() then
 			CastSpellByName("毒蛇钉刺")
+			return
+		end
+
+		-- 瞄准射击->奥术弹药
+		if MPHunterBeastSaved[MPHunterBeastConfig].ArcaneShot==1 and ASSJ and MPIsHunterArcaneShot() then
+			CastSpellByName("奥术射击")
 			return
 		end
 

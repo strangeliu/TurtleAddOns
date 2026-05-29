@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奶德一键宏
--- 更新日期：2026-04-10 （后面根据时间来判断版本）
+-- 更新日期：2026-05-07 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -166,6 +166,18 @@ function MPDriudAutoHealth()
         if MPDriudHealth("player") then
             return
         end
+    end
+
+    -- 小队成员
+    if MPDriudHealSaved[MPDriudHealConfig].PartyFirst==1 then
+
+        local sortedMembers = MPGetSortedPartyByHealth()
+        for i, member in ipairs(sortedMembers) do
+            if MPDriudHealth(member.unit) then
+                return
+            end
+        end
+
     end
 
     -- 队伍里的其他人
@@ -397,6 +409,13 @@ function MPGetSortedGroupByHealth()
     return MPSortByHealthPercentAsc(members)
 end
 
+-- 获取小队成员并按血量降序排序
+function MPGetSortedPartyByHealth()
+    local members = MPGetPartyHealthList()
+    return MPSortByHealthPercentAsc(members)
+end
+
+
 function MPSortByHealthPercentAsc(members)
     table.sort(members, function(a, b)
         local aPercent = a.health / a.maxHealth
@@ -405,6 +424,42 @@ function MPSortByHealthPercentAsc(members)
     end)
     return members
 end
+
+
+
+function MPGetPartyHealthList()
+    local groupMembers = {}
+    
+    local numPartyMembers = GetNumPartyMembers()
+        
+    -- 先添加玩家自己
+    table.insert(groupMembers, {
+        name = UnitName("player"),
+        health = UnitHealth("player"),
+        maxHealth = UnitHealthMax("player"),
+        unit = "player",
+        isPlayer = true
+    })
+        
+    -- 添加队友（如果有）
+    if numPartyMembers > 0 then
+        for i = 1, numPartyMembers do
+            local unit = "party" .. i
+            if UnitExists(unit) and UnitIsVisible(unit) then
+                table.insert(groupMembers, {
+                    name = UnitName(unit),
+                    health = UnitHealth(unit),
+                    maxHealth = UnitHealthMax(unit),
+                    unit = unit,
+                    isPlayer = false
+                })
+            end
+        end
+    end
+    
+    return groupMembers
+end
+
 
 
 function MPGetGroupHealthList()

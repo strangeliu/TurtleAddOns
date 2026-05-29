@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 神牧一键宏
--- 更新日期：2026-04-11 （后面根据时间来判断版本）
+-- 更新日期：2026-04-27 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -127,6 +127,7 @@ function MPPriestAutoHealth()
     end
 
     if MPPriestHealSaved[MPPriestHealConfig].PrayerHealing==1 and (GetTime()-PriestHealLoopTimer>0) then
+    if MPPriestHealSaved[MPPriestHealConfig].PrayerBook==0 or (MPPriestHealSaved[MPPriestHealConfig].PrayerBook==1 and MPPriestPrayerBookCount~=4) then
         -- 祷言 本队优先
         if MPPriestHealSaved[MPPriestHealConfig].PrayerHealingPartyFirst==1 then
             MPPrayerHealthParty()
@@ -136,6 +137,7 @@ function MPPriestAutoHealth()
         MPPrayerHealthRaid()
 
         PriestHealLoopTimer = GetTime()+0.3
+    end
     end
 
     -- 自己
@@ -278,6 +280,7 @@ function MPPriestHealth(unit)
 
     -- 强效治疗术
     if percentHealth < MPPriestHealSaved[MPPriestHealConfig].GreaterHeal_Value and MPPriestHealSaved[MPPriestHealConfig].GreaterHeal==1 and MPPriestGreaterHealManaMaxLevel>0 then
+    if MPPriestHealSaved[MPPriestHealConfig].PrayerBook==0 or (MPPriestHealSaved[MPPriestHealConfig].PrayerBook==1 and MPPriestPrayerBookCount~=3) then
 
         MPHealTargetDelay[targetName] = GetTime()
 
@@ -300,10 +303,13 @@ function MPPriestHealth(unit)
         end
 
         return MPCastSpellWithoutTarget("强效治疗术(等级 "..MPPriestHealSaved[MPPriestHealConfig].GreaterHealMinLevel..")", unit, 1)
+
+    end
     end
 
     -- 快速治疗
     if MPPriestHealSaved[MPPriestHealConfig].FlashHeal==1 and MPPriestFlashHealManaMaxLevel>0 then
+    if MPPriestHealSaved[MPPriestHealConfig].PrayerBook==0 or (MPPriestHealSaved[MPPriestHealConfig].PrayerBook==1 and MPPriestPrayerBookCount~=2) then
 
         MPHealTargetDelay[targetName] = GetTime()
 
@@ -326,6 +332,7 @@ function MPPriestHealth(unit)
         end
 
         return MPCastSpellWithoutTarget("快速治疗(等级 "..MPPriestHealSaved[MPPriestHealConfig].FlashHealMinLevel..")", unit, 1)
+    end
     end
 
 

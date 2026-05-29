@@ -176,6 +176,7 @@ end)
 
 -- 创建单选框 - Tip
 local checkButton_Tip = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "开启 提示信息")
+checkButton_Tip:Hide()
 -- 设置点击事件
 checkButton_Tip:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -374,9 +375,12 @@ end)
 
 postion_y = postion_y - 40
 
+
+postion_y = postion_y - 40
+
 -- 祈祷之书
-local checkButton_PrayerBook = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "|cFF888888自动 祈祷之书 (未完工)|r")
-checkButton_PrayerBook:Disable()
+local checkButton_PrayerBook = MPCreateCheckButton(CatUISettingsPriestHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "适配天赋 祈祷之书")
+--checkButton_PrayerBook:Disable()
 checkButton_PrayerBook:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPPriestHealSaved[ConfigCurrent].PrayerBook = 1
@@ -384,8 +388,6 @@ checkButton_PrayerBook:SetScript("OnClick", function(self)
         MPPriestHealSaved[ConfigCurrent].PrayerBook = 0
     end
 end)
-
-postion_y = postion_y - 40
 
 postion_y = postion_y - 40
 
@@ -428,7 +430,7 @@ slider_GreaterHeal_Value:SetPoint("TOPLEFT", CatUISettingsPriestHealWindow, "TOP
 slider_GreaterHeal_Value:SetWidth(220) -- 拖动条长度
 slider_GreaterHeal_Value:SetHeight(16) -- 拖动条高度
 
-slider_GreaterHeal_Value:SetMinMaxValues(10, 99)
+slider_GreaterHeal_Value:SetMinMaxValues(10, 100)
 slider_GreaterHeal_Value:SetValueStep(1)
 slider_GreaterHeal_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_GreaterHeal_Value)
@@ -731,7 +733,7 @@ TipText:SetText("宏命令 |cFFFFFFFF/mheal|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local PriestHealSettingsUIVersion = 18
+local PriestHealSettingsUIVersion = 19
 
 function MPResetPriestHealSettings(config)
 
@@ -739,7 +741,7 @@ function MPResetPriestHealSettings(config)
 
     -- 基本配置
 
-    MPPriestHealSaved[config].GreaterHeal = 0
+    MPPriestHealSaved[config].GreaterHeal = 1
     MPPriestHealSaved[config].PrayerHealing = 1
     MPPriestHealSaved[config].MoveRenew = 1
     MPPriestHealSaved[config].FlashHeal = 1
@@ -774,7 +776,7 @@ function MPResetPriestHealSettings(config)
     MPPriestHealSaved[config].PrayerBook_Value = 0
 
     MPPriestHealSaved[config].Desperate_Value = 20
-    MPPriestHealSaved[config].GreaterHeal_Value = 50
+    MPPriestHealSaved[config].GreaterHeal_Value = 99
     MPPriestHealSaved[config].Shield_Value = 30
     MPPriestHealSaved[config].PrayerHealingPartyFirst = 1
     MPPriestHealSaved[config].PrayerHealing_Value = 5

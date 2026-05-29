@@ -122,6 +122,31 @@ checkButton_Swiftmend:SetScript("OnClick", function(self)
 end)
 
 
+-- 创建单选框 - 优先治疗小队
+local checkButton_PartyFirst = MPCreateCheckButton(CatUISettingsDriudHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "优先治疗 小队")
+checkButton_PartyFirst:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPDriudHealSaved[ConfigCurrent].PartyFirst = 1
+    else
+        MPDriudHealSaved[ConfigCurrent].PartyFirst = 0
+    end
+end)
+
+
+
+postion_y = postion_y-30
+
+-- 创建单选框 - 移动回春
+local checkButton_MoveRejuvenation = MPCreateCheckButton(CatUISettingsDriudHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 回春术 (移动时)")
+checkButton_MoveRejuvenation:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPDriudHealSaved[ConfigCurrent].MoveRejuvenation = 1
+    else
+        MPDriudHealSaved[ConfigCurrent].MoveRejuvenation = 0
+    end
+end)
+
+
 -- 创建单选框 - 治疗大团
 local checkButton_ScanTeam = MPCreateCheckButton(CatUISettingsDriudHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "治疗大团")
 checkButton_ScanTeam:SetScript("OnClick", function(self)
@@ -158,21 +183,6 @@ checkButton_ScanTeam_Rand:SetScript("OnClick", function(self)
     checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].ScanTeam_Rand))
 end)
 
-
-
-postion_y = postion_y-30
-
--- 创建单选框 - 移动回春
-local checkButton_MoveRejuvenation = MPCreateCheckButton(CatUISettingsDriudHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 回春术 (移动时)")
-checkButton_MoveRejuvenation:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPDriudHealSaved[ConfigCurrent].MoveRejuvenation = 1
-    else
-        MPDriudHealSaved[ConfigCurrent].MoveRejuvenation = 0
-    end
-end)
-
-
 -- 创建单选框 - Tip
 local checkButton_Tip = MPCreateCheckButton(CatUISettingsDriudHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "开启 提示信息")
 checkButton_Tip:Hide()
@@ -183,6 +193,7 @@ checkButton_Tip:SetScript("OnClick", function(self)
         MPDriudHealSaved[ConfigCurrent].Tip = 0
     end
 end)
+
 
 
 postion_y = postion_y-30
@@ -636,7 +647,7 @@ TipText:SetText("宏命令 |cFFFF7D0A/dheal|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local DriudHealSettingsUIVersion = 20
+local DriudHealSettingsUIVersion = 21
 
 function MPResetDriudHealSettings(config)
 
@@ -653,6 +664,7 @@ function MPResetDriudHealSettings(config)
     MPDriudHealSaved[config].TargetFirst = 1
     MPDriudHealSaved[config].TargetTarget = 1
     MPDriudHealSaved[config].SelfFirst = 0
+    MPDriudHealSaved[config].PartyFirst = 0
     MPDriudHealSaved[config].ScanTeam = 1
     MPDriudHealSaved[config].ScanTeam_Low = 1
     MPDriudHealSaved[config].ScanTeam_Rand = 0
@@ -704,6 +716,7 @@ function MPInitDriudHealSettingsPart1()
     checkButton_TargetFirst:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].TargetFirst))
     checkButton_TargetTarget:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].TargetTarget))
     checkButton_SelfFirst:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].SelfFirst))
+    checkButton_PartyFirst:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].PartyFirst))
     checkButton_ScanTeam:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].ScanTeam))
     checkButton_ScanTeam_Low:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].ScanTeam_Low))
     checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPDriudHealSaved[ConfigCurrent].ScanTeam_Rand))

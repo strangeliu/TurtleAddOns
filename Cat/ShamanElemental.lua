@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 元素萨一键宏
--- 更新日期：2026-04-16 （后面根据时间来判断版本）
+-- 更新日期：2026-05-08 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -268,7 +268,7 @@ function MPShamanAutoElemental()
         end
     end
 
-    --[[
+
     if MP_SuperWoW then
         -- 要考虑弹道时间
         if GetTime()-MPBeginLavaBurstCastTimer > 2.5 then
@@ -277,7 +277,7 @@ function MPShamanAutoElemental()
             local a,guid=UnitExists("target")
             if check[guid] then
                 local timer = 15-(GetTime()-check[guid])
-                if MPShamanElementalSaved[MPShamanElementalConfig].LavaBurst==1 and timer>0 and timer<7 then
+                if MPShamanElementalSaved[MPShamanElementalConfig].FlameShockFromLavaBurst==1 and timer>0 and timer<7 then
                     CastSpellByName("熔岩爆裂")
                     return
                 end
@@ -289,7 +289,7 @@ function MPShamanAutoElemental()
             -- 要考虑弹道时间
             if GetTime()-MPBeginLavaBurstCastTimer > 2.5 then
 
-                if MPShamanElementalSaved[MPShamanElementalConfig].LavaBurst==1 then
+                if MPShamanElementalSaved[MPShamanElementalConfig].FlameShockFromLavaBurst==1 then
                     CastSpellByName("熔岩爆裂")
                     return
                 end
@@ -298,7 +298,7 @@ function MPShamanAutoElemental()
         end
 
     end
-    ]]
+
 
     local rang = -1
     local t = UnitExists("target")

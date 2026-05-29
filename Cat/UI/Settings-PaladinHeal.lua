@@ -159,6 +159,7 @@ postion_y = postion_y - 30
 
 -- 创建单选框 - Tip
 local checkButton_Tip = MPCreateCheckButton(CatUISettingsPaladinHealWindow, ADDON_NAME.."CheckButton", 340, postion_y, "开启 提示信息")
+checkButton_Tip:Hide()
 -- 设置点击事件
 checkButton_Tip:SetScript("OnClick", function(self)
     if this:GetChecked() then

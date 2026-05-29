@@ -128,14 +128,38 @@ postion_y = postion_y-30
 
 -- 创建单选框 - 烈焰震击
 local checkButton_FlameShock = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 烈焰震击")
+
+
+
+
+postion_y = postion_y-30
+
+-- 创建单选框 - 烈焰震击 通过 熔岩爆裂
+local checkButton_FlameShockFromLavaBurst = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "保持 烈焰震击 通过 熔岩爆裂")
+
 checkButton_FlameShock:SetScript("OnClick", function(self)
     if this:GetChecked() then
         MPShamanElementalSaved[ConfigCurrent].FlameShock = 1
     else
         MPShamanElementalSaved[ConfigCurrent].FlameShock = 0
+        MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst = 0
     end
+    checkButton_FlameShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShock) )
+    checkButton_FlameShockFromLavaBurst:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst) )
+end)
+checkButton_FlameShockFromLavaBurst:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst = 1
+        MPShamanElementalSaved[ConfigCurrent].FlameShock = 1
+    else
+        MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst = 0
+    end
+    checkButton_FlameShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShock) )
+    checkButton_FlameShockFromLavaBurst:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst) )
 end)
 
+-- 创建单选框 - 闪电之盾
+local checkButton_LightningShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 闪电之盾 (单选)")
 
 
 
@@ -144,8 +168,9 @@ postion_y = postion_y-30
 -- 创建单选框 - 大地震击
 local checkButton_EarthShock = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 大地震击 (单选)")
 
--- 创建单选框 - 闪电之盾
-local checkButton_LightningShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 闪电之盾 (单选)")
+
+-- 创建单选框 - 水之护盾
+local checkButton_WaterShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 水之护盾 (单选)")
 
 
 
@@ -180,12 +205,6 @@ checkButton_FrostShock:SetScript("OnClick", function(self)
     checkButton_FrostShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FrostShock) )
 end)
 
--- 创建单选框 - 水之护盾
-local checkButton_WaterShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 水之护盾 (单选)")
-
-
-
-postion_y = postion_y-30
 
 -- 创建单选框 - 大地之盾
 local checkButton_EarthShield = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 340, postion_y, "保持 大地之盾 (单选)")
@@ -549,7 +568,7 @@ postion_y = postion_y-130
 
 
 -- 创建单选框 - 熔岩爆裂
-local checkButton_LavaBurst = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启火萨流程 熔岩+烈震")
+local checkButton_LavaBurst = MPCreateCheckButton(CatUISettingsShamanElementalWindow, ADDON_NAME.."CheckButton", 20, postion_y, "仅开启 火萨流程 熔岩+烈震")
 -- 熔岩爆裂设置点击事件
 checkButton_LavaBurst:SetScript("OnClick", function(self)
     if this:GetChecked() then
@@ -840,7 +859,7 @@ TipText:SetText("宏命令 |cFF0070DE/sedps|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local ShamanElementalSettingsUIVersion = 13
+local ShamanElementalSettingsUIVersion = 14
 
 function MPResetShamanElementalSettings(config)
 
@@ -854,6 +873,7 @@ function MPResetShamanElementalSettings(config)
     MPShamanElementalSaved[config].EarthShock = 1
     MPShamanElementalSaved[config].FrostShock = 0
     MPShamanElementalSaved[config].FlameShock = 0
+    MPShamanElementalSaved[config].FlameShockFromLavaBurst = 0
 
     MPShamanElementalSaved[config].LightningShield = 0
     MPShamanElementalSaved[config].WaterShield = 1
@@ -925,6 +945,7 @@ function InitShamanElementalSettingsPart1()
     checkButton_EarthShock:SetChecked(MPToBoolean(MPShamanElementalSaved[ConfigCurrent].EarthShock))
     checkButton_FrostShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FrostShock) )
     checkButton_FlameShock:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShock) )
+    checkButton_FlameShockFromLavaBurst:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].FlameShockFromLavaBurst) )
     checkButton_LavaBurst:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].LavaBurst) )
 
     checkButton_WEnhance:SetChecked( MPToBoolean(MPShamanElementalSaved[ConfigCurrent].WEnhance) )

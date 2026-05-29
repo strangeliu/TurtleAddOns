@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 防骑一键宏
--- 更新日期：2026-04-18 （后面根据时间来判断版本）
+-- 更新日期：2026-04-30 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -45,6 +45,49 @@ local function Consecration()
 		CastSpellByName("奉献")
 	end
 end
+
+local function CastConsecration()
+
+	-- 是否踩奉献
+	if CatPaladinSeal:IsVisible() then
+		if MPPaladinSealSaved.Consecration==1 and MPGetTargetDistance() and FX then
+			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
+				if ManaPercent>0.8 then
+					CastSpellByName("奉献(等级 5)")
+				elseif ManaPercent>0.5 then
+					CastSpellByName("奉献(等级 3)")
+				elseif Mana>MPPaladinConsecrationLevel1 then
+					CastSpellByName("奉献(等级 1)")
+				end
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
+			end
+
+			return true
+		end
+	else
+		-- 是否踩奉献
+		if MPPaladinTankSaved[MPPaladinTankConfig].Consecration==1 and MPGetTargetDistance() and FX then
+
+			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
+				if ManaPercent>0.8 then
+					CastSpellByName("奉献(等级 5)")
+				elseif ManaPercent>0.5 then
+					CastSpellByName("奉献(等级 3)")
+				elseif Mana>MPPaladinConsecrationLevel1 then
+					CastSpellByName("奉献(等级 1)")
+				end
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
+			end
+
+			return true
+		end
+	end
+
+	return false
+end
+
 
 local function Exorcism()
 	if Mana<MPPaladinExorcismLevel6 then
@@ -265,6 +308,13 @@ function MPPallyTank()
 		end
 	end
 
+	-- 奉献：优先级高
+	if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Priority==3 then
+		if CastConsecration() then
+			return
+		end
+	end
+
 	-- 神圣之盾
 	if SSZD and MPPaladinTankSaved[MPPaladinTankConfig].HolyShield==1 then
 
@@ -291,6 +341,11 @@ function MPPallyTank()
 		if SZJ and Mana>=120 then CastSpellByName("神圣打击")  end
 	end
 
+	if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Priority==2 and not SZJ then
+		if CastConsecration() then
+			return
+		end
+	end
 
 	if HasTarget then
 
@@ -505,54 +560,13 @@ function MPPallyTank()
 	end
 
 
-	-- 是否踩奉献
-	if CatPaladinSeal:IsVisible() then
-		if MPPaladinSealSaved.Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
-			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
-				if ManaPercent>0.8 then
-					CastSpellByName("奉献(等级 5)")
-				elseif ManaPercent>0.5 then
-					CastSpellByName("奉献(等级 3)")
-				elseif Mana>MPPaladinConsecrationLevel1 then
-					CastSpellByName("奉献(等级 1)")
-				end
-			else
-				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
-			end
-		end
-	else
-		-- 是否踩奉献
-		if MPPaladinTankSaved[MPPaladinTankConfig].Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
 
-			if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
-				if ManaPercent>0.8 then
-					CastSpellByName("奉献(等级 5)")
-				elseif ManaPercent>0.5 then
-					CastSpellByName("奉献(等级 3)")
-				elseif Mana>MPPaladinConsecrationLevel1 then
-					CastSpellByName("奉献(等级 1)")
-				end
-			else
-				CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
-			end
+	if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Priority==1 and not SZJ and not SP then
+		if CastConsecration() then
+			return
 		end
 	end
 
-	--[[
-	if MPPaladinTankSaved[MPPaladinTankConfig].Consecration==1 and not SZJ and MPGetTargetDistance() and FX then
-		if MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level==0 then
-			if ManaPercent>0.8 then
-				CastSpellByName("奉献(等级 5)")
-			elseif ManaPercent>0.5 then
-				CastSpellByName("奉献(等级 3)")
-			elseif Mana>MPPaladinConsecrationLevel1 then
-				CastSpellByName("奉献(等级 1)")
-			end
-		else
-			CastSpellByName("奉献(等级 "..MPPaladinTankSaved[MPPaladinTankConfig].Consecration_Level..")")
-		end
-	end
-	]]
 
 
 	if MP_Nampower then

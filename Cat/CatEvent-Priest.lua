@@ -55,6 +55,8 @@ local ChanneledTimer = 0
 -- 鞭笞 阶段
 local MindFlayCount = 0
 
+-- 祈祷之书
+MPPriestPrayerBookCount = 0
 
 local function OnEvent()
 
@@ -99,10 +101,11 @@ local function OnEvent()
     elseif event == "SPELLCAST_START" then
 
         -- 牧师治疗读条处理
-        if arg1 == "强效治疗术" then MPPriestCastHeal=GetTime() end
-        if arg1 == "快速治疗" then MPPriestCastHeal=GetTime() end
-
-        if arg1 == "神圣之火" then
+        if arg1 == "强效治疗术" then
+            MPPriestCastHeal=GetTime() 
+        elseif arg1 == "快速治疗" then
+            MPPriestCastHeal=GetTime() 
+        elseif arg1 == "神圣之火" then
             MPCastHolyFireTimer=GetTime()+(arg2/1000)+0.3
         end
 
@@ -148,11 +151,11 @@ local function OnEvent()
     elseif event == "UNIT_CASTEVENT" then
 
         if arg3 == "CAST" then
-
             -- 仅监控自己放出的技能
             if arg1 == PLAYER_GUID then
 
                 --MPMsg(arg4)
+                
 
                 -- 暗言术：痛
                 if arg4==589 or arg4==594 or arg4==970 or arg4==992 or arg4==2767 or arg4==10892 or arg4==10893 or arg4==10894 then
@@ -165,6 +168,22 @@ local function OnEvent()
                 -- 神圣之火
                 elseif arg4==14914 or arg4==15262 or arg4==15263 or arg4==15264 or arg4==15265 or arg4==15266 or arg4==15267 or arg4==15261 then
                     HolyFireDelayTime[arg2] = GetTime()
+
+                -- 恢复
+                elseif arg4==139 or arg4==6074 or arg4==6075 or arg4==6076 or arg4==6077 or arg4==6078 or arg4==10927 or arg4==10928 or arg4==10929 or arg4==25315 then
+                    MPPriestPrayerBookCount = 1
+
+                -- 快速治疗
+                elseif arg4==2061 or arg4==9472 or arg4==9473 or arg4==9474 or arg4==10915 or arg4==10916 or arg4==10917 then
+                    MPPriestPrayerBookCount = 2
+
+                -- 强效治疗术
+                elseif arg4==2060 or arg4==10963 or arg4==10964 or arg4==10965 or arg4==25314 then
+                    MPPriestPrayerBookCount = 3
+
+                -- 治疗祷言
+                elseif arg4==596 or arg4==996 or arg4==10960 or arg4==10961 or arg4==25316 then
+                    MPPriestPrayerBookCount = 4
 
                 end
 

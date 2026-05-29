@@ -96,7 +96,7 @@ JusticeButtonNormal.text = JusticeButtonNormal:CreateFontString(nil, "OVERLAY", 
 JusticeButtonNormal.text:SetPoint("BOTTOM", JusticeButtonNormal, "BOTTOM", 0, 5)
 JusticeButtonNormal.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
 JusticeButtonNormal.text:SetTextColor(1, 1, 1)
-JusticeButtonNormal.text:SetText("空")
+JusticeButtonNormal.text:SetText("配置")
 
 
 
@@ -214,7 +214,7 @@ ButtonConsecration.text = ButtonConsecration:CreateFontString(nil, "OVERLAY", "G
 ButtonConsecration.text:SetPoint("BOTTOM", ButtonConsecration, "BOTTOM", 0, 5)
 ButtonConsecration.text:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
 ButtonConsecration.text:SetTextColor(1, 1, 1)
-ButtonConsecration.text:SetText("奉献")
+ButtonConsecration.text:SetText("奉献\n开")
 
 
 -- 添加点击事件
@@ -251,12 +251,21 @@ JusticeButtonCrusader:SetScript("OnClick", function()
 end)
 
 ButtonConsecration:SetScript("OnClick", function()
-    if MPPaladinSealSaved.Consecration==1 then
+    if MPPaladinSealSaved.Consecration==0 then
+        ButtonConsecration:SetAlpha(1.0)
+        MPPaladinSealSaved.Consecration=2
+        ButtonConsecration.text:SetText("奉献\n配置")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Nature_WispSplode")
+    elseif MPPaladinSealSaved.Consecration==1 then
         ButtonConsecration:SetAlpha(PopColor)
         MPPaladinSealSaved.Consecration=0
-    else
+        ButtonConsecration.text:SetText("奉献\n关")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Holy_InnerFire")
+    elseif MPPaladinSealSaved.Consecration==2 then
         ButtonConsecration:SetAlpha(1.0)
         MPPaladinSealSaved.Consecration=1
+        ButtonConsecration.text:SetText("奉献\n开")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Holy_InnerFire")
     end
 end)
 
@@ -575,10 +584,18 @@ function MPCatPaladinSealInit()
         SealButtonCommand:SetAlpha(1.0)
     end
 
-    if MPPaladinSealSaved.Consecration==1 then
+    if MPPaladinSealSaved.Consecration==2 then
         ButtonConsecration:SetAlpha(1.0)
-    else
+        ButtonConsecration.text:SetText("奉献\n配置")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Nature_WispSplode")
+    elseif MPPaladinSealSaved.Consecration==0 then
         ButtonConsecration:SetAlpha(PopColor)
+        ButtonConsecration.text:SetText("奉献\n关")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Holy_InnerFire")
+    elseif MPPaladinSealSaved.Consecration==1 then
+        ButtonConsecration:SetAlpha(1.0)
+        ButtonConsecration.text:SetText("奉献\n开")
+        ButtonConsecration.icon:SetTexture("Interface\\Icons\\Spell_Holy_InnerFire")
     end
 
 end

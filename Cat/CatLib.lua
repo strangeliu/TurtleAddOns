@@ -42,7 +42,7 @@ MPHasteRating = 0
 MPTipsColor = "|cFF9264cdCat|r |cFFc3a7e2"
 
 -- 版本
-MPCatAddonVer = "2026-04-24"
+MPCatAddonVer = "2026-05-09"
 
 -- 调试
 MPCatDebug = 1
@@ -496,7 +496,7 @@ function MPBuff(buffName, unit)
 	if MP_Nampower4 then
 
 		if MPPlayerAurasSpellName[buffName] then
-			return true, MPPlayerAurasSpellSlot[buffName]
+			return true, -1
 		end
 
 	end
@@ -591,7 +591,9 @@ function MPCancelBuffByName(buffName, unit)
 	unit = unit or "player";  -- 默认检查玩家自己
 	local f, i = MPBuff(buffName, unit)
 	if f then
-		CancelPlayerBuff(i)
+		if i ~= -1 then
+			CancelPlayerBuff(i)
+		end
 	end
 end
 

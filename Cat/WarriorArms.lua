@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 武器战士DPS一键宏
--- 更新日期：2026-04-18（后面根据时间来判断版本）
+-- 更新日期：2026-05-07（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -439,34 +439,20 @@ function MPArmsTwoHand()
 		
 	end
 
-	if Once==0 then
 
-		-- 锁定狂暴姿态
-		if MPWarriorArmsSaved[MPWarrorArmsConfig].BerserkerStance==1 then
-			if not ZS and not XFZ and NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value and MPGetShape(MPWarriorBerserkerStanceID) then
-				MPCastWithoutNampower("猛击")
-				return
-			end
-		else
-			if not ZS and not XFZ and NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value then
-				MPCastWithoutNampower("猛击")
-				return
-			end
+	-- 锁定狂暴姿态
+	if MPWarriorArmsSaved[MPWarrorArmsConfig].BerserkerStance==1 then
+		if NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value and MPGetShape(MPWarriorBerserkerStanceID) then
+			MPCastWithoutNampower("猛击")
+			return
 		end
 	else
-		-- 锁定狂暴姿态
-		if MPWarriorArmsSaved[MPWarrorArmsConfig].BerserkerStance==1 then
-			if not ZS and NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value and MPGetShape(MPWarriorBerserkerStanceID) then
-				MPCastWithoutNampower("猛击")
-				return
-			end
-		else
-			if not ZS and NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value then
-				MPCastWithoutNampower("猛击")
-				return
-			end
+		if NQ>=15 and MPGetMainHandLeft()>MPWarriorArmsSaved[MPWarrorArmsConfig].Slam_Value then
+			MPCastWithoutNampower("猛击")
+			return
 		end
 	end
+
 
 
 

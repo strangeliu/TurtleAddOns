@@ -63,17 +63,53 @@ postion_y = postion_y-30
 
 -- 创建单选框 - 奉献
 local checkButton_Consecration = MPCreateCheckButton(CatUISettingsPaladinTank, ADDON_NAME.."CheckButton", 20, postion_y, "开启 奉献")
+
+local slider_Consecration = CreateFrame("Slider", ADDON_NAME.."slider_Consecration", checkButton_Consecration, "OptionsSliderTemplate")
+slider_Consecration:SetPoint("RIGHT", checkButton_Consecration, "RIGHT", 270, -2)
+slider_Consecration:SetWidth(120) -- 拖动条长度
+slider_Consecration:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_Consecration:SetMinMaxValues(1, 3)
+slider_Consecration:SetValueStep(1)
+slider_Consecration:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_Consecration)
+
+local color_Consecration = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_Consecration:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPPaladinTankSaved[ConfigCurrent].Consecration_Priority = arg1
+    if MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
+    end
+end)
+
 -- 设置点击事件
 checkButton_Consecration:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPPaladinCJSaved.Consecration=1
         MPPaladinTankSaved[ConfigCurrent].Consecration = 1
+        color_Consecration = "|cFFFFD100"
     else
-        MPPaladinCJSaved.Consecration=0
+        color_Consecration = "|cFF888888"
         MPPaladinTankSaved[ConfigCurrent].Consecration = 0
+    end
+    if MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
     end
     MPCatPaladinSealInit()
 end)
+
+
 
 
 -- 创建单选框 - 下方饰品
@@ -660,7 +696,7 @@ TipText:SetText("宏命令 |cFFF58CBA/ptank|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local PaladinTankSettingsUIVersion = 21
+local PaladinTankSettingsUIVersion = 22
 
 function MPResetPaladinTankSettings(config)
 
@@ -676,6 +712,7 @@ function MPResetPaladinTankSettings(config)
     MPPaladinTankSaved[config].RighteousFury = 1
     MPPaladinTankSaved[config].Consecration = 1
     MPPaladinTankSaved[config].Consecration_Level = 0
+    MPPaladinTankSaved[config].Consecration_Priority = 1
 
     MPPaladinTankSaved[config].HolyShield = 1
     MPPaladinTankSaved[config].Exorcism = 1
@@ -847,6 +884,20 @@ function InitPaladinTankSettingsPart2()
     slider_Consecration_Level:SetValue(MPPaladinTankSaved[ConfigCurrent].Consecration_Level)
 
     slider_CrusaderStrikeTimer:SetValue(MPPaladinTankSaved[ConfigCurrent].CrusaderStrikeTimer)
+
+    slider_Consecration:SetValue(MPPaladinTankSaved[ConfigCurrent].Consecration_Priority)
+    if MPPaladinTankSaved[ConfigCurrent].Consecration==1 then
+        color_Consecration = "|cFFFFD100"
+    else
+        color_Consecration = "|cFF888888"
+    end
+    if MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==1 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 低|r")
+    elseif MPPaladinTankSaved[ConfigCurrent].Consecration_Priority==2 then
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 中|r")
+    else
+        _G[slider_Consecration:GetName().."Text"]:SetText(color_Consecration.."优先级: 高|r")
+    end
 
 end
 

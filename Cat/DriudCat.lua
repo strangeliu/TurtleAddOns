@@ -83,8 +83,6 @@ MPDriudTigerFuryTimer = 0
 MPDriudMaxRipAP = 0
 MPDriudMaxRakeAP = 0
 
--- 献祭之油时间
-MPSacrificialTimer = 0
 
 MPDriudCatPVP = 0
 MPDriudCatTest = 0

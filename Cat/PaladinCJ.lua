@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 惩戒骑一键宏
--- 更新日期：2026-04-17 （后面根据时间来判断版本）
+-- 更新日期：2026-05-07 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -91,6 +91,44 @@ local function Consecration()
 	else
 		CastSpellByName("奉献")
 	end
+end
+
+local function CastConsecration()
+
+	if CatPaladinSeal:IsVisible() then
+		if MPPaladinSealSaved.Consecration==1 and MPGetTargetDistance()  and FX then
+			if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level==0 then
+				Consecration()
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level..")")
+			end
+			return true
+		elseif MPPaladinSealSaved.Consecration==2 then
+			-- 是否踩奉献
+			if MPPaladinCJSaved[MPPaladinCJConfig].Consecration==1 and MPGetTargetDistance()  and FX then
+
+				if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level==0 then
+					Consecration()
+				else
+					CastSpellByName("奉献(等级 "..MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level..")")
+				end
+				return true
+			end
+		end
+	else
+		-- 是否踩奉献
+		if MPPaladinCJSaved[MPPaladinCJConfig].Consecration==1 and MPGetTargetDistance()  and FX then
+
+			if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level==0 then
+				Consecration()
+			else
+				CastSpellByName("奉献(等级 "..MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level..")")
+			end
+			return true
+		end
+	end
+
+	return false
 end
 
 local function Exorcism()
@@ -310,6 +348,11 @@ function MPPaladinCJSpell()
 	end
 
 
+	if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Priority==3 then
+		if CastConsecration() then
+			return
+		end
+	end
 
 	-- 主攻技能策略
 	if SZJ then
@@ -354,6 +397,13 @@ function MPPaladinCJSpell()
 
 		end
 
+	end
+
+
+	if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Priority==2 and not SZJ then
+		if CastConsecration() then
+			return
+		end
 	end
 
 
@@ -537,23 +587,9 @@ function MPPaladinCJSpell()
 		end
 	end
 
-	if CatPaladinSeal:IsVisible() then
-		if MPPaladinSealSaved.Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
-			if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level==0 then
-				Consecration()
-			else
-				CastSpellByName("奉献(等级 "..MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level..")")
-			end
-		end
-	else
-		-- 是否踩奉献
-		if MPPaladinCJSaved[MPPaladinCJConfig].Consecration==1 and MPGetTargetDistance() and not SZJ and not SP and FX then
-
-			if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level==0 then
-				Consecration()
-			else
-				CastSpellByName("奉献(等级 "..MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Level..")")
-			end
+	if MPPaladinCJSaved[MPPaladinCJConfig].Consecration_Priority==1 and not SZJ and not SP then
+		if CastConsecration() then
+			return
 		end
 	end
 

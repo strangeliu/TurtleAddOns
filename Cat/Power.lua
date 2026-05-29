@@ -16,6 +16,8 @@
 
 -- -------------------------------------
 
+-- 献祭之油时间
+MPSacrificialTimer = 0
 
 function MPCatPower()
 
