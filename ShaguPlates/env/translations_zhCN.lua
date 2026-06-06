@@ -3,6 +3,7 @@ ShaguPlates_translation["zhCN"] = {
   ["Abbreviate Unit Names"] = "缩写单位名称",
   ["Always Show On Target Units"] = "始终在目标单位上显示",
   ["Always Show On Units With Missing HP"] = "始终在未满血单位上显示",
+  ["Always Show Player Pets"] = "始终显示玩家宠物",
   ["Ammo Counter"] = "弹药数量",
   ["Ascending"] = "上移",
   ["Background Color"] = "背景颜色",

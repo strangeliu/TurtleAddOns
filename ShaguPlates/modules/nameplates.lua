@@ -39,6 +39,24 @@ ShaguPlates:RegisterModule("nameplates", "vanilla:tbc", function ()
   local registry = {}
   local debuffdurations = C.appearance.cd.debuffs == "1" and true or nil
 
+  -- pet name cache: maps pet name -> true for quick lookup
+  local petcache = {}
+
+  local function UpdatePetCache()
+    petcache = {}
+    local n
+    n = UnitName("pet")
+    if n then petcache[n] = true end
+    for i = 1, 4 do
+      n = UnitName("partypet" .. i)
+      if n then petcache[n] = true end
+    end
+    for i = 1, 40 do
+      n = UnitName("raidpet" .. i)
+      if n then petcache[n] = true end
+    end
+  end
+
   -- cache default border color
   local er, eg, eb, ea = GetStringColor(ShaguPlates_config.appearance.border.color)
 
@@ -114,6 +132,7 @@ ShaguPlates:RegisterModule("nameplates", "vanilla:tbc", function ()
     elseif C.nameplates.neutralnpc == "1" and unittype == "NEUTRAL_NPC" then
       return true
     elseif C.nameplates.friendlynpc == "1" and unittype == "FRIENDLY_NPC" then
+      if C.nameplates.showpet == "1" and petcache[name] then return nil end
       return true
     elseif C.nameplates.friendlyplayer == "1" and unittype == "FRIENDLY_PLAYER" then
       return true
@@ -309,10 +328,16 @@ ShaguPlates:RegisterModule("nameplates", "vanilla:tbc", function ()
   nameplates:RegisterEvent("UNIT_COMBO_POINTS")
   nameplates:RegisterEvent("PLAYER_COMBO_POINTS")
   nameplates:RegisterEvent("UNIT_AURA")
+  nameplates:RegisterEvent("PARTY_MEMBERS_CHANGED")
+  nameplates:RegisterEvent("RAID_ROSTER_UPDATE")
+  nameplates:RegisterEvent("UNIT_PET")
 
   nameplates:SetScript("OnEvent", function()
     if event == "PLAYER_ENTERING_WORLD" then
       this:SetGameVariables()
+      UpdatePetCache()
+    elseif event == "PARTY_MEMBERS_CHANGED" or event == "RAID_ROSTER_UPDATE" or event == "UNIT_PET" then
+      UpdatePetCache()
     else
       this.eventcache = true
     end

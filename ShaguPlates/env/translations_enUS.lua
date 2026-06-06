@@ -3,6 +3,7 @@ ShaguPlates_translation["enUS"] = {
   ["Abbreviate Unit Names"] = nil,
   ["Always Show On Target Units"] = nil,
   ["Always Show On Units With Missing HP"] = nil,
+  ["Always Show Player Pets"] = nil,
   ["Ammo Counter"] = nil,
   ["Ascending"] = nil,
   ["Background Color"] = nil,
