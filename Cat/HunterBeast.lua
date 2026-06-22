@@ -71,6 +71,14 @@ function MPHunterBeastDPS()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPHunterBeastSaved[MPHunterBeastConfig].Target, 0)
 
+	-- 野猪模式：自动锁敌开启时，只允许攻击名字中含"猪"的目标
+	if MPHunterBeastSaved[MPHunterBeastConfig].Target == 1 and MPHunterBeastSaved[MPHunterBeastConfig].BoarMode == 1 then
+		if UnitExists("target") and not string.find(UnitName("target") or "", "猪") then
+			ClearTarget()
+			return
+		end
+	end
+
 	-- 自动拾取
 	if MPHunterBeastSaved[MPHunterBeastConfig].Pick==1 then
 		MPAutoLoot()

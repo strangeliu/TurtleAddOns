@@ -126,6 +126,18 @@ checkButton_Target:SetScript("OnClick", function(self)
     end
 end)
 
+-- 创建单选框 - 野猪模式（开启后自动锁敌只选名字含"猪"的目标，锚定在"自动锁敌"下方）
+local checkButton_BoarMode = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "野猪模式")
+checkButton_BoarMode:ClearAllPoints()
+checkButton_BoarMode:SetPoint("TOPLEFT", checkButton_Target, "BOTTOMLEFT", 18, -2)
+checkButton_BoarMode:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].BoarMode = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].BoarMode = 0
+    end
+end)
+
 
 
 
@@ -654,6 +666,7 @@ function MPResetHunterBeastSettings(config)
     MPHunterBeastSaved[config].Trinket_Below = 1
     MPHunterBeastSaved[config].TBBoss = 0
     MPHunterBeastSaved[config].Target = 0
+    MPHunterBeastSaved[config].BoarMode = 0
     MPHunterBeastSaved[config].PetAttack = 0
 
     MPHunterBeastSaved[config].RaptorStrike = 1
@@ -710,6 +723,7 @@ local function MPInitHunterBeastSettingsPart1()
     checkButton_Trinket_Below:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trinket_Below))
     checkButton_TBBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].TBBoss))
     checkButton_Target:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Target))
+    checkButton_BoarMode:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].BoarMode))
     checkButton_PetAttack:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].PetAttack))
 
     checkButton_RaptorStrike:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RaptorStrike))
