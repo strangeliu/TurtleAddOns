@@ -25,11 +25,6 @@ do -- /db track mines
   pfDatabase:AddCustomIcon(-177388, "img\\tracking\\mines\\RichThorium") -- Ooze Covered Rich Thorium Vein
   pfDatabase:AddCustomIcon(-165658, "img\\tracking\\mines\\DarkIron") -- Dark Iron Deposit
   pfDatabase:AddCustomIcon(-2653, "img\\tracking\\mines\\LesserBloodstone") -- Lesser Bloodstone Deposit
-  pfDatabase:AddCustomIcon(-181555, "img\\tracking\\mines\\FelIron") -- Fel Iron Deposit
-  pfDatabase:AddCustomIcon(-181556, "img\\tracking\\mines\\Adamantite") -- Adamantite Deposit
-  pfDatabase:AddCustomIcon(-181569, "img\\tracking\\mines\\Adamantite") -- Rich Adamantite Deposit
-  pfDatabase:AddCustomIcon(-181557, "img\\tracking\\mines\\Khorium") -- Khorium Vein
-  pfDatabase:AddCustomIcon(-185877, "img\\tracking\\mines\\Nethercite") -- Nethercite Deposit
 end
 
 do -- /db track herbs
@@ -61,17 +56,7 @@ do -- /db track herbs
   pfDatabase:AddCustomIcon(-142142, "img\\tracking\\herbs\\Sungrass") -- Sungrass
   pfDatabase:AddCustomIcon(-1623, "img\\tracking\\herbs\\WildSteelbloom") -- Wild Steelbloom
   pfDatabase:AddCustomIcon(-2044, "img\\tracking\\herbs\\Wintersbite") -- Wintersbite
-  pfDatabase:AddCustomIcon(-181270, "img\\tracking\\herbs\\Felweed") -- Felweed
-  pfDatabase:AddCustomIcon(-181271, "img\\tracking\\herbs\\DreamingGlory") -- Dreaming Glory
   pfDatabase:AddCustomIcon(-181166, "img\\tracking\\herbs\\Stranglekelp") -- Bloodthistle
-  pfDatabase:AddCustomIcon(-181275, "img\\tracking\\herbs\\Ragveil") -- Ragveil
-  pfDatabase:AddCustomIcon(-181276, "img\\tracking\\herbs\\FlameCap") -- Flame Cap
-  pfDatabase:AddCustomIcon(-181277, "img\\tracking\\herbs\\Terocone") -- Terocone
-  pfDatabase:AddCustomIcon(-181278, "img\\tracking\\herbs\\AncientLichen") -- Ancient Lichen
-  pfDatabase:AddCustomIcon(-181279, "img\\tracking\\herbs\\Netherbloom") -- Netherbloom
-  pfDatabase:AddCustomIcon(-181280, "img\\tracking\\herbs\\NightmareVine") -- Nightmare Vine
-  pfDatabase:AddCustomIcon(-181281, "img\\tracking\\herbs\\ManaThistle") -- Mana Thistle
-  pfDatabase:AddCustomIcon(-185881, "img\\tracking\\herbs\\Netherdust") -- Netherdust Bush
   pfDatabase:AddCustomIcon(-157936, "img\\tracking\\herbs\\GraveMoss") -- Un'Goro Dirt Pile
 end
 

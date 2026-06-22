@@ -28,8 +28,9 @@ local function ShowTooltip()
 
       local qlogid = pfQuest.questlog[this.node.questid] and pfQuest.questlog[this.node.questid].qlogid
       if qlogid then
-        local objectives = GetNumQuestLeaderBoards(qlogid)
-        if objectives and objectives > 0 then
+        if not pfQuest:TurtleUnsafeQuest(this.node.questid, this.node.quest) then
+          local objectives = GetNumQuestLeaderBoards(qlogid)
+          if objectives and objectives > 0 then
           for i=1, objectives, 1 do
             local text, _, done = GetQuestLogLeaderBoard(i, qlogid)
             local _, _, obj, cur, req = strfind(gsub(text, "\239\188\154", ":"), "(.*):%s*([%d]+)%s*/%s*([%d]+)")
@@ -43,6 +44,7 @@ local function ShowTooltip()
             end
           end
           GameTooltip:AddLine(" ")
+          end
         end
       end
     end
@@ -257,6 +259,9 @@ function tracker.ButtonClick()
         HideUIPanel(QuestLogFrame)
         SelectQuestLogEntry(data.qlogid)
         ShowUIPanel(QuestLogFrame)
+        if pfQuest and pfQuest.TurtleSafeQuestID and pfQuest:TurtleSafeQuestID(questid, data.title) then
+          QuestLog_UpdateQuestDetails(true)
+        end
         break
       end
     end
@@ -274,13 +279,7 @@ function tracker.ButtonClick()
     pfQuest.updateQuestGivers = true
   elseif IsControlKeyDown() and not WorldMapFrame:IsShown() then
     -- show world map
-    if ToggleWorldMap then
-      -- vanilla & tbc
-      ToggleWorldMap()
-    else
-      -- wotlk
-      WorldMapFrame:Show()
-    end
+    ToggleWorldMap()
   elseif IsControlKeyDown() and pfQuest_config["spawncolors"] == "0" then
     -- switch color
     pfQuest_colors[this.title] = { pfMap.str2rgb(this.title .. GetTime()) }
@@ -351,7 +350,7 @@ function tracker.ButtonEvent(self)
     local qlogid = pfQuest.questlog[qid] and pfQuest.questlog[qid].qlogid or 0
     local qtitle, level, tag, header, collapsed, complete = compat.GetQuestLogTitle(qlogid)
     if not qlogid or not qtitle then return end
-    local objectives = GetNumQuestLeaderBoards(qlogid)
+    local objectives = nil
     local watched = IsQuestWatched(qlogid)
     local color = pfQuestCompat.GetDifficultyColor(level)
     local cur,max = 0,0
@@ -363,6 +362,13 @@ function tracker.ButtonEvent(self)
     end
 
     local expanded = expand_states[title] == 1 and true or nil
+
+    if pfQuest:TurtleUnsafeQuest(qid, title) then
+      objectives = 0
+      max = 1
+    else
+      objectives = GetNumQuestLeaderBoards(qlogid)
+    end
 
     if objectives and objectives > 0 then
       for i=1, objectives, 1 do

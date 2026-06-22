@@ -200,13 +200,16 @@ pfMap.minimap_sizes = minimap_sizes
 
 pfMap.tooltip = CreateFrame("Frame" , "pfMapTooltip", GameTooltip)
 pfMap.tooltip:SetScript("OnShow", function()
+  if pfMap.tooltip_lock then return end
+  pfMap.tooltip_lock = true
+
   local focus = GetMouseFocus()
   -- abort on pfQuest nodes
-  if focus and focus.title then return end
+  if focus and focus.title then pfMap.tooltip_lock = nil return end
   -- abort on quest timers
-  if focus and focus.GetName and strsub((focus:GetName() or ""),0,10) == "QuestTimer" then return end
+  if focus and focus.GetName and strsub((focus:GetName() or ""),0,10) == "QuestTimer" then pfMap.tooltip_lock = nil return end
   -- abort if tooltips are disabled
-  if pfQuest_config.showtooltips == "0" then return end
+  if pfQuest_config.showtooltips == "0" then pfMap.tooltip_lock = nil return end
 
   local name = getglobal("GameTooltipTextLeft1") and getglobal("GameTooltipTextLeft1"):GetText() or "__NONE__"
   local zone = pfMap:GetMapID(GetCurrentMapContinent(), GetCurrentMapZone())
@@ -223,6 +226,8 @@ pfMap.tooltip:SetScript("OnShow", function()
       end
     end
   end
+
+  pfMap.tooltip_lock = nil
 end)
 
 -- dummy function that can be used by extensions
@@ -275,8 +280,12 @@ function pfMap:ShowTooltip(meta, tooltip)
 
       if meta["quest"] == qtitle then
         -- handle active quests
-        local objectives = GetNumQuestLeaderBoards(qid)
+        local objectives = nil
         catch = true
+
+        if not (pfQuest and pfQuest.TurtleUnsafeQuest and pfQuest:TurtleUnsafeQuest(meta["questid"], meta["quest"])) then
+          objectives = GetNumQuestLeaderBoards(qid)
+        end
 
         local symbol = ( complete or objectives == 0 ) and "|cff555555[|cffffcc00?|cff555555]|r " or "|cff555555[|cffffcc00!|cff555555]|r "
         tooltip:AddLine(symbol .. meta["quest"], 1, 1, 0)
@@ -293,7 +302,7 @@ function pfMap:ShowTooltip(meta, tooltip)
                 local r,g,b = pfMap.tooltip:GetColor(objNum, objNeeded)
                 tooltip:AddLine("|cffaaaaaa- |r" .. monsterName .. ": " .. objNum .. "/" .. objNeeded, r, g, b)
               end
-            elseif table.getn(meta["item"]) > 0 and type == "item" and meta["droprate"] then
+            elseif meta["item"] and table.getn(meta["item"]) > 0 and type == "item" and meta["droprate"] then
               -- loot
               local i, j, itemName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_OBJECTS_FOUND))
 
@@ -306,7 +315,7 @@ function pfMap:ShowTooltip(meta, tooltip)
                   tooltip:AddLine("|cffaaaaaa- |r" .. itemName .. ": " .. objNum .. "/" .. objNeeded .. " |cff555555[|cff" .. lootcolor .. meta["droprate"] .. "%|cff555555]", r, g, b)
                 end
               end
-            elseif table.getn(meta["item"]) > 0 and type == "item" and meta["sellcount"] then
+            elseif meta["item"] and table.getn(meta["item"]) > 0 and type == "item" and meta["sellcount"] then
               -- vendor
               local i, j, itemName, objNum, objNeeded = strfind(text, pfUI.api.SanitizePattern(QUEST_OBJECTS_FOUND))
 
@@ -368,7 +377,7 @@ function pfMap:ShowTooltip(meta, tooltip)
     end
   else
     -- handle non-quest objects
-    if meta["item"][1] and meta["itemid"] and not meta["itemlink"] then
+    if meta["item"][1] and meta["itemid"] and not meta["itemlink"] and not (pfQuest and pfQuest.TurtleUnsafeItem and pfQuest:TurtleUnsafeItem(meta["itemid"])) then
       local _, _, itemQuality = GetItemInfo(meta["itemid"])
       if itemQuality then
         local itemColor = "|c" .. string.format("%02x%02x%02x%02x", 255,
@@ -409,14 +418,8 @@ end
 
 function pfMap:ShowMapID(map)
   if map then
-    if ToggleWorldMap then
-      -- vanilla & tbc
-      if not WorldMapFrame:IsShown() then
-        ToggleWorldMap()
-      end
-    else
-      -- wotlk
-      WorldMapFrame:Show()
+    if not WorldMapFrame:IsShown() then
+      ToggleWorldMap()
     end
 
     pfMap:SetMapByID(map)
@@ -634,11 +637,6 @@ function pfMap:NodeClick()
 end
 
 function pfMap:NodeEnter()
-  -- wotlk: need to disable blop tooltips first
-  if compat.client >= 30300 then
-    WorldMapPOIFrame.allowBlobTooltip = false
-  end
-
   local tooltip = this:GetParent() == WorldMapButton and WorldMapTooltip or GameTooltip
   tooltip:SetOwner(this, "ANCHOR_LEFT")
   this.spawn = this.spawn or UNKNOWN
@@ -674,11 +672,6 @@ function pfMap:NodeEnter()
 end
 
 function pfMap:NodeLeave()
-  -- wotlk: re-enable blop tooltips
-  if compat.client >= 30300 then
-    WorldMapPOIFrame.allowBlobTooltip = true
-  end
-
   local tooltip = this:GetParent() == WorldMapButton and WorldMapTooltip or GameTooltip
   tooltip:Hide()
   pfMap.highlight = nil
@@ -960,6 +953,11 @@ function pfMap:UpdateMinimap()
   local mapWidth = minimap_sizes[mapID] and minimap_sizes[mapID][1] or 0
   local mapHeight = minimap_sizes[mapID] and minimap_sizes[mapID][2] or 0
 
+  if mapWidth == 0 or mapHeight == 0 then
+    for pins, pin in pairs(pfMap.mpins) do pin:Hide() end
+    return
+  end
+
   local xScale = mapZoom / mapWidth
   local yScale = mapZoom / mapHeight
 
@@ -1114,34 +1112,3 @@ pfMap:SetScript("OnUpdate", function()
     hidecluster = nil
   end
 end)
-
--- only hook for 3.3.5
-if compat.client >= 30300 then
-  -- Initialize a variable to track the previous clicked title
-  local previousTitle = nil
-  -- Highlight Map Quest Log Selection Nodes
-  local pfHookWorldMapQuestFrame_OnMouseUp = WorldMapQuestFrame_OnMouseUp
-  WorldMapQuestFrame_OnMouseUp = function(self)
-    pfHookWorldMapQuestFrame_OnMouseUp(self)
-    WorldMapBlobFrame:Hide()
-    WorldMapFrame_ClearQuestPOIs()
-    if not IsShiftKeyDown() then
-      pfMap.highlight = nil
-      local questLogIndex = GetQuestLogSelection()
-      local title = GetQuestLogTitle(questLogIndex)
-
-      if title then
-        if previousTitle == title then
-          -- Reset the highlight if the same title is clicked again
-          pfMap.highlight = nil
-          previousTitle = nil
-        else
-          -- Logic for highlighting nodes associated with the clicked quest
-          pfMap.highlight = title
-          previousTitle = title
-          pfMap.queue_update = GetTime()
-        end
-      end
-    end
-  end
-end

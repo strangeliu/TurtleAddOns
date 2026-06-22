@@ -9,26 +9,8 @@ local noloc = { items = true, quests = true, objects = true, units = true }
 
 pfDB.locales = {
   ["enUS"] = "English",
-  ["koKR"] = "Korean",
-  ["frFR"] = "French",
-  ["deDE"] = "German",
   ["zhCN"] = "Chinese (Simplified)",
-  ["zhTW"] = "Chinese (Traditional)",
-  ["esES"] = "Spanish",
-  ["ruRU"] = "Russian",
-  ["ptBR"] = "Portuguese",
 }
-
--- Patch databases to further expansions
-local function patchtable(base, diff)
-  for k, v in pairs(diff) do
-    if type(v) == "string" and v == "_" then
-      base[k] = nil
-    else
-      base[k] = v
-    end
-  end
-end
 
 -- Return the best cluster point for a coordiante table
 local best, neighbors = { index = 1, neighbors = 0 }, 0
@@ -127,29 +109,6 @@ local function lev(str1, str2, limit)
   return matrix[len1][len2]
 end
 
-local loc_core, loc_update
-for _, exp in pairs({ "-tbc", "-wotlk" }) do
-  for _, db in pairs(dbs) do
-    if pfDB[db]["data"..exp] then
-      patchtable(pfDB[db]["data"], pfDB[db]["data"..exp])
-    end
-
-    for loc, _ in pairs(pfDB.locales) do
-      if pfDB[db][loc] and pfDB[db][loc..exp] then
-        loc_update = pfDB[db][loc..exp] or pfDB[db]["enUS"..exp]
-        patchtable(pfDB[db][loc], loc_update)
-      end
-    end
-  end
-
-  loc_core = pfDB["professions"][loc] or pfDB["professions"]["enUS"]
-  loc_update = pfDB["professions"][loc..exp] or pfDB["professions"]["enUS"..exp]
-  if loc_update then patchtable(loc_core, loc_update) end
-
-  if pfDB["minimap"..exp] then patchtable(pfDB["minimap"], pfDB["minimap"..exp]) end
-  if pfDB["meta"..exp] then patchtable(pfDB["meta"], pfDB["meta"..exp]) end
-end
-
 -- detect installed locales
 for key, name in pairs(pfDB.locales) do
   if not pfDB["quests"][key] then pfDB.locales[key] = nil end
@@ -217,8 +176,11 @@ pfDatabase.itemlist:SetScript("OnUpdate", function()
       local link = GetContainerItemLink(bag,slot)
       local _, _, parse = strfind((link or ""), "(%d+):")
       if parse then
-        local item = GetItemInfo(parse)
-        if item then this.db[item] = true end
+        -- Some custom quest items crash the 1.12 client when queried before their template is cached.
+        if not (pfQuest and pfQuest.TurtleUnsafeItem and pfQuest:TurtleUnsafeItem(parse)) then
+          local item = GetItemInfo(parse)
+          if item then this.db[item] = true end
+        end
       end
     end
   end
@@ -339,12 +301,6 @@ local bitraces = {
   [128] = "Troll"
 }
 
--- append with playable races by expansion
-if pfQuestCompat.client > 11200 then
-  bitraces[512] = "BloodElf"
-  bitraces[1024] = "Draenei"
-end
-
 -- make it public for extensions
 pfDB.bitraces = bitraces
 
@@ -354,7 +310,6 @@ local bitclasses = {
   [4] = "HUNTER",
   [8] = "ROGUE",
   [16] = "PRIEST",
-  [32] = "DEATHKNIGHT",
   [64] = "SHAMAN",
   [128] = "MAGE",
   [256] = "WARLOCK",
@@ -1155,7 +1110,9 @@ function pfDatabase:SearchQuestID(id, meta, maps)
 
           if meta["qlogid"] then
             local _, _, _, _, _, complete = compat.GetQuestLogTitle(meta["qlogid"])
-            complete = complete or GetNumQuestLeaderBoards(meta["qlogid"]) == 0 and true or nil
+            if not (pfQuest and pfQuest.TurtleUnsafeQuest and pfQuest:TurtleUnsafeQuest(id, meta["quest"])) then
+              complete = complete or GetNumQuestLeaderBoards(meta["qlogid"]) == 0 and true or nil
+            end
             if complete == true or complete == 1 then
               meta["texture"] = pfQuestConfig.path.."\\img\\complete_c"
             else
@@ -1177,7 +1134,9 @@ function pfDatabase:SearchQuestID(id, meta, maps)
 
           if meta["qlogid"] then
             local _, _, _, _, _, complete = compat.GetQuestLogTitle(meta["qlogid"])
-            complete = complete or GetNumQuestLeaderBoards(meta["qlogid"]) == 0 and true or nil
+            if not (pfQuest and pfQuest.TurtleUnsafeQuest and pfQuest:TurtleUnsafeQuest(id, meta["quest"])) then
+              complete = complete or GetNumQuestLeaderBoards(meta["qlogid"]) == 0 and true or nil
+            end
             if complete then
               meta["texture"] = pfQuestConfig.path.."\\img\\complete_c"
             else
@@ -1202,7 +1161,7 @@ function pfDatabase:SearchQuestID(id, meta, maps)
   }
 
   -- If QuestLogID is given, scan and add all finished objectives to blacklist
-  if meta["qlogid"] then
+  if meta["qlogid"] and not (pfQuest and pfQuest.TurtleUnsafeQuest and pfQuest:TurtleUnsafeQuest(id, meta["quest"])) then
     local objectives = GetNumQuestLeaderBoards(meta["qlogid"])
     local _, _, _, _, _, complete = compat.GetQuestLogTitle(meta["qlogid"])
     if complete then return maps end
@@ -1562,6 +1521,12 @@ end
 -- Try to guess the quest ID based on the questlog ID
 -- Returns possible quest IDs
 function pfDatabase:GetQuestIDs(qid)
+  local safe_title = compat.GetQuestLogTitle(qid)
+  local safe_quest_id = pfQuest and pfQuest.TurtleSafeQuestID and pfQuest:TurtleSafeQuestID(nil, safe_title)
+  if safe_quest_id then
+    return { [1] = safe_quest_id }
+  end
+
   if GetQuestLink then
     local questLink = GetQuestLink(qid)
       if questLink then

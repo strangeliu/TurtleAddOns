@@ -37,10 +37,8 @@ end
 
 pfUI.api.SetButtonFont = pfUI.api.SetButtonFont or function(button, font, size, flags)
   if button.SetFont then
-    -- vanilla + tbc
     button:SetFont(font, size, flags)
   else
-    -- wotlk
     local buttonText = button:GetFontString()
     if buttonText then
       buttonText:SetFont(font, size, flags)
@@ -56,10 +54,8 @@ end
 
 pfUI.api.SetButtonFontColor = pfUI.api.SetButtonFontColor or function(button, r, g, b, a)
   if button.SetTextColor then
-    -- vanilla + tbc
     button:SetTextColor(r, g, b, a)
   else
-    -- wotlk
     local buttonText = button:GetFontString()
     if buttonText then buttonText:SetTextColor(r, g, b, a) end
   end

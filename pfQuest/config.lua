@@ -179,7 +179,7 @@ pfQuestConfig:EnableMouse(true)
 pfQuestConfig:SetClampedToScreen(true)
 pfQuestConfig:RegisterEvent("ADDON_LOADED")
 pfQuestConfig:SetScript("OnEvent", function()
-  if arg1 == "pfQuest" or arg1 == "pfQuest-tbc" or arg1 == "pfQuest-wotlk" then
+  if arg1 == "pfQuest" then
     pfQuestConfig:LoadConfig()
     pfQuestConfig:MigrateHistory()
     pfQuestConfig:CreateConfigEntries(pfQuest_defconfig)
@@ -220,7 +220,7 @@ pfUI.api.CreateBackdrop(pfQuestConfig, nil, true, 0.75)
 table.insert(UISpecialFrames, "pfQuestConfig")
 
 -- detect current addon path
-local tocs = { "", "-master", "-tbc", "-wotlk" }
+local tocs = { "", "-master" }
 for _, name in pairs(tocs) do
   local current = string.format("pfQuest%s", name)
   local _, title = GetAddOnInfo(current)

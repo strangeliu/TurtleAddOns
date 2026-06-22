@@ -1,19 +1,10 @@
 -- multi api compat
 local compat = pfQuestCompat
-local _, _, _, client = GetBuildInfo()
-client = client or 11200
-local _G = client == 11200 and getfenv(0) or _G
+local _G = getfenv(0)
 
 pfQuest = CreateFrame("Frame")
 pfQuest.icons = {}
-
-if client >= 30300 then
-  pfQuest.dburl = "https://www.wowhead.com/wotlk/quest="
-elseif client >= 20400 then
-  pfQuest.dburl = "https://www.wowhead.com/tbc/quest="
-else
-  pfQuest.dburl = "https://www.wowhead.com/classic/quest="
-end
+pfQuest.dburl = "https://database.turtlecraft.gg/?quest="
 
 function pfQuest:Debug(msg)
   -- only show debug output if enabled
@@ -38,6 +29,58 @@ function pfQuest:Debug(msg)
 
   pfQuest.debugwin:AddMessage(msg)
   pfQuest.debugwin:Show()
+end
+
+local turtle_unsafe_quests = {
+  [42065] = true,
+  [42066] = true,
+  [42067] = true,
+  [42069] = true,
+  ["人头落地"] = true,
+  ["玛拉塞希尔的鬼魂"] = true,
+  ["天外陨星"] = true,
+  ["枯萎的洞穴"] = true,
+  ["Falling the Fallen"] = true,
+  ["Ghosts of Maras’ethil"] = true,
+  ["Heaven Falling Down"] = true,
+  ["The Withered Den"] = true,
+}
+
+local turtle_safe_quest_ids = {
+  [42065] = 42065,
+  [42066] = 42066,
+  [42067] = 42067,
+  [42069] = 42069,
+  ["人头落地"] = 42065,
+  ["玛拉塞希尔的鬼魂"] = 42066,
+  ["天外陨星"] = 42067,
+  ["枯萎的洞穴"] = 42069,
+  ["Falling the Fallen"] = 42065,
+  ["Ghosts of Maras’ethil"] = 42066,
+  ["Heaven Falling Down"] = 42067,
+  ["The Withered Den"] = 42069,
+}
+
+local turtle_unsafe_items = {
+  [42351] = true,
+  [42352] = true,
+  [42353] = true,
+  [42354] = true,
+  [42355] = true,
+  [42356] = true,
+  [42357] = true,
+}
+
+function pfQuest:TurtleUnsafeQuest(id, title)
+  return turtle_unsafe_quests[id] or turtle_unsafe_quests[title]
+end
+
+function pfQuest:TurtleSafeQuestID(id, title)
+  return turtle_safe_quest_ids[title] or turtle_safe_quest_ids[id]
+end
+
+function pfQuest:TurtleUnsafeItem(id)
+  return turtle_unsafe_items[tonumber(id)]
 end
 
 function pfQuest:SortedPairs(t, index, reverse)
@@ -87,7 +130,7 @@ pfQuest:RegisterEvent("SKILL_LINES_CHANGED")
 pfQuest:RegisterEvent("ADDON_LOADED")
 pfQuest:SetScript("OnEvent", function()
   if event == "ADDON_LOADED" then
-    if arg1 == "pfQuest" or arg1 == "pfQuest-tbc" or arg1 == "pfQuest-wotlk" then
+    if arg1 == "pfQuest" then
       pfQuest:AddQuestLogIntegration()
       pfQuest:AddWorldMapIntegration()
       this.lock = GetTime() + 10
@@ -234,7 +277,6 @@ function pfQuest:UpdateQuestlog()
   -- iterate over all quests
   for qlogid=1,40 do
     local title, _, _, header, _, complete = compat.GetQuestLogTitle(qlogid)
-    local objectives = GetNumQuestLeaderBoards(qlogid)
     local watched, questid, state
 
     if title and not header then
@@ -244,10 +286,15 @@ function pfQuest:UpdateQuestlog()
       state = watched and "track" or ""
 
       -- build state string
-      if objectives then
-        for i=1, objectives, 1 do
-          local text, _, done = GetQuestLogLeaderBoard(i, qlogid)
-          state = state .. i .. (done and "done" or "todo")
+      if pfQuest:TurtleSafeQuestID(questid, title) then
+        state = state .. "safe-no-objectives"
+      else
+        local objectives = GetNumQuestLeaderBoards(qlogid)
+        if objectives then
+          for i=1, objectives, 1 do
+            local _, _, done = GetQuestLogLeaderBoard(i, qlogid)
+            state = state .. i .. (done and "done" or "todo")
+          end
         end
       end
 
@@ -549,15 +596,9 @@ function pfQuest:AddWorldMapIntegration()
     end
 
     UIDropDownMenu_Initialize(pfQuest.mapButton, CreateEntries)
-    if client >= 30300 then
-      UIDropDownMenu_SetWidth(pfQuest.mapButton, 120)
-      UIDropDownMenu_SetButtonWidth(pfQuest.mapButton, 125)
-      UIDropDownMenu_JustifyText(pfQuest.mapButton, "RIGHT")
-    else
-      UIDropDownMenu_SetWidth(120, pfQuest.mapButton)
-      UIDropDownMenu_SetButtonWidth(125, pfQuest.mapButton)
-      UIDropDownMenu_JustifyText("RIGHT", pfQuest.mapButton)
-    end
+    UIDropDownMenu_SetWidth(120, pfQuest.mapButton)
+    UIDropDownMenu_SetButtonWidth(125, pfQuest.mapButton)
+    UIDropDownMenu_JustifyText("RIGHT", pfQuest.mapButton)
     UIDropDownMenu_SetSelectedID(pfQuest.mapButton, pfQuest.mapButton.current)
   end
 end
@@ -603,20 +644,39 @@ local function UpdateQuestLevel(button, id)
   QuestLogTitleButton_Resize(button)
 end
 
+local function TurtleHandleQuestWatchClick(questIndex)
+  if not IsShiftKeyDown() or ChatFrameEditBox:IsVisible() then return end
+
+  if IsQuestWatched(questIndex) then
+    RemoveQuestWatch(questIndex)
+  else
+    AddQuestWatch(questIndex)
+  end
+
+  SelectQuestLogEntry(questIndex)
+  QuestLog_Update()
+  QuestLog_UpdateQuestDetails(true)
+  pfQuest.updateQuestLog = true
+  pfMap:UpdateNodes()
+  return true
+end
+
 -- Update quest id button
 local pfHookQuestLog_Update = QuestLog_Update
 QuestLog_Update = function()
-  pfHookQuestLog_Update()
+  local selected = GetQuestLogSelection()
+  local selectedTitle = compat.GetQuestLogTitle(selected)
+  local selectedSafeID = pfQuest:TurtleSafeQuestID(nil, selectedTitle)
+
+  if selectedSafeID then
+    QuestLog_UpdateQuestDetails(true)
+  else
+    pfHookQuestLog_Update()
+  end
 
   if pfQuest_config["questloglevel"] == "1" then
-    if client >= 30300 then
-      for i, button in pairs(QuestLogScrollFrame.buttons) do
-        UpdateQuestLevel(button, button:GetID())
-      end
-    else
-      for i=1, QUESTS_DISPLAYED, 1 do
-        UpdateQuestLevel(_G["QuestLogTitle"..i], i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame))
-      end
+    for i=1, QUESTS_DISPLAYED, 1 do
+      UpdateQuestLevel(_G["QuestLogTitle"..i], i + FauxScrollFrame_GetOffset(QuestLogListScrollFrame))
     end
   end
 
@@ -644,6 +704,52 @@ QuestLog_Update = function()
   end
 end
 
+local pfHookQuestLog_UpdateQuestDetails = QuestLog_UpdateQuestDetails
+QuestLog_UpdateQuestDetails = function(doNotScroll)
+  local questIndex = GetQuestLogSelection()
+  local title, _, _, header = compat.GetQuestLogTitle(questIndex)
+  local questid = pfQuest:TurtleSafeQuestID(nil, title)
+
+  if questid and title then
+    local lang = pfQuest_config.translate
+    local data = pfDB["quests"][lang] and pfDB["quests"][lang][questid]
+
+    if data then
+      local QuestLogQuestTitle = EQL3_QuestLogQuestTitle or pfQuestCompat.QuestLogQuestTitle
+      local QuestLogObjectivesText = EQL3_QuestLogObjectivesText or pfQuestCompat.QuestLogObjectivesText
+      local QuestLogQuestDescription = EQL3_QuestLogQuestDescription or pfQuestCompat.QuestLogQuestDescription
+      local QuestLogDetailScrollFrame = EQL3_QuestLogDetailScrollFrame or QuestLogDetailScrollFrame
+
+      QuestLogQuestTitle:SetText(pfDatabase:FormatQuestText(data["T"] or title))
+      QuestLogObjectivesText:SetText(pfDatabase:FormatQuestText(data["O"] or ""))
+      QuestLogQuestDescription:SetText(pfDatabase:FormatQuestText(data["D"] or ""))
+      QuestLogDetailScrollFrame:UpdateScrollChildRect()
+
+      return
+    end
+  end
+
+  pfHookQuestLog_UpdateQuestDetails(doNotScroll)
+end
+
+if QuestLogFrame and QuestLogFrame.GetScript and QuestLogFrame.SetScript then
+  local pfHookQuestLogFrame_OnShow = QuestLogFrame:GetScript("OnShow")
+  QuestLogFrame:SetScript("OnShow", function()
+    local questIndex = GetQuestLogSelection()
+    local title = compat.GetQuestLogTitle(questIndex)
+
+    if pfQuest:TurtleSafeQuestID(nil, title) then
+      QuestLog_Update()
+      QuestLog_UpdateQuestDetails(true)
+      return
+    end
+
+    if pfHookQuestLogFrame_OnShow then
+      pfHookQuestLogFrame_OnShow()
+    end
+  end)
+end
+
 -- attach the new function to the scroll frame
 if QuestLogScrollFrame then
   QuestLogScrollFrame.update = QuestLog_Update
@@ -652,6 +758,19 @@ end
 -- refresh language and url on quest selection
 local pfHookQuestLogTitleButton_OnClick = QuestLogTitleButton_OnClick
 QuestLogTitleButton_OnClick = function(self, button)
+  local scrollFrame = EQL3_QuestLogListScrollFrame or ShaguQuest_QuestLogListScrollFrame or QuestLogListScrollFrame
+  local questIndex = this:GetID() + FauxScrollFrame_GetOffset(scrollFrame)
+  local questName = compat.GetQuestLogTitle(questIndex)
+
+  if pfQuest:TurtleSafeQuestID(nil, questName) then
+    if TurtleHandleQuestWatchClick(questIndex) then return end
+
+    SelectQuestLogEntry(questIndex)
+    QuestLog_Update()
+    QuestLog_UpdateQuestDetails(true)
+    return
+  end
+
   pfHookQuestLogTitleButton_OnClick(self, button)
   QuestLog_Update()
 end
@@ -669,6 +788,15 @@ if not GetQuestLink then -- Allow to send questlinks from questlog
       pfQuestCompat.InsertQuestLink(questid, questName)
       QuestLog_SetSelection(questIndex)
       QuestLog_Update()
+      return
+    end
+
+    if pfQuest:TurtleSafeQuestID(nil, questName) then
+      if TurtleHandleQuestWatchClick(questIndex) then return end
+
+      SelectQuestLogEntry(questIndex)
+      QuestLog_Update()
+      QuestLog_UpdateQuestDetails(true)
       return
     end
 
@@ -765,44 +893,5 @@ if not GetQuestLink then -- Allow to send questlinks from questlog
       pfQuestHookSetItemRef(link, text, button)
     end
     ItemRefTooltip.pfQtext = text
-  end
-else
-  -- patch itemref to show known quest levels on tbc
-  local pfQuestHookSetItemRef = SetItemRef
-  SetItemRef = function(link, text, button)
-    pfQuestHookSetItemRef(link, text, button)
-
-    -- skip modifier clicks
-    if IsAltKeyDown() or IsControlKeyDown() or IsShiftKeyDown() then return end
-
-    local quest, _, id = string.find(link, "quest:(%d+):.*")
-    if not quest then return end
-    id = tonumber(id)
-
-    -- adjust text color to level color
-    if id and id > 0 and pfDB["quests"]["loc"][id] then
-      local questlevel = tonumber(pfDB["quests"]["data"][id]["lvl"])
-      local color = pfQuestCompat.GetDifficultyColor(questlevel)
-      ItemRefTooltipTextLeft1:SetTextColor(color.r, color.g, color.b)
-    end
-
-    -- add quest levels to tooltip
-    if pfDB["quests"]["loc"][id] then
-      ItemRefTooltip:AddLine(" ")
-
-      if pfDB["quests"]["data"][id]["min"] then
-        local questlevel = tonumber(pfDB["quests"]["data"][id]["min"])
-        local color = pfQuestCompat.GetDifficultyColor(questlevel)
-        ItemRefTooltip:AddLine("|cffffffff" .. pfQuest_Loc["Required Level"] .. ": |r" .. questlevel, color.r, color.g, color.b)
-      end
-
-      if pfDB["quests"]["data"][id]["lvl"] then
-        local questlevel = tonumber(pfDB["quests"]["data"][id]["lvl"])
-        local color = pfQuestCompat.GetDifficultyColor(questlevel)
-        ItemRefTooltip:AddLine("|cffffffff" .. pfQuest_Loc["Quest Level"] .. ": |r" .. questlevel, color.r, color.g, color.b)
-      end
-    end
-
-    ItemRefTooltip:Show()
   end
 end
