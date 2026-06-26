@@ -68,15 +68,21 @@ function MPHunterBeastDPS()
 	MZSJ = MPSpellReady("瞄准射击")
 
 
+	-- 野猪模式：记录自动锁敌前是否已有有效目标（有则说明玩家手动选中，不过滤）
+	local boarNeedFilter = false
+	if MPHunterBeastSaved[MPHunterBeastConfig].Target == 1 and MPHunterBeastSaved[MPHunterBeastConfig].BoarMode == 1 then
+		if not UnitExists("target") or UnitIsDeadOrGhost("target") or not UnitCanAttack("player", "target") then
+			boarNeedFilter = true
+		end
+	end
+
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPHunterBeastSaved[MPHunterBeastConfig].Target, 0)
 
-	-- 野猪模式：自动锁敌开启时，只允许攻击名字中含"猪"的目标
-	if MPHunterBeastSaved[MPHunterBeastConfig].Target == 1 and MPHunterBeastSaved[MPHunterBeastConfig].BoarMode == 1 then
-		if UnitExists("target") and not string.find(UnitName("target") or "", "猪") then
-			ClearTarget()
-			return
-		end
+	-- 野猪模式：只对自动锁定到的新目标做过滤，手动选中的目标不受影响
+	if boarNeedFilter and UnitExists("target") and not string.find(UnitName("target") or "", "猪") then
+		ClearTarget()
+		return
 	end
 
 	-- 自动拾取
