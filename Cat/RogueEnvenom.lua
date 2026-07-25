@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 毒伤贼一键宏
--- 发布日期：2026-04-12 （后面根据时间来判断版本）
+-- 发布日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -101,6 +101,47 @@ function MPRogueEnvenomDPS()
 	end
 
 
+	-- 更换武器，毒药切换
+	if MPRogueEnvenomSaved[MPRogueConfig].SwitchWeapon==1 then
+		local t = UnitExists("target")
+		local postion_text
+		if t and not MPCheckUIStatus() then
+			local creature = UnitCreatureType("target") or "其它"
+			local position = string.find("元素生物,机械,巨人,亡灵", creature)
+			if position then
+				-- 切换至溶解毒药
+				-- 主手
+				postion_text = MPGetMainHandPostion()
+				if not postion_text or not string.find( postion_text, "溶解毒药" ) then
+					MPRogueSwitchWeapon("溶解毒药", 16)
+				else
+
+					-- 副手
+					postion_text = MPGetOffHandPostion()
+					if not postion_text or not string.find( postion_text, "溶解毒药" ) then
+						MPRogueSwitchWeapon("溶解毒药", 17)
+					end
+				end
+			else
+				-- 切换至速效毒药
+
+				-- 主手
+				postion_text = MPGetMainHandPostion()
+				if not postion_text or not string.find( postion_text, "速效毒药" ) then
+					MPRogueSwitchWeapon("速效毒药", 16)
+				else
+
+					-- 副手
+					postion_text = MPGetOffHandPostion()
+					if not postion_text or not string.find( postion_text, "速效毒药" ) then
+						MPRogueSwitchWeapon("速效毒药", 17)
+					end
+				end
+			end
+		end
+	end
+
+
 	-- 在潜行状态
 	if QX and MPRogueEnvenomSaved[MPRogueEnvenomConfig].Stealth==1 then
 
@@ -169,7 +210,7 @@ function MPRogueEnvenomDPS()
 
 		if MPRogueEnvenomSaved[MPRogueEnvenomConfig].Soulspeed==1 and TargetDistance then
 			if MPRogueEnvenomSaved[MPRogueEnvenomConfig].SoulspeedBoss==0 or (MPRogueEnvenomSaved[MPRogueEnvenomConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -184,6 +225,13 @@ function MPRogueEnvenomDPS()
 		end
 		if percent<MPRogueEnvenomSaved[MPRogueEnvenomConfig].Carrot_Value and MPRogueEnvenomSaved[MPRogueEnvenomConfig].Carrot==1 then
 			MPUseItemByName("鞭根块茎")
+		end
+
+		-- 冷血
+		if MPRogueEnvenomSaved[MPRogueCombatConfig].ColdBlood==1 and MPRogueColdBlood==1 and MPRogueColdBloodReady() then
+			if MPRogueEnvenomSaved[MPRogueCombatConfig].ColdBloodBoss==0 or (MPRogueEnvenomSaved[MPRogueCombatConfig].ColdBloodBoss==1 and MPIsBossTarget()) then
+				CastSpellByName("冷血")
+			end
 		end
 
 		-- 特定 种族天赋 --
@@ -214,7 +262,9 @@ function MPRogueEnvenomDPS()
 
 	-- 自动打断
 	if MPRogueEnvenomSaved[MPRogueEnvenomConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 保护剑刃乱舞
@@ -353,11 +403,11 @@ function MPRogueEnvenomDPS()
 		CastSpellByName("还击")
 	end
 
-	if myPower>39 and MPRogueEnvenomSaved[MPRogueEnvenomConfig].GhostlyStrike==1 then
-		CastSpellByName("鬼魅攻击")
-	end
-	if myPower>44 then
-		CastSpellByName("双刃毒袭")
+	if  MPRogueEnvenomSaved[MPRogueEnvenomConfig].GhostlyStrike==1 and MPSpellReady("鬼魅攻击") then
+		if myPower>39 then
+			CastSpellByName("鬼魅攻击")
+		end
+		return
 	end
 
 	-- 突袭
@@ -365,6 +415,12 @@ function MPRogueEnvenomDPS()
 		CastSpellByName("突袭")
 		return
 	end
+
+	if myPower>44 then
+		CastSpellByName("双刃毒袭")
+		return
+	end
+
 end
 
 

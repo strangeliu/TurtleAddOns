@@ -14,6 +14,8 @@ frame:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
 frame:RegisterEvent("CHAT_MSG_COMBAT_SELF_HITS")
 --frame:RegisterEvent("CHAT_MSG_SPELL_PET_DAMAGE")
 --frame:RegisterEvent("CHAT_MSG_COMBAT_PET_HITS")
+frame:RegisterEvent("START_AUTOREPEAT_SPELL")
+frame:RegisterEvent("STOP_AUTOREPEAT_SPELL")
 
 frame:RegisterEvent("SPELLCAST_CHANNEL_START")
 frame:RegisterEvent("SPELLCAST_CHANNEL_UPDATE")
@@ -43,6 +45,9 @@ local ViperDelayTime = {}
 -- 割伤 激活时间
 MPHunterGoreTimer = 0
 
+
+-- 自动射击状态
+MPHunterAutoShot = 0
 
 local function ResetData()
     SerpentCheck = {}
@@ -160,6 +165,14 @@ local function OnEvent()
             end
         end
     ]]
+
+    elseif event == "START_AUTOREPEAT_SPELL" then
+
+        MPHunterAutoShot = 1
+
+    elseif event == "STOP_AUTOREPEAT_SPELL" then
+
+        MPHunterAutoShot = 0
 
     ---------------------------
     -- SuperWoW事件 -----------

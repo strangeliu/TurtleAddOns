@@ -540,6 +540,12 @@ local myButton = MPCreateButton(CatUISettingsPaladinMeleeHeal, ADDON_NAME.."Butt
 myButton:SetScript("OnClick", function()
     MPResetPaladinMeleeHealSettings(ConfigCurrent)
     MPInitPaladinMeleeHealSettings()
+
+    MPCatPaladinSealReset()
+    CatPaladinSeal:Hide()
+    CatPaladinSeal:ClearAllPoints()
+    CatPaladinSeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
 end)
 
 local ConfigButton = {}

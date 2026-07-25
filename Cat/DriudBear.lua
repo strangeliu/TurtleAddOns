@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 全自动熊一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-06-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -35,7 +35,7 @@ MPDriudBearShapeshiftID = 1
 MPDriudBerserk = 0
 
 -- 野蛮撕咬的消耗怒气
-MPDruidFerociousBitePower = 30
+MPDruidFerociousBitePower = 25
 
 -- 槌击的消耗怒气
 MPDruidManglePower = 15
@@ -59,7 +59,7 @@ function MPBear(value)
 	MHP = UnitHealth("player")
 	GCD = MPGetGCD()
 	JNSF = MPGetOmen()
-	XMSY = MPSpellReadyOffset("野蛮撕咬")
+	XMSY=MPSpellReadyOffset("野蛮撕咬")
 	KN = MPSpellReady("狂怒")
 
 	-- 确保在巨熊形态下
@@ -115,7 +115,7 @@ function MPBear(value)
 
 		if MPDriudBearSaved[MPDriudBearConfig].Soulspeed==1 and TargetDistance then
 			if MPDriudBearSaved[MPDriudBearConfig].SoulspeedBoss==0 or (MPDriudBearSaved[MPDriudBearConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -145,6 +145,7 @@ function MPBear(value)
 	if MPDriudBearSaved[MPDriudBearConfig].UnSalvation==1 and (MPBuff("强效拯救祝福") or MPBuff("拯救祝福")) then
 		MPCancelBuffByName("强效拯救祝福")
 		MPCancelBuffByName("拯救祝福")
+		MPMsg("MPCancelBuffByName")
 	end
 
 	-- 清晰预兆在，则优先使用野蛮撕咬
@@ -182,7 +183,7 @@ function MPBear(value)
 		end
 
 		-- 单拉
-		if myPower >= MPDruidFerociousBitePower+MPDruidManglePower then
+		if myPower >= MPDruidSwipePower+MPDruidFerociousBitePower+MPDruidManglePower then
 			CastSpellByName("槌击")
 		end
 

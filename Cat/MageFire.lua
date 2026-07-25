@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 火法一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -113,6 +113,11 @@ function MPMageFireAuto()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPMageFireSaved[MPMageFireConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPMageFireSaved[MPMageFireConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPMageFireSaved[MPMageFireConfig].Pick==1 then
 		MPAutoLoot()
@@ -147,7 +152,7 @@ function MPMageFireAuto()
 
 		if MPMageFireSaved[MPMageFireConfig].Soulspeed==1 then
 			if MPMageFireSaved[MPMageFireConfig].SoulspeedBoss==0 or (MPMageFireSaved[MPMageFireConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

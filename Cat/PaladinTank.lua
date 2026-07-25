@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 防骑一键宏
--- 更新日期：2026-04-30 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -26,6 +26,10 @@ end
 -- 全局变量，可以直接调用，不需要函数访问，以提高宏的性能
 -- 以下参数请勿手动修改，插件会自动进行变化
 
+
+
+-- 庇护祝福
+MPPaladinSanctuary = 0
 
 -- -------------------------------------
 
@@ -242,7 +246,7 @@ function MPPallyTank()
 
 		if MPPaladinTankSaved[MPPaladinTankConfig].Soulspeed==1 and MPGetTargetDistance() then
 			if MPPaladinTankSaved[MPPaladinTankConfig].SoulspeedBoss==0 or (MPPaladinTankSaved[MPPaladinTankConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -288,6 +292,12 @@ function MPPallyTank()
 					local TF = MPSpellReady("狂暴")
 					if TF then CastSpellByName("狂暴") end
 				end
+
+				-- 是否自动开启 矮人-石像形态
+				if MPPlayerRace=="Dwarf" then
+					local TF = MPSpellReady("石像形态")
+					if TF then CastSpellByName("石像形态") end
+				end
 			end
 		end
 
@@ -302,9 +312,10 @@ function MPPallyTank()
 	end
 
 	-- 自动 小庇护祝福
-	if MPPaladinTankSaved[MPPaladinTankConfig].Sanctuary==1 then
+	if MPPaladinTankSaved[MPPaladinTankConfig].Sanctuary==1 and MPPaladinSanctuary==1 then
 		if not MPBuff("强效庇护祝福") and not MPBuff("庇护祝福") then
-			CastSpellByName("庇护祝福")
+			CastSpellByName("庇护祝福", "player")
+			return
 		end
 	end
 

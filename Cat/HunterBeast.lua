@@ -102,9 +102,12 @@ function MPHunterBeastDPS()
 		return
 	end
 
-	-- 宠物攻击
+	-- 宠物攻击：目标不同时先 StopAttack 再 Attack，避免 PetAttack 的切换式行为干扰目标切换
 	if MPHunterBeastSaved[MPHunterBeastConfig].PetAttack==1 then
-		PetAttack()
+		if not UnitExists("pettarget") or not UnitIsUnit("pettarget", "target") then
+			PetStopAttack()
+			PetAttack()
+		end
 	end
 
 	-- 目标没有猎人印记时：施放猎人印记并返回

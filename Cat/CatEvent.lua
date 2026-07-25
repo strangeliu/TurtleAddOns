@@ -33,11 +33,12 @@ frame:RegisterEvent("RAW_COMBATLOG")
 
 -- Nampower专有事件
 frame:RegisterEvent("SPELL_FAILED_SELF")
-frame:RegisterEvent("BUFF_ADDED_SELF")
-frame:RegisterEvent("BUFF_REMOVED_SELF")
-frame:RegisterEvent("DEBUFF_ADDED_SELF")
-frame:RegisterEvent("DEBUFF_REMOVED_SELF")
-frame:RegisterEvent("AURA_CAST_ON_SELF")
+--frame:RegisterEvent("BUFF_ADDED_SELF")
+--frame:RegisterEvent("BUFF_REMOVED_SELF")
+--frame:RegisterEvent("DEBUFF_ADDED_SELF")
+--frame:RegisterEvent("DEBUFF_REMOVED_SELF")
+--frame:RegisterEvent("AURA_CAST_ON_SELF")
+
 --frame:RegisterEvent("BUFF_UPDATE_DURATION_SELF")
 --frame:RegisterEvent("DEBUFF_UPDATE_DURATION_SELF")
 frame:RegisterEvent("AUTO_ATTACK_SELF")
@@ -213,7 +214,7 @@ local function OnEvent()
 
         if SUPERWOW_STRING then
             
-            if string.find(SUPERWOW_STRING,"1.5") then
+            if string.find(SUPERWOW_STRING,"1.5") or string.find(SUPERWOW_STRING,"2.0") or string.find(SUPERWOW_STRING,"2.1") or string.find(SUPERWOW_STRING,"2.2")  then
                 MPtextSystemInfo = MPtextSystemInfo .. MPLanguage.UI_FoundSuperWoW..SUPERWOW_VERSION.."|r"
             else
                 MPtextSystemInfo = MPtextSystemInfo .. MPLanguage.UI_FoundSuperWoW..SUPERWOW_VERSION..MPLanguage.UI_SuperWoWAbnormalSuffix
@@ -835,7 +836,7 @@ function MPIsMoving()
         if PlayerIsMoving() == 1 then
             return true
         else
-            return false
+            return MPPlayerIsMoving
         end
 
     end
@@ -850,6 +851,7 @@ end
 function MPCheckBehind(value)
 
     -- 任意参数，则不进行UnitXP调用，用于特殊情况下，UnitXP无法正常使用下的临时处理
+    --[[
     if not value then
         value=0
     end
@@ -867,6 +869,23 @@ function MPCheckBehind(value)
             end
         end
     end
+
+    ]]
+
+    -- 检测异常捕获的方向错误
+    if ErrorBehind == false then
+        if GetTime() - ErrorBehindTimer > 0.3 then
+            ErrorBehind = true
+        else
+            return false
+        end
+    end
+
+    --[[ 不使用UnitXP
+    if MP_UnitXP then
+        return UnitXP("behind", "player", "target")
+    end
+    ]]
 
     return true
 end

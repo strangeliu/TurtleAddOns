@@ -5,7 +5,7 @@ local ADDON_NAME = "Settings-Rogue"
 local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsRogue = MPCreateFrame(ADDON_NAME.."Frame", 520, 760, "|cFFFFF569设置 - 盗贼 自配置|r")
+CatUISettingsRogue = MPCreateFrame(ADDON_NAME.."Frame", 520, 790, "|cFFFFF569设置 - 盗贼 自配置|r")
 
 
 local postion_y = -50
@@ -856,6 +856,18 @@ checkButton_Cover:SetScript("OnClick", function(self)
 end)
 
 
+postion_y = postion_y-40
+
+-- 四武器双毒切换功能
+local checkButton_SwitchWeapon = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "|cFFFFF569四武器双毒切换功能|r")
+checkButton_SwitchWeapon:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPRogueSaved[ConfigCurrent].SwitchWeapon = 1
+        print("启动|cFFFFF569四武器双毒切换功能|r 目前仅支持双速效毒药和双溶解毒药的切换，除了手上的两把武器，包里要预备好两把已经上好毒的武器。")
+    else
+        MPRogueSaved[ConfigCurrent].SwitchWeapon = 0
+    end
+end)
 
 
 
@@ -863,7 +875,7 @@ end)
 
 -- 高级
 
-postion_y = postion_y+65
+postion_y = postion_y+80
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsRogue:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -875,16 +887,40 @@ TipText1:SetJustifyH("LEFT")
 TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
-postion_y = postion_y-140
+postion_y = postion_y-155
 
--- 创建单选框 - UnitXP
-local checkButton_UnitXP = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "启用UnitXP模组 (朝向判断)")
+-- 创建单选框 - 剑刃乱舞
+local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
+local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
+slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
+slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
+slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
+slider_BladeFlurry_Value:SetValueStep(1)
+slider_BladeFlurry_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+
+local color_BladeFlurry = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPRogueSaved[ConfigCurrent].BladeFlurry_Value = arg1
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+end)
+
 -- 设置点击事件
-checkButton_UnitXP:SetScript("OnClick", function(self)
+checkButton_BladeFlurry:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].UnitXP = 1
+        MPRogueSaved[ConfigCurrent].BladeFlurry = 1
+        color_BladeFlurry = "|cFFFFD100"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     else
-        MPRogueSaved[ConfigCurrent].UnitXP = 0
+        MPRogueSaved[ConfigCurrent].BladeFlurry = 0
+        color_BladeFlurry = "|cFF888888"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     end
 end)
 
@@ -928,41 +964,42 @@ end)
 
 postion_y = postion_y-40
 
+-- 创建单选框 - buff时间
+local checkButton_LeftTime = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "提前保持Buff\n(SuperWoW)")
 
--- 创建单选框 - 剑刃乱舞
-local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
-local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
-slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
-slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
-slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+local slider_LeftTime = CreateFrame("Slider", ADDON_NAME.."Slider_SliceDiceTime", checkButton_LeftTime, "OptionsSliderTemplate")
+slider_LeftTime:SetPoint("RIGHT", checkButton_LeftTime, "RIGHT", 260, -2)
+slider_LeftTime:SetWidth(150) -- 拖动条长度
+slider_LeftTime:SetHeight(16) -- 拖动条高度
 
 -- 设置数值范围（最小值0，最大值100，步长1）
-slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
-slider_BladeFlurry_Value:SetValueStep(1)
-slider_BladeFlurry_Value:SetValue(8) -- 默认值
-MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+slider_LeftTime:SetMinMaxValues(0, 10)
+slider_LeftTime:SetValueStep(1)
+slider_LeftTime:SetValue(100) -- 默认值
+MPCatUISliderRegionHide(slider_LeftTime)
 
-local color_BladeFlurry = "|cFFFFD100"
+local color_LeftTime = "|cFFFFD100"
 
 -- 值变化时的回调函数
-slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
-    --print("HealthStone当前值:", arg1)
-    MPRogueSaved[ConfigCurrent].BladeFlurry_Value = arg1
-    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+slider_LeftTime:SetScript("OnValueChanged", function()
+    --print("HerbalTea当前值:", arg1)
+    MPRogueSaved[ConfigCurrent].LeftTime_Value = arg1
+    _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
 end)
 
 -- 设置点击事件
-checkButton_BladeFlurry:SetScript("OnClick", function(self)
+checkButton_LeftTime:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].BladeFlurry = 1
-        color_BladeFlurry = "|cFFFFD100"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueSaved[ConfigCurrent].LeftTime = 1
+        color_LeftTime = "|cFFFFD100"
+        _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
     else
-        MPRogueSaved[ConfigCurrent].BladeFlurry = 0
-        color_BladeFlurry = "|cFF888888"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueSaved[ConfigCurrent].LeftTime = 0
+        color_LeftTime = "|cFF888888"
+        _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
     end
 end)
+
 
 
 -- 创建单选框 - 草药茶
@@ -1005,41 +1042,17 @@ end)
 
 postion_y = postion_y-40
 
--- 创建单选框 - buff时间
-local checkButton_LeftTime = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "提前保持Buff\n(SuperWoW)")
-
-local slider_LeftTime = CreateFrame("Slider", ADDON_NAME.."Slider_SliceDiceTime", checkButton_LeftTime, "OptionsSliderTemplate")
-slider_LeftTime:SetPoint("RIGHT", checkButton_LeftTime, "RIGHT", 260, -2)
-slider_LeftTime:SetWidth(150) -- 拖动条长度
-slider_LeftTime:SetHeight(16) -- 拖动条高度
-
--- 设置数值范围（最小值0，最大值100，步长1）
-slider_LeftTime:SetMinMaxValues(0, 10)
-slider_LeftTime:SetValueStep(1)
-slider_LeftTime:SetValue(100) -- 默认值
-MPCatUISliderRegionHide(slider_LeftTime)
-
-local color_LeftTime = "|cFFFFD100"
-
--- 值变化时的回调函数
-slider_LeftTime:SetScript("OnValueChanged", function()
-    --print("HerbalTea当前值:", arg1)
-    MPRogueSaved[ConfigCurrent].LeftTime_Value = arg1
-    _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
-end)
-
+-- 创建单选框 - 背刺 改 邪恶
+local checkButton_SinisterStrike = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "背刺 不可用时启用 邪恶攻击")
 -- 设置点击事件
-checkButton_LeftTime:SetScript("OnClick", function(self)
+checkButton_SinisterStrike:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].LeftTime = 1
-        color_LeftTime = "|cFFFFD100"
-        _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
+        MPRogueSaved[ConfigCurrent].SinisterStrike = 1
     else
-        MPRogueSaved[ConfigCurrent].LeftTime = 0
-        color_LeftTime = "|cFF888888"
-        _G[slider_LeftTime:GetName().."Text"]:SetText(color_LeftTime.."提前 ".. MPRogueSaved[ConfigCurrent].LeftTime_Value .." 秒|r")
+        MPRogueSaved[ConfigCurrent].SinisterStrike = 0
     end
 end)
+
 
 
 -- 创建单选框 - 鞭根块茎
@@ -1084,15 +1097,13 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 背刺 改 邪恶
-local checkButton_SinisterStrike = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "背刺 不可用时启用 邪恶攻击")
--- 设置点击事件
-checkButton_SinisterStrike:SetScript("OnClick", function(self)
+-- 创建单选框 - 保护剑刃乱舞
+local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
+checkButton_Protect:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].SinisterStrike = 1
+        MPRogueSaved[ConfigCurrent].Protect = 1
     else
-        MPRogueSaved[ConfigCurrent].SinisterStrike = 0
+        MPRogueSaved[ConfigCurrent].Protect = 0
     end
 end)
 
@@ -1112,16 +1123,24 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 保护剑刃乱舞
-local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
-checkButton_Protect:SetScript("OnClick", function(self)
+-- 创建单选框 - 冲动
+local checkButton_Impulse = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 冲动/冷血")
+checkButton_Impulse:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].Protect = 1
+        MPRogueSaved[ConfigCurrent].Impulse = 1
     else
-        MPRogueSaved[ConfigCurrent].Protect = 0
+        MPRogueSaved[ConfigCurrent].Impulse = 0
     end
 end)
+local checkButton_ImpulseBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_ImpulseBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPRogueSaved[ConfigCurrent].ImpulseBoss = 1
+    else
+        MPRogueSaved[ConfigCurrent].ImpulseBoss = 0
+    end
+end)
+
 
 -- 创建单选框 - 种族天赋
 local checkButton_RacialTraits = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 340, postion_y, "自动 种族天赋")
@@ -1144,23 +1163,6 @@ end)
 
 postion_y = postion_y-40
 
--- 创建单选框 - 冲动
-local checkButton_Impulse = MPCreateCheckButton(CatUISettingsRogue, ADDON_NAME.."CheckButton", 20, postion_y, "自动 冲动")
-checkButton_Impulse:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].Impulse = 1
-    else
-        MPRogueSaved[ConfigCurrent].Impulse = 0
-    end
-end)
-local checkButton_ImpulseBoss = MPCreateCheckButtonSmall(CatUISettingsRogue, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
-checkButton_ImpulseBoss:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPRogueSaved[ConfigCurrent].ImpulseBoss = 1
-    else
-        MPRogueSaved[ConfigCurrent].ImpulseBoss = 0
-    end
-end)
 
 
 -- 魂能之速
@@ -1289,7 +1291,7 @@ TipText:SetText("宏命令 |cFFFFF569/rdps|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local RogueSettingsUIVersion = 31
+local RogueSettingsUIVersion = 32
 
 function MPResetRogueSettings(config)
 
@@ -1332,6 +1334,8 @@ function MPResetRogueSettings(config)
     MPRogueSaved[config].OffHandCount = 50
     MPRogueSaved[config].LeaveFight = 0
     MPRogueSaved[config].Cover = 0
+
+    MPRogueSaved[config].SwitchWeapon = 0
 
 
     -- 高级配置
@@ -1443,7 +1447,7 @@ local function InitRogueSettingsPart1()
     checkButton_TUBoss:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].TUBoss))
     checkButton_Trinket_Below:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].Trinket_Below))
     checkButton_TBBoss:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].TBBoss))
-    checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].UnitXP))
+    --checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].UnitXP))
 
     checkButton_Interrupt:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].Interrupt))
     checkButton_RacialTraits:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].RacialTraits))
@@ -1458,6 +1462,7 @@ local function InitRogueSettingsPart1()
 
     checkButton_LeaveFight:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].LeaveFight))
     checkButton_Cover:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].Cover))
+    checkButton_SwitchWeapon:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].SwitchWeapon))
 
     checkButton_Power:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].Power))
     checkButton_Pick:SetChecked(MPToBoolean(MPRogueSaved[ConfigCurrent].Pick))

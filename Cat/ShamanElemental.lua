@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 元素萨一键宏
--- 更新日期：2026-05-08 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -132,7 +132,9 @@ function MPShamanAutoElemental()
 	if not UnitExists("target") then return end
 
 	-- 开启自动攻击
-	MPStartAttack()
+    if MPShamanElementalSaved[MPShamanElementalConfig].Target==1 then
+	    MPStartAttack()
+    end
 
 	-- 自动拾取
 	if MPShamanElementalSaved[MPShamanElementalConfig].Pick==1 then
@@ -167,7 +169,7 @@ function MPShamanAutoElemental()
 
 		if MPShamanElementalSaved[MPShamanElementalConfig].Soulspeed==1  then
 			if MPShamanElementalSaved[MPShamanElementalConfig].SoulspeedBoss==0 or (MPShamanElementalSaved[MPShamanElementalConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

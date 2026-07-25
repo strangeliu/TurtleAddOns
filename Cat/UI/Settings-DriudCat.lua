@@ -5,7 +5,7 @@ local ADDON_NAME = "Settings-DriudCat"
 local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsCatWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 660, "|cFFFF7D0A设置 - 猫德|r")
+CatUISettingsCatWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 690, "|cFFFF7D0A设置 - 猫德|r")
 
 --[[
 CatUISettingsCatMini, CatUISettingsCatWindow = MPCreateMainFrame(ADDON_NAME.."Frame", 520, 660, "|cFFFF7D0A猫德|r")
@@ -212,7 +212,7 @@ TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 postion_y = postion_y-70
 
-
+--[[
 -- 创建单选框 - UnitXP
 local checkButton_UnitXP = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "启用UnitXP模组 (朝向判断)")
 checkButton_UnitXP:SetScript("OnClick", function(self)
@@ -220,6 +220,18 @@ checkButton_UnitXP:SetScript("OnClick", function(self)
         MPDriudCatSaved[ConfigCurrent].UnitXP = 1
     else
         MPDriudCatSaved[ConfigCurrent].UnitXP = 0
+    end
+end)
+]]
+
+-- 阿莎曼之怒
+local checkButton_Ashamane = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "阿莎曼之怒 (T3.5特性倾斜)")
+-- 设置点击事件
+checkButton_Ashamane:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPDriudCatSaved[ConfigCurrent].Ashamane = 1
+    else
+        MPDriudCatSaved[ConfigCurrent].Ashamane = 0
     end
 end)
 
@@ -264,16 +276,6 @@ end)
 postion_y = postion_y-40
 
 
--- 阿莎曼之怒
-local checkButton_Ashamane = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "阿莎曼之怒 (T3.5特性倾斜)")
--- 设置点击事件
-checkButton_Ashamane:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPDriudCatSaved[ConfigCurrent].Ashamane = 1
-    else
-        MPDriudCatSaved[ConfigCurrent].Ashamane = 0
-    end
-end)
 
 
 -- 创建单选框 - 草药茶
@@ -359,8 +361,8 @@ end)
 
 local ripBack = CreateFrame("Frame", nil, CatUISettingsCatWindow)
 ripBack:SetWidth(240)
-ripBack:SetHeight(130)
-ripBack:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 10, postion_y+50)
+ripBack:SetHeight(170)
+ripBack:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 10, postion_y+80)
 ripBack:SetBackdrop({
     bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -380,7 +382,7 @@ ripBackText:SetJustifyH("CENTER")
 ripBackText:SetText("双流血")
 
 
-postion_y = postion_y+20
+postion_y = postion_y+50
 
 -- 撕咬星
 local slider_Ferocious = CreateFrame("Slider", ADDON_NAME.."SliderFerocious", CatUISettingsCatWindow, "OptionsSliderTemplate")
@@ -390,7 +392,7 @@ slider_Ferocious:SetHeight(16) -- 拖动条高度
 
 slider_Ferocious:SetMinMaxValues(1, 5)
 slider_Ferocious:SetValueStep(1)
-slider_Ferocious:SetValue(3) -- 默认值
+slider_Ferocious:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_Ferocious)
 
 -- 值变化时的回调函数
@@ -423,23 +425,23 @@ end)
 
 postion_y = postion_y-40
 
--- 变身 双流血
-local slider_BleedModeShapeshift = CreateFrame("Slider", ADDON_NAME.."SliderBleedModeShapeshift", CatUISettingsCatWindow, "OptionsSliderTemplate")
-slider_BleedModeShapeshift:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 15, postion_y)
-slider_BleedModeShapeshift:SetWidth(110) -- 拖动条长度
-slider_BleedModeShapeshift:SetHeight(16) -- 拖动条高度
+-- 撕扯星
+local slider_Rip_Bite = CreateFrame("Slider", ADDON_NAME.."SliderRip_Bite", CatUISettingsCatWindow, "OptionsSliderTemplate")
+slider_Rip_Bite:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 15, postion_y)
+slider_Rip_Bite:SetWidth(110) -- 拖动条长度
+slider_Rip_Bite:SetHeight(16) -- 拖动条高度
 
-slider_BleedModeShapeshift:SetMinMaxValues(10, 50)
-slider_BleedModeShapeshift:SetValueStep(1)
-slider_BleedModeShapeshift:SetValue(20) -- 默认值
-MPCatUISliderRegionHide(slider_BleedModeShapeshift)
+slider_Rip_Bite:SetMinMaxValues(1, 5)
+slider_Rip_Bite:SetValueStep(1)
+slider_Rip_Bite:SetValue(0) -- 默认值
+MPCatUISliderRegionHide(slider_Rip_Bite)
 
 -- 值变化时的回调函数
-slider_BleedModeShapeshift:SetScript("OnValueChanged", function()
-    MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift = arg1
-
-    _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..arg1.."能量")
+slider_Rip_Bite:SetScript("OnValueChanged", function()
+    MPDriudCatSaved[ConfigCurrent].Rip_Bite = arg1
+    _G[slider_Rip_Bite:GetName().."Text"]:SetText("撕扯: ".. arg1 .."星")
 end)
+
 
 
 -- 撕扯界限
@@ -450,7 +452,7 @@ slider_Rip:SetHeight(16) -- 拖动条高度
 
 slider_Rip:SetMinMaxValues(0, 20000)
 slider_Rip:SetValueStep(1000)
-slider_Rip:SetValue(3000) -- 默认值
+slider_Rip:SetValue(7100) -- 默认值
 MPCatUISliderRegionHide(slider_Rip)
 
 
@@ -472,8 +474,28 @@ slider_Rip:SetScript("OnLeave", function()
     GameTooltip:Hide()
 end)
 
+postion_y = postion_y-40
 
-postion_y = postion_y-150
+-- 变身 双流血
+local slider_BleedModeShapeshift = CreateFrame("Slider", ADDON_NAME.."SliderBleedModeShapeshift", CatUISettingsCatWindow, "OptionsSliderTemplate")
+slider_BleedModeShapeshift:SetPoint("TOPLEFT", CatUISettingsCatWindow, "TOPLEFT", 15, postion_y)
+slider_BleedModeShapeshift:SetWidth(110) -- 拖动条长度
+slider_BleedModeShapeshift:SetHeight(16) -- 拖动条高度
+
+slider_BleedModeShapeshift:SetMinMaxValues(10, 50)
+slider_BleedModeShapeshift:SetValueStep(1)
+slider_BleedModeShapeshift:SetValue(0) -- 默认值
+MPCatUISliderRegionHide(slider_BleedModeShapeshift)
+
+-- 值变化时的回调函数
+slider_BleedModeShapeshift:SetScript("OnValueChanged", function()
+    MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift = arg1
+
+    _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..arg1.."能量")
+end)
+
+
+postion_y = postion_y-160
 
 
 
@@ -526,7 +548,7 @@ slider_ShredFerocious:SetHeight(16) -- 拖动条高度
 
 slider_ShredFerocious:SetMinMaxValues(1, 5)
 slider_ShredFerocious:SetValueStep(1)
-slider_ShredFerocious:SetValue(3) -- 默认值
+slider_ShredFerocious:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_ShredFerocious)
 
 -- 值变化时的回调函数
@@ -544,7 +566,7 @@ slider_ShredFerocious_Value:SetHeight(16) -- 拖动条高度
 
 slider_ShredFerocious_Value:SetMinMaxValues(36, 100)
 slider_ShredFerocious_Value:SetValueStep(1)
-slider_ShredFerocious_Value:SetValue(50) -- 默认值
+slider_ShredFerocious_Value:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_ShredFerocious_Value)
 
 -- 值变化时的回调函数
@@ -564,7 +586,7 @@ slider_ShredModeShapeshift:SetHeight(16) -- 拖动条高度
 
 slider_ShredModeShapeshift:SetMinMaxValues(10, 50)
 slider_ShredModeShapeshift:SetValueStep(1)
-slider_ShredModeShapeshift:SetValue(20) -- 默认值
+slider_ShredModeShapeshift:SetValue(0) -- 默认值
 MPCatUISliderRegionHide(slider_ShredModeShapeshift)
 
 -- 值变化时的回调函数
@@ -575,7 +597,7 @@ slider_ShredModeShapeshift:SetScript("OnValueChanged", function()
 end)
 
 
-postion_y = postion_y-170
+postion_y = postion_y-190
 
 local checkButton_Style1 = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 20, postion_y, "仅爪击")
 local checkButton_Style2 = MPCreateCheckButton(CatUISettingsCatWindow, ADDON_NAME.."CheckButton", 140, postion_y, "均衡 朝向自动")
@@ -622,7 +644,7 @@ end)
 
 
 
-postion_y = postion_y+325
+postion_y = postion_y+365
 
 
 -- 魂能之速
@@ -1041,7 +1063,7 @@ TipText:SetText("宏命令 全自动 |cFFFF7D0A/catdps |r[ 1 | 2 | 3 ]  背刺�
 
 
 -- 配置文件版本号
-local CatSettingsUIVersion = 29
+local CatSettingsUIVersion = 30
 
 function MPResetCatSettings(config)
 
@@ -1077,7 +1099,8 @@ function MPResetCatSettings(config)
     MPDriudCatSaved[config].Ferocious_Bite = 5
     MPDriudCatSaved[config].Ferocious_Value = 53
     MPDriudCatSaved[config].BleedModeShapeshift = 20
-    MPDriudCatSaved[config].OutHPRip = 3000
+    MPDriudCatSaved[config].Rip_Bite = 5
+    MPDriudCatSaved[config].OutHPRip = 0
     MPDriudCatSaved[config].HighShred = 1
     MPDriudCatSaved[config].HighShred_Value = 68
     MPDriudCatSaved[config].Style = 2
@@ -1126,7 +1149,7 @@ local function CatSettingsPart1()
     checkButton_Prowl:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Prowl))
     checkButton_Cower:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].Cower))
 
-    checkButton_UnitXP:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].UnitXP))
+    --checkButton_UnitXP:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].UnitXP))
 
     checkButton_HealthStone:SetChecked(MPToBoolean(MPDriudCatSaved[ConfigCurrent].HealthStone))
     slider_HealthStone:SetValue(MPDriudCatSaved[ConfigCurrent].HealthStone_Value)
@@ -1159,20 +1182,14 @@ end
 
 local function CatSettingsPart2()
     slider_Ferocious:SetValue(MPDriudCatSaved[ConfigCurrent].Ferocious_Bite)
-    _G[slider_Ferocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved[ConfigCurrent].Ferocious_Bite .."星")
+    slider_Rip_Bite:SetValue(MPDriudCatSaved[ConfigCurrent].Rip_Bite)
     slider_Ferocious_Value:SetValue(MPDriudCatSaved[ConfigCurrent].Ferocious_Value)
-    _G[slider_Ferocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved[ConfigCurrent].Ferocious_Value.."能量")
     slider_BleedModeShapeshift:SetValue(MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift)
-    _G[slider_BleedModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved[ConfigCurrent].BleedModeShapeshift.."能量")
     slider_Rip:SetValue(MPDriudCatSaved[ConfigCurrent].OutHPRip)
-    _G[slider_Rip:GetName().."Text"]:SetText("<".. MPDriudCatSaved[ConfigCurrent].OutHPRip/1000 .."k不撕扯")
 
     slider_ShredFerocious:SetValue(MPDriudCatSaved[ConfigCurrent].ShredFerocious_Bite)
-    _G[slider_ShredFerocious:GetName().."Text"]:SetText("撕咬: ".. MPDriudCatSaved[ConfigCurrent].ShredFerocious_Bite .."星")
     slider_ShredFerocious_Value:SetValue(MPDriudCatSaved[ConfigCurrent].ShredFerocious_Value)
-    _G[slider_ShredFerocious_Value:GetName().."Text"]:SetText("撕咬<"..MPDriudCatSaved[ConfigCurrent].ShredFerocious_Value.."能量")
     slider_ShredModeShapeshift:SetValue(MPDriudCatSaved[ConfigCurrent].ShredModeShapeshift)
-    _G[slider_ShredModeShapeshift:GetName().."Text"]:SetText("变身<"..MPDriudCatSaved[ConfigCurrent].ShredModeShapeshift.."能量")
 
 
     if MPDriudCatSaved[ConfigCurrent].Style==1 then

@@ -5,7 +5,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 惩戒骑一键宏
--- 更新日期：2026-05-07 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -284,7 +284,7 @@ function MPPaladinCJSpell()
 
 		if MPPaladinCJSaved[MPPaladinCJConfig].Soulspeed==1 and MPGetTargetDistance() then
 			if MPPaladinCJSaved[MPPaladinCJConfig].SoulspeedBoss==0 or (MPPaladinCJSaved[MPPaladinCJConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

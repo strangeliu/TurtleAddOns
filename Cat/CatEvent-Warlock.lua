@@ -341,6 +341,7 @@ local function OnEvent()
 
                 -- 献祭
                 elseif arg4==348 or arg4==707 or arg4==1094 or arg4==2941 or arg4==11665 or arg4==11667 or arg4==11668 or arg4==25309 then
+                    --MPMsg("献祭 目标="..arg2)
                     ImmolateDelayTime[arg2] = GetTime()
 
                 -- 燃烧

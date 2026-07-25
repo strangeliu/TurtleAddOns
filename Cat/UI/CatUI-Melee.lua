@@ -68,6 +68,14 @@ ArmorText:SetTextColor(1.0, 1.0, 1.0)
 ArmorText:SetJustifyH("CENTER")
 ArmorText:SetText("")
 
+local SpeedText = CatUIMelee:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+SpeedText:SetPoint("BOTTOM", CatUIMelee, "BOTTOM", 0, -66)
+SpeedText:SetWidth(250)
+SpeedText:SetFont("Fonts\\FRIZQT__.TTF", 24, "OUTLINE") -- 使用OUTLINE参数
+SpeedText:SetTextColor(0.0, 1.0, 0.0)
+SpeedText:SetJustifyH("CENTER")
+SpeedText:SetText("")
+
 local TWTText = CatUIMelee:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
 TWTText:SetPoint("BOTTOM", CatUIMelee, "BOTTOM", 0, 105)
 TWTText:SetWidth(250)
@@ -161,6 +169,8 @@ function MPCatUIMeleeRun()
             else
                 TWTText:SetText("")
             end
+
+
         end
     else
         CatUIMelee:SetAlpha(0.2+(MPMeleeSaved.Alpha/2)) 
@@ -169,6 +179,18 @@ function MPCatUIMeleeRun()
         progressBar:Hide()
     end
 
+    if MP_UnitXP then
+
+        if UnitXP("version", "coffTimeDateStamp")>=1783143763 then
+            local cur, ground, swim = UnitXP("speed","player")
+            if cur > 0 then
+                SpeedText:SetText("移速: "..cur)
+            else
+                SpeedText:SetText("")
+            end
+        end
+
+    end
 
 end
 

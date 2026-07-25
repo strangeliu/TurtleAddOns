@@ -415,7 +415,7 @@ end)
 
 postion_y = postion_y-40
 
-
+--[[
 -- 创建单选框 - 一星破甲
 local checkButton_FirstStar = MPCreateCheckButton(CatUISettingsRogueArmor, ADDON_NAME.."CheckButton", 20, postion_y, "启用 1星破甲填补过渡期")
 -- 设置点击事件
@@ -426,7 +426,7 @@ checkButton_FirstStar:SetScript("OnClick", function(self)
         MPRogueArmorSaved[ConfigCurrent].FirstStar = 0
     end
 end)
-
+]]
 
 -- 创建单选框 - 草药茶
 local checkButton_HerbalTea = MPCreateCheckButton(CatUISettingsRogueArmor, ADDON_NAME.."CheckButton", 340, postion_y, "自动 草药茶")
@@ -675,7 +675,7 @@ TipText:SetText("宏命令 |cFFFFF569/pjz|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local RogueArmorSettingsUIVersion = 12
+local RogueArmorSettingsUIVersion = 13
 
 function MPResetRogueArmorSettings(config)
 
@@ -771,7 +771,7 @@ local function InitRogueArmorSettingsPart1()
     checkButton_LeaveFight:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].LeaveFight))
     checkButton_Cover:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].Cover))
 
-    checkButton_FirstStar:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].FirstStar))
+    --checkButton_FirstStar:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].FirstStar))
 
     checkButton_Power:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].Power))
     checkButton_Pick:SetChecked(MPToBoolean(MPRogueArmorSaved[ConfigCurrent].Pick))

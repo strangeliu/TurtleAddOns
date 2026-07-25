@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 战斗贼一键宏
--- 发布日期：2026-04-12 （后面根据时间来判断版本）
+-- 发布日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -165,7 +165,7 @@ function MPRogueCombatDPS()
 
 		if MPRogueCombatSaved[MPRogueCombatConfig].Soulspeed==1 and TargetDistance then
 			if MPRogueCombatSaved[MPRogueCombatConfig].SoulspeedBoss==0 or (MPRogueCombatSaved[MPRogueCombatConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -217,7 +217,9 @@ function MPRogueCombatDPS()
 
 	-- 自动打断
 	if MPRogueCombatSaved[MPRogueCombatConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 保护剑刃乱舞
@@ -287,6 +289,7 @@ function MPRogueCombatDPS()
 
 		if MPGetRogueBloody(10) or MPRogueBloody==0 or MPRogueCombatSaved[MPRogueCombatConfig].Bloody==0 then
 
+			--[[
 			-- 保持切割
 			if MPRogueCombatSaved[MPRogueCombatConfig].SliceDice==1 and not MPGetRogueSlice(2) and myPower>=MPRogueSliceEnergy then
 				MPCastWithoutNampower("切割")
@@ -298,7 +301,7 @@ function MPRogueCombatDPS()
 				MPCastWithoutNampower("毒伤")
 				return
 			end
-
+			]]
 
 			if MPRogueCombatSaved[MPRogueCombatConfig].Eviscerate==1 and myPower>29 then
 				MPCastWithoutNampower("剔骨")
@@ -311,6 +314,7 @@ function MPRogueCombatDPS()
 
 		if MPGetRogueBloody(10) or MPRogueBloody==0 or MPRogueCombatSaved[MPRogueCombatConfig].Bloody==0 then
 
+			--[[
 			-- 保持切割
 			if MPRogueCombatSaved[MPRogueCombatConfig].SliceDice==1 and not MPGetRogueSlice(3) and myPower>=MPRogueSliceEnergy then
 				MPCastWithoutNampower("切割")
@@ -322,6 +326,7 @@ function MPRogueCombatDPS()
 				MPCastWithoutNampower("毒伤")
 				return
 			end
+			]]
 
 			if MPRogueCombatSaved[MPRogueCombatConfig].Eviscerate==1 and myPower>29 then
 				MPCastWithoutNampower("剔骨")
@@ -360,6 +365,7 @@ function MPRogueCombatDPS()
 		CastSpellByName("还击")
 	end
 
+
 	if MPRogueCombatSaved[MPRogueCombatConfig].Backstab==1 and MPRogueMainHand==2 then
 
 		-- 背刺贼
@@ -368,8 +374,9 @@ function MPRogueCombatDPS()
 				CastSpellByName("背刺")
 			end
 		else
-			if myPower>39 and MPRogueCombatSaved[MPRogueCombatConfig].GhostlyStrike==1 then
+			if myPower>39 and MPRogueCombatSaved[MPRogueCombatConfig].GhostlyStrike==1 and MPSpellReady("鬼魅攻击") then
 				CastSpellByName("鬼魅攻击")
+				return
 			end
 
 			if MPRogueCombatSaved[MPRogueCombatConfig].SinisterStrike==1 and myPower>39 then
@@ -381,8 +388,9 @@ function MPRogueCombatDPS()
 	else
 
 		-- 战斗贼
-		if myPower>39 and MPRogueCombatSaved[MPRogueCombatConfig].GhostlyStrike==1 then
+		if myPower>39 and MPRogueCombatSaved[MPRogueCombatConfig].GhostlyStrike==1 and MPSpellReady("鬼魅攻击") then
 			CastSpellByName("鬼魅攻击")
+			return
 		end
 
 		if myPower>39 then

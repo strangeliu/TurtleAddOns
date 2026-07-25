@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 邪修战士DPS一键宏
--- 更新日期：2026-05-07（后面根据时间来判断版本）
+-- 更新日期：2026-07-22（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -106,7 +106,9 @@ function MPEvilDPS(o)
 
 	-- 自动打断
 	if MPWarriorEvilSaved[MPWarriorEvilConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 在战斗中
@@ -128,7 +130,7 @@ function MPEvilDPS(o)
 		end
 		if MPWarriorEvilSaved[MPWarriorEvilConfig].Soulspeed==1 and TargetDistance then
 			if MPWarriorEvilSaved[MPWarriorEvilConfig].SoulspeedBoss==0 or (MPWarriorEvilSaved[MPWarriorEvilConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

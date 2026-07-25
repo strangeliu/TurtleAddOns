@@ -4,7 +4,7 @@ local ADDON_NAME = "Settings-HunterBeast"
 local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsHunterBeast = MPCreateFrame(ADDON_NAME.."Frame", 520, 600, "|cFFABD473设置 - 兽王猎|r")
+CatUISettingsHunterBeast = MPCreateFrame(ADDON_NAME.."Frame", 520, 590, "|cFFABD473设置 - 兽王猎|r")
 
 
 local postion_y = -50
@@ -126,18 +126,6 @@ checkButton_Target:SetScript("OnClick", function(self)
     end
 end)
 
--- 创建单选框 - 野猪模式（开启后自动锁敌只选名字含"猪"的目标，锚定在"自动锁敌"下方）
-local checkButton_BoarMode = MPCreateCheckButtonSmall(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 340, postion_y, "野猪模式")
-checkButton_BoarMode:ClearAllPoints()
-checkButton_BoarMode:SetPoint("TOPLEFT", checkButton_Target, "BOTTOMLEFT", 18, -2)
-checkButton_BoarMode:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPHunterBeastSaved[ConfigCurrent].BoarMode = 1
-    else
-        MPHunterBeastSaved[ConfigCurrent].BoarMode = 0
-    end
-end)
-
 
 
 
@@ -154,6 +142,19 @@ checkButton_KillCommand:SetScript("OnClick", function(self)
 end)
 
 
+
+postion_y = postion_y-30
+
+-- 创建单选框 - 稳固射击
+local checkButton_SteadyShot = MPCreateCheckButton(CatUISettingsHunterBeast, ADDON_NAME.."CheckButton", 20, postion_y, "开启 稳固射击")
+-- 设置点击事件
+checkButton_SteadyShot:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterBeastSaved[ConfigCurrent].SteadyShot = 1
+    else
+        MPHunterBeastSaved[ConfigCurrent].SteadyShot = 0
+    end
+end)
 
 postion_y = postion_y-30
 
@@ -278,13 +279,6 @@ end)
 
 
 
--- 添加文字标签
-local checkText_Help = CatUISettingsHunterBeast:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Help:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-checkText_Help:SetTextColor(1, 1, 1)
-checkText_Help:SetPoint("TOPLEFT", CatUISettingsHunterBeast, "TOPLEFT", 20, postion_y+20)
-checkText_Help:SetText("|cFFDD4080关键配置：|r需将【自动射击】拖出至任意技能栏里。")
-
 
 
 
@@ -295,7 +289,7 @@ checkText_Help:SetText("|cFFDD4080关键配置：|r需将【自动射击】拖�
 -- 高级
 
 
-postion_y = postion_y-10
+postion_y = postion_y+30
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsHunterBeast:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -307,7 +301,7 @@ TipText1:SetJustifyH("LEFT")
 TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
-postion_y = postion_y-120
+postion_y = postion_y-110
 
 
 -- 急速射击
@@ -666,7 +660,6 @@ function MPResetHunterBeastSettings(config)
     MPHunterBeastSaved[config].Trinket_Below = 1
     MPHunterBeastSaved[config].TBBoss = 0
     MPHunterBeastSaved[config].Target = 0
-    MPHunterBeastSaved[config].BoarMode = 0
     MPHunterBeastSaved[config].PetAttack = 0
 
     MPHunterBeastSaved[config].RaptorStrike = 1
@@ -711,6 +704,7 @@ local function MPInitHunterBeastSettingsPart1()
     checkButton_Mark:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Mark) )
     checkButton_MarkBossOnly:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].MarkBossOnly) )
     checkButton_KillCommand:SetChecked( MPToBoolean(MPHunterBeastSaved[ConfigCurrent].KillCommand) )
+    checkButton_SteadyShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].SteadyShot))
     checkButton_Trueshot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trueshot))
     checkButton_AimedShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].AimedShot))
     checkButton_MultiShot:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].MultiShot))
@@ -723,7 +717,6 @@ local function MPInitHunterBeastSettingsPart1()
     checkButton_Trinket_Below:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Trinket_Below))
     checkButton_TBBoss:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].TBBoss))
     checkButton_Target:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].Target))
-    checkButton_BoarMode:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].BoarMode))
     checkButton_PetAttack:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].PetAttack))
 
     checkButton_RaptorStrike:SetChecked(MPToBoolean(MPHunterBeastSaved[ConfigCurrent].RaptorStrike))

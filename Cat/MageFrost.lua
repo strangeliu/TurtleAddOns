@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 冰法一键宏
--- 更新日期：2026-04-18 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -103,6 +103,11 @@ function MPMageFrostAuto()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPMageFrostSaved[MPMageFrostConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPMageFrostSaved[MPMageFrostConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPMageFrostSaved[MPMageFrostConfig].Pick==1 then
 		MPAutoLoot()
@@ -137,7 +142,7 @@ function MPMageFrostAuto()
 
 		if MPMageFrostSaved[MPMageFrostConfig].Soulspeed==1 and GetMageArcaneMissiles()<=0 then
 			if MPMageFrostSaved[MPMageFrostConfig].SoulspeedBoss==0 or (MPMageFrostSaved[MPMageFrostConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

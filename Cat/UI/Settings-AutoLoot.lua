@@ -4,7 +4,7 @@ local ADDON_NAME = "Settings-AutoLoot"
 
 
 -- 创建主框架
-CatUISettingAutoLoot = MPCreateFrame(ADDON_NAME.."Frame", 520, 180, "|cFFDD4080"..MPLanguage.UI_Set_AutoLootTitle.."|r")
+CatUISettingAutoLoot = MPCreateFrame(ADDON_NAME.."Frame", 520, 150, "|cFFDD4080"..MPLanguage.UI_Set_AutoLootTitle.."|r")
 
 
 local postion_y = -50
@@ -42,6 +42,7 @@ checkButton_AutoLoot:SetScript("OnClick", function(self)
     end
 end)
 
+--[[
 postion_y = postion_y-20
 
 -- 添加文字标签
@@ -50,7 +51,7 @@ checkText_Help:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
 checkText_Help:SetTextColor(1, 1, 1)
 checkText_Help:SetPoint("TOPLEFT", CatUISettingAutoLoot, "TOPLEFT", 20, postion_y)
 checkText_Help:SetText(MPLanguage.UI_Set_AutoLootNote)
-
+]]
 
 local myButton = MPCreateButton(CatUISettingAutoLoot, ADDON_NAME.."ButtonReset", MPLanguage.UI_Set_ResetDefaults, 120, -44, 100, 22)
 myButton:SetScript("OnClick", function()
@@ -81,7 +82,7 @@ end
 function MPInitAutoLootSettings()
 
     if not MPPublicSaved.AutoLoot then
-        MPPublicSaved.AutoLoot = 0
+        MPPublicSaved.AutoLoot = 1
     end
     checkButton_AutoLoot:SetChecked(MPToBoolean(MPPublicSaved.AutoLoot))
 

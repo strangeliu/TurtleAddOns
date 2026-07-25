@@ -313,7 +313,9 @@ local function OnEvent()
             --message("---------"..arg1.."----------")
             if string.find( arg2, "你的撕裂.*" ) or string.find( arg2, ".*your 撕裂.*" ) then
                 local targetGUID = MPMatchGUID(arg2) 
-                RendCheck[targetGUID] = GetTime()
+                if targetGUID then
+                    RendCheck[targetGUID] = GetTime()
+                end
             end
 
         end
@@ -511,6 +513,7 @@ end
 -- 战士刷新特性状态
 function MPWarriorRefreshInfo()
 
+    MPWarriorBerserkerStanceID = 1
 	for i = 1, 4 do
 		local _, name, _, id = GetShapeshiftFormInfo(i)
         if name and name=="狂暴姿态" then

@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 鸟德一键宏
--- 更新日期：2026-04-16 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -168,6 +168,11 @@ function MPCoo()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPDriudCOOSaved[MPDriudCooConfig].Target, 2)
 
+	-- 开启自动攻击
+	if MPDriudCOOSaved[MPDriudCooConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPDriudCOOSaved[MPDriudCooConfig].Pick==1 then
 		MPAutoLoot()
@@ -201,9 +206,9 @@ function MPCoo()
 
 		if MPDriudCOOSaved[MPDriudCooConfig].Soulspeed==1 then
 			if MPDriudCOOSaved[MPDriudCooConfig].SoulspeedBoss==1 and TargetBOSS then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			elseif MPDriudCOOSaved[MPDriudCooConfig].SoulspeedBoss==0 then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

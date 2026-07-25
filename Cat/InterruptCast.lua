@@ -1,6 +1,6 @@
 -- -------------------------------------
 -- 乌龟服 - 全自动读条打断一键宏
--- 发布日期：2025-09-26 （后面根据时间来判断版本）
+-- 发布日期：2026-05-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -69,18 +69,18 @@ function MPINTCast(spellname)
     -- 检测是否有SuperWow模组
     if not MP_SuperWoW then
         DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."未加载SuperWow，自动打断读条功能无效。|r")
-        return 
+        return false
     end
 
     -- 确认有目标
     if not UnitExists("target") then
-        return
+        return false
     end
 
     -- 确认目标正在读条
     local cast,name = MPTargetCast()
     if not cast then
-        return
+        return false
     end
 
 
@@ -89,13 +89,14 @@ function MPINTCast(spellname)
         --print(name)
         if not string.find(name, spellname) then
             --DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."不打断 ["..name.."]。|r")
-            return
+            return false
         end
         --DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."尝试打断 ["..spellname.."]。|r")
     end
 
     MPIntCastSpell()
 
+    return true
 end
 
 -- 根据职业施放打断技能

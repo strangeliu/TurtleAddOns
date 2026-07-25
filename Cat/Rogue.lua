@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 盗贼自配置一键宏
--- 发布日期：2026-05-08 （后面根据时间来判断版本）
+-- 发布日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -32,6 +32,7 @@ local AUTO_RDPS_Trinket_Delay = 3			-- 进入战斗后，3秒后才允许使用�
 
 local QG,GCP,QX,THP,myPower,TX,XX,JRLW,DS,PJ,XF,YG,SJ
 local TargetDistance = false
+
 
 -- 默认配置
 MPRogueConfig = 1
@@ -133,6 +134,49 @@ function MPRogueDPS()
 	end
 
 
+	-- 更换武器，毒药切换
+	if MPRogueSaved[MPRogueConfig].SwitchWeapon==1 then
+
+		local t = UnitExists("target")
+		local postion_text
+		if t and not MPCheckUIStatus() then
+			local creature = UnitCreatureType("target") or "其它"
+			local position = string.find("元素生物,机械,巨人,亡灵", creature)
+			if position then
+				-- 切换至溶解毒药
+				-- 主手
+				postion_text = MPGetMainHandPostion()
+				if not postion_text or not string.find( postion_text, "溶解毒药" ) then
+					MPRogueSwitchWeapon("溶解毒药", 16)
+				else
+
+					-- 副手
+					postion_text = MPGetOffHandPostion()
+					if not postion_text or not string.find( postion_text, "溶解毒药" ) then
+						MPRogueSwitchWeapon("溶解毒药", 17)
+					end
+				end
+			else
+				-- 切换至速效毒药
+
+				-- 主手
+				postion_text = MPGetMainHandPostion()
+				if not postion_text or not string.find( postion_text, "速效毒药" ) then
+					MPRogueSwitchWeapon("速效毒药", 16)
+				else
+
+					-- 副手
+					postion_text = MPGetOffHandPostion()
+					if not postion_text or not string.find( postion_text, "速效毒药" ) then
+						MPRogueSwitchWeapon("速效毒药", 17)
+					end
+				end
+			end
+		end
+
+	end
+
+
 	-- 在潜行状态
 	if QX and MPRogueSaved[MPRogueConfig].Stealth==1 then
 
@@ -200,7 +244,7 @@ function MPRogueDPS()
 
 		if MPRogueSaved[MPRogueConfig].Soulspeed==1 and TargetDistance then
 			if MPRogueSaved[MPRogueConfig].SoulspeedBoss==0 or (MPRogueSaved[MPRogueConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -217,10 +261,18 @@ function MPRogueDPS()
 			MPUseItemByName("鞭根块茎")
 		end
 
-		-- 冲动
-		if MPRogueSaved[MPRogueConfig].Impulse==1 and MPRogueImpulse==1 and TargetDistance and MPSpellReady("冲动") then
-			if MPRogueSaved[MPRogueConfig].ImpulseBoss==0 or (MPRogueSaved[MPRogueConfig].ImpulseBoss==1 and MPIsBossTarget()) then
-				CastSpellByName("冲动")
+		if MPRogueSaved[MPRogueConfig].Impulse==1 then
+			-- 冲动
+			if MPRogueImpulse==1 and TargetDistance and MPSpellReady("冲动") then
+				if MPRogueSaved[MPRogueConfig].ImpulseBoss==0 or (MPRogueSaved[MPRogueConfig].ImpulseBoss==1 and MPIsBossTarget()) then
+					CastSpellByName("冲动")
+				end
+			end
+			-- 冷血
+			if MPRogueColdBlood==1 and MPRogueColdBloodReady() then
+				if MPRogueSaved[MPRogueCombatConfig].ImpulseBoss==0 or (MPRogueSaved[MPRogueCombatConfig].ImpulseBoss==1 and MPIsBossTarget()) then
+					CastSpellByName("冷血")
+				end
 			end
 		end
 
@@ -252,7 +304,9 @@ function MPRogueDPS()
 
 	-- 自动打断
 	if MPRogueSaved[MPRogueConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 保护剑刃乱舞
@@ -362,6 +416,20 @@ function MPRogueDPS()
 		CastSpellByName("还击")
 	end
 
+	-- 鬼魅攻击
+	if MPRogueSaved[MPRogueConfig].GhostlyStrike==1 and MPSpellReady("鬼魅攻击") then
+		if myPower>39 then
+			CastSpellByName("鬼魅攻击")
+		end
+		return
+	end
+
+	-- 突袭
+	if MPRogueSaved[MPRogueConfig].SurpriseStrike==1 and MPRogueRiposte==1 and myPower>9 and MPRogueSurpriseStrike() and TX then
+		CastSpellByName("突袭")
+		return
+	end
+
 	-- 背刺
 	if MPRogueSaved[MPRogueConfig].Backstab==1 then
 
@@ -389,10 +457,6 @@ function MPRogueDPS()
 
 	end
 
-	-- 鬼魅攻击
-	if myPower>39 and MPRogueSaved[MPRogueConfig].GhostlyStrike==1 then
-		CastSpellByName("鬼魅攻击")
-	end
 
 
 	-- 出血
@@ -416,11 +480,6 @@ function MPRogueDPS()
 		return
 	end
 
-	-- 突袭
-	if MPRogueSaved[MPRogueConfig].SurpriseStrike==1 and MPRogueRiposte==1 and myPower>9 and MPRogueSurpriseStrike() and TX then
-		CastSpellByName("突袭")
-		return
-	end
 
 end
 

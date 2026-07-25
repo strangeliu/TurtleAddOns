@@ -103,7 +103,7 @@ local function OnEvent()
 
         if string.find( arg1, ".*根基图腾.*" ) then
             if MP_SuperWoW then
-                local mainplayer = string.match(arg1, "%((.-)%)")
+                local mainplayer = MPMatch(arg1, "%((.-)%)")
                 if mainplayer == UnitName("player") then
                     MPAirTotemTimer = 0
                 end
@@ -122,7 +122,7 @@ local function OnEvent()
         end
 
         if not MP_SuperWoW then
-            local totemName = string.match(arg1, "你施放了(.+)。")
+            local totemName = MPMatch(arg1, "你施放了(.+)。")
 
             if totemName=="地缚图腾" then
                 MPEarthTotemDuration = 45

@@ -168,7 +168,7 @@ local function MPCreateBuff()
 end
 
 -- 初始化
-for i=1, 16 do
+for i=1, 32 do
     MPCreateBuff("null", "null")
     MPCatElixirButton[i]:SetScript("OnClick", function(self)
     end)

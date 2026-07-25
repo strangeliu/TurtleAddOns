@@ -3,6 +3,7 @@ if playerClass ~= "ROGUE" then
     return  -- 终止文件执行
 end
 
+
 local frame = CreateFrame("Frame")
 
 frame:RegisterEvent("PLAYER_LOGIN")
@@ -13,6 +14,9 @@ frame:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
 -- SuperWow专有事件
 frame:RegisterEvent("UNIT_CASTEVENT")
 frame:RegisterEvent("RAW_COMBATLOG")
+
+-- Nampower专有事件
+frame:RegisterEvent("BUFF_REMOVED_SELF")
 
 -- 自己的GUID
 local PLAYER_GUID = 0
@@ -66,7 +70,9 @@ MPRogueHemorrhageEnergy = 45
 
 -- 冲动
 MPRogueImpulse = 0
-
+-- 冷血
+MPRogueColdBlood = 0
+MPRogueColdBloodTimer = 0
 
 
 -- 切割buff
@@ -136,6 +142,7 @@ local function OnEvent()
             if arg1 == PLAYER_GUID then
 
                 --MPMsg(arg4)
+                -- 冷血id 14177
 
                 -- 突袭
                 if arg4 == 52511 then
@@ -149,7 +156,7 @@ local function OnEvent()
                     MPBloodyTimer = GetTime()
 
                 -- 血腥气息
-                elseif arg4 == 52530 then
+                elseif arg4==52529 or arg4 == 52530 then
                     MPMsg("血腥气息 "..MPRogueCombo)
                     MPRogueBloodyDuration = 6+(MPRogueCombo*2) + MPRogueBloodyTalent
                     MPBloodyTimer = GetTime()
@@ -236,6 +243,16 @@ local function OnEvent()
                 end
             end
 
+        end
+
+    elseif event == "BUFF_REMOVED_SELF" then
+
+        --local spellname = GetSpellRecField(arg3, "name")
+        --MPMsg(arg3.."-"..spellname)
+
+        -- 冷血 消耗
+        if arg3 == 14177 then
+            MPRogueColdBloodTimer = GetTime()+180
         end
 
     end
@@ -379,6 +396,20 @@ end
 
 
 
+function MPRogueColdBloodReady()
+    if not MPBuff("冷血") then
+        if MPSpellReady("冷血") then
+            if MPRogueColdBloodTimer<GetTime() then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+
+
 
 
 
@@ -397,6 +428,136 @@ function MPPutonPostion(postion, slot)
 	MPClickReplace()    -- 点击替换按钮
 	ClearCursor()
 end
+
+
+
+local PostionNametip = CreateFrame("GameTooltip", "MPPostionNametip", nil, "GameTooltipTemplate")
+
+-- 检查主手毒药类型
+function MPGetMainHandPostion()
+	PostionNametip:SetOwner(UIParent, "ANCHOR_NONE")
+    PostionNametip:ClearLines()
+    PostionNametip:SetInventoryItem("player", 16)   -- 主手
+    -- 扫描 Tooltip 文本
+    for i = 2, PostionNametip:NumLines() do
+        local line = _G["MPPostionNametipTextLeft"..i]
+        if line then
+            local text = line:GetText() or ""
+            if string.find(text, "毒药") then
+                return text
+            end
+        end
+    end
+
+    return nil
+end
+
+
+-- 检查副手毒药类型
+function MPGetOffHandPostion()
+	PostionNametip:SetOwner(UIParent, "ANCHOR_NONE")
+    PostionNametip:ClearLines()
+    PostionNametip:SetInventoryItem("player", 17)   -- 副手
+    -- 扫描 Tooltip 文本
+    for i = 2, PostionNametip:NumLines() do
+        local line = _G["MPPostionNametipTextLeft"..i]
+        if line then
+            local text = line:GetText() or ""
+            if string.find(text, "毒药") then
+                return text
+            end
+        end
+    end
+
+    return nil
+end
+
+
+-- 切换包里武器，根据毒药来进行选择
+function MPRogueSwitchWeapon(postion, inventory)
+
+    local speed_bag,speed_slot
+    local speed = 0
+    local dps = 0
+    local weapon_dps = 0
+
+	PostionNametip:SetOwner(UIParent, "ANCHOR_NONE")
+	local bag, slot
+    for bag = 0, 4 do
+        for slot = 1, GetContainerNumSlots(bag) do
+            local itemLink = GetContainerItemLink(bag, slot)
+            if itemLink then
+                PostionNametip:ClearLines()
+                PostionNametip:SetBagItem(bag, slot)
+
+                -- 扫描 Tooltip 文本
+                for i = 2, PostionNametip:NumLines() do
+
+                    -- 先找到有毒药的武器
+                    local line = _G["MPPostionNametipTextLeft"..i]
+                    if line then
+                        local text = line:GetText() or ""
+
+                        local local_dps = MPMatch(text, "每秒伤害(%d+%.?%d*)")
+                        if local_dps then
+                            weapon_dps = MPToNumber(local_dps)
+                        end
+
+                        if string.find(text, postion) then
+                            local _, _, name = string.find(itemLink, "%[(.-)%]")
+                            --print(name)
+
+                            -- 判断武器攻速
+                            for j = 2, 6 do
+                                local right = _G["MPPostionNametipTextRight"..j]
+                                if right then
+                                    local text_right = right:GetText() or ""
+
+                                    local Value = MPToNumber(MPMatch(text_right, "速度 (%d+%.?%d*)"))
+                                    --print(Value)
+                                    if Value and Value>0 then
+                                        
+                                        --MPMsg(name.."speed "..speed.." - "..Value)
+                                        --MPMsg(name.."dps "..dps.." - "..weapon_dps)
+                                        --MPMsg("bag="..bag.."  slot="..slot)
+                                        if speed < Value then
+                                            speed = Value
+                                            speed_bag = bag
+                                            speed_slot = slot
+                                            dps = weapon_dps
+                                        elseif speed == Value then
+                                            -- 攻速一样的情况下，看秒伤
+                                            if weapon_dps and dps < weapon_dps then
+                                                speed = Value
+                                                speed_bag = bag
+                                                speed_slot = slot
+                                                dps = weapon_dps
+                                            end
+                                        end
+                                        break
+                                    end
+                                end
+                            end
+
+
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if speed_bag and speed_slot then
+        --print(speed_bag)
+        --print(speed_slot)
+        PickupContainerItem(speed_bag, speed_slot)
+		EquipCursorItem(inventory)
+    end
+end
+
+
+
+
 
 
 
@@ -462,6 +623,9 @@ function MPRogueRefreshInfo()
 
     -- 检查 冲动 天赋
     MPRogueImpulse = MPIsTalentLearned(2,18)
+
+    -- 检查 冷血 天赋
+    MPRogueColdBlood = MPIsTalentLearned(1,15)
 
 end
 

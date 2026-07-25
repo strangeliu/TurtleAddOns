@@ -46,6 +46,9 @@ MPmonsterList = {
 
 	-- TAQ
 
+    -- 黑龙
+    ["奥妮克希亚火嗣"] = true,
+
     -- FX
     ["莫阿姆"] = true,
 
@@ -56,10 +59,32 @@ MPmonsterList = {
     ["暗炉圣职者"] = true,
     ["法师领主索瑞森"] = true,
     ["巫王索瑞森"] = true,
+    ["熔核摧毁者"] = true,
 
 	-- STSM
     ["安娜丝塔丽男爵夫人"] = true,
     ["埃提耶什"] = true,
+
+    -- 龙吼居所
+    ["被遗忘的先祖"] = true,
+    ["哈尔甘·红标"] = true,
+
+    -- 黑石深渊
+    ["弗莱拉斯大使"] = true,
+    ["安格雷尔"] = true,
+    ["西斯雷尔"] = true,
+    ["多普雷尔"] = true,
+    ["格鲁雷尔"] = true,
+    ["瓦勒雷尔"] = true,
+    ["黑特雷尔"] = true,
+    ["杜姆雷尔"] = true,
+    ["玛格姆斯"] = true,
+
+	-- 玛拉顿
+    ["瑟莱德丝公主"] = true,
+
+	-- 暴风城地牢
+    ["戴米安"] = true,
 
 	-- 其他
     ["黑衣守卫斥候"] = true,
@@ -85,6 +110,7 @@ MPmonsterList = {
     ["鬼魅随从"] = true,
     ["艾德雷斯妖灵"] = true,
     ["天灾勇士"] = true,
+    ["天灾卫兵"] = true,
     ["不安宁的阴影"] = true,
     ["不死的看守者"] = true,
     ["哀嚎的鬼怪"] = true,
@@ -92,6 +118,12 @@ MPmonsterList = {
     ["不死的居民"] = true,
     ["不死的看守者"] = true,
     ["幽灵工人"] = true,
+    ["鬼灵工人"] = true,
+    ["徘徊的农夫"] = true,
+    ["被诅咒的水兵"] = true,
+    ["峭壁咆哮者"] = true,
+    ["峭壁行者"] = true,
+    ["峭壁击碎者"] = true,
 }
 
 -- 元素生物,机械中的白名单列表
@@ -103,6 +135,8 @@ MPmonsterWhiteList = {
 	-- MC
     ["加尔"] = true,
     ["焚化者古雷曼格"] = true,
+    ["巴萨尔萨"] = true,
+    ["斯摩达利斯"] = true,
 
 	-- 玛拉顿
 	["锐刺鞭笞者"] = true,
@@ -111,6 +145,10 @@ MPmonsterWhiteList = {
     ["灌木塑根者"] = true,
     ["灌木露水收集者"] = true,
     ["长瘤的灌木兽"] = true,
+    ["焦油潜伏者"] = true,
+    ["焦油爬行者"] = true,
+    ["焦油兽王"] = true,
+    ["焦油兽"] = true,
 }
 
 function MPCanBleed(unit)
@@ -263,6 +301,11 @@ MPFaerieFireBlcokList = {
     -- 世界
     ["熔岩元素"] = true,
     ["涅玛丝拉"] = true,
+    ["雷霆流放者"] = true,
+    ["狂风漩涡"] = true,
+
+    -- 黑石深渊
+    ["达格兰·索瑞森大帝"] = true,
 
 	-- test
     --["学徒训练假人"] = true,

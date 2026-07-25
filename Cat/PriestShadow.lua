@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 暗牧一键宏
--- 更新日期：2026-04-15 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -68,6 +68,11 @@ function MPPriestShadow()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPPriestShadowSaved[MPPriestShadowConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPPriestShadowSaved[MPPriestShadowConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPPriestShadowSaved[MPPriestShadowConfig].Pick==1 then
 		MPAutoLoot()
@@ -106,7 +111,7 @@ function MPPriestShadow()
 
 		if MPPriestShadowSaved[MPPriestShadowConfig].Soulspeed==1 then
 			if MPPriestShadowSaved[MPPriestShadowConfig].SoulspeedBoss==0 or (MPPriestShadowSaved[MPPriestShadowConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

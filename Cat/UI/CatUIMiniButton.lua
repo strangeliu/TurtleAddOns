@@ -466,6 +466,7 @@ function MPCreateMiniButtonMenu()
 
        -- 分隔线
         info = {}
+        info.text = " "
         info.disabled = 1
         UIDropDownMenu_AddButton(info)
 
@@ -479,6 +480,7 @@ function MPCreateMiniButtonMenu()
 
        -- 分隔线
         info = {}
+        info.text = " "
         info.disabled = 1
         UIDropDownMenu_AddButton(info)
 
@@ -514,6 +516,7 @@ function MPCreateMiniButtonMenu()
 
        -- 分隔线
         info = {}
+        info.text = " "
         info.disabled = 1
         UIDropDownMenu_AddButton(info)
 
@@ -551,6 +554,7 @@ function MPCreateMiniButtonMenu()
 
        -- 分隔线
         info = {}
+        info.text = " "
         info.disabled = 1
         UIDropDownMenu_AddButton(info)
 
@@ -577,6 +581,7 @@ function MPCreateMiniButtonMenu()
 
        -- 分隔线
         info = {}
+        info.text = " "
         info.disabled = 1
         UIDropDownMenu_AddButton(info)
 

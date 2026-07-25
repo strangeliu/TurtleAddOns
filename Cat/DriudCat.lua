@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 猫德一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -71,6 +71,8 @@ MPDriudTalent = 0
 
 -- 猛虎时间
 MPMHTimer = 10
+-- 猛虎能量
+MPDriudTigerFury = 30
 
 -- 流血dot 跳 时间
 MPDriudRateJumpTimer = 0
@@ -119,13 +121,13 @@ local function CatDotReset()
 		-- 爪击保险
 		if MPGetRakeDot() and MPDriudRateJumpTimer-Timer < -3.0 then
 			MPResetRakeDot(guid)
-			DEFAULT_CHAT_FRAME:AddMessage("爪击续杯失败，重置计时！")
+			--DEFAULT_CHAT_FRAME:AddMessage("爪击续杯失败，重置计时！")
 		end
 
 		-- 撕扯保险
 		if MPGetRipDot() and MPDriudRipJumpTimer-Timer < -2.0 then
 			MPResetRipDot(guid)
-			DEFAULT_CHAT_FRAME:AddMessage("撕扯续杯失败，重置计时！")
+			--DEFAULT_CHAT_FRAME:AddMessage("撕扯续杯失败，重置计时！")
 		end
 
 	end
@@ -196,6 +198,13 @@ function MPCat(type)
 		-- 潜行下，无需后续流程
 		return
 
+	end
+
+	if not MPInCombat then
+		if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 and (not MPMHTimer or Timer-MPMHTimer>10) and myPower>=80 then
+			CastSpellByName("猛虎之怒")
+			MPMHTimer=Timer
+		end
 	end
 
 	DM = MPDriudMana()
@@ -285,9 +294,9 @@ function MPCat(type)
 
 		if MPDriudCatSaved[MPDriudCatConfig].Soulspeed==1 and TargetDistance then
 			if MPDriudCatSaved[MPDriudCatConfig].SoulspeedBoss==1 and TargetBOSS then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			elseif MPDriudCatSaved[MPDriudCatConfig].SoulspeedBoss==0 then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -553,6 +562,11 @@ end
 -- 猫德填充技能
 local function MPCatAttack(type)
 
+	-- 技能安全检查，没有学撕碎，则强制用爪击
+	if MPGetSpellID("撕碎") == 0 then
+		type=1
+	end
+
 	-- 根据正反面撕碎/爪击填充空挡
 	-- 基础技能
 	if type==1 then
@@ -645,13 +659,13 @@ function MPCatBackstab()
 	if MPDriudCatSaved[MPDriudCatConfig].TigerFury==1 then
 		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==0 then
 			-- 走地猫的开启猛虎优化
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
 		else
 			-- 变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>17) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>17) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
@@ -766,13 +780,13 @@ function MPCatBleed()
 
 		if MPDriudCatSaved[MPDriudCatConfig].Shapeshift==0 then
 			-- 走地猫的开启猛虎优化
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
 		else
 			-- 变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>17) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>17) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
 				MPMHTimer=Timer
 			end
@@ -954,11 +968,13 @@ function MPCatBleedNew()
 			-- 变身猫的猛虎策略
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
 				CastSpellByName("猛虎之怒")
+				MPMHTimer=Timer
 			end
 		else
 			-- 不变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
+				MPMHTimer=Timer
 			end
 		end
 	end
@@ -969,22 +985,25 @@ function MPCatBleedNew()
 	else
 
 		-- 补撕扯
-		if not MPRip and GCP>=5 and THP>MPDriudCatSaved[MPDriudCatConfig].OutHPRip and myPower>=30 then
+		if not MPRip and GCP>=MPDriudCatSaved[MPDriudCatConfig].Rip_Bite and THP>MPDriudCatSaved[MPDriudCatConfig].OutHPRip and myPower>=30 then
 			CastSpellByName("撕扯")
 			return
 		end
 
 	end
 
-	-- 抢救 撕扯
-	if AF and MPRip and (myPower>=35 or JNSF) then
-		local check = MPGetRipCheck()
-        if check[guid] then
-			local timer = MPDriudRipDuration-(Timer-check[guid])
-			if timer < 3 then 
-				MPCastWithoutNampower("凶猛撕咬")
-				MPMsg("|cFFee1111抢救 撕扯|r")
-				return
+	-- 凶猛撕咬存在
+	if MPGetSpellID("凶猛撕咬") > 0 then
+		-- 抢救 撕扯
+		if AF and MPRip and (myPower>=35 or JNSF) then
+			local check = MPGetRipCheck()
+			if check[guid] then
+				local timer = MPDriudRipDuration-(Timer-check[guid])
+				if timer < 3 then 
+					MPCastWithoutNampower("凶猛撕咬")
+					MPMsg("|cFFee1111抢救 撕扯|r")
+					return
+				end
 			end
 		end
 	end
@@ -1012,12 +1031,17 @@ function MPCatBleedNew()
 		end
 	end
 
+	-- 凶猛撕咬存在
+	if MPGetSpellID("凶猛撕咬") > 0 then
+		-- 撕咬
+		if AF and myPower<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Value and MPRip and not JNSF and myPower>=35 then
+			MPCastWithoutNampower("凶猛撕咬")
+			return
+		end
+	end
 
-	-- 撕咬
-	if AF and myPower<MPDriudCatSaved[MPDriudCatConfig].Ferocious_Value and MPRip and not JNSF and myPower>=35 then
-		MPCastWithoutNampower("凶猛撕咬")
-		return
-	else
+	-- 扫击存在
+	if MPGetSpellID("扫击") > 0 then
 
 		-- 补扫击
 		if MPDriudCatSaved[MPDriudCatConfig].BOSS==1 and not TargetBOSS then
@@ -1035,6 +1059,7 @@ function MPCatBleedNew()
 		end
 
 	end
+
 	
 
 	if MPDriudCatSaved[MPDriudCatConfig].FaerieFire==1 then
@@ -1097,18 +1122,25 @@ function MPCatBackstabNew()
 			-- 变身猫的猛虎策略
 			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=60 then
 				CastSpellByName("猛虎之怒")
+				MPMHTimer=Timer
 			end
 		else
 			-- 不变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
+				MPMHTimer=Timer
 			end
 		end
 	end
 
-	if GCP>=5 and myPower<15 and JNSF and MPRip then   -- AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
-		MPCastWithNampower("凶猛撕咬")
-		return
+	-- 凶猛撕咬存在
+	if MPGetSpellID("凶猛撕咬") > 0 then
+
+		if GCP>=5 and myPower<15 and JNSF and MPRip then   -- AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].Ferocious_Bite)
+			MPCastWithNampower("凶猛撕咬")
+			return
+		end
+
 	end
 
 	-- 清晰预兆触发时，根据正反面选择撕碎/爪击
@@ -1132,10 +1164,13 @@ function MPCatBackstabNew()
 	end
 
 
-	-- 无清晰预兆，再撕咬
-	if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Value and not JNSF and myPower>=35 then
-		CastSpellByName("凶猛撕咬")
-		return
+	-- 凶猛撕咬存在
+	if MPGetSpellID("凶猛撕咬") > 0 then
+		-- 无清晰预兆，再撕咬
+		if AllowFerocious(MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Bite) and myPower<MPDriudCatSaved[MPDriudCatConfig].ShredFerocious_Value and not JNSF and myPower>=35 then
+			CastSpellByName("凶猛撕咬")
+			return
+		end
 	end
 
 
@@ -1242,7 +1277,7 @@ function MPCatBleedTest()
 			end
 		else
 			-- 不变身猫的猛虎策略
-			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=30 then
+			if (not MPMHTimer or Timer-MPMHTimer>18) and myPower>=MPDriudTigerFury then
 				CastSpellByName("猛虎之怒")
 			end
 		end

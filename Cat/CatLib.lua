@@ -42,7 +42,7 @@ MPHasteRating = 0
 MPTipsColor = "|cFF9264cdCat|r |cFFc3a7e2"
 
 -- 版本
-MPCatAddonVer = "2026-05-09"
+MPCatAddonVer = "2026-07-23"
 
 -- 调试
 MPCatDebug = 1
@@ -330,6 +330,7 @@ end
 
 function MPPlayerBuffNameByIndex(index)
     CatPlusTooltip:SetOwner(UIParent, "ANCHOR_NONE");
+	CatPlusTooltip:ClearLines()
     CatPlusTooltip:SetPlayerBuff(index);
     local buffName = CatPlusTooltipTextLeft1:GetText();
     CatPlusTooltip:Hide();
@@ -345,6 +346,7 @@ end
 function MPGetBuffNameByIndex(unit, index)
 	if UnitBuff(unit, index) then
 		CatPlusTooltip:SetOwner(UIParent, "ANCHOR_NONE");
+		CatPlusTooltip:ClearLines()
 		CatPlusTooltip:SetUnitBuff(unit, index);
 		local buffName = CatPlusTooltipTextLeft1:GetText();
 		CatPlusTooltip:Hide();
@@ -361,6 +363,7 @@ end
 function MPGetDebuffNameByIndex(unit, index)
 	if UnitDebuff(unit, index) then
 		CatPlusTooltip:SetOwner(UIParent, "ANCHOR_NONE");
+		CatPlusTooltip:ClearLines()
 		CatPlusTooltip:SetUnitDebuff(unit, index);
 		local buffName = CatPlusTooltipTextLeft1:GetText();
 		CatPlusTooltip:Hide();
@@ -451,6 +454,7 @@ function MPBuff(buffName, unit)
 		for i = 0, maxIndex do
 			-- 通过索引尝试访问buff
 			local found, name = MPPlayerBuffNameByIndex(i)
+			--print(name)
 			if not found then
 				break
 			end
@@ -749,6 +753,9 @@ end
 
 
 
+
+
+
 -- 获取技能是否CD结束
 -- name技能名称
 -- return 获取成立返回真
@@ -772,6 +779,12 @@ end
 -- name技能名称，offset偏移值，空为默认0.5秒
 -- return 获取成立返回真
 function MPSpellReadyOffset(name,offset)
+
+	-- 不存在该技能
+	if MPGetSpellID(name) == 0 then
+		return false
+	end
+
 	if not offset then offset=0.5 end
 	if MPGetSpellCooldown(name) <offset then
 		return true
@@ -793,6 +806,9 @@ function MPGetSpellCooldown(spell)
 	return time
 end
 
+-- 获取技能是否存在
+-- name技能名称
+-- return 获取成立返id
 function MPGetSpellID(name, rank)
 	local i = 0
 	local spellName = " "
@@ -920,7 +936,7 @@ function MPCast(spellName, unit)
 		end
 	end
 
-	CastSpellByName(spellName)
+	CastSpellByName(spellName, unit)
 
 	if MP_Nampower then
 		SetCVar("NP_QueueChannelingSpells", NP_QueueChannelingSpells)
@@ -1104,6 +1120,27 @@ function MPUseItemByName(itemName)
     end
 
     return false
+end
+
+-- 对自己使用背包中物品（用于防止没开启对自己施法的情况）
+-- itemName 物品名
+-- return 存在为真
+function MPUseItemByNameToSelf(itemName)
+
+	if MPGetItemByNameCD(itemName) then
+
+        local target,guid = UnitExists("target")
+
+        TargetUnit("player")
+		MPUseItemByName(itemName)
+
+        if not target then
+            ClearTarget()
+        else
+            TargetUnit(guid)
+        end
+	end
+
 end
 
 -- 检查背包中物品CD
@@ -1920,6 +1957,30 @@ end
 
 
 
+
+
+-- 获取鱼饵是否存在
+function MPGetBait()
+
+	PostionTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+    PostionTooltip:ClearLines()
+    PostionTooltip:SetInventoryItem("player", 16)
+    -- 扫描 Tooltip 文本
+    for i = 2, PostionTooltip:NumLines() do
+        local line = _G["MPPostionTooltipTextLeft"..i]
+        if line then
+            local text = line:GetText() or ""
+            local Value = string.find(text, "鱼饵")
+            if Value then
+                return true
+            end
+
+        end
+    end
+
+
+	return false
+end
 
 
 

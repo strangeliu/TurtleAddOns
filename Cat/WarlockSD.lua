@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 暗毁术一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -112,6 +112,11 @@ function MPWarlockSD()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPWarlockSDSaved[MPWarlockSDConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPWarlockSDSaved[MPWarlockAffConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPWarlockSDSaved[MPWarlockSDConfig].Pick==1 then
 		MPAutoLoot()
@@ -152,7 +157,7 @@ function MPWarlockSD()
 
 		if MPWarlockSDSaved[MPWarlockSDConfig].Soulspeed==1 then
 			if MPWarlockSDSaved[MPWarlockSDConfig].SoulspeedBoss==0 or (MPWarlockSDSaved[MPWarlockSDConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -234,14 +239,7 @@ function MPWarlockSD()
 		return
 	end
 
-
-	-- 腐蚀术
-	if MPWarlockSDSaved[MPWarlockSDConfig].Corruption==1 and not MPGetCorruptionDot() then
-		if MPWarlockSDSaved[MPWarlockSDConfig].CorruptionBoss==0 or (MPWarlockSDSaved[MPWarlockSDConfig].CorruptionBoss==1 and MPIsBossTarget()) then
-			MPCastCorruption()
-			return
-		end
-	end
+	-- 痛苦诅咒、腐蚀术、生命虹吸
 
 	-- 大诅咒
 	local bigdot = false
@@ -283,14 +281,25 @@ function MPWarlockSD()
 	end
 
 
-	-- 痛苦诅咒、腐蚀术、生命虹吸
 
+	-- 腐蚀术
+	if MPWarlockSDSaved[MPWarlockSDConfig].Corruption==1 and not MPGetCorruptionDot() then
+		if MPWarlockSDSaved[MPWarlockSDConfig].CorruptionBoss==0 or (MPWarlockSDSaved[MPWarlockSDConfig].CorruptionBoss==1 and MPIsBossTarget()) then
+			MPCastCorruption()
+			return
+		end
+	end
+
+	-- 痛苦诅咒
 	if MPWarlockSDSaved[MPWarlockSDConfig].CurseAgony==1 and not MPGetCurseAgonyDot() then
+
+		-- BOSS状态
 		if MPWarlockSDSaved[MPWarlockSDConfig].CurseAgonyBoss==0 or (MPWarlockSDSaved[MPWarlockSDConfig].CurseAgonyBoss==1 and MPIsBossTarget()) then
 
 			-- 是否有大诅咒设定
 			local count = MPWarlockSDSaved[MPWarlockSDConfig].CurseRecklessness+MPWarlockSDSaved[MPWarlockSDConfig].CurseElements+MPWarlockSDSaved[MPWarlockSDConfig].CurseShadow+MPWarlockSDSaved[MPWarlockSDConfig].CurseTongues
 			if count > 0 and MPWarlockSDSaved[MPWarlockSDConfig].CurseEvil==1 and MPWarlockCurseEvil==1 then
+
 
 				-- 邪咒 启动
 				if MPWarlockSDSaved[MPWarlockSDConfig].CurseRecklessness==1 then
@@ -311,7 +320,7 @@ function MPWarlockSD()
 
 			end
 
-			--print("原始 - 痛苦")
+			-- 不开启邪咒，痛苦组织直接补
 			MPCastCurseAgony()
 			return
 

@@ -4,7 +4,7 @@ local ADDON_NAME = "Settings-HunterShot"
 local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsHunterShot = MPCreateFrame(ADDON_NAME.."Frame", 520, 590, "|cFFABD473设置 - 射击猎|r")
+CatUISettingsHunterShot = MPCreateFrame(ADDON_NAME.."Frame", 520, 570, "|cFFABD473设置 - 射击猎|r")
 
 
 local postion_y = -50
@@ -123,14 +123,14 @@ local checkButton_Target = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NA
 
 postion_y = postion_y-30
 
--- 创建单选框 - 瞄准射击
-local checkButton_AimedShot = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, postion_y, "开启 瞄准射击 (主技能)")
+-- 创建单选框 - 稳固射击
+local checkButton_SteadyShot = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, postion_y, "开启 稳固射击 (主技能)")
 -- 设置点击事件
-checkButton_AimedShot:SetScript("OnClick", function(self)
+checkButton_SteadyShot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterShotSaved[ConfigCurrent].AimedShot = 1
+        MPHunterShotSaved[ConfigCurrent].SteadyShot = 1
     else
-        MPHunterShotSaved[ConfigCurrent].AimedShot = 0
+        MPHunterShotSaved[ConfigCurrent].SteadyShot = 0
     end
 end)
 
@@ -166,14 +166,14 @@ end)
 
 postion_y = postion_y-30
 
--- 创建单选框 - 多重射击
-local checkButton_MultiShot = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, postion_y, "开启 多重射击")
+-- 创建单选框 - 瞄准射击
+local checkButton_AimedShot = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, postion_y, "开启 瞄准射击 (主技能)")
 -- 设置点击事件
-checkButton_MultiShot:SetScript("OnClick", function(self)
+checkButton_AimedShot:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPHunterShotSaved[ConfigCurrent].MultiShot = 1
+        MPHunterShotSaved[ConfigCurrent].AimedShot = 1
     else
-        MPHunterShotSaved[ConfigCurrent].MultiShot = 0
+        MPHunterShotSaved[ConfigCurrent].AimedShot = 0
     end
 end)
 
@@ -185,6 +185,20 @@ checkButton_PetAttack:SetScript("OnClick", function(self)
         MPHunterShotSaved[ConfigCurrent].PetAttack = 1
     else
         MPHunterShotSaved[ConfigCurrent].PetAttack = 0
+    end
+end)
+
+
+postion_y = postion_y-30
+
+-- 创建单选框 - 多重射击
+local checkButton_MultiShot = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButton", 20, postion_y, "开启 多重射击")
+-- 设置点击事件
+checkButton_MultiShot:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPHunterShotSaved[ConfigCurrent].MultiShot = 1
+    else
+        MPHunterShotSaved[ConfigCurrent].MultiShot = 0
     end
 end)
 
@@ -272,18 +286,6 @@ end)
 
 
 
--- 添加文字标签
-local checkText_Help = CatUISettingsHunterShot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-checkText_Help:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-checkText_Help:SetTextColor(1, 1, 1)
-checkText_Help:SetPoint("TOPLEFT", CatUISettingsHunterShot, "TOPLEFT", 20, postion_y)
-checkText_Help:SetText("|cFFDD4080关键配置：|r需将【自动射击】拖出至任意技能栏里。")
-
-
-
-
-postion_y = postion_y-30
-
 
 
 
@@ -292,7 +294,7 @@ postion_y = postion_y-30
 -- 高级
 
 
-postion_y = postion_y-10
+postion_y = postion_y+30
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsHunterShot:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -304,7 +306,7 @@ TipText1:SetJustifyH("LEFT")
 TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 
-postion_y = postion_y-110
+postion_y = postion_y-100
 
 -- 急速射击
 local checkButton_RapidFire = MPCreateCheckButton(CatUISettingsHunterShot, ADDON_NAME.."CheckButtonSoulspeed", 20, postion_y, "自动 急速射击")
@@ -513,21 +515,21 @@ end)
 
 
 -- 稳固节点
-local slider_SteadyShot = CreateFrame("Slider", ADDON_NAME.."SliderSteadyShot", CatUISettingsHunterShot, "OptionsSliderTemplate")
-slider_SteadyShot:SetPoint("TOPLEFT", CatUISettingsHunterShot, "TOPLEFT", 20, postion_y+70)
-slider_SteadyShot:SetWidth(220) -- 拖动条长度
-slider_SteadyShot:SetHeight(16) -- 拖动条高度
+local slider_SteadyShotValue = CreateFrame("Slider", ADDON_NAME.."SliderSteadyShotValue", CatUISettingsHunterShot, "OptionsSliderTemplate")
+slider_SteadyShotValue:SetPoint("TOPLEFT", CatUISettingsHunterShot, "TOPLEFT", 20, postion_y+50)
+slider_SteadyShotValue:SetWidth(220) -- 拖动条长度
+slider_SteadyShotValue:SetHeight(16) -- 拖动条高度
 
-slider_SteadyShot:SetMinMaxValues(0.8, 3)
-slider_SteadyShot:SetValueStep(0.1)
-slider_SteadyShot:SetValue(1.5) -- 默认值
-MPCatUISliderRegionHide(slider_SteadyShot)
+slider_SteadyShotValue:SetMinMaxValues(0.8, 3)
+slider_SteadyShotValue:SetValueStep(0.1)
+slider_SteadyShotValue:SetValue(1.5) -- 默认值
+MPCatUISliderRegionHide(slider_SteadyShotValue)
 
 -- 值变化时的回调函数
-slider_SteadyShot:SetScript("OnValueChanged", function()
+slider_SteadyShotValue:SetScript("OnValueChanged", function()
     MPHunterShotSaved[ConfigCurrent].SteadyShot_Value = arg1
 
-    _G[slider_SteadyShot:GetName().."Text"]:SetText("稳固 >"..string.format("%.1f", arg1).."秒 下一次平射前")
+    _G[slider_SteadyShotValue:GetName().."Text"]:SetText("稳固 >"..string.format("%.1f", arg1).."秒 下一次平射前")
 end)
 
 
@@ -680,7 +682,7 @@ TipText:SetText("宏命令 |cFFABD473/sjdps|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local HunterShotSettingsUIVersion = 25
+local HunterShotSettingsUIVersion = 26
 
 function MPResetHunterShotSettings(config)
 
@@ -695,6 +697,7 @@ function MPResetHunterShotSettings(config)
     MPHunterShotSaved[config].AimedShot = 1
     MPHunterShotSaved[config].MultiShot = 1
     MPHunterShotSaved[config].ArcaneShot = 1
+    MPHunterShotSaved[config].SteadyShot = 1
     MPHunterShotSaved[config].Serpent = 1
     MPHunterShotSaved[config].Viper = 0
 
@@ -752,6 +755,7 @@ local function MPInitHunterShotSettingsPart1()
     checkButton_AimedShot:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].AimedShot))
     checkButton_MultiShot:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].MultiShot))
     checkButton_ArcaneShot:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].ArcaneShot))
+    checkButton_SteadyShot:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].SteadyShot))
     checkButton_SerpentSting:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].Serpent))
     checkButton_ViperSting:SetChecked(MPToBoolean(MPHunterShotSaved[ConfigCurrent].Viper))
 
@@ -847,8 +851,8 @@ function MPInitHunterShotSettings()
     _G[slider_HerbalTeaMana:GetName().."Text"]:SetText(color_HerbalTeaMana.."蓝量: ".. MPHunterShotSaved[ConfigCurrent].HerbalTeaMana_Value .."%|r")
 
 
-    slider_SteadyShot:SetValue(MPHunterShotSaved[ConfigCurrent].SteadyShot_Value)
-    _G[slider_SteadyShot:GetName().."Text"]:SetText("稳固射击 射击前 >"..string.format("%.1f", MPHunterShotSaved[ConfigCurrent].SteadyShot_Value).." 秒")
+    slider_SteadyShotValue:SetValue(MPHunterShotSaved[ConfigCurrent].SteadyShot_Value)
+    _G[slider_SteadyShotValue:GetName().."Text"]:SetText("稳固射击 射击前 >"..string.format("%.1f", MPHunterShotSaved[ConfigCurrent].SteadyShot_Value).." 秒")
 
         --[[
     checkButton_JewelMana:SetChecked(MPHunterShotSaved[ConfigCurrent].JewelMana)

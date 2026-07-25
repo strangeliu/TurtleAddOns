@@ -419,17 +419,42 @@ TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 postion_y = postion_y-130
 
+-- 创建单选框 - 剑刃乱舞
+local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
 
--- 创建单选框 - UnitXP
-local checkButton_UnitXP = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "启用UnitXP模组 (朝向判断)")
+local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
+slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
+slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
+slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
+slider_BladeFlurry_Value:SetValueStep(1)
+slider_BladeFlurry_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+
+local color_BladeFlurry = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value = arg1
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+end)
+
 -- 设置点击事件
-checkButton_UnitXP:SetScript("OnClick", function(self)
+checkButton_BladeFlurry:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueCombatSaved[ConfigCurrent].UnitXP = 1
+        MPRogueCombatSaved[ConfigCurrent].BladeFlurry = 1
+        color_BladeFlurry = "|cFFFFD100"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     else
-        MPRogueCombatSaved[ConfigCurrent].UnitXP = 0
+        MPRogueCombatSaved[ConfigCurrent].BladeFlurry = 0
+        color_BladeFlurry = "|cFF888888"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     end
 end)
+
 
 
 
@@ -475,42 +500,17 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 剑刃乱舞
-local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
-
-local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
-slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
-slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
-slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
-
--- 设置数值范围（最小值0，最大值100，步长1）
-slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
-slider_BladeFlurry_Value:SetValueStep(1)
-slider_BladeFlurry_Value:SetValue(8) -- 默认值
-MPCatUISliderRegionHide(slider_BladeFlurry_Value)
-
-local color_BladeFlurry = "|cFFFFD100"
-
--- 值变化时的回调函数
-slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
-    --print("HealthStone当前值:", arg1)
-    MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value = arg1
-    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
-end)
-
+-- 创建单选框 - 背刺 改 邪恶
+local checkButton_SinisterStrike = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "背刺 不可用时启用 邪恶攻击")
 -- 设置点击事件
-checkButton_BladeFlurry:SetScript("OnClick", function(self)
+checkButton_SinisterStrike:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueCombatSaved[ConfigCurrent].BladeFlurry = 1
-        color_BladeFlurry = "|cFFFFD100"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueCombatSaved[ConfigCurrent].SinisterStrike = 1
     else
-        MPRogueCombatSaved[ConfigCurrent].BladeFlurry = 0
-        color_BladeFlurry = "|cFF888888"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueCombatSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueCombatSaved[ConfigCurrent].SinisterStrike = 0
     end
 end)
+
 
 
 
@@ -556,18 +556,18 @@ end)
 
 postion_y = postion_y-40
 
-
-
--- 创建单选框 - 背刺 改 邪恶
-local checkButton_SinisterStrike = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "背刺 不可用时启用 邪恶攻击")
+-- 创建单选框 - 保护剑刃乱舞
+local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
 -- 设置点击事件
-checkButton_SinisterStrike:SetScript("OnClick", function(self)
+checkButton_Protect:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueCombatSaved[ConfigCurrent].SinisterStrike = 1
+        MPRogueCombatSaved[ConfigCurrent].Protect = 1
     else
-        MPRogueCombatSaved[ConfigCurrent].SinisterStrike = 0
+        MPRogueCombatSaved[ConfigCurrent].Protect = 0
     end
 end)
+
+
 
 
 -- 创建单选框 - 鞭根块茎
@@ -612,17 +612,24 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 保护剑刃乱舞
-local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
--- 设置点击事件
-checkButton_Protect:SetScript("OnClick", function(self)
+-- 创建单选框 - 冲动
+local checkButton_Impulse = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "自动 冲动")
+checkButton_Impulse:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueCombatSaved[ConfigCurrent].Protect = 1
+        MPRogueCombatSaved[ConfigCurrent].Impulse = 1
     else
-        MPRogueCombatSaved[ConfigCurrent].Protect = 0
+        MPRogueCombatSaved[ConfigCurrent].Impulse = 0
     end
 end)
+local checkButton_ImpulseBoss = MPCreateCheckButtonSmall(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_ImpulseBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPRogueCombatSaved[ConfigCurrent].ImpulseBoss = 1
+    else
+        MPRogueCombatSaved[ConfigCurrent].ImpulseBoss = 0
+    end
+end)
+
 
 
 -- 创建单选框 - 自动打断
@@ -640,23 +647,6 @@ end)
 
 postion_y = postion_y-40
 
--- 创建单选框 - 冲动
-local checkButton_Impulse = MPCreateCheckButton(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 20, postion_y, "自动 冲动")
-checkButton_Impulse:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPRogueCombatSaved[ConfigCurrent].Impulse = 1
-    else
-        MPRogueCombatSaved[ConfigCurrent].Impulse = 0
-    end
-end)
-local checkButton_ImpulseBoss = MPCreateCheckButtonSmall(CatUISettingsRogueCombat, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
-checkButton_ImpulseBoss:SetScript("OnClick", function(self)
-    if this:GetChecked() then
-        MPWarlockAffSaved[ConfigCurrent].ImpulseBoss = 1
-    else
-        MPWarlockAffSaved[ConfigCurrent].ImpulseBoss = 0
-    end
-end)
 
 
 -- 创建单选框 - 种族天赋
@@ -907,7 +897,7 @@ local function InitRogueCombatSettingsPart1()
     checkButton_TUBoss:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].TUBoss))
     checkButton_Trinket_Below:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].Trinket_Below))
     checkButton_TBBoss:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].TBBoss))
-    checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].UnitXP))
+    --checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].UnitXP))
 
     checkButton_Interrupt:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].Interrupt))
     checkButton_RacialTraits:SetChecked(MPToBoolean(MPRogueCombatSaved[ConfigCurrent].RacialTraits))

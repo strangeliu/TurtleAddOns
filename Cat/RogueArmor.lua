@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 破甲贼一键宏
--- 发布日期：2026-04-12 （后面根据时间来判断版本）
+-- 发布日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -165,7 +165,7 @@ function MPRoguePJZ()
 
 		if MPRogueArmorSaved[MPRogueArmorConfig].Soulspeed==1 and MPGetTargetDistance() then
 			if MPRogueArmorSaved[MPRogueArmorConfig].SoulspeedBoss==0 or (MPRogueArmorSaved[MPRogueArmorConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -210,7 +210,9 @@ function MPRoguePJZ()
 
 	-- 自动打断
 	if MPRogueArmorSaved[MPRogueArmorConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	if not MP_SuperWoW then
@@ -311,7 +313,7 @@ function MPRoguePJZ()
 
 		-- 鬼魅攻击
 		if MPRogueArmorSaved[MPRogueArmorConfig].GhostlyStrike==1 and GMGJ then
-			if myPower>44 then
+			if myPower>39 then
 				CastSpellByName("鬼魅攻击")
 				return
 			end
@@ -328,7 +330,7 @@ function MPRoguePJZ()
 
 		-- 鬼魅攻击
 		if MPRogueArmorSaved[MPRogueArmorConfig].GhostlyStrike==1 and GMGJ then
-			if myPower>44 then
+			if myPower>39 then
 				CastSpellByName("鬼魅攻击")
 				return
 			end

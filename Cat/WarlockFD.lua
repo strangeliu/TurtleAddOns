@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 火毁术一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -140,6 +140,11 @@ function MPWarlockFD()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPWarlockFDSaved[MPWarlockFDConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPWarlockFDSaved[MPWarlockAffConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPWarlockFDSaved[MPWarlockFDConfig].Pick==1 then
 		MPAutoLoot()
@@ -180,7 +185,7 @@ function MPWarlockFD()
 
 		if MPWarlockFDSaved[MPWarlockFDConfig].Soulspeed==1 then
 			if MPWarlockFDSaved[MPWarlockFDConfig].SoulspeedBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -274,14 +279,6 @@ function MPWarlockFD()
 	end
 
 
-	-- 腐蚀术
-	if MPWarlockFDSaved[MPWarlockFDConfig].Corruption==1 and not MPGetCorruptionDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
-		if MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==1 and MPIsBossTarget()) then
-			MPCastCorruption()
-			return
-		end
-	end
-
 	if bigdot then
 
 
@@ -331,7 +328,13 @@ function MPWarlockFD()
 	end
 
 
-
+	-- 腐蚀术
+	if MPWarlockFDSaved[MPWarlockFDConfig].Corruption==1 and not MPGetCorruptionDot() and MPGetTargetDistance("target", 30+MPWarlockRuthlessExtend) then
+		if MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==0 or (MPWarlockFDSaved[MPWarlockFDConfig].CorruptionBoss==1 and MPIsBossTarget()) then
+			MPCastCorruption()
+			return
+		end
+	end
 
 
 
@@ -343,6 +346,8 @@ function MPWarlockFD()
 		return
 	end
 
+
+
 	-- 灵魂之火
 	if MPWarlockFDSaved[MPWarlockFDConfig].SoulFireBoss==1 and not MPIsBossTarget() then
 	else
@@ -353,10 +358,11 @@ function MPWarlockFD()
 	end
 
 	-- 献祭
-	if MPWarlockFDSaved[MPWarlockFDConfig].Immolate==1 and not MPGetImmolateDot("target", 2) and GetTime()-MPImmolateTimer>2 then
+	if MPWarlockFDSaved[MPWarlockFDConfig].Immolate==1 and not MPGetImmolateDot("target", 1.5) and GetTime()-MPImmolateTimer>1.6 then
 		MPCastImmolate()
 		return
 	end
+
 
 
 	-- 暗影灼烧

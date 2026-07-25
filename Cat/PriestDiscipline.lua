@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 暗牧一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -53,7 +53,6 @@ end
 
 function MPPriestDiscipline()
 
-	local a,guid=UnitExists("target")
 
 	MHP = UnitHealth("player")
 	DM = UnitMana("player")
@@ -65,6 +64,11 @@ function MPPriestDiscipline()
 
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPPriestDisciplineSaved[MPPriestDConfig].Target, 0)
+
+	-- 开启自动攻击
+	if MPPriestDisciplineSaved[MPPriestDConfig].Target==1 then
+		MPStartAttack()
+	end
 
 	-- 自动拾取
 	if MPPriestDisciplineSaved[MPPriestDConfig].Pick==1 then
@@ -100,7 +104,7 @@ function MPPriestDiscipline()
 
 		if MPPriestDisciplineSaved[MPPriestDConfig].Soulspeed==1 then
 			if MPPriestDisciplineSaved[MPPriestDConfig].SoulspeedBoss==0 or (MPPriestDisciplineSaved[MPPriestDConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -156,10 +160,14 @@ function MPPriestDiscipline()
 			MPCastHolyFire()
 			return
 		end
-		
-		if MP_SuperWoW and MPGetHolyFireCheck(guid)<2.5 then
-			MPCastHolyFire()
-			return
+
+		-- 提前补
+		local a,guid=UnitExists("target")
+		if MP_SuperWoW and a then
+			if MPGetHolyFireCheck(guid)<2.5 then
+				MPCastHolyFire()
+				return
+			end
 		end
 	end
 

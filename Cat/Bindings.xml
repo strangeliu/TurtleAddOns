@@ -56,9 +56,6 @@
 	<Binding name="萨满-元素萨" header="CAT_PLUGINNAME">
 		MPShamanElementalCommand()
 	</Binding>
-	<Binding name="萨满-火萨" header="CAT_PLUGINNAME">
-		MPShamanFireCommand()
-	</Binding>
 	<Binding name="萨满-奶萨" header="CAT_PLUGINNAME">
 		MPShamanHealCommand()
 	</Binding>

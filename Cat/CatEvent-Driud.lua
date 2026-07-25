@@ -170,8 +170,8 @@ local function OnEvent()
     elseif event == "SPELLCAST_START" then
 
         -- 德鲁伊治疗读条处理
-        if arg1 == "愈合" then MPDriudCastHeal=GetTime() end
-        if arg1 == "治疗之触" then MPDriudCastHeal=GetTime() end
+        if arg1 == "愈合" then MPDriudCastHeal=GetTime()+arg2 end
+        if arg1 == "治疗之触" then MPDriudCastHeal=GetTime()+arg2 end
 
     elseif event == "SPELLCAST_STOP" then
 
@@ -190,17 +190,20 @@ local function OnEvent()
         -- 撕扯 - 异常流血目标记录
         if string.find( arg1, "你的撕扯施放失败。.*对此免疫.*" ) then
 
+            --[[
         	local creature = UnitCreatureType("target") or "其它"
     	    local position = string.find("亡灵,龙类,恶魔", creature)
             -- 此记录只对亡灵类怪物进行处理
 	        if position then
+            ]]
                 local targetName = UnitName("target")
                 if targetName then
                     DEFAULT_CHAT_FRAME:AddMessage(MPTipsColor.."发现["..targetName.."]不吃流血。")
                     -- 将该目标加入流血表（临时，重登后丢失）
                     MPmonsterList[targetName] = true
+                    MPTargetBleed = false
                 end
-	        end
+	        --end
 
         end
 
@@ -1091,6 +1094,21 @@ function MPDriudRefreshInfo()
 		MPDriudCatFuror = 0
 	end
 
+    -- 猛虎之怒 能量
+    MPDriudTigerFury = 30
+	-- 猫德T1套装特效
+    count = 0
+	if MPCheckInventoryItemName(1,"塞纳里奥皮盔") then count=count+1 end
+	if MPCheckInventoryItemName(3,"塞纳里奥护肩") then count=count+1 end
+	if MPCheckInventoryItemName(5,"塞纳里奥外套") then count=count+1 end
+	if MPCheckInventoryItemName(6,"塞纳里奥束带") then count=count+1 end
+	if MPCheckInventoryItemName(7,"塞纳里奥短裤") then count=count+1 end
+	if MPCheckInventoryItemName(8,"塞纳里奥皮靴") then count=count+1 end
+	if MPCheckInventoryItemName(9,"塞纳里奥腕甲") then count=count+1 end
+	if MPCheckInventoryItemName(10,"塞纳里奥护手") then count=count+1 end
+	if count>=5 then MPDriudTigerFury=25 end
+
+
 
 	-- -------------------------------------
 	-- 鸟德特性 --
@@ -1345,6 +1363,11 @@ function MPDriudRefreshInfo()
 
 	-- 狂暴天赋是否存在
 	MPDriudBerserk = MPIsTalentLearned(2,15)
+
+    -- 等级太低，没有野蛮撕咬
+    if MPGetSpellID("野蛮撕咬")==0 then
+        MPDruidFerociousBitePower = 0
+    end
 
 end
 

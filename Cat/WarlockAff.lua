@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 痛苦术一键宏
--- 更新日期：2026-04-12 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -116,6 +116,11 @@ function MPWarlockAff()
 	-- 确认目标的存活和转火
 	MPAutoSwitchTarget(MPWarlockAffSaved[MPWarlockAffConfig].Target, 0)
 
+	-- 开启自动攻击
+	if MPWarlockAffSaved[MPWarlockAffConfig].Target==1 then
+		MPStartAttack()
+	end
+
 	-- 自动拾取
 	if MPWarlockAffSaved[MPWarlockAffConfig].Pick==1 then
 		MPAutoLoot()
@@ -179,7 +184,7 @@ function MPWarlockAff()
 
 		if MPWarlockAffSaved[MPWarlockAffConfig].Soulspeed==1 then
 			if MPWarlockAffSaved[MPWarlockAffConfig].SoulspeedBoss==0 or (MPWarlockAffSaved[MPWarlockAffConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

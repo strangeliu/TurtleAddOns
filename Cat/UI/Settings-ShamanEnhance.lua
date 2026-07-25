@@ -704,6 +704,7 @@ local modes_DefaultTotem = {
     [6] = {text = "|cFF0070DD怒气图腾|r", item="怒气图腾", value = 6},
     [7] = {text = "|cFF0070DD星火图腾|r", item="星火图腾", value = 7},
     [8] = {text = "|cFF0070DD腐根图腾|r", item="腐根图腾", value = 8},
+    [9] = {text = "|cFF0070DD腐潮图腾|r", item="腐潮图腾", value = 9},
 }
 local function Dropdown_DefaultT()
     for idx, data in pairs(modes_DefaultTotem) do

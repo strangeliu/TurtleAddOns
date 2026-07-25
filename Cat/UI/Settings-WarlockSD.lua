@@ -810,7 +810,7 @@ TipText:SetText("宏命令 |cFF9482C9/ahdps|r [ 1 | 2 | 3 ]   多线Dot |cFF9482
 
 
 -- 配置文件版本号
-local WarlockSDSettingsUIVersion = 17
+local WarlockSDSettingsUIVersion = 18
 
 function MPResetWarlockSDSettings(config)
 
@@ -862,7 +862,7 @@ function MPResetWarlockSDSettings(config)
 
     MPWarlockSDSaved[config].CurseBOSS = 0
     MPWarlockSDSaved[config].FirstShadowBolt = 0
-    MPWarlockSDSaved[config].CurseEvil = 0
+    MPWarlockSDSaved[config].CurseEvil = 1
 
     MPWarlockSDSaved[config].RacialTraits = 0
     MPWarlockSDSaved[config].RacialTraitsBoss = 1

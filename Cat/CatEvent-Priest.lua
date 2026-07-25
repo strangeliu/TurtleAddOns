@@ -414,9 +414,14 @@ function MPGetHolyFireCheck( guid )
 
     else
         -- 已经过了认证期
-        return 10-(GetTime()-HolyFireCheck[guid])
+        if HolyFireCheck[guid] then
+            return 10-(GetTime()-HolyFireCheck[guid])
+        else
+            return 0
+        end
     end
 
+    return 0
 end
 
 

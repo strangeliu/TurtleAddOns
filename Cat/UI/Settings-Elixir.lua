@@ -1631,6 +1631,11 @@ function MPInitElixirSettingsPart1()
     --checkButton_Combat:SetChecked(MPToBoolean(MPElixirSaved.Combat))
     checkButton_Msg:SetChecked(MPToBoolean(MPElixirSaved.Msg))
 
+    -- 合剂
+    checkButton_Titans:SetChecked(MPToBoolean(MPElixirSaved.Titans))
+    checkButton_SupremePower:SetChecked(MPToBoolean(MPElixirSaved.SupremePower))
+    checkButton_DistilledWisdom:SetChecked(MPToBoolean(MPElixirSaved.DistilledWisdom))
+
     -- 独特
     checkButton_ZanzaSpeed:SetChecked(MPToBoolean(MPElixirSaved.ZanzaSpeed))
     checkButton_ArthasGift:SetChecked(MPToBoolean(MPElixirSaved.ArthasGift))

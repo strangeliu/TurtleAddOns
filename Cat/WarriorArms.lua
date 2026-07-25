@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 武器战士DPS一键宏
--- 更新日期：2026-05-07（后面根据时间来判断版本）
+-- 更新日期：2026-07-22（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -50,8 +50,8 @@ function MPArmsDPS(o)
 	NQ = UnitMana("player")
 	HPP = UnitHealth("target")/UnitHealthMax("target")*100
 	if MPWarriorArmsSaved[MPWarrorArmsConfig].Whirlwind==1 then XFZ = MPSpellReadyOffset("旋风斩",2.0) else XFZ=false end
-	XX = MPSpellReady("血性狂暴")
-	YZ = MPSpellReadyOffset("压制",1.5)
+	XX=MPSpellReady("血性狂暴") 
+	YZ=MPSpellReadyOffset("压制",1.5)
 	TargetDistance = MPGetTargetDistance()
 
 	if MPMortalStrike==1 then ZS=MPSpellReadyOffset("致死打击",2.0) else ZS=false end
@@ -102,7 +102,9 @@ function MPArmsDPS(o)
 
 	-- 自动打断
 	if MPWarriorArmsSaved[MPWarrorArmsConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 在战斗中
@@ -124,7 +126,7 @@ function MPArmsDPS(o)
 		end
 		if MPWarriorArmsSaved[MPWarrorArmsConfig].Soulspeed==1 and TargetDistance then
 			if MPWarriorArmsSaved[MPWarrorArmsConfig].SoulspeedBoss==0 or (MPWarriorArmsSaved[MPWarrorArmsConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 

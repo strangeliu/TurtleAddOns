@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 狂暴战DPS一键宏
--- 更新日期：2026-05-07（后面根据时间来判断版本）
+-- 更新日期：2026-07-22（后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -102,7 +102,9 @@ function MPFuryDPS(o)
 
 	-- 自动打断
 	if MPWarriorFurySaved[MPWarriorFuryConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 	-- 在战斗中
@@ -124,7 +126,7 @@ function MPFuryDPS(o)
 		end
 		if MPWarriorFurySaved[MPWarriorFuryConfig].Soulspeed==1 and TargetDistance then
 			if MPWarriorFurySaved[MPWarriorFuryConfig].SoulspeedBoss==0 or (MPWarriorFurySaved[MPWarriorFuryConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -407,6 +409,60 @@ function MPFuryTwoHand()
 		MPWarriorSlamStop()
 		CastSpellByName("斩杀")
 		return
+	end
+
+
+	-- 练级特供
+	-- 还没有学到乱舞
+	if MPWarriorFlurry==0 then
+		-- 卡猛击时间
+		if MPGetMainHandLeft()<MPWarriorFurySaved[MPWarriorFuryConfig].Slam_Value then --or MPGetMainHandLeft()>(UnitAttackSpeed("player")-1.7) then
+
+			if XFZ and NQ>=MPWarriorWhirlwind and TargetDistance and Once==0 and MPGetShape(MPWarriorBerserkerStanceID) then
+				CastSpellByName("旋风斩")
+				return
+			end
+
+			if SX and NQ>29 then
+				CastSpellByName("嗜血")
+				return
+			end
+
+			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorFurySaved[MPWarriorFuryConfig].UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
+				CastSpellByName("斩杀")
+				return
+			end
+
+		elseif MPGetMainHandLeft()<2.0 then
+
+			if XFZ and NQ>=MPWarriorWhirlwind and TargetDistance and Once==0 and MPGetShape(MPWarriorBerserkerStanceID) then
+				CastSpellByName("旋风斩")
+				return
+			end
+
+			if SX and NQ>29 then
+				CastSpellByName("嗜血")
+				return
+			end
+
+			if HPP<20 and NQ>=MPWarriorExecute and MPWarriorFurySaved[MPWarriorFuryConfig].UseExecute==1 then -- 待测试 and not SX and not (XFZ and Once==0) then
+				CastSpellByName("斩杀")
+				return
+			end
+
+			if NQ>=15 and (MPWarriorFurySaved[MPWarriorFuryConfig].BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+				MPCastWithoutNampower("猛击")
+				return
+			end
+
+		else
+
+			if NQ>=15 and (MPWarriorFurySaved[MPWarriorFuryConfig].BerserkerStance==0 or MPGetShape(MPWarriorBerserkerStanceID)) then
+				MPCastWithoutNampower("猛击")
+				return
+			end
+
+		end
 	end
 
 

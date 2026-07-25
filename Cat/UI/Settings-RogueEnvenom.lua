@@ -5,7 +5,7 @@ local ADDON_NAME = "Settings-RogueEnvenom"
 local ConfigCurrent = 1
 
 -- 创建主框架
-CatUISettingsRogueEnvenom = MPCreateFrame(ADDON_NAME.."Frame", 520, 690, "|cFFFFF569设置 - 毒伤贼|r")
+CatUISettingsRogueEnvenom = MPCreateFrame(ADDON_NAME.."Frame", 520, 710, "|cFFFFF569设置 - 毒伤贼|r")
 
 local postion_y = -50
 
@@ -387,6 +387,18 @@ checkButton_Cover:SetScript("OnClick", function(self)
 end)
 
 
+postion_y = postion_y-40
+
+-- 四武器双毒切换功能
+local checkButton_SwitchWeapon = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "|cFFFFF569四武器双毒切换功能|r")
+checkButton_SwitchWeapon:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPRogueEnvenomSaved[ConfigCurrent].SwitchWeapon = 1
+        print("启动|cFFFFF569四武器双毒切换功能|r 目前仅支持双速效毒药和双溶解毒药的切换，除了手上的两把武器，包里要预备好两把已经上好毒的武器。")
+    else
+        MPRogueEnvenomSaved[ConfigCurrent].SwitchWeapon = 0
+    end
+end)
 
 
 
@@ -395,7 +407,7 @@ end)
 
 -- 高级
 
-postion_y = postion_y+50
+postion_y = postion_y+60
 
 -- 添加提示内容区域
 local TipText1 = CatUISettingsRogueEnvenom:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -409,17 +421,43 @@ TipText1:SetText(MPLanguage.UI_Set_AdvancedConfig)
 
 postion_y = postion_y-130
 
+-- 创建单选框 - 剑刃乱舞
+local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
 
--- 创建单选框 - UnitXP
-local checkButton_UnitXP = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "启用UnitXP模组 (朝向判断)")
+local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
+slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
+slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
+slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
+
+-- 设置数值范围（最小值0，最大值100，步长1）
+slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
+slider_BladeFlurry_Value:SetValueStep(1)
+slider_BladeFlurry_Value:SetValue(8) -- 默认值
+MPCatUISliderRegionHide(slider_BladeFlurry_Value)
+
+local color_BladeFlurry = "|cFFFFD100"
+
+-- 值变化时的回调函数
+slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
+    --print("HealthStone当前值:", arg1)
+    MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value = arg1
+    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+end)
+
 -- 设置点击事件
-checkButton_UnitXP:SetScript("OnClick", function(self)
+checkButton_BladeFlurry:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueEnvenomSaved[ConfigCurrent].UnitXP = 1
+        MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry = 1
+        color_BladeFlurry = "|cFFFFD100"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     else
-        MPRogueEnvenomSaved[ConfigCurrent].UnitXP = 0
+        MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry = 0
+        color_BladeFlurry = "|cFF888888"
+        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
     end
 end)
+
+
 
 
 -- 创建单选框 - 治疗石
@@ -461,42 +499,16 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 剑刃乱舞
-local checkButton_BladeFlurry = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "自动 剑刃乱舞")
-
-local slider_BladeFlurry_Value = CreateFrame("Slider", ADDON_NAME.."Slider_BladeFlurry_Value", checkButton_BladeFlurry, "OptionsSliderTemplate")
-slider_BladeFlurry_Value:SetPoint("RIGHT", checkButton_BladeFlurry, "RIGHT", 260, -2)
-slider_BladeFlurry_Value:SetWidth(150) -- 拖动条长度
-slider_BladeFlurry_Value:SetHeight(16) -- 拖动条高度
-
--- 设置数值范围（最小值0，最大值100，步长1）
-slider_BladeFlurry_Value:SetMinMaxValues(5, 20)
-slider_BladeFlurry_Value:SetValueStep(1)
-slider_BladeFlurry_Value:SetValue(8) -- 默认值
-MPCatUISliderRegionHide(slider_BladeFlurry_Value)
-
-local color_BladeFlurry = "|cFFFFD100"
-
--- 值变化时的回调函数
-slider_BladeFlurry_Value:SetScript("OnValueChanged", function()
-    --print("HealthStone当前值:", arg1)
-    MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value = arg1
-    _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
-end)
-
--- 设置点击事件
-checkButton_BladeFlurry:SetScript("OnClick", function(self)
+-- 创建单选框 - 保护剑刃乱舞
+local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
+checkButton_Protect:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry = 1
-        color_BladeFlurry = "|cFFFFD100"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueEnvenomSaved[ConfigCurrent].Protect = 1
     else
-        MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry = 0
-        color_BladeFlurry = "|cFF888888"
-        _G[slider_BladeFlurry_Value:GetName().."Text"]:SetText(color_BladeFlurry.."感应范围".. MPRogueEnvenomSaved[ConfigCurrent].BladeFlurry_Value .."码|r")
+        MPRogueEnvenomSaved[ConfigCurrent].Protect = 0
     end
 end)
+
 
 
 -- 创建单选框 - 草药茶
@@ -539,16 +551,24 @@ end)
 
 postion_y = postion_y-40
 
-
--- 创建单选框 - 保护剑刃乱舞
-local checkButton_Protect = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "保护剑刃乱舞 自动取消无用Buff")
-checkButton_Protect:SetScript("OnClick", function(self)
+-- 创建单选框 - 冷血
+local checkButton_ColdBlood = MPCreateCheckButton(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 20, postion_y, "自动 冷血")
+checkButton_ColdBlood:SetScript("OnClick", function(self)
     if this:GetChecked() then
-        MPRogueEnvenomSaved[ConfigCurrent].Protect = 1
+        MPRogueEnvenomSaved[ConfigCurrent].ColdBlood = 1
     else
-        MPRogueEnvenomSaved[ConfigCurrent].Protect = 0
+        MPRogueEnvenomSaved[ConfigCurrent].ColdBlood = 0
     end
 end)
+local checkButton_ColdBloodBoss = MPCreateCheckButtonSmall(CatUISettingsRogueEnvenom, ADDON_NAME.."CheckButton", 200, postion_y, MPLanguage.UI_Set_BossOnly)
+checkButton_ColdBloodBoss:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPRogueEnvenomSaved[ConfigCurrent].ColdBloodBoss = 1
+    else
+        MPRogueEnvenomSaved[ConfigCurrent].ColdBloodBoss = 0
+    end
+end)
+
 
 
 -- 创建单选框 - 鞭根块茎
@@ -591,6 +611,8 @@ end)
 
 
 postion_y = postion_y-40
+
+
 
 
 -- 创建单选框 - 自动打断
@@ -757,7 +779,7 @@ TipText:SetText("宏命令 |cFFFFF569/dsdps|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local RogueEnvenomSettingsUIVersion = 9
+local RogueEnvenomSettingsUIVersion = 12
 
 function MPResetRogueEnvenomSettings(config)
 
@@ -794,6 +816,7 @@ function MPResetRogueEnvenomSettings(config)
     MPRogueEnvenomSaved[config].LeaveFight = 0
     MPRogueEnvenomSaved[config].Cover = 0
 
+    MPRogueEnvenomSaved[config].SwitchWeapon = 0
 
     -- 高级配置
 
@@ -828,6 +851,9 @@ function MPResetRogueEnvenomSettings(config)
     MPRogueEnvenomSaved[config].BladeFlurry_Value = 10
     MPRogueEnvenomSaved[config].Protect = 0
 
+    MPRogueEnvenomSaved[config].ColdBlood = 0
+    MPRogueEnvenomSaved[config].ColdBloodBoss = 1
+
     -- 通用
     MPRogueEnvenomSaved[config].Power = 0
     MPRogueEnvenomSaved[config].Pick = 0
@@ -852,18 +878,21 @@ local function InitRogueEnvenomSettingsPart1()
     checkButton_TUBoss:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].TUBoss))
     checkButton_Trinket_Below:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Trinket_Below))
     checkButton_TBBoss:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].TBBoss))
-    checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].UnitXP))
+    --checkButton_UnitXP:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].UnitXP))
 
     checkButton_Interrupt:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Interrupt))
     checkButton_RacialTraits:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].RacialTraits))
     checkButton_RacialTraitsBoss:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].RacialTraitsBoss))
     checkButton_Soulspeed:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Soulspeed))
     checkButton_SoulspeedBoss:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].SoulspeedBoss))
+    checkButton_ColdBlood:SetChecked(MPRogueEnvenomSaved[ConfigCurrent].ColdBlood)
+    checkButton_ColdBloodBoss:SetChecked(MPRogueEnvenomSaved[ConfigCurrent].ColdBloodBoss)
 
     checkButton_Protect:SetChecked(MPRogueEnvenomSaved[ConfigCurrent].Protect)
 
     checkButton_LeaveFight:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].LeaveFight))
     checkButton_Cover:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Cover))
+    checkButton_SwitchWeapon:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].SwitchWeapon))
 
     checkButton_Power:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Power))
     checkButton_Pick:SetChecked(MPToBoolean(MPRogueEnvenomSaved[ConfigCurrent].Pick))

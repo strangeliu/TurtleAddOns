@@ -166,12 +166,13 @@ local height = 0
     end)
     buttonPaladinHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
 
+    --[[
     local buttonPaladinMeleeHeal = CreateFlatButton("MyFlatButton1", CatUISettingsCatMenu, nil, nil, MPLanguage.UI_MeleeHealPaladin, function()
         MPCatSettingsCloseAll()
         CatUISettingsPaladinMeleeHeal:Show()
     end)
     buttonPaladinMeleeHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*3, postion_y)
-
+    ]]
 
     local linePaladin = CatUISettingsCatMenu:CreateTexture(nil, "ARTWORK")
     linePaladin:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
@@ -590,20 +591,20 @@ local function InitMenuSettingsPart1()
         buttonPaladinCJ:Show()
         buttonPaladinTank:Show()
         buttonPaladinHeal:Show()
-        buttonPaladinMeleeHeal:Show()
+        --buttonPaladinMeleeHeal:Show()
         linePaladin:Show()
         TipTextPaladin:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", 34, postion_y-6)
         buttonPaladinCJ:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x, postion_y)
         buttonPaladinTank:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset, postion_y)
         buttonPaladinHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*2, postion_y)
-        buttonPaladinMeleeHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*3, postion_y)
+        --buttonPaladinMeleeHeal:SetPoint("TOPLEFT", CatUISettingsCatMenu, "TOPLEFT", postion_x+offset*3, postion_y)
         linePaladin:SetPoint("TOP", CatUISettingsCatMenu, "TOP", 0, postion_y-36)
     else
         TipTextPaladin:Hide()
         buttonPaladinCJ:Hide()
         buttonPaladinTank:Hide()
         buttonPaladinHeal:Hide()
-        buttonPaladinMeleeHeal:Hide()
+        --buttonPaladinMeleeHeal:Hide()
         linePaladin:Hide()
     end
 

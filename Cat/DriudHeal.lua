@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奶德一键宏
--- 更新日期：2026-05-07 （后面根据时间来判断版本）
+-- 更新日期：2026-07-11 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -75,10 +75,9 @@ MPDriudTotalHealing = 0
 
 -- -------------------------------------
 
-MPDriudCastHeal = -5
+MPDriudCastHeal = 0
 MPDriudCastHealTarget = nil
 local MPHealTargetDelay = {}
-local MPHealthUnit = nil
 
 -- 默认配置
 MPDriudHealConfig = 1
@@ -87,17 +86,8 @@ MPDriudHealConfig = 1
 function MPDriudAutoHealth()
 
     -- 愈合正在读条
-    if GetTime()-MPDriudCastHeal<3 then
-
-        -- 是否有治疗目标
-        if MPHealthUnit and MPDriudHealSaved[MPDriudHealConfig].Overflow==1 then
-            -- 被治疗目标状态
-            local target_percent = UnitHealth(MPHealthUnit) / UnitHealthMax(MPHealthUnit) * 100
-            if target_percent > MPDriudHealSaved[MPDriudHealConfig].Begin_Value then
-                SpellStopCasting()
-            end
-        end
-
+    if MPDriudCastHeal-GetTime()>20 then
+        MPMsg("正在读条")
         return
     end
 
@@ -237,7 +227,7 @@ function MPDriudHealth(unit)
 
     percentHealth = health/maxHealth * 100
     HealthDec = maxHealth - health
-    --print(string.format("[查询] %s: %d/%d (%f%%)", name, health, maxHealth, percentHealth))
+    --MPMsg(health.." - "..maxHealth.." - "..percentHealth.." - "..MPDriudHealSaved[MPDriudHealConfig].Begin_Value)
 
     if MPDriudHealSaved[MPDriudHealConfig].Begin_Value <= percentHealth then
 --        print(percentHealth)
@@ -262,31 +252,26 @@ function MPDriudHealth(unit)
     end
 
     -- 用于防止同一目标多次治疗
-    --if MPDriudCastHealTarget == unit then
-        local targetName = UnitName(unit)
-        MPDriudCastHealTarget = nil
-    --end
-
-    if MPHealTargetDelay[targetName] and GetTime()-MPHealTargetDelay[targetName] < 1.2 then
-        --print("return "..targetName)
+    local targetName = UnitName(unit)
+    if MPHealTargetDelay[targetName] and MPHealTargetDelay[targetName]-GetTime()>0 then
+        --print("return "..MPHealTargetDelay[targetName])
         return false
-    else
-        --print(targetName)
-        --MPHealTargetDelay[targetName] = GetTime()
     end
 
-    --MPDriudCastHealTarget = unit
+    MPHealTargetDelay[targetName] = GetTime()+1.0
+    --print("cast "..MPHealTargetDelay[targetName])
+
     -- 危机抢救
-    if percentHealth < MPDriudHealSaved[MPDriudHealConfig].Swiftmend_Value and (MPBuff("愈合",unit) or MPBuff("回春术",unit)) and XJZY and MPDriudSwiftmend==1 and MPDriudHealSaved[MPDriudHealConfig].Swiftmend==1 then
-        MPHealTargetDelay[targetName] = GetTime()
-        return MPCastSpellWithoutTarget("迅捷治愈", unit, 1)
+    if percentHealth < MPDriudHealSaved[MPDriudHealConfig].Swiftmend_Value and MPDriudSwiftmend==1 and MPDriudHealSaved[MPDriudHealConfig].Swiftmend==1 then
+        if (MPBuff("愈合",unit) or MPBuff("回春术",unit)) and XJZY  then
+            return MPCastSpellWithoutTarget("迅捷治愈", unit, 1)
+        end
     end
 
 
-    if (MPIsMoving() or MPDriudHealSaved[MPDriudHealConfig].Regrowth==0) and MPDriudHealSaved[MPDriudHealConfig].MoveRejuvenation==1 and MPDriudRejuvenationMaxLevel>0 then
+    if MPIsMoving() and MPDriudHealSaved[MPDriudHealConfig].MoveRejuvenation==1 and MPDriudRejuvenationMaxLevel>0 then
         -- 目标是否已经有回春术
         if not MPBuff("回春术",unit) then
-            MPHealTargetDelay[targetName] = GetTime()
 
             -- 根据配置等级和所学等级计算
             local RejuvenationMaxLevel = MPDriudRejuvenationMaxLevel
@@ -315,9 +300,6 @@ function MPDriudHealth(unit)
 
         -- 触有开，优先触
         if MPDriudHealSaved[MPDriudHealConfig].HealingTouch==1 and MPDriudHealingTouchMaxLevel>0 then
-            MPHealthUnit = unit
-
-            MPHealTargetDelay[targetName] = GetTime()
 
             -- 根据配置等级和所学等级计算
             local  TouchMaxLevel = MPDriudHealingTouchMaxLevel
@@ -346,9 +328,6 @@ function MPDriudHealth(unit)
         -- 目标是否已经有愈合
         if not MPBuff("愈合",unit) or (MPDriudHealSaved[MPDriudHealConfig].RegrowthAgain==1 and MPGetShape(MPDriudTreeShapeshiftID) and percentHealth<=MPDriudHealSaved[MPDriudHealConfig].RegrowthAgain_Value) and MPDriudRegrowthMaxLevel>0 then
 --        print(HealthDec)
-            MPHealthUnit = unit
-
-            MPHealTargetDelay[targetName] = GetTime()
 
             -- 根据配置等级和所学等级计算
             local RegrowthMaxLevel = MPDriudRegrowthMaxLevel
@@ -451,7 +430,7 @@ function MPGetPartyHealthList()
                     health = UnitHealth(unit),
                     maxHealth = UnitHealthMax(unit),
                     unit = unit,
-                    isPlayer = false
+                    isPlayer = true
                 })
             end
         end
@@ -485,14 +464,6 @@ function MPGetGroupHealthList()
         -- 不在团队，检查是否在队伍
         local numPartyMembers = GetNumPartyMembers()
         
-        -- 先添加玩家自己
-        table.insert(groupMembers, {
-            name = UnitName("player"),
-            health = UnitHealth("player"),
-            maxHealth = UnitHealthMax("player"),
-            unit = "player",
-            isPlayer = true
-        })
         
         -- 添加队友（如果有）
         if numPartyMembers > 0 then
@@ -504,11 +475,20 @@ function MPGetGroupHealthList()
                         health = UnitHealth(unit),
                         maxHealth = UnitHealthMax(unit),
                         unit = unit,
-                        isPlayer = false
+                        isPlayer = true
                     })
                 end
             end
         end
+
+        -- 最后添加玩家自己
+        table.insert(groupMembers, {
+            name = UnitName("player"),
+            health = UnitHealth("player"),
+            maxHealth = UnitHealthMax("player"),
+            unit = "player",
+            isPlayer = true
+        })
     end
     
     return groupMembers

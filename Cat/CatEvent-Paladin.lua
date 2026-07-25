@@ -24,6 +24,7 @@ frame:RegisterEvent("UNIT_CASTEVENT")
 frame:RegisterEvent("RAW_COMBATLOG")
 
 
+
 -- 圣骑士 十字军打击监测
 local CrusaderStrikeCheck = 0
 
@@ -401,6 +402,9 @@ function MPPaladinRefreshInfo()
         end
 
     end
+
+    -- 庇护祝福
+    MPPaladinSanctuary = MPIsTalentLearned(2,7)
 
 end
 

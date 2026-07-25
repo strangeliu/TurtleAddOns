@@ -1,6 +1,6 @@
 -- -------------------------------------
 -- 乌龟服 - TWT仇恨相关
--- 更新日期：2025-10-21 
+-- 更新日期：2026-06-30 
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 -- -------------------------------------
@@ -14,8 +14,12 @@ function MPGetHatredFromTWT()
 	if TWT then
 		-- 安全验证
 		if TWT.name and TWT.threats then
-			if TWT.threats[TWT.name] and TWT.threats[TWT.name].perc then
-				return TWT.round(TWT.threats[TWT.name].perc)
+			if TWT.threats[TWT.name] then
+				if TWT.threats[TWT.name].perc then
+					if type(TWT.round) == "function" then
+						return TWT.round(TWT.threats[TWT.name].perc)
+					end
+				end
 			end
 		end
 

@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 奶骑一键宏
--- 更新日期：2026-04-15 （后面根据时间来判断版本）
+-- 更新日期：2026-07-23 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -96,6 +96,25 @@ function MPPaladinAutoHealth()
 
     if GCD<1.3 then
         return
+    end
+
+    -- 神打
+    if MPPaladinHealSaved[MPPaladinHealConfig].SacredStrike==1 then
+        if MPSpellReady("神圣打击") then
+            local count,_,list = MPScanNearbyEnemiesCount()
+            if count>0 then
+
+                -- 有近战敌人
+
+                for key, value in pairs(list) do
+                    -- 校对key的角度
+                    -- 校对key的可攻击性
+
+                    -- 尝试神打
+                    MPCastSpellWithoutTarget("神圣打击(等级 1)", key)
+                end
+            end
+        end
     end
 
     -- 目标
@@ -218,17 +237,16 @@ function MPPaladinHealth(unit)
 
 
     -- 治疗 --
+    MPHealTargetDelay[targetName] = GetTime()
 
 
     if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].LayHands_Value and MPPaladinHealSaved[MPPaladinHealConfig].LayHands==1 and SLS then
-        MPHealTargetDelay[targetName] = GetTime()
         return MPCastSpellWithoutTarget("圣疗术", unit, 1)
     end
 
     if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].HolyShock_Value and MPPaladinHealSaved[MPPaladinHealConfig].HolyShock==1 and SSZJ then
         if MP_UnitXP then
             if UnitXP("distanceBetween", "player", unit)<=20 then
-                MPHealTargetDelay[targetName] = GetTime()
                 if MPCastSpellWithoutTarget("神圣震击", unit, 1) then
                     return
                 end
@@ -236,7 +254,6 @@ function MPPaladinHealth(unit)
                 MPMsg("施放：神圣震击-> ["..UnitName(unit).."] 超出距离！")
             end
         else
-            MPHealTargetDelay[targetName] = GetTime()
             if MPCastSpellWithoutTarget("神圣震击", unit, 1) then
                 return
             end
@@ -247,8 +264,6 @@ function MPPaladinHealth(unit)
     MPHealthUnit = unit
 
     if percentHealth < MPPaladinHealSaved[MPPaladinHealConfig].HolyLight_Value and MPPaladinHealSaved[MPPaladinHealConfig].HolyLight==1 and MPPaladinHolyLightMaxLevel>0 then
-
-        MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local HolyLightMaxLevel = MPPaladinHolyLightMaxLevel
@@ -275,8 +290,6 @@ function MPPaladinHealth(unit)
 
 
     if MPPaladinHealSaved[MPPaladinHealConfig].FlashLight==1 and MPPaladinFlashLightMaxLevel>0 then
-
-        MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local FlashLightMaxLevel = MPPaladinFlashLightMaxLevel

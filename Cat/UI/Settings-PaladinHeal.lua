@@ -6,7 +6,7 @@ local ConfigCurrent = 1
 
 
 -- 创建主框架
-CatUISettingsPaladinHealWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 580, "|cFFF58CBA设置 - 奶骑|r")
+CatUISettingsPaladinHealWindow = MPCreateFrame(ADDON_NAME.."Frame", 520, 600, "|cFFF58CBA设置 - 奶骑|r")
 
 local postion_y = -50
 
@@ -154,7 +154,20 @@ checkButton_ScanTeam_Rand:SetScript("OnClick", function(self)
 end)
 
 
+postion_y = postion_y-30
 
+-- 创建单选框 - 神圣打击
+local checkButton_SacredStrike = MPCreateCheckButton(CatUISettingsPaladinHealWindow, ADDON_NAME.."CheckButton", 20, postion_y, "开启 神圣打击 (近战奶)")
+-- 设置点击事件
+checkButton_SacredStrike:SetScript("OnClick", function(self)
+    if this:GetChecked() then
+        MPPaladinHealSaved[ConfigCurrent].SacredStrike = 1
+    else
+        MPPaladinHealSaved[ConfigCurrent].SacredStrike = 0
+    end
+end)
+
+--[[
 postion_y = postion_y - 30
 
 -- 创建单选框 - Tip
@@ -168,8 +181,8 @@ checkButton_Tip:SetScript("OnClick", function(self)
         MPPaladinHealSaved[ConfigCurrent].Tip = 0
     end
 end)
-
-postion_y = postion_y - 60 + 30
+]]
+postion_y = postion_y - 50
 
 --起始治疗
 local slider_Begin_Value = CreateFrame("Slider", ADDON_NAME.."SliderBegin_Value", CatUISettingsPaladinHealWindow, "OptionsSliderTemplate")
@@ -478,9 +491,9 @@ slider_LayHands_Value:SetPoint("TOPLEFT", CatUISettingsPaladinHealWindow, "TOPLE
 slider_LayHands_Value:SetWidth(220) -- 拖动条长度
 slider_LayHands_Value:SetHeight(16) -- 拖动条高度
 
-slider_LayHands_Value:SetMinMaxValues(10, 99)
-slider_LayHands_Value:SetValueStep(1)
-slider_LayHands_Value:SetValue(0) -- 默认值
+slider_LayHands_Value:SetMinMaxValues(10, 90)
+slider_LayHands_Value:SetValueStep(10)
+slider_LayHands_Value:SetValue(11) -- 默认值
 MPCatUISliderRegionHide(slider_LayHands_Value)
 
 -- 值变化时的回调函数
@@ -598,6 +611,10 @@ local myButton = MPCreateButton(CatUISettingsPaladinHealWindow, ADDON_NAME.."But
 myButton:SetScript("OnClick", function()
     MPResetPaladinHealSettings(ConfigCurrent)
     MPInitPaladinHealSettings()
+
+    CatPaladinHeal:Hide()
+    CatPaladinHeal:ClearAllPoints()
+    CatPaladinHeal:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 end)
 
 
@@ -698,7 +715,7 @@ TipText:SetText("宏命令 |cFFF58CBA/pheal|r [ 1 | 2 | 3 ]")
 
 
 -- 配置文件版本号
-local PaladinHealSettingsUIVersion = 17
+local PaladinHealSettingsUIVersion = 18
 
 function MPResetPaladinHealSettings(config)
 
@@ -710,6 +727,7 @@ function MPResetPaladinHealSettings(config)
     MPPaladinHealSaved[config].FlashLight = 1
     MPPaladinHealSaved[config].HolyShock = 1
     MPPaladinHealSaved[config].LayHands = 0
+    MPPaladinHealSaved[config].SacredStrike = 1
     MPPaladinHealSaved[config].Tip = 1
     MPPaladinHealSaved[config].TargetFirst = 1
     MPPaladinHealSaved[config].TargetTarget = 1
@@ -742,8 +760,8 @@ function MPResetPaladinHealSettings(config)
 
     MPPaladinHealSaved[config].HolyLight_Value = 60
     MPPaladinHealSaved[config].FlashLight_Value = 99
-    MPPaladinHealSaved[config].HolyShock_Value = 40
-    MPPaladinHealSaved[config].LayHands_Value = 10
+    MPPaladinHealSaved[config].HolyShock_Value = 70
+    MPPaladinHealSaved[config].LayHands_Value = 20
 
     MPPaladinHealSaved[config].FlashLightMinLevel = 1
     MPPaladinHealSaved[config].FlashLightMaxLevel = 7
@@ -761,6 +779,7 @@ local function InitPaladinHealSettingsPart1()
     checkButton_FlashLight:SetChecked( MPToBoolean(MPPaladinHealSaved[ConfigCurrent].FlashLight) )
     checkButton_HolyShock:SetChecked( MPToBoolean(MPPaladinHealSaved[ConfigCurrent].HolyShock) )
     checkButton_LayHands:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].LayHands))
+    checkButton_SacredStrike:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].SacredStrike))
 
     checkButton_TargetFirst:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].TargetFirst))
     checkButton_TargetTarget:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].TargetTarget))
@@ -768,7 +787,7 @@ local function InitPaladinHealSettingsPart1()
     checkButton_ScanTeam:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].ScanTeam))
     checkButton_ScanTeam_Low:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].ScanTeam_Low))
     checkButton_ScanTeam_Rand:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].ScanTeam_Rand))
-    checkButton_Tip:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].Tip))
+    --checkButton_Tip:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].Tip))
 
     checkButton_Overflow:SetChecked(MPToBoolean(MPPaladinHealSaved[ConfigCurrent].Overflow))
 

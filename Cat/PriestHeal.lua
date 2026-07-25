@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 神牧一键宏
--- 更新日期：2026-04-27 （后面根据时间来判断版本）
+-- 更新日期：2026-07-17 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -181,7 +181,6 @@ function MPPriestHealth(unit)
     local maxHealth = UnitHealthMax(unit)
     local percentHealth = 0
     local HealthDec = 0
-    local JWDY=MPSpellReady("绝望祷言")
 
     if UnitIsDeadOrGhost(unit) then
         return false
@@ -227,29 +226,29 @@ function MPPriestHealth(unit)
     local targetName = UnitName(unit)
     MPPriestCastHealTarget = nil
 
-    if MPHealTargetDelay[targetName] and GetTime()-MPHealTargetDelay[targetName] < 1.2 then
+    if MPHealTargetDelay[targetName] and MPHealTargetDelay[targetName]-GetTime() > 0 then
         return false
     end
 
+    MPHealTargetDelay[targetName] = GetTime()+1.0
+
     -- 危机抢救
-    if percentHealth < MPPriestHealSaved[MPPriestHealConfig].Desperate_Value and JWDY and MPPriestHealSaved[MPPriestHealConfig].DesperatePrayer==1 then
-        MPHealTargetDelay[targetName] = GetTime()
+    if percentHealth < MPPriestHealSaved[MPPriestHealConfig].Desperate_Value and MPPriestHealSaved[MPPriestHealConfig].DesperatePrayer==1 and MPSpellReady("绝望祷言") then
         return MPCastSpellWithoutTarget("绝望祷言", unit, 1)
     end
 
     -- 套盾
-    if percentHealth < MPPriestHealSaved[MPPriestHealConfig].Shield_Value and MPPriestHealSaved[MPPriestHealConfig].Shield==1 and not MPBuff("真言术：盾",unit) then
-        MPHealTargetDelay[targetName] = GetTime()
+    if percentHealth < MPPriestHealSaved[MPPriestHealConfig].Shield_Value and MPPriestHealSaved[MPPriestHealConfig].Shield==1 and not MPBuff("真言术：盾",unit) and MPSpellReady("真言术：盾") then
         return MPCastSpellWithoutTarget("真言术：盾", unit, 1)
     end
 
     MPHealthUnit = unit
 
+
     -- 恢复
     if (MPIsMoving() or MPPriestHealSaved[MPPriestHealConfig].FlashHeal==0) and MPPriestHealSaved[MPPriestHealConfig].MoveRenew==1 and MPPriestRenewManaMaxLevel>0 then
         -- 目标是否已经有恢复
         if not MPBuff("恢复",unit) then
-            MPHealTargetDelay[targetName] = GetTime()
 
             -- 根据配置等级和所学等级计算
             local RenewMaxLevel = MPPriestRenewManaMaxLevel
@@ -282,8 +281,6 @@ function MPPriestHealth(unit)
     if percentHealth < MPPriestHealSaved[MPPriestHealConfig].GreaterHeal_Value and MPPriestHealSaved[MPPriestHealConfig].GreaterHeal==1 and MPPriestGreaterHealManaMaxLevel>0 then
     if MPPriestHealSaved[MPPriestHealConfig].PrayerBook==0 or (MPPriestHealSaved[MPPriestHealConfig].PrayerBook==1 and MPPriestPrayerBookCount~=3) then
 
-        MPHealTargetDelay[targetName] = GetTime()
-
         -- 根据配置等级和所学等级计算
         local GreaterHealMaxLevel = MPPriestGreaterHealManaMaxLevel
         if MPPriestHealSaved[MPPriestHealConfig].GreaterHealMaxLevel < MPPriestGreaterHealManaMaxLevel then
@@ -310,8 +307,6 @@ function MPPriestHealth(unit)
     -- 快速治疗
     if MPPriestHealSaved[MPPriestHealConfig].FlashHeal==1 and MPPriestFlashHealManaMaxLevel>0 then
     if MPPriestHealSaved[MPPriestHealConfig].PrayerBook==0 or (MPPriestHealSaved[MPPriestHealConfig].PrayerBook==1 and MPPriestPrayerBookCount~=2) then
-
-        MPHealTargetDelay[targetName] = GetTime()
 
         -- 根据配置等级和所学等级计算
         local FlashHealMaxLevel = MPPriestFlashHealManaMaxLevel
@@ -532,13 +527,19 @@ function MPPrayerHealthRaid()
             local Level = MPPriestHealSaved[MPPriestHealConfig].PrayerHealingMaxLevel
             if DM<500 then
                 Level = 1
+                MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+1, 1)
+                MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+2, 1)
+                MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+3, 1)
+                MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+4, 1)
+                MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+5, 1)
+                return
             end
 
-            MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+1, 1)
-            MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+2, 1)
-            MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+3, 1)
-            MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+4, 1)
-            MPCastSpellWithoutTarget("治疗祷言(等级 "..Level..")", "raid"..targetParty*5+5, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+1, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+2, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+3, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+4, 1)
+            MPCastSpellWithoutTarget("治疗祷言", "raid"..targetParty*5+5, 1)
             return
         end
 

@@ -4,7 +4,7 @@ end
 
 -- -------------------------------------
 -- 乌龟服 - 战士Tank一键宏
--- 更新日期：2026-04-21 （后面根据时间来判断版本）
+-- 更新日期：2026-07-22 （后面根据时间来判断版本）
 -- 发布者：妖姬变 - 卡拉赞 - 亚服
 -- 有问题游戏里或者kook-德鲁伊频道交流
 --
@@ -130,7 +130,7 @@ function MPWarriorTank()
 
 		if MPWarriorTankSaved[MPWarriorTankConfig].Soulspeed==1 and TargetDistance then
 			if MPWarriorTankSaved[MPWarriorTankConfig].SoulspeedBoss==0 or (MPWarriorTankSaved[MPWarriorTankConfig].SoulspeedBoss==1 and MPIsBossTarget()) then
-				MPUseItemByName("魂能之速")
+				MPUseItemByNameToSelf("魂能之速")
 			end
 		end
 
@@ -195,6 +195,12 @@ function MPWarriorTank()
 					local TF = MPSpellReady("狂暴")
 					if TF then CastSpellByName("狂暴") end
 				end
+
+				-- 是否自动开启 矮人-石像形态
+				if MPPlayerRace=="Dwarf" then
+					local TF = MPSpellReady("石像形态")
+					if TF then CastSpellByName("石像形态") end
+				end
 			end
 		end
 
@@ -243,7 +249,9 @@ function MPWarriorTank()
 
 	-- 自动打断
 	if MPWarriorTankSaved[MPWarriorTankConfig].Interrupt==1 then
-		MPINTCast()
+		if MPINTCast() then
+			return
+		end
 	end
 
 
