@@ -480,10 +480,10 @@
 
 	<Frame name="WorldBuffsTrackerConfigFrame" parent="UIParent" hidden="true">
 		<Size>
-			<AbsDimension x="172" y="250"/>
+			<AbsDimension x="172" y="270"/>
 		</Size>
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="WorldBuffsTrackerMainFrame" relativePoint="TOP">
+			<Anchor point="TOP" relativeTo="WorldBuffsTrackerMainFrame" relativePoint="BOTTOM">
 				<Offset>
 					<AbsDimension x="0" y="0"/>
 				</Offset>
@@ -659,12 +659,46 @@
 				</Scripts>
 			</CheckButton>
 			<!--  -->
-			<CheckButton name="$parent_AlarmSoundSwitch" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parent_AutoHearthstone" inherits="OptionsCheckButtonTemplate">
 				<Size>
 					<AbsDimension x="20" y="20"/>
 				</Size>
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parent_Hearthstone" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("自动使用炉石")
+						getglobal(this:GetName().."Text"):SetTextColor("0","0.93","0.93","1")
+					</OnLoad>
+					<OnClick>
+						WorldBuffsTracker_AutoHearthstone_Click();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:ClearLines();
+						GameTooltip:SetOwner(this, "ANCHOR_BOTTOM", -(this:GetWidth() / 2), 5);
+						GameTooltip:AddLine("监控到龙头时自动使用炉石");
+						GameTooltip:AddLine("1.需同时开启【开启闪电报警】");
+						GameTooltip:AddLine("2.人物在战斗中不会触发");
+						GameTooltip:AddLine("3.每次龙头事件只触发一次");
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</CheckButton>
+			<!--  -->
+			<CheckButton name="$parent_AlarmSoundSwitch" inherits="OptionsCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent_AutoHearthstone" relativePoint="BOTTOM">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>

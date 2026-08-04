@@ -15,7 +15,8 @@ local WBT_Config = {
     alarm_sound_Alliance = 'sound1',
     alarm_sound_Horde = 'sound1',
     mini_btn_position = 360,
-    ShowHearthstoneAction = true
+    ShowHearthstoneAction = true,
+    auto_use_hearthstone = false
 }
 
 local WBT_Timer_Data = {
@@ -93,6 +94,13 @@ local WBT_Timer = {
     }
 }
 
+local WBT_AutoHearthstone_Triggered = {
+    Alliance_Onyxia = false,
+    Alliance_Nefarian = false,
+    Horde_Onyxia = false,
+    Horde_Nefarian = false
+}
+
 local caution = CreateFrame("Frame", "caution", UIParent)
 caution.string = caution:CreateFontString("lushi", "BACKGROUND")
 caution.string:SetPoint("CENTER", UIParent, "CENTER", 0, 2)
@@ -102,6 +110,37 @@ caution:Hide()
 caution.string:SetTextHeight(50);
 -- caution.string:SetText("快回城，要挂龙头了\n还有15秒")
 -- caution:Show()
+
+local function WBT_UseHearthstone()
+    -- 优先尝试法术栏中的炉石（技能形式）
+    local _, _, offset, numSpells = GetSpellTabInfo(GetNumSpellTabs())
+    local numAllSpell = offset + numSpells
+    for slot = 1, numAllSpell do
+        local spellName = GetSpellName(slot, "BOOKTYPE_SPELL")
+        if spellName == "炉石" then
+            CastSpell(slot, "BOOKTYPE_SPELL")
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[龙头计时]|r 自动使用炉石（技能）")
+            return true
+        end
+    end
+    -- 退而求其次：从背包中使用炉石物品（物品ID 6948）
+    for bag = 0, 4 do
+        for slot = 1, GetContainerNumSlots(bag) do
+            local itemLink = GetContainerItemLink(bag, slot)
+            if itemLink then
+                local itemID = tonumber(string.match(itemLink, "item:(%d+)"))
+                if itemID == 6948 then
+                    UseContainerItem(bag, slot)
+                    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FFFF[龙头计时]|r 自动使用炉石（物品）")
+                    return true
+                end
+            end
+        end
+    end
+    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF8080[龙头计时]|r 未找到炉石，自动回城失败")
+    return false
+end
+
 -- 定义状态变量
 local isFadingOut = true -- 是否正在变透明
 
@@ -438,6 +477,7 @@ local WBT_Handler = {
         WorldBuffsTrackerConfigFrame_AlarmSwitch:SetChecked(WBT_Config["alarm_switch_on"])
         WorldBuffsTrackerConfigFrame_AlarmSoundSwitch:SetChecked(WBT_Config["alarm_sound_switch_on"])
         WorldBuffsTrackerConfigFrame_Hearthstone:SetChecked(WBT_Config["ShowHearthstoneAction"])
+        WorldBuffsTrackerConfigFrame_AutoHearthstone:SetChecked(WBT_Config["auto_use_hearthstone"])
 
         WorldBuffsTrackerMiniBtn_UpdatePosition();
     end,
@@ -466,6 +506,9 @@ local WBT_Handler = {
         -- if not WBT_Config.ShowHearthstoneAction then
         --     WBT_Config.ShowHearthstoneAction = true
         -- end
+        if WBT_Config.auto_use_hearthstone == nil then
+            WBT_Config.auto_use_hearthstone = false
+        end
     end,
     Get_TimerData_OrDefault = function()
         --存储对象为空则创建
@@ -510,6 +553,7 @@ local WBT_Handler = {
             end
 
             WBT_Timer.lightning_Timer[key] = true; --设好时间后，开启闪电计时
+            WBT_AutoHearthstone_Triggered[key] = false; --重置自动炉石触发标记
 
             --设置龙头计时（强制设置，计时之前的龙头计时未完成；因为是新龙头，以此为准）
             self.Set_Timer_Data(key, WBT_Server_Time, WBT_Server_Time + 7200)
@@ -651,6 +695,11 @@ local WBT_Handler = {
                 if WBT_Config.ShowHearthstoneAction and not UnitAffectingCombat("player") then
                     WorldBuffsTracker_ShowActionBar() -- 使用炉石模块显示动作栏
                 end
+                -- 自动使用炉石：每次新龙头事件只触发一次，且玩家不在战斗中
+                if WBT_Config.auto_use_hearthstone and not WBT_AutoHearthstone_Triggered[key] and not UnitAffectingCombat("player") then
+                    WBT_AutoHearthstone_Triggered[key] = true
+                    WBT_UseHearthstone()
+                end
             else
                 caution:Hide()
                 WorldBuffsTracker_HideActionBar() -- 使用炉石模块隐藏动作栏
@@ -661,6 +710,7 @@ local WBT_Handler = {
             DEFAULT_CHAT_FRAME:AddMessage('|cFFFF8080' .. WBT_Options.Consts[t[1]] .. WBT_Options.Consts[t[2]] .. '|r 闪电报警……|cffff2020已释放完成|r')
             caution:Hide()
             WorldBuffsTracker_HideActionBar() -- 使用炉石模块隐藏动作栏
+            WBT_AutoHearthstone_Triggered[key] = false -- 计时结束后重置触发标记
         end
     end,
     Event_WorldMapUpdate_Handler = function(self)
@@ -1095,6 +1145,14 @@ function WorldBuffsTracker_Hearthstone_Click()
         WBT_Handler.Set_Config("ShowHearthstoneAction", true);
     else
         WBT_Handler.Set_Config("ShowHearthstoneAction", false);
+    end
+end
+
+function WorldBuffsTracker_AutoHearthstone_Click()
+    if this:GetChecked() then
+        WBT_Handler.Set_Config("auto_use_hearthstone", true);
+    else
+        WBT_Handler.Set_Config("auto_use_hearthstone", false);
     end
 end
 
