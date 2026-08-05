@@ -1,0 +1,10 @@
+## Interface: 11200
+## Title: HunterTracker
+## Notes: 猎人追踪助手 - 快速切换追踪不同生物类型
+## Title-zhCN: 猎人追踪助手
+## Notes-zhCN: 猎人追踪助手 - 快速切换追踪不同生物类型
+## Version: 1.0.0
+## Author: Turtle WoW
+## SavedVariables: HunterTrackerSaved
+
+HunterTracker.lua
