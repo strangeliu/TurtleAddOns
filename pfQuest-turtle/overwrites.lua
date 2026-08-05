@@ -3,21 +3,1163 @@
 -- To be able to customize and/or fix entries that aren't yet detected
 -- by the extractor logic, this file here can be used to save overwrites.
 
+-- 移除一条记录：data-turtle + 所有语言名称表。只清 data 会留下"有名字没 data"的幽灵记录，
+-- browser.lua 取字段时索引 nil 报错。
+local function removeTurtleRecord(db, id)
+  pfDB[db]["data-turtle"][id] = nil
+  for loc in pairs(pfDB.locales) do
+    if pfDB[db][loc .. "-turtle"] then pfDB[db][loc .. "-turtle"][id] = nil end
+  end
+end
+
+-- 反操作。names = { enUS = ..., zhCN = ... }，缺的语言回落 enUS。名称表必须一起写，否则显示 UNKNOWN。
+local function addTurtleRecord(db, id, data, names)
+  pfDB[db]["data-turtle"][id] = data
+  for loc in pairs(pfDB.locales) do
+    if pfDB[db][loc .. "-turtle"] then
+      pfDB[db][loc .. "-turtle"][id] = names[loc] or names.enUS
+    end
+  end
+end
+
 do -- area trigger
+  -- Custom manual area markers for objectives that are "use quest item here",
+  -- not tied to any 真实 NPC. IDs start at 900001 to avoid colliding with
+  -- extractor-assigned areatrigger IDs.
+
+  -- "发表声明" (40180): target area in Booty Bay, borrowed from Baron Revilgaz's (2496) coords
+  pfDB["areatrigger"]["data-turtle"][900001] = {
+    ["coords"] = { { 27.2, 76.9, 33 } },
+  }
+
+  -- "门纳尔湖之谜" (40295): target area Lake Mennar, borrowed from Lieutenant Asalarus's (91283) coords
+  pfDB["areatrigger"]["data-turtle"][900002] = {
+    ["coords"] = { { 40.7, 81.5, 16 } },
+  }
+
+  -- "并不孤单" (41956): 走到三个熊怪部族即完成，原目标是无坐标占位符。
+  --   900003 绿爪：灰谷        900004 木喉：费伍德森林      900005 冬泉：冬泉谷 [实测，要进营地]
+  pfDB["areatrigger"]["data-turtle"][900003] = {
+    ["coords"] = { { 56.1, 59.2, 331 } },
+  }
+  pfDB["areatrigger"]["data-turtle"][900004] = {
+    ["coords"] = { { 65.2, 2.7, 361 } },
+  }
+  pfDB["areatrigger"]["data-turtle"][900005] = {
+    ["coords"] = { { 67.1, 35.7, 618 } },
+  }
+
+  -- "我们所知道的信息" (70029): 走到灰谷的洞穴口即完成。升级到上游时这条被弄丢了，
+  -- 坐标取升级前原值（属手工估值，位置可能差几步）。沿用原 id 而非 900006 号段。
+  pfDB["areatrigger"]["data-turtle"][70029] = {
+    ["coords"] = { { 78, 85, 331 } },
+  }
 end
 
 do -- items
+  -- 掉率一律写 100：本段补的来源都不是随机掉落（对话给予/商人出售/场景物件交互），必然获得。
+  -- 写 1 会在浏览器里显示成 1%，反而误导。
+
+  -- "萨拉的梳子" (41695, quest 41648): handed over via Gossip, not looted
+  pfDB["items"]["data-turtle"][41695]["U"] = { [62489] = 100 }
+
+  -- "一捆苹果" (41737, quest 41668): bought from Marissa via Gossip
+  pfDB["items"]["data-turtle"][41737]["U"] = { [62146] = 100 }
+
+  -- "破损的吊坠盒" (41687, quest 41642): on Christopher's body near the Northwind lumber camp
+  pfDB["items"]["data-turtle"][41687]["U"] = { [62492] = 100 }
+
+  -- "珠光碎片" (41773, quest 41709): Gossip on the Tidal Altar (2020182, 巴洛)
+  pfDB["items"]["data-turtle"][41773]["O"] = { [2020182] = 100 }
+
+  -- "治疗软膏" (80865, quest 80315): dialogue with 伊露蕊娅·夜语 (80900, 暴风城)
+  pfDB["items"]["data-turtle"][80865]["U"] = { [80900] = 100 }
+
+  -- "被俘获的黑石座狼" (60731, quest 40497): dialogue with 幼年黑石座狼 (60873, 灰烬之柱)
+  pfDB["items"]["data-turtle"][60731]["U"] = { [60873] = 100 }
+
+  -- ==== 订正掉率占位值 1 ====
+  -- 掉率是百分数，1 就是 1%。它刚好卡在 mindropchance 默认值上，玩家把阈值调到 5/10 就整批消失。
+  -- 下面整表重写，列出的就是该物品的全部来源（原值都是占位的 1）。
+
+  -- 必掉的任务物品 [上游 drops 确认 100]
+  pfDB["items"]["data-turtle"][42072]["O"] = { [2020263] = 100 }  -- 难民物资（41905 黑铁的袭击）
+  pfDB["items"]["data-turtle"][42172]["U"] = { [63014] = 100 }    -- 涅玛丝拉之心（41932 熊怪的古老药方）
+  pfDB["items"]["data-turtle"][42173]["U"] = { [63015] = 100 }    -- 格拉蒙之舌，同上
+  pfDB["items"]["data-turtle"][42174]["U"] = { [16072] = 100 }    -- 净化之瓶，同上
+  pfDB["items"]["data-turtle"][42218]["U"] = { [63088] = 100 }    -- 塔玛安的项链（41947）
+  pfDB["items"]["data-turtle"][42225]["U"] = { [6140] = 100 }     -- 赫塔拉的皮（41955）
+  pfDB["items"]["data-turtle"][42226]["U"] = { [62748] = 100 }    -- 提福里恩的皮，同上
+  pfDB["items"]["data-turtle"][42227]["U"] = { [63080] = 100 }    -- 斯卡费农的皮，同上
+  pfDB["items"]["data-turtle"][42240]["O"] = { [2020317] = 100 }  -- 角的碎片（41964 古迹寻踪）
+  pfDB["items"]["data-turtle"][42308]["U"] = { [63184] = 100 }    -- 菲恩瓦尔德的情报（42030 偷窃与勒索）
+  pfDB["items"]["data-turtle"][42309]["U"] = { [63185] = 100 }    -- 秽堆的情报，同上
+  pfDB["items"]["data-turtle"][42312]["U"] = { [63186] = 100 }    -- 元素锁蓝图上半（42032）
+  pfDB["items"]["data-turtle"][42320]["O"] = { [2020338] = 100 }  -- 机场补给（42037）
+
+  -- 梦魇之触的龙心（42004）：四条绿龙各必掉一个
+  pfDB["items"]["data-turtle"][42297]["U"] = {
+    [14887] = 100, [14888] = 100, [14889] = 100, [14890] = 100,
+  }
+
+  -- 四种元素核心（41940）[上游 drops 确认 40]
+  pfDB["items"]["data-turtle"][42207]["U"] = { [2762] = 40 }  -- 风
+  pfDB["items"]["data-turtle"][42208]["U"] = { [2592] = 40 }  -- 土
+  pfDB["items"]["data-turtle"][42209]["U"] = { [2761] = 40 }  -- 水
+  pfDB["items"]["data-turtle"][42210]["U"] = { [2760] = 40 }  -- 火
+
+  -- 腐心的角（41949）[上游 drops 合成 owner c2000358 记 15]
+  pfDB["items"]["data-turtle"][42221]["U"] = { [62810] = 15, [62811] = 15, [62812] = 15 }
+
+  -- ==== 纯任务物品（class=12）的占位掉率 ====
+  -- 上游 drops 的 owner 常是合成 id（代表"掉这东西的那组怪"），按物品查而不是按来源查才能取到值，
+  -- 取到后套用到该物品的全部来源。
+  pfDB["items"]["data-turtle"][42258]["U"] = { [63005] = 8 }    -- 闪光的多头蛇鳞片（41974）
+  pfDB["items"]["data-turtle"][42306]["U"] = { [62947] = 2 }    -- 腐化的乌索尔之皮（42022），上游是剥皮来源
+  pfDB["items"]["data-turtle"][42137]["U"] = { [62810] = 60, [62811] = 60, [62812] = 60 }  -- 腐心的蹄
+  pfDB["items"]["data-turtle"][42139]["U"] = { [62823] = 60, [62824] = 60 }  -- 月丝线卷
+  pfDB["items"]["data-turtle"][42396]["U"] = { [63001] = 85, [63002] = 85, [63003] = 85 }  -- 潮刃鳞片
+  pfDB["items"]["data-turtle"][42135]["U"] = {  -- 高等精灵碎片（41913）
+    [62887] = 20, [62888] = 20, [62889] = 20, [62890] = 20, [62891] = 20,
+  }
+  pfDB["items"]["data-turtle"][42381]["U"] = {  -- 月光护符（42076）
+    [63144] = 100, [63145] = 100, [63172] = 100, [63173] = 100,
+  }
+  pfDB["items"]["data-turtle"][42274]["O"] = {  -- 玛拉塞希尔遗物（41990）
+    [2020322] = 100, [2020323] = 100, [2020324] = 100, [2020325] = 100,
+  }
+  -- 成年蓝龙的肌腱（7634 龙筋箭袋）：该物品只在基础库，所以写 data 不是 data-turtle。
+  -- 上游没单列魔法利爪 (10663)，但它 58 级精英、与 0.5% 那档的钴蓝龙人同刷在海加尔山，取 0.5。
+  -- 注意 0.5 低于 mindropchance 默认值 1，这条在默认设置下不再出图钉——这是准确性优先的取舍。
+  pfDB["items"]["data"][18704]["U"] = {
+    [6109] = 100, [7435] = 0.5, [7436] = 0.5, [7437] = 0.5,
+    [10196] = 0.3, [10663] = 0.5, [10664] = 0.1,
+  }
+
+  -- 未改：42235 永恒净化精华（有使用效果且无关联任务，已不像任务物品）
+
+  -- ==== 照上游 drops 订正占位掉率 ====
+  -- 大部分是 db 升级引入的回退：社区旧版这 316 处里占位值只有 1 个，其余都是正确值或压根没这条来源。
+  -- 取上游 drops 有明确记录且 >=10% 的（低于 10% 的收益不大，本来就在阈值附近）。
+  pfDB["items"]["data-turtle"][42133]["U"] = { [62988] = 100 }  -- 血红水晶
+  pfDB["items"]["data-turtle"][42134]["U"] = { [62815] = 35 }  -- 奥术树皮
+  pfDB["items"]["data-turtle"][42138]["U"] = { [62990] = 100 }  -- 长老的信笺
+  pfDB["items"]["data-turtle"][42140]["O"] = { [2020265] = 100 }  -- 玛格汉的货物
+  pfDB["items"]["data-turtle"][42170]["U"] = { [62934] = 100 }  -- 哨兵吊坠
+  pfDB["items"]["data-turtle"][42171]["U"] = { [62871] = 100 }  -- 枯喉图腾
+  pfDB["items"]["data-turtle"][42175]["O"] = { [2020307] = 100 }  -- 纳科格的药袋
+  pfDB["items"]["data-turtle"][42176]["O"] = { [2020308] = 100 }  -- 腐臭之花
+  pfDB["items"]["data-turtle"][42206]["U"] = { [62195] = 100 }  -- 风蚀纹章石
+  pfDB["items"]["data-turtle"][42211]["O"] = { [2020310] = 100 }  -- 火山土壤
+  -- 孢子骨
+  pfDB["items"]["data-turtle"][42212]["U"] = {
+    [8523] = 60, [8524] = 60, [8525] = 60, [8530] = 60, [8543] = 60,
+    [62337] = 60,
+  }
+  pfDB["items"]["data-turtle"][42213]["O"] = { [2020311] = 100 }  -- 扭曲树苗
+  pfDB["items"]["data-turtle"][42222]["U"] = { [62813] = 100 }  -- 装有红色水晶的箱子
+  pfDB["items"]["data-turtle"][42223]["U"] = { [63092] = 100 }  -- 黑根货物
+  pfDB["items"]["data-turtle"][42224]["U"] = { [62940] = 100 }  -- 晶簇碎片
+  pfDB["items"]["data-turtle"][42238]["O"] = { [2020315] = 100 }  -- 诺达希尔橡果
+  pfDB["items"]["data-turtle"][42239]["O"] = { [2020316] = 100 }  -- 艾森娜的灵液
+  pfDB["items"]["data-turtle"][42241]["O"] = { [2020318] = 100 }  -- 净化之焰
+  pfDB["items"]["data-turtle"][42241]["U"] = { [11502] = 100 }  -- 净化之焰
+  pfDB["items"]["data-turtle"][42262]["O"] = { [2020320] = 100 }  -- 风角圣物
+  pfDB["items"]["data-turtle"][42273]["O"] = { [2020321] = 100 }  -- 破碎的水元素领主神像
+  pfDB["items"]["data-turtle"][42278]["O"] = { [2020326] = 100 }  -- 蓝月卷轴
+  pfDB["items"]["data-turtle"][42280]["O"] = { [2020327] = 100 }  -- 蛾丝茧
+  pfDB["items"]["data-turtle"][42295]["U"] = { [60686] = 50 }  -- 蠕动的触手
+  pfDB["items"]["data-turtle"][42296]["U"] = { [8716] = 100 }  -- 恐惧魔王之钉
+  pfDB["items"]["data-turtle"][42298]["U"] = { [60748] = 100 }  -- 艾林碎片
+  pfDB["items"]["data-turtle"][42300]["U"] = { [63133] = 100 }  -- 完美无瑕的豹皮
+  pfDB["items"]["data-turtle"][42301]["O"] = { [2020334] = 100 }  -- 冰冻的高等精灵药剂瓶
+  pfDB["items"]["data-turtle"][42304]["U"] = { [62998] = 100 }  -- 欧汉齐之心
+  pfDB["items"]["data-turtle"][42305]["U"] = { [63008] = 50 }  -- 雷象的牙
+  pfDB["items"]["data-turtle"][42307]["U"] = { [60686] = 50 }  -- 符文源质钥匙
+  pfDB["items"]["data-turtle"][42310]["O"] = { [2020337] = 100 }  -- 确凿的证据
+  pfDB["items"]["data-turtle"][42313]["U"] = { [57642] = 100 }  -- 元素锁蓝图的下半部分
+  pfDB["items"]["data-turtle"][42326]["O"] = { [2020339] = 100 }  -- 卡兹甘石板
+  pfDB["items"]["data-turtle"][42327]["U"] = { [62992] = 100 }  -- 长老的著作
+  pfDB["items"]["data-turtle"][42336]["O"] = { [2020420] = 100 }  -- 艾纳瑞丝遗物
+  pfDB["items"]["data-turtle"][42350]["O"] = { [2020341] = 100 }  -- 誓日者补给
+  -- 堕落者头颅：上游 drops 对整组怪记的是 90（合成 owner c2000368），九个来源同值
+  pfDB["items"]["data-turtle"][42351]["U"] = {
+    [62925] = 90, [62926] = 90, [62927] = 90, [62928] = 90, [62929] = 90,
+    [62930] = 90, [62931] = 90, [62932] = 90, [62933] = 90,
+  }
+  pfDB["items"]["data-turtle"][42352]["U"] = { [63156] = 100 }  -- 梦境之眼
+  pfDB["items"]["data-turtle"][42353]["U"] = { [63159] = 100 }  -- 克索诺斯之刃
+  pfDB["items"]["data-turtle"][42354]["U"] = { [63158] = 100 }  -- 翡翠之权
+  pfDB["items"]["data-turtle"][42355]["U"] = { [63157] = 100 }  -- 月之幕
+  pfDB["items"]["data-turtle"][42356]["O"] = { [2020342] = 100 }  -- 陨石碎片
+  pfDB["items"]["data-turtle"][42357]["U"] = { [63150] = 100 }  -- 诺克斯之星
+  pfDB["items"]["data-turtle"][42380]["O"] = { [2020343] = 100 }  -- 磨损的信件
+  pfDB["items"]["data-turtle"][42385]["U"] = { [63067] = 100 }  -- 烧焦一半的卷轴
+  pfDB["items"]["data-turtle"][42394]["O"] = { [2020345] = 100, [2020346] = 100 }  -- 奈迪斯纪念品
+  pfDB["items"]["data-turtle"][42395]["O"] = { [300609] = 100, [2020346] = 100 }  -- 艾纳瑞丝的遗物
+  pfDB["items"]["data-turtle"][42397]["O"] = { [300608] = 100 }  -- 碧蓝闪耀的角鹰兽羽毛
 end
 
 do -- units/npcs
+  -- "柳" (61514): 40908 点燃篝火召唤出来的，无坐标。借用篝火 (2020026, 吉尔尼斯) 的位置
+  pfDB["units"]["data-turtle"][61514]["coords"] = { { 39.2, 55.4, 5179, 300 } }
+
+  -- 补 fac：下列任务及其前置都无种族限制，故 "AH"
+  pfDB["units"]["data-turtle"][60496]["fac"] = "AH"  -- 加菲尔德·光爆，任务 40187/40354
+  pfDB["units"]["data-turtle"][91722]["fac"] = "AH"  -- 守护者艾瑟勒斯，任务 40247
+  pfDB["units"]["data-turtle"][60644]["fac"] = "AH"  -- 奥术师索瓦提尔，任务 40362
+  pfDB["units"]["data"][5601]["fac"] = "AH"          -- 杰恩可汗，任务 40616
+  pfDB["units"]["data"][5602]["fac"] = "AH"          -- 沙卡可汗，任务 40629
+  pfDB["units"]["data-turtle"][11957]["fac"] = "AH"  -- 巨豹之灵，任务 41030
+
+  -- 名称表只写名字不带头衔。乌龟层给 14392 加了"督军"，游戏内就叫"伦萨克"
+  pfDB["units"]["zhCN-turtle"][14392] = "伦萨克"
+
+  -- 以下 NPC 经实测游戏内不存在，整体移除。相关任务在下方 quests 段一并移除
+  removeTurtleRecord("units", 60443)  -- 凯科斯·击王
+  removeTurtleRecord("units", 60441)  -- 托宝·光链
+  removeTurtleRecord("units", 61611)  -- 邮递员阿尔伯特·曼尼塔斯（暴风城）
+  removeTurtleRecord("units", 61612)  -- 邮递员卡蒂亚·黑斯廷斯（奥格瑞玛）
+  removeTurtleRecord("units", 80903)  -- 维兹·菲泽比斯特，只发 80331-80334 那批废弃任务
+
+  -- ==== 月语海岸 (5642) 缺失的任务 NPC ====
+  -- 本地导出要么没条目、要么坐标为空。数据照抄 KameleonUK/pfQuest-Turtle 分支的实测值，
+  -- 中文名取自本地任务文本。fac 留空的沿用 kam：两阵营都显示比猜错更安全。
+
+  -- "阿里亚" (62986): 任务 41910/41911 的交接方
+  addTurtleRecord("units", 62986, {
+    ["coords"] = { { 63.5, 67, 5642, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Ar'lia", zhCN = "阿里亚" })
+
+  -- "纳尔兰" (60082): 任务 41911 的目标，原本是无坐标占位符，整条替换
+  addTurtleRecord("units", 60082, {
+    ["coords"] = { { 63.5, 46, 5642, 1 } },
+    ["fac"] = "AH",
+    ["lvl"] = "1",
+  }, { enUS = "Nar'lan", zhCN = "纳尔兰" })
+
+  -- "女猎手凡·德赫拉" (63046): 任务 41944 的接取方，中文名无官方译法，自拟
+  addTurtleRecord("units", 63046, {
+    ["coords"] = { { 64.72, 66.74, 5642, 0 } },
+    ["fac"] = "AH",
+    ["lvl"] = "50",
+  }, { enUS = "Huntress Fan Dhe'ra", zhCN = "女猎手凡·德赫拉" })
+
+  -- "菲娜·玛达尔" (62852): 任务 41945 的接取/交付方，中文名取自 41945 描述
+  addTurtleRecord("units", 62852, {
+    ["coords"] = { { 60.9, 65.7, 5642, 120 } },
+  }, { enUS = "Fena Ma'dar", zhCN = "菲娜·玛达尔" })
+
+  -- "农夫丹佛" (62922): 任务 41946 的接取/交付方。英文名以服务端库为准，kam 分支拼错了
+  addTurtleRecord("units", 62922, {
+    ["coords"] = { { 64.1, 69.7, 5642, 0 } },
+  }, { enUS = "Farmer Denphar", zhCN = "农夫丹佛" })
+
+  -- "商人玛格汉" (62994): 任务 41952 的接取方。另有手工伪 ID 90041920 同名同位置，不动它
+  addTurtleRecord("units", 62994, {
+    ["coords"] = { { 60.9, 80, 5642, 0 } },
+    ["fac"] = "AH",
+    ["lvl"] = "50",
+  }, { enUS = "Maghan", zhCN = "商人玛格汉" })
+
+  -- "黑格哈拉" (62851): 任务 42012 的交付方，中文名取自 42012 目标
+  addTurtleRecord("units", 62851, {
+    ["coords"] = { { 61.01, 66.58, 5642, 120 } },
+  }, { enUS = "Heghala", zhCN = "黑格哈拉" })
+
+  -- 以下三个的坐标由服务端库刷新点换算而来，kam 分支没有。fac 留空：整批村民都是中立阵营
+
+  -- "年迈的克拉辛" (62863): 任务 41921 的交付方
+  addTurtleRecord("units", 62863, {
+    ["coords"] = { { 61.61, 65.24, 5642, 0 } },
+    ["lvl"] = "48",
+  }, { enUS = "Elder Krasheen", zhCN = "年迈的克拉辛" })
+
+  -- "裂隙大师拉尔佩卡" (62920): 月语海岸 5 个任务的交付方
+  addTurtleRecord("units", 62920, {
+    ["coords"] = { { 61.14, 65.91, 5642, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Riftmaster Ral'pekta", zhCN = "裂隙大师拉尔佩卡" })
+
+  -- "莫洛加酋长" (62850): 《莫洛加的阿里亚》链的起点。"K'la" 被官方译作头衔"酋长"
+  addTurtleRecord("units", 62850, {
+    ["coords"] = { { 60.91, 65.19, 5642, 0 } },
+    ["lvl"] = "60",
+    ["rnk"] = "1",
+  }, { enUS = "Moro'gai K'la", zhCN = "莫洛加酋长" })
+
+  -- 以下 3 个照 Turtle WoW Wiki 的 Moro'gai Village 页面补齐，坐标同样由服务端库刷新点换算
+
+  -- "厨师雷姆塞" (62861): 任务 41944 的交付方
+  addTurtleRecord("units", 62861, {
+    ["coords"] = { { 63.12, 66, 5642, 0 } },
+    ["lvl"] = "48",
+  }, { enUS = "Cook Rem'sai", zhCN = "厨师雷姆塞" })
+
+  -- "守备官哈玛尔" (63047): 任务 41947/41948/41949 的交付方，替代坐标是估值的伪 ID 90041949
+  addTurtleRecord("units", 63047, {
+    ["coords"] = { { 63.61, 65.61, 5642, 0 } },
+    ["lvl"] = "55",
+    ["rnk"] = "1",
+  }, { enUS = "Chief Defender Hamaam", zhCN = "守备官哈玛尔" })
+
+  -- "普利" (62854): 任务 41920 的交付方，替代坐标是估值的伪 ID 90042140
+  addTurtleRecord("units", 62854, {
+    ["coords"] = { { 64.88, 66.71, 5642, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "P'li", zhCN = "普利" })
+
+  -- ==== 从服务端库导入坐标（第二批）====
+  -- 由 spawn_points 的世界坐标按 zones 表边界换算成百分比。副本区域（如厄运之槌）换算不可靠，不碰。
+  -- 服务端库含未上线内容，这批属"待实测确认"，进游戏发现不存在的删掉即可。
+
+  -- 以下 9 条 pfQuest 本来就有记录（lvl/fac 都在），只是 coords 为空，只补坐标。
+  -- "科诺尔·瑞沃斯" (5081, 任务 1301 接取方): 暴风城。只在基础库，不在 data-turtle
+  pfDB["units"]["data"][5081]["coords"] = { { 51.1, 95.5, 1519, 0 } }
+
+  -- "初级工头银臂" (66000, 任务 40367 的接取/交付方): 贫瘠之地
+  pfDB["units"]["data-turtle"][66000]["coords"] = { { 48.6, 83, 17, 0 } }
+
+  -- "巴尔莫丹魔像" (60442, 任务 40367 的击杀目标): 贫瘠之地巴尔莫丹一带，32 个刷新点
+  pfDB["units"]["data-turtle"][60442]["coords"] = {
+    { 47.8, 86.3, 17, 0 }, { 47.7, 86.1, 17, 0 }, { 47.8, 86, 17, 0 },
+    { 47.6, 86.6, 17, 0 }, { 47.5, 86.9, 17, 0 }, { 47.7, 86.9, 17, 0 },
+    { 47.7, 87.3, 17, 0 }, { 47.9, 87.3, 17, 0 }, { 47.6, 87.6, 17, 0 },
+    { 47.9, 87.6, 17, 0 }, { 47.9, 88.2, 17, 0 }, { 47.8, 88, 17, 0 },
+    { 47.8, 88.2, 17, 0 }, { 47.9, 88.4, 17, 0 }, { 47.7, 88.6, 17, 0 },
+    { 48.1, 89, 17, 0 },   { 48.6, 89.1, 17, 0 }, { 48.1, 89.5, 17, 0 },
+    { 48.3, 89, 17, 0 },   { 48.9, 89.8, 17, 0 }, { 49, 89.8, 17, 0 },
+    { 48.7, 90.4, 17, 0 }, { 48.5, 88.4, 17, 0 }, { 48.5, 87.9, 17, 0 },
+    { 48.3, 87.3, 17, 0 }, { 48.8, 87.6, 17, 0 }, { 49.1, 87.6, 17, 0 },
+    { 49, 88, 17, 0 },     { 48, 89.2, 17, 0 },   { 48.6, 89.3, 17, 0 },
+    { 48.3, 89.6, 17, 0 }, { 48.5, 89.8, 17, 0 },
+  }
+
+  -- "孤峰" (91243, 任务 40679/40680/40681/55035 的接取/交付方): 湿地
+  pfDB["units"]["data-turtle"][91243]["coords"] = { { 55.1, 35, 11, 0 } }
+
+  -- "深渊海妖" (62355, 任务 41711 的击杀目标): 巴洛
+  pfDB["units"]["data-turtle"][62355]["coords"] = { { 45.5, 35.2, 5561, 0 } }
+
+  -- "纳特·爆葬" (80121, 任务 55011/80108/80109 的接取/交付方): 杜隆塔尔
+  pfDB["units"]["data-turtle"][80121]["coords"] = { { 50.1, 35.9, 14, 0 } }
+
+  -- "巴图克·烫壶" (52068, 任务 55202 的交付方): 湿地
+  pfDB["units"]["data-turtle"][52068]["coords"] = { { 21, 71.4, 11, 0 } }
+
+  -- 以下 6 条 pfQuest 完全没有记录，整条新建。
+  -- fac 仍按关联任务的 race 位掩码推断：race=434（兽人2+亡灵16+牛头人32+巨魔128+地精256）-> "H"
+
+  -- "尚夫" (63019, 任务 41938 交付方): 石爪山脉大地之环营地，中文名取自 41939 目标
+  addTurtleRecord("units", 63019, {
+    ["coords"] = { { 46.9, 71.9, 406, 0 } },
+    ["fac"] = "H",
+    ["lvl"] = "13",
+  }, { enUS = "Shovu", zhCN = "尚夫" })
+
+  -- "奥荷娜·河弯" (62803, 任务 41943 接取/交付方): 石爪山脉大地之环营地，中文名取自 41943 目标
+  addTurtleRecord("units", 62803, {
+    ["coords"] = { { 51.7, 69.7, 406, 0 } },
+    ["fac"] = "H",
+    ["lvl"] = "55",
+  }, { enUS = "Ohona Riverbend", zhCN = "奥荷娜·河弯" })
+
+  -- "灵魂引导师托尼兹特" (62804, 任务 41988 接取方): 石爪山脉大地之环营地
+  -- 中文名无官方译法，按 61303 "Spirit Guide Khana / 灵魂引导师卡纳" 拟的
+  addTurtleRecord("units", 62804, {
+    ["coords"] = { { 48.3, 69.2, 406, 0 } },
+    ["fac"] = "H",
+    ["lvl"] = "50",
+  }, { enUS = "Spirit Guide Tohnizte", zhCN = "灵魂引导师托尼兹特" })
+
+  -- "玛雅·山月" (63106, 任务 41988 交付方、41989 接取/交付方): 菲拉斯恐怖之岛，中文名取自 41988 目标
+  addTurtleRecord("units", 63106, {
+    ["coords"] = { { 28.2, 64, 357, 0 } },
+    ["fac"] = "H",
+    ["lvl"] = "45",
+  }, { enUS = "Makya Hillmoon", zhCN = "玛雅·山月" })
+
+  -- "艾劳迪亚" (80999, 任务 80381 交付方): 塔纳利斯，中文名取自 80381 目标。该任务无种族限制 -> "AH"
+  addTurtleRecord("units", 80999, {
+    ["coords"] = { { 67.6, 26.8, 440, 0 } },
+    ["fac"] = "AH",
+    ["lvl"] = "51",
+  }, { enUS = "Elodia", zhCN = "艾劳迪亚" })
+
+  -- ==== 上游缺失的带坐标 NPC（从升级前的本地库回填）====
+  -- 不被任何任务引用，只影响浏览器里搜到时能否看到位置。占位符条目已排除
+  addTurtleRecord("units", 40055, {
+    ["coords"] = { { 61.73, 23.87, 17, 0 } },
+    ["lvl"] = "11-12",
+  }, { enUS = "Brown Riding Kodo", zhCN = "棕色骑乘科多兽" })
+  addTurtleRecord("units", 40056, {
+    ["coords"] = { { 61.85, 24.03, 17, 0 } },
+    ["lvl"] = "11-12",
+  }, { enUS = "Gray Riding Kodo", zhCN = "灰色骑乘科多兽" })
+  addTurtleRecord("units", 40058, {
+    ["coords"] = { { 61.81, 23.97, 17, 0 } },
+    ["lvl"] = "1-2",
+  }, { enUS = "Timber Riding Wolf", zhCN = "木骑狼" })
+  addTurtleRecord("units", 40062, {
+    ["coords"] = { { 64.93, 34.3, 17, 0 } },
+    ["lvl"] = "1",
+  }, { enUS = "Gray Riding Ram", zhCN = "灰色骑公羊" })
+  addTurtleRecord("units", 40065, {
+    ["coords"] = { { 34.36, 21.13, 28, 0 }, { 42.74, 52.88, 28, 0 } },
+    ["lvl"] = "1-2",
+  }, { enUS = "White Stallion", zhCN = "白种马" })
+  addTurtleRecord("units", 40066, {
+    ["coords"] = { { 64.9432, 34.3312, 17, 0 } },
+    ["lvl"] = "1-2",
+  }, { enUS = "Palomino", zhCN = "帕洛米诺" })
+  addTurtleRecord("units", 49016, {
+    ["coords"] = { { 0, 0, 2159, 0 }, { 0, 0, 2159, 0 }, { 0, 0, 2159, 0 }, { 0, 0, 2159, 0 } },
+    ["lvl"] = "62",
+    ["rnk"] = "1",
+  }, { enUS = "Onyxian Inciter", zhCN = "奥妮克希亚煽动者" })
+  addTurtleRecord("units", 49017, {
+    ["coords"] = { { 0, 0, 2159, 0 }, { 0, 0, 2159, 0 }, { 0, 0, 2159, 0 } },
+    ["lvl"] = "62",
+    ["rnk"] = "1",
+  }, { enUS = "Onyxian Flamespawn", zhCN = "奥妮克希亚火嗣" })
+  addTurtleRecord("units", 49018, {
+    ["coords"] = { { 0, 0, 2159, 0 } },
+    ["lvl"] = "63",
+    ["rnk"] = "3",
+  }, { enUS = "Broodcommander Axelus", zhCN = "巢穴指挥官阿克塞勒斯" })
+  addTurtleRecord("units", 50143, {
+    ["coords"] = { { 0, 0, 2159, 0 } },
+    ["lvl"] = "63",
+    ["rnk"] = "3",
+  }, { enUS = "Cindarion", zhCN = "辛达里奥" })
+  addTurtleRecord("units", 51233, {
+    ["coords"] = { { 0, 0, 2677, 0 }, { 0, 0, 2677, 0 }, { 0, 0, 2677, 0 } },
+    ["lvl"] = "61",
+    ["rnk"] = "1",
+  }, { enUS = "Blackwing Alchemist", zhCN = "黑翼炼金术士" })
+  addTurtleRecord("units", 62758, {
+    ["coords"] = { { 45.3, 88.08, 400, 0 }, { 47.85, 88.62, 400, 0 }, { 63.83, 49.99, 400, 0 }, { 65.06, 45.56, 400, 0 }, { 65.4, 50.5, 400, 0 }, { 65.45, 51.97, 400, 0 }, { 65.83, 42.05, 400, 0 }, { 67.11, 44.64, 400, 0 }, { 67.88, 43.44, 400, 0 }, { 69.27, 40.89, 400, 0 } },
+    ["lvl"] = "24",
+    ["rnk"] = "1",
+  }, { enUS = "Blackwind Sorcerer", zhCN = "黑风法师" })
+  addTurtleRecord("units", 62819, {
+    ["coords"] = { { 84.2723, 39.3239, 618, 0 } },
+    ["lvl"] = "5",
+  }, { enUS = "Tamed Moonstrider Hatchling", zhCN = "被驯服的月步雏鸟" })
+  addTurtleRecord("units", 62833, {
+    ["coords"] = { { 67.8107, 63.5227, 400, 0 } },
+    ["lvl"] = "29",
+  }, { enUS = "Torthon Stonemane", zhCN = "托松·石鬃" })
+  addTurtleRecord("units", 62840, {
+    ["coords"] = { { 82.93, 31.76, 618, 0 } },
+    ["lvl"] = "49",
+  }, { enUS = "Garwon", zhCN = "加尔温" })
+  addTurtleRecord("units", 62841, {
+    ["coords"] = { { 71.36, 6.282, 618, 0 }, { 72.5, 4.232, 618, 0 }, { 72.84, 3.472, 618, 0 }, { 72.84, 3.472, 618, 3 }, { 73.51, 1.655, 618, 3 }, { 86.65, 8.584, 618, 0 }, { 87.24, 7.465, 618, 0 }, { 87.53, 6.07, 618, 3 }, { 87.65, 5.88, 618, 3 }, { 88.47, 11.06, 618, 0 }, { 88.55, 5.69, 618, 0 }, { 88.55, 5.69, 618, 3 }, { 89.09, 6.725, 618, 0 }, { 89.43, 7.465, 618, 0 }, { 90.43, 7.084, 618, 3 }, { 90.78, 7.021, 618, 0 }, { 90.78, 7.021, 618, 3 } },
+    ["lvl"] = "55",
+    ["rnk"] = "1",
+  }, { enUS = "Moonhoof Defender", zhCN = "月蹄防御者" })
+  addTurtleRecord("units", 62844, {
+    ["coords"] = { { 89.16, 7, 618, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Parnal", zhCN = "帕纳尔" })
+  addTurtleRecord("units", 62845, {
+    ["coords"] = { { 31.08, 44.02, 400, 0 } },
+    ["lvl"] = "30",
+    ["rnk"] = "1",
+  }, { enUS = "Ruhit Windhorn", zhCN = "鲁希特风号" })
+  addTurtleRecord("units", 62846, {
+    ["coords"] = { { 83.22, 31.63, 618, 0 } },
+    ["lvl"] = "52",
+  }, { enUS = "Sagarna", zhCN = "萨甘纳" })
+  addTurtleRecord("units", 62847, {
+    ["coords"] = { { 87.54, 9.979, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Tagasha Windhorn", zhCN = "塔加莎·风角" })
+  addTurtleRecord("units", 62848, {
+    ["coords"] = { { 48.88, 63.18, 12, 0 } },
+    ["lvl"] = "20",
+  }, { enUS = "Nat <Dreamer>", zhCN = "纳特 <梦想家>" })
+  addTurtleRecord("units", 62868, {
+    ["coords"] = { { 66.03, 82.89, 618, 0 }, { 66.5, 81.07, 618, 0 }, { 66.84, 81.3, 618, 0 }, { 67.22, 79, 618, 0 } },
+    ["lvl"] = "51-52",
+  }, { enUS = "Withermaw Warrior", zhCN = "枯喉战士" })
+  addTurtleRecord("units", 62869, {
+    ["coords"] = { { 65.16, 81.75, 618, 0 }, { 65.27, 80.56, 618, 0 }, { 66.57, 82.08, 618, 0 }, { 66.57, 82.08, 618, 3 }, { 66.85, 80.63, 618, 0 }, { 67.38, 78.66, 618, 0 }, { 67.38, 78.66, 618, 3 } },
+    ["lvl"] = "51-52",
+  }, { enUS = "Withermaw Mystic", zhCN = "枯喉秘法师" })
+  addTurtleRecord("units", 62896, {
+    ["coords"] = { { 85.16, 20.61, 618, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Venuris", zhCN = "薇娜瑞丝" })
+  addTurtleRecord("units", 62897, {
+    ["coords"] = { { 85.24, 20.44, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Janero", zhCN = "贾内罗" })
+  addTurtleRecord("units", 62898, {
+    ["coords"] = { { 86.4, 38.84, 618, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Richard", zhCN = "理查德" })
+  addTurtleRecord("units", 62903, {
+    ["coords"] = { { 58.69, 24.623, 5642, 0 }, { 58.69, 24.623, 5642, 3 }, { 59.03, 25.309, 5642, 3 }, { 59.18, 25.811, 5642, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Narvalis Sentinel", zhCN = "纳瓦利斯哨兵" })
+  addTurtleRecord("units", 62908, {
+    ["coords"] = { { 58.68, 25.272, 5642, 0 } },
+    ["lvl"] = "56",
+    ["rnk"] = "1",
+  }, { enUS = "Merellanea <Hippogryph Master>", zhCN = "梅蕾莱妮雅" })
+  addTurtleRecord("units", 62909, {
+    ["coords"] = { { 59.37, 25.4, 5642, 0 } },
+    ["lvl"] = "44",
+  }, { enUS = "Badel Wildlance <Stable Master>", zhCN = "巴德尔·野矛" })
+  addTurtleRecord("units", 62911, {
+    ["coords"] = { { 69.864, 22.458, 5642, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Achak Pinemoon", zhCN = "阿查克·松月" })
+  addTurtleRecord("units", 62912, {
+    ["coords"] = { { 69.2, 23.48, 5642, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Naturalist Pinemoon", zhCN = "娜崔莱丝特·松月" })
+  addTurtleRecord("units", 62915, {
+    ["coords"] = { { 67.86, 22.794, 5642, 0 }, { 68.78, 22.474, 5642, 0 }, { 68.78, 23.389, 5642, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Grove Sister", zhCN = "丛林的姐妹" })
+  addTurtleRecord("units", 62916, {
+    ["coords"] = { { 68.419, 21.75, 5642, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Prismwing", zhCN = "棱彩之翼" })
+  addTurtleRecord("units", 62918, {
+    ["coords"] = { { 67.52, 23.206, 5642, 0 }, { 67.91, 22.291, 5642, 0 }, { 68.64, 21.697, 5642, 0 }, { 68.85, 23.754, 5642, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Sungrove Guardian", zhCN = "日林卫士" })
+  addTurtleRecord("units", 62919, {
+    ["coords"] = { { 67.57, 23.343, 5642, 0 }, { 69.06, 21.697, 5642, 0 }, { 69.83, 22.657, 5642, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Sungrove Guardian", zhCN = "日林卫士" })
+  addTurtleRecord("units", 62975, {
+    ["coords"] = { { 88.58, 4.824, 618, 0 } },
+    ["lvl"] = "53",
+  }, { enUS = "Innkeeper Warmbreeze <Innkeeper>", zhCN = "旅店老板暖风 <旅店老板>" })
+  addTurtleRecord("units", 62987, {
+    ["coords"] = { { 84.85, 15.62, 618, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Nar'lan", zhCN = "纳尔兰" })
+  addTurtleRecord("units", 63051, {
+    ["coords"] = { { 86.9061, 7.4013, 618, 0 } },
+    ["lvl"] = "55",
+    ["rnk"] = "1",
+  }, { enUS = "Sol Greycloud <Flight Master>", zhCN = "索尔·灰云" })
+  addTurtleRecord("units", 63053, {
+    ["coords"] = { { 86.85, 8.204, 618, 0 }, { 86.93, 8.056, 618, 0 }, { 87.02, 5.986, 618, 0 } },
+    ["lvl"] = "43",
+  }, { enUS = "Moonhoof Youngblood", zhCN = "月蹄青年" })
+  addTurtleRecord("units", 63058, {
+    ["coords"] = { { 87.69, 7.951, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Hula Swiftmane <Stable Master>", zhCN = "胡拉·迅鬃" })
+  addTurtleRecord("units", 63070, {
+    ["coords"] = { { 53.94, 13.194, 5642, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Whizzbeard Cogshipper", zhCN = "威兹比德齿轮运输者" })
+  addTurtleRecord("units", 63073, {
+    ["coords"] = { { 57.82, 28.737, 5642, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Thulio", zhCN = "图里奥" })
+  addTurtleRecord("units", 63093, {
+    ["coords"] = { { 69.78, 4.296, 618, 0 }, { 70.15, 3.514, 618, 0 }, { 71.53, 6.261, 618, 0 }, { 72.12, 4.908, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Moonhoof Celebrator", zhCN = "月蹄庆祝者" })
+  addTurtleRecord("units", 63105, {
+    ["coords"] = { { 67.72, 16.644, 5642, 0 }, { 68.114, 17.837, 5642, 0 }, { 69.465, 18.955, 5642, 0 }, { 69.788, 18.769, 5642, 0 }, { 70.207, 14.893, 5642, 0 }, { 70.397, 15.508, 5642, 0 }, { 70.758, 18.545, 5642, 0 } },
+    ["lvl"] = "62",
+    ["rnk"] = "1",
+  }, { enUS = "Sinister Echo", zhCN = "邪恶的回响" })
+  addTurtleRecord("units", 63120, {
+    ["coords"] = { { 81.02, 47.94, 618, 0 } },
+    ["lvl"] = "60",
+    ["rnk"] = "1",
+  }, { enUS = "Pysan the Righteous", zhCN = "正义的派森" })
+  addTurtleRecord("units", 63123, {
+    ["coords"] = { { 76.46, 44.46, 618, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Ley-Technician Firael <Repairs>", zhCN = "魔网技术员菲雷尔 <修理>" })
+  addTurtleRecord("units", 63125, {
+    ["coords"] = { { 76.37, 44.39, 618, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Kallion Dawnstrike", zhCN = "卡里昂黎明之击" })
+  addTurtleRecord("units", 63126, {
+    ["coords"] = { { 76.3708, 44.3521, 618, 0 } },
+    ["lvl"] = "45",
+  }, { enUS = "Netharas Dawnstrike", zhCN = "奈萨拉斯黎明之击" })
+  addTurtleRecord("units", 63128, {
+    ["coords"] = { { 75.68, 43.38, 618, 0 }, { 76.08, 44.31, 618, 0 }, { 76.64, 43.89, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Sunsworn Sentinel", zhCN = "誓日者哨兵" })
+  addTurtleRecord("units", 63174, {
+    ["coords"] = { { 88.27, 7.19, 618, 0 } },
+    ["lvl"] = "35",
+  }, { enUS = "Ushaa Rockjumper", zhCN = "乌莎跳岩者" })
+  addTurtleRecord("units", 63175, {
+    ["coords"] = { { 87.71, 6.197, 618, 0 } },
+    ["lvl"] = "55",
+  }, { enUS = "Matron Mefini", zhCN = "梅菲尼护士长" })
+  addTurtleRecord("units", 63176, {
+    ["coords"] = { { 90.77, 7.401, 618, 0 } },
+    ["lvl"] = "50",
+  }, { enUS = "Fisher Ghujabi", zhCN = "费希尔·古贾比" })
+  addTurtleRecord("units", 63178, {
+    ["coords"] = { { 48.86, 39.27, 493, 0 } },
+    ["lvl"] = "40",
+  }, { enUS = "Haldaan Dawnbranch <Innkeeper>", zhCN = "哈尔丹·晨枝" })
+  addTurtleRecord("units", 63191, {
+    ["coords"] = { { 78.12, 67.82, 618, 0 }, { 79.09, 66.92, 618, 0 }, { 81.41, 62.52, 618, 0 }, { 82.1, 60.22, 618, 0 }, { 82.5, 59.84, 618, 0 }, { 88.38, 53.18, 618, 0 }, { 88.95, 52.08, 618, 0 }, { 89.17, 50.04, 618, 0 }, { 89.22, 12.11, 618, 0 }, { 89.43, 13.68, 618, 0 }, { 89.61, 49.65, 618, 0 } },
+    ["lvl"] = "51-52",
+  }, { enUS = "Bluetide Outcast", zhCN = "蓝潮流放者" })
+  addTurtleRecord("units", 63211, {
+    ["coords"] = { { 32.8, 56.88, 12, 0 }, { 62.24, 49.96, 12, 0 } },
+    ["lvl"] = "60",
+  }, { enUS = "Luchor Halfshoe", zhCN = "卢克半鞋" })
+  addTurtleRecord("units", 65136, {
+    ["coords"] = { { 57.9746, 56.413, 440, 0 } },
+    ["lvl"] = "30",
+  }, { enUS = "Tizzy <Neto's Assistant>", zhCN = "蒂兹 <内托的助手>" })
+  addTurtleRecord("units", 65148, {
+    ["coords"] = { { 0, 0, 2677, 0 } },
+    ["lvl"] = "63",
+    ["rnk"] = "3",
+  }, { enUS = "Ezzel Darkbrewer <Renowned Alchemist>", zhCN = "伊泽尔·黑酿" })
+  addTurtleRecord("units", 65150, {
+    ["coords"] = { { 0, 0, 2677, 0 }, { 0, 0, 2677, 0 }, { 0, 0, 2677, 0 }, { 0, 0, 2677, 0 } },
+    ["lvl"] = "60",
+  }, { enUS = "Wall <two more weeks>", zhCN = "沃尔<还有两周>" })
+  addTurtleRecord("units", 90041918, {
+    ["coords"] = { { 64, 81, 5642, 0 } },
+    ["lvl"] = "54",
+  }, { enUS = "Hara'ne", zhCN = "海拉尼" })
+  addTurtleRecord("units", 90041919, {
+    ["coords"] = { { 64, 81, 5642, 0 } },
+    ["lvl"] = "54",
+  }, { enUS = "Hara'ne", zhCN = "海拉尼" })
+  addTurtleRecord("units", 90041920, {
+    ["coords"] = { { 61, 80, 5642, 0 } },
+    ["lvl"] = "53",
+  }, { enUS = "Maghan", zhCN = "商人玛格汉" })
+  addTurtleRecord("units", 90041949, {
+    ["coords"] = { { 64, 66, 5642, 0 } },
+    ["lvl"] = "54",
+  }, { enUS = "Chief Defender Hamaam", zhCN = "守备官哈玛尔" })
+  addTurtleRecord("units", 90042139, {
+    ["coords"] = { { 61, 65, 5642, 0 } },
+    ["lvl"] = "54",
+  }, { enUS = "Elder Sage Azh'okar", zhCN = "贤长阿兹欧卡" })
+  addTurtleRecord("units", 90042140, {
+    ["coords"] = { { 65, 67, 5642, 0 } },
+    ["lvl"] = "53",
+  }, { enUS = "P'li", zhCN = "普利" })
 end
 
 do -- quests
-  -- Add "Dark Iron Gunpowder Keg" to objectives of "Vile Dwarven Pigs"
-  -- The extractor scripts did not catch those, as the objetive is filled via a Gossip on use.
+  -- "肮脏的矮人猪猡" (41682): 目标物件是黑铁火药桶，走 Gossip 触发，抽取脚本没带出来
   pfDB["quests"]["data-turtle"][41682]["obj"]["O"] = { 2020173 }
 
-  -- Add "Head of Geshgan" to the loot table of "Geshgan"
-  -- This can be removed by the next database export
-  pfDB["items"]["data-turtle"][41783]["U"] = { [62217] = 1.0 }
+  -- 盾牌的拥有者 (40554): 占位符换成 3 个真实 NPC
+  pfDB["quests"]["data-turtle"][40554]["obj"]["U"] = { 60949, 60950, 60951 }
+
+  -- 水烟给你的麻烦 (40003): 占位符换成 沙古
+  pfDB["quests"]["data-turtle"][40003]["obj"]["U"] = { 60300 }
+
+  -- 首领尧德恩宠 (40026): 占位符换成 首领尧德
+  pfDB["quests"]["data-turtle"][40026]["obj"]["U"] = { 91289 }
+
+  -- 稳定冷却装置 (40068): 占位符换成 芬多·胀气
+  pfDB["quests"]["data-turtle"][40068]["obj"]["U"] = { 91770 }
+
+  -- "干扰纳迦" (40124): 占位符 60312 (quest_40124_dummy_triger) 实际是场景物件
+  -- "恶鞭神殿" (2010801, 48.8/55.2)，不是 NPC
+  pfDB["quests"]["data-turtle"][40124]["obj"]["U"] = { 6195 }
+  pfDB["quests"]["data-turtle"][40124]["obj"]["O"] = { 2010801 }
+
+  -- 博兰家族 (40141): 占位符换成 卡尔·伯兰/萨穆尔·伯兰
+  pfDB["quests"]["data-turtle"][40141]["obj"]["U"] = { 1242, 92936 }
+
+  -- 拉匹迪斯之塔之四 (40166): 占位符换成 大法师安斯雷姆·鲁因维沃尔
+  pfDB["quests"]["data-turtle"][40166]["obj"]["U"] = { 2543 }
+
+  -- 海上红旗 (40172): 占位符换成 加菲尔德·光爆
+  pfDB["quests"]["data-turtle"][40172]["obj"]["U"] = { 60453 }
+
+  -- "大炮的不幸" (40174): 占位符 60328 ("温德60世") 实际是场景物件 "爆炸火药桶"
+  pfDB["quests"]["data-turtle"][40174]["obj"]["O"] = { 2010834 }
+
+  -- "发表声明" (40180): 占位符 60333 ("温德65世") 实际是在藏宝海湾指定区域使用任务道具。
+  -- 改用区域标记 900001 只标位置，避免显示成"和里维加兹对话"
+  pfDB["quests"]["data-turtle"][40180]["obj"]["U"] = nil
+  pfDB["quests"]["data-turtle"][40180]["obj"]["A"] = { 900001 }
+
+  -- "发现陆地？更像是永无归期" (40186): 占位符 60330 ("温德62世") 实际是场景物件 "爆炸火药桶"
+  pfDB["quests"]["data-turtle"][40186]["obj"]["O"] = { 2010834 }
+
+  -- 血帆海盗船长 (40187): 占位符换成 加菲尔德·光爆
+  pfDB["quests"]["data-turtle"][40187]["obj"]["U"] = { 60496 }
+
+  -- 隐士 (40210): 占位符换成 英桑姆尼
+  pfDB["quests"]["data-turtle"][40210]["obj"]["U"] = { 60446 }
+
+  -- 埃达拉之杖 (40247): 占位符换成 守护者艾瑟勒斯
+  pfDB["quests"]["data-turtle"][40247]["obj"]["U"] = { 91722 }
+
+  -- "恢复魔网线" (40253): 占位符 60336 ("温德68世") 实际是场景物件 "亚山石"
+  pfDB["quests"]["data-turtle"][40253]["obj"]["O"] = { 2010851 }
+
+  -- 莫尔奥格危机之一 (40264): 占位符换成 克鲁克佐格首领
+  pfDB["quests"]["data-turtle"][40264]["obj"]["U"] = { 92180 }
+
+  -- 莫尔奥格危机之三 (40266): 占位符换成 先知伯乌克
+  pfDB["quests"]["data-turtle"][40266]["obj"]["U"] = { 91854 }
+
+  -- 莫尔奥格危机之九 (40272): 占位符换成 克鲁克佐格首领 (same one as in 40264)
+  pfDB["quests"]["data-turtle"][40272]["obj"]["U"] = { 92180 }
+
+  -- 剑圣的请求 (40285): 占位符换成 守护者艾瑟勒斯
+  pfDB["quests"]["data-turtle"][40285]["obj"]["U"] = { 91722 }
+
+  -- 纪念被遗忘的人 (40289): 占位符换成 卡托卡·刀风
+  pfDB["quests"]["data-turtle"][40289]["obj"]["U"] = { 92196 }
+
+  -- 魔法师的仪式 (40293): 占位符换成 亚格奥仕
+  pfDB["quests"]["data-turtle"][40293]["obj"]["U"] = { 92197 }
+
+  -- "门纳尔湖之谜" (40295): 占位符 60343 ("温德75世") 实际是侦察一处地点，改用区域标记 900002
+  pfDB["quests"]["data-turtle"][40295]["obj"]["U"] = nil
+  pfDB["quests"]["data-turtle"][40295]["obj"]["A"] = { 900002 }
+
+  -- "我们所知道的信息" (70029): 占位符 70028 换成区域标记（见上方 areatrigger 段）
+  pfDB["quests"]["data-turtle"][70029]["obj"]["U"] = nil
+  pfDB["quests"]["data-turtle"][70029]["obj"]["A"] = { 70029 }
+
+  -- 卡拉赞深渊之六 (40309): 占位符换成 科尔根
+  pfDB["quests"]["data-turtle"][40309]["obj"]["U"] = { 60607 }
+
+  -- 卡拉赞之谜之六 (40316): 占位符换成 大法师艾瑞登·暗塔
+  pfDB["quests"]["data-turtle"][40316]["obj"]["U"] = { 60606 }
+
+  -- 青金石 (40338): 占位符换成 托尔丹·山心
+  pfDB["quests"]["data-turtle"][40338]["obj"]["U"] = { 60629 }
+
+  -- 灵魂行者之路之三 (40346): 占位符换成 圣者帕尔伦纳
+  pfDB["quests"]["data-turtle"][40346]["obj"]["U"] = { 5390 }
+
+  -- "灵魂行者之路之五" (40348): 占位符 60349/60350/60351 换成三位真实先祖 智慧之祖/圣洁之祖/谦卑之祖
+  pfDB["quests"]["data-turtle"][40348]["obj"]["U"] = { 60863, 60864, 60865 }
+
+  -- 巫医之路之三 (40351): 占位符换成 波贝
+  pfDB["quests"]["data-turtle"][40351]["obj"]["U"] = { 10578 }
+
+  -- 巫医之路之四 (40352): 占位符换成 恩里比
+  pfDB["quests"]["data-turtle"][40352]["obj"]["U"] = { 60631 }
+
+  -- "家庭高于一切" (40541): 占位符 60383/60384 实际是两个海岸场景物件 "废弃的鱼人小屋/巢穴"
+  pfDB["quests"]["data-turtle"][40541]["obj"]["O"] = { 2010918, 2010919 }
+
+  -- 为船只命名 (40354): 占位符换成 加菲尔德·光爆
+  pfDB["quests"]["data-turtle"][40354]["obj"]["U"] = { 60496 }
+
+  -- 历史学家找到你 (40362): 占位符换成 奥术师索瓦提尔（同交付人）
+  pfDB["quests"]["data-turtle"][40362]["obj"]["U"] = { 60644 }
+
+  -- 艾尔德萨拉斯的圣水 (40382): 占位符换成 维斯提亚·月矛
+  pfDB["quests"]["data-turtle"][40382]["obj"]["U"] = { 7878 }
+
+  -- 采取必要的手段之五 (40401): 占位符换成 尼雷米乌斯·暗风
+  pfDB["quests"]["data-turtle"][40401]["obj"]["U"] = { 60710 }
+
+  -- 聆听奥瓦克的故事 (40460): 占位符换成 奥瓦克·严岩
+  pfDB["quests"]["data-turtle"][40460]["obj"]["U"] = { 60833 }
+
+  -- 收获傀儡之谜之七 (40476): 占位符换成 马尔蒂莫·加特赛德
+  pfDB["quests"]["data-turtle"][40476]["obj"]["U"] = { 60858 }
+
+  -- "调查仇恨熔炉" (40486): 占位符 60376 ("温德92世") 实际是场景物件 "仇恨熔炉采石场（入口）"
+  pfDB["quests"]["data-turtle"][40486]["obj"]["O"] = { 112940 }
+
+  -- 接下来的行动 (40718): 占位符换成 卡古隆（同接取人）
+  pfDB["quests"]["data-turtle"][40718]["obj"]["U"] = { 61056 }
+
+  -- 沙怒救赎之三 (40524): 占位符换成 沃金（同交付人）
+  pfDB["quests"]["data-turtle"][40524]["obj"]["U"] = { 10540 }
+
+  -- 来自马尔蒂莫的信 (40529): 占位符换成 马尔蒂莫·加特赛德（同交付人）
+  pfDB["quests"]["data-turtle"][40529]["obj"]["U"] = { 60858 }
+
+  -- 狼魂之路之三 (40532): 占位符换成 远古之狼灵魂（同交付人）
+  pfDB["quests"]["data-turtle"][40532]["obj"]["U"] = { 66004 }
+
+  -- 狼魂之路之四 (40533): 占位符换成 远古之狼灵魂
+  pfDB["quests"]["data-turtle"][40533]["obj"]["U"] = { 66004 }
+
+  -- 狼魂之路之五 (40534): 占位符换成 远古之狼灵魂
+  pfDB["quests"]["data-turtle"][40534]["obj"]["U"] = { 66004 }
+
+  -- 战斗中的羁绊 (40536): 占位符换成 追日者
+  pfDB["quests"]["data-turtle"][40536]["obj"]["U"] = { 60821 }
+
+  -- 与敌人的会面 (40558): 占位符换成 法格兰·哈斯迪尔（同接取人）
+  pfDB["quests"]["data-turtle"][40558]["obj"]["U"] = { 5088 }
+
+  -- 占卜仪式 (40562): 占位符换成 大法师哈利斯特（同接取人）
+  pfDB["quests"]["data-turtle"][40562]["obj"]["U"] = { 60731 }
+
+  -- 第二次会议 (40564): 占位符换成 法格兰·哈斯迪尔（同接取人）
+  pfDB["quests"]["data-turtle"][40564]["obj"]["U"] = { 5088 }
+
+  -- 白天梦游 (40567): 占位符换成 伯特·马诺
+  pfDB["quests"]["data-turtle"][40567]["obj"]["U"] = { 52017 }
+
+  -- 西部荒野旧教堂之五 (40597): 占位符换成 尼尔斯修士
+  pfDB["quests"]["data-turtle"][40597]["obj"]["U"] = { 952 }
+
+  -- 我们的人 (40616): 占位符换成 杰恩可汗（同交付人）
+  pfDB["quests"]["data-turtle"][40616]["obj"]["U"] = { 5601 }
+
+  -- 名誉吉尔吉斯人 (40629): 占位符换成 沙卡可汗（同交付人）
+  pfDB["quests"]["data-turtle"][40629]["obj"]["U"] = { 5602 }
+
+  -- 管理水手 (40660): 占位符换成 3 个真实 NPC
+  pfDB["quests"]["data-turtle"][40660]["obj"]["U"] = { 61013, 61015, 61016 }
+
+  -- 给萨尔的消息 (40670): 占位符换成 曼尼·奥弗洛（同接取人）
+  pfDB["quests"]["data-turtle"][40670]["obj"]["U"] = { 61052 }
+
+  -- 复仇之旅 (40691): 占位符换成 格鲁姆尼尔·战须
+  pfDB["quests"]["data-turtle"][40691]["obj"]["U"] = { 60993 }
+
+  -- 相互矛盾的问题 (40698): 占位符换成 弗丹·碎月
+  pfDB["quests"]["data-turtle"][40698]["obj"]["U"] = { 60471 }
+
+  -- "诸王之地" (40713): 占位符 60009 ("温德2世") 实际是场景物件 "科萨恩之锣"
+  pfDB["quests"]["data-turtle"][40713]["obj"]["O"] = { 2010946 }
+
+  -- 泽塔利亚的诅咒 (40714): 占位符换成 被遗忘的守护者
+  pfDB["quests"]["data-turtle"][40714]["obj"]["U"] = { 60916 }
+
+  -- 又一次乏味的外交 (40721): 占位符换成 卡古隆
+  pfDB["quests"]["data-turtle"][40721]["obj"]["U"] = { 61056 }
+
+  -- 海量信息！ (40733): 占位符换成 利扎·弗拉克斯托格尔（同接取人）
+  pfDB["quests"]["data-turtle"][40733]["obj"]["U"] = { 61116 }
+
+  -- 卡拉赞的钥匙之六 (40825): 占位符换成 多万·布雷斯温德
+  pfDB["quests"]["data-turtle"][40825]["obj"]["U"] = { 61137 }
+
+  -- 与王子的会面 (41240): 占位符换成 大魔导师罗玛斯
+  pfDB["quests"]["data-turtle"][41240]["obj"]["U"] = { 61800 }
+
+  -- 失踪的朋友！ (40771): 占位符换成 尼布
+  pfDB["quests"]["data-turtle"][40771]["obj"]["U"] = { 61157 }
+
+  -- 空屋 (41643): 占位符换成 3 个真实 NPC
+  pfDB["quests"]["data-turtle"][41643]["obj"]["U"] = { 62154, 62489, 62153 }
+
+  -- 走向最黑暗地点 (41694): 占位符换成 3 个真实 NPC
+  pfDB["quests"]["data-turtle"][41694]["obj"]["U"] = { 62557, 62558, 62559 }
+
+  -- 援助学校 (41637): 占位符换成 4 个真实 NPC
+  pfDB["quests"]["data-turtle"][41637]["obj"]["U"] = { 62300, 62301, 62302, 62303 }
+
+  -- 爆炸物让我心跳加速！ (41698): 占位符换成三个放炸药的场景物件
+  pfDB["quests"]["data-turtle"][41698]["obj"]["O"] = { 2020178, 2020179, 2020180 }
+
+  -- 传说变为现实！ (40782): 占位符换成 3 个真实 NPC
+  pfDB["quests"]["data-turtle"][40782]["obj"]["U"] = { 61172, 61169, 61170 }
+
+  -- "卡拉赞的钥匙之七" (40826): 占位符 60036-60039 实际是四个场景物件 "麦迪文的回响/羽毛"，
+  -- 分别在 幽暗城/斯坦索姆/奥特兰克山脉/海加尔山
+  pfDB["quests"]["data-turtle"][40826]["obj"]["O"] = { 2011045, 2011046, 2011047, 2011048 }
+
+  -- 至理名言 (40799): 占位符换成 4 个真实 NPC
+  pfDB["quests"]["data-turtle"][40799]["obj"]["U"] = { 4407, 6706, 4267, 3838 }
+
+  -- 姓氏 (40800): 占位符换成 沙普塔隆
+  pfDB["quests"]["data-turtle"][40800]["obj"]["U"] = { 12676 }
+
+  -- 耐心是关键 (40801): 占位符换成 星风指挥官/布罗森·铁林
+  pfDB["quests"]["data-turtle"][40801]["obj"]["U"] = { 61143, 61147 }
+
+  -- 压力是关键 (40807): 占位符换成 星风指挥官/布罗森·铁林
+  pfDB["quests"]["data-turtle"][40807]["obj"]["U"] = { 61143, 61147 }
+
+  -- 卡拉赞的钥匙之一 (40817): 占位符换成 埃伯洛克领主
+  pfDB["quests"]["data-turtle"][40817]["obj"]["U"] = { 61255 }
+
+  -- 卡拉赞的钥匙之十 (40829): 占位符换成 多万·布雷斯温德
+  pfDB["quests"]["data-turtle"][40829]["obj"]["U"] = { 61137 }
+
+  -- 寐入梦境之一 (40957): 占位符换成 拉拉修斯
+  pfDB["quests"]["data-turtle"][40957]["obj"]["U"] = { 61326 }
+
+  -- 寐入梦境之五 (40961): 占位符换成 拉拉修斯
+  pfDB["quests"]["data-turtle"][40961]["obj"]["U"] = { 61326 }
+
+  -- 起义军 (40972): 占位符换成 达瑞斯·拉文伍德勋爵
+  pfDB["quests"]["data-turtle"][40972]["obj"]["U"] = { 61259 }
+
+  -- "纪念富兰克林" (40982): 占位符 60047 ("温德39世") 实际是场景物件 "富兰克林·黑心之墓"
+  pfDB["quests"]["data-turtle"][40982]["obj"]["O"] = { 2020035 }
+
+  -- 符文仪式 (40985): 占位符换成 布托克·云角
+  pfDB["quests"]["data-turtle"][40985]["obj"]["U"] = { 61561 }
+
+  -- 从失败中汲取智慧 (41388): 占位符换成 5 个真实 NPC
+  pfDB["quests"]["data-turtle"][41388]["obj"]["U"] = { 62032, 6236, 62063, 62031 }
+
+  -- 护腕的上半部分之四 (41014): 占位符换成 帕纳布斯
+  pfDB["quests"]["data-turtle"][41014]["obj"]["U"] = { 61570 }
+
+  -- 拯救洛雷什 (41030): 占位符换成 巨豹之灵
+  pfDB["quests"]["data-turtle"][41030]["obj"]["U"] = { 11957 }
+
+  -- 雷炉大师 (41143): 占位符换成 弗里格·雷炉
+  pfDB["quests"]["data-turtle"][41143]["obj"]["U"] = { 61758 }
+
+  -- 开辟道路 (41372): 占位符换成 千里眼亚妮拉丝
+  pfDB["quests"]["data-turtle"][41372]["obj"]["U"] = { 61996 }
+
+  -- 乌尔的智慧 (41383): 占位符换成 大德鲁伊梦风
+  pfDB["quests"]["data-turtle"][41383]["obj"]["U"] = { 61512 }
+
+  -- "永望广播劫案" (41649): 占位符 60069 ("温德128世") 实际是场景物件 "查波的录音盒"
+  pfDB["quests"]["data-turtle"][41649]["obj"]["O"] = { 2020166 }
+
+  -- "比铁还要黑" (41677): 占位符 60070 ("温德131世") 实际是场景物件 "黑铁火药桶"
+  pfDB["quests"]["data-turtle"][41677]["obj"]["O"] = { 2020173 }
+
+  -- 尤索克的仪式 (41731): 占位符换成 先知莫唐
+  pfDB["quests"]["data-turtle"][41731]["obj"]["U"] = { 62432 }
+
+  -- 女神之力 (41745): 占位符换成 大德鲁伊梦风
+  pfDB["quests"]["data-turtle"][41745]["obj"]["U"] = { 61512 }
+
+  -- 灰鳞矮人 (41803): 占位符换成 萨蒂斯·鳞心
+  pfDB["quests"]["data-turtle"][41803]["obj"]["U"] = { 62421 }
+
+  -- "与渗透者会合" (40847): 目标物品 61351 由 格蕾塔·朗派克 (61379, 吉尔尼斯) 对话给予
+  pfDB["quests"]["data-turtle"][40847]["obj"]["U"] = { 61379 }
+
+  -- "融合软泥怪" (4642): 对安戈洛的软泥怪 (6557) 使用道具 12291；obj 原本缺 U，无法落图钉
+  pfDB["quests"]["data-turtle"][4642]["obj"]["U"] = { 6557 }
+
+  -- "失落的荣耀" (2784): 与"部落英雄的灵魂"对话（即本任务的起止 NPC）
+  pfDB["quests"]["data-turtle"][2784]["obj"] = { ["U"] = { 7572 } }
+
+  -- "巨槌石" (3821): 交互 "沙妮·长齿的遗骸" 会召唤出 "沙妮·长齿"
+  pfDB["quests"]["data-turtle"][3821]["obj"] = { ["O"] = { 160445 } }
+
+  -- "伊崔格的智慧" (4941): 交给萨尔 (4949) 之前先找 伊崔格 (3144, 奥格瑞玛)；obj 表原本整个缺失
+  pfDB["quests"]["data-turtle"][4941]["obj"] = { ["U"] = { 3144 } }
+
+  -- ==== 移除游戏内已不存在 / 已废弃的任务 ====
+  -- 别因为服务端库而撤销：导出里 hidden=0、标题正常也可能是导出落后于线上。
+  -- 链路都核对过，块外无现役任务依赖。只删任务不删 NPC（units 库还服务于 NPC 查询）。
+
+  -- 凯科斯·击王 (60443) 的部落链 [实测 NPC 不存在]
+  removeTurtleRecord("quests", 40130)  -- 有利可图的收获
+  removeTurtleRecord("quests", 40131)  -- 征用一个核心
+  removeTurtleRecord("quests", 40133)  -- 有利可图的激活
+  removeTurtleRecord("quests", 41102)  -- 来自击王的召唤
+  removeTurtleRecord("quests", 41104)  -- 击王的贵宾
+
+  -- 托宝·光链 (60441) 的联盟链，同上
+  removeTurtleRecord("quests", 40128)  -- 古老的收获
+  removeTurtleRecord("quests", 40129)  -- 偷一个核心
+  removeTurtleRecord("quests", 40132)  -- 激活
+  removeTurtleRecord("quests", 41103)  -- 来自托宝的信
+  removeTurtleRecord("quests", 41105)  -- 光链的主宾
+
+  -- 两个邮递员的信件面包屑 [实测 NPC 已删]。功能已由中立任务 80407/80410 接管
+  removeTurtleRecord("quests", 41098)  -- 加基森的一封信（联盟）
+  removeTurtleRecord("quests", 41099)  -- 加基森的一封信（部落）
+  removeTurtleRecord("quests", 41100)  -- 莱茵的一封信（联盟）
+  removeTurtleRecord("quests", 41101)  -- 莱茵的一封信（部落）
+
+  -- 地精猎人废弃版"驯服野兽"，现役版是独立链 60160-60163
+  removeTurtleRecord("quests", 80331)
+  removeTurtleRecord("quests", 80332)
+  removeTurtleRecord("quests", 80333)
+  removeTurtleRecord("quests", 80334)  -- 训练野兽
+
+  -- 灰烬使者线，整线移除。不能只删前四条：20004 的 pre 是 20003，
+  -- 单删前四条会让 20004 失去前置反而提前显示为可接
+  removeTurtleRecord("quests", 20000)  -- 纯光之球
+  removeTurtleRecord("quests", 20001)  -- 到别处寻求帮助
+  removeTurtleRecord("quests", 20002)  -- 唤醒灰烬使者
+  removeTurtleRecord("quests", 20003)  -- 灰烬使者之魂
+  removeTurtleRecord("quests", 20004)  -- 谦卑的行为
+  removeTurtleRecord("quests", 20005)  -- 血色十字军的恶臭
+
+  -- 寻找太阳的知识（联盟牧师 10 级职业任务）[实测已删]
+  removeTurtleRecord("quests", 40795)
+
+  -- ==== 补回的任务交接关系（按任务号排列）====
+  -- 抽取脚本没带出这些 start/end/obj，任务因此无法定位。来源标记见 .claude/skills/overwrites-comments
+
+  -- 41734 "破损的遗物装置"  [服务端库]  end 加卡尔·融苔 (6868)
+  pfDB["quests"]["data-turtle"][41734]["end"] = { ["U"] = { 6868 } }
+
+  -- 41910-41917 + 41949-41953 是《莫洛加的阿里亚》链，上游关系表全空，以下均据任务文本推导。
+  -- 涉及的 NPC：莫洛加酋长 62850 / 阿里亚 62986 / 拉尔佩卡 62920
+
+  -- 41910 "莫洛加的阿里亚"  [任务文本]  链起点
+  pfDB["quests"]["data-turtle"][41910]["start"] = { ["U"] = { 62850 } }
+
+  -- 41911 "披着羊皮的狼"  [任务文本]  obj 原指向的占位符 60082 已在 units 段修好
+  pfDB["quests"]["data-turtle"][41911]["end"]   = { ["U"] = { 62986 } }
+
+  -- 41912 "红色水晶"  [任务文本]  目标 NPC 62989 是脚本生成的，无坐标，目标端仍无法定位
+  pfDB["quests"]["data-turtle"][41912]["start"] = { ["U"] = { 62986 } }
+  pfDB["quests"]["data-turtle"][41912]["end"]   = { ["U"] = { 62920 } }
+
+  -- 41913 "德莱尼占卜"  [任务文本]
+  pfDB["quests"]["data-turtle"][41913]["start"] = { ["U"] = { 62920 } }
+  pfDB["quests"]["data-turtle"][41913]["end"]   = { ["U"] = { 62920 } }
+
+  -- 41914 "蹄与角，皆覆红"  [任务文本]
+  pfDB["quests"]["data-turtle"][41914]["start"] = { ["U"] = { 62920 } }
+  pfDB["quests"]["data-turtle"][41914]["end"]   = { ["U"] = { 62986 } }
+
+  -- 41915 "父亲的回答"  [任务文本]  obj 原是无坐标占位符，目标就是质问酋长本人
+  pfDB["quests"]["data-turtle"][41915]["start"] = { ["U"] = { 62986 } }
+  pfDB["quests"]["data-turtle"][41915]["end"]   = { ["U"] = { 62850 } }
+  pfDB["quests"]["data-turtle"][41915]["obj"]   = { ["U"] = { 62850 } }
+
+  -- 41916 "长者的末路"  [任务文本]  end 确凿，start 是据前置交付人推断
+  pfDB["quests"]["data-turtle"][41916]["start"] = { ["U"] = { 62850 } }
+  pfDB["quests"]["data-turtle"][41916]["end"]   = { ["U"] = { 62850 } }
+
+  -- 41917 "阿里亚的决意"  [任务文本]
+  pfDB["quests"]["data-turtle"][41917]["start"] = { ["U"] = { 62850 } }
+  pfDB["quests"]["data-turtle"][41917]["end"]   = { ["U"] = { 62986 } }
+
+  -- 41921 "熟悉的扰动"  [实测]  三边库都没有 start/end。阿赫·扎多尔 -> 年迈的克拉辛
+  pfDB["quests"]["data-turtle"][41921]["start"] = { ["U"] = { 91782 } }
+  pfDB["quests"]["data-turtle"][41921]["end"]   = { ["U"] = { 62863 } }
+
+  -- 41922 "故亲重逢"  [实测]  41921 的后续。年迈的克拉辛 -> 桑夫·科拉（悲伤沼泽避难营）
+  pfDB["quests"]["data-turtle"][41922]["start"] = { ["U"] = { 62863 } }
+  pfDB["quests"]["data-turtle"][41922]["end"]   = { ["U"] = { 91781 } }
+
+  -- 41923-41926 "梦境之石" 系列  [服务端库]  接取交付都在同一块石头上，本地库只有 start
+  pfDB["quests"]["data-turtle"][41923]["end"] = { ["O"] = { 2020302 } }  -- 灰谷 93.5/38.4
+  pfDB["quests"]["data-turtle"][41924]["end"] = { ["O"] = { 2020303 } }  -- 菲拉斯 51.1/11.8
+  pfDB["quests"]["data-turtle"][41925]["end"] = { ["O"] = { 2020304 } }  -- 暮色森林 46.1/38.9
+  pfDB["quests"]["data-turtle"][41926]["end"] = { ["O"] = { 2020305 } }  -- 辛特兰 63.8/27.4
+
+  -- 41929 "爆裂魔力碎片"  [服务端库]  end 物件"下界年鉴"。跨区交付不是数据错误
+  pfDB["quests"]["data-turtle"][41929]["end"] = { ["O"] = { 2020306 } }
+
+  -- 41949 "腐心的角"  [任务文本]  两端原本都指向伪 ID 90041949
+  pfDB["quests"]["data-turtle"][41949]["start"] = { ["U"] = { 63047 } }
+  pfDB["quests"]["data-turtle"][41949]["end"]   = { ["U"] = { 63047 } }
+
+  -- 41950 "留滞货箱"  [任务文本]  start 不动：本任务由道具 42222 触发，没有 NPC 接取方
+  pfDB["quests"]["data-turtle"][41950]["end"] = { ["U"] = { 62920 } }
+
+  -- 41951 "商人之见"  [任务文本]
+  pfDB["quests"]["data-turtle"][41951]["start"] = { ["U"] = { 62920 } }
+  pfDB["quests"]["data-turtle"][41951]["end"]   = { ["U"] = { 62994 } }
+
+  -- 41952 "月光下的阴影"  [任务文本]
+  pfDB["quests"]["data-turtle"][41952]["end"]   = { ["U"] = { 62920 } }
+
+  -- 41953 "复原水晶"  [任务文本]
+  pfDB["quests"]["data-turtle"][41953]["start"] = { ["U"] = { 62920 } }
+  pfDB["quests"]["data-turtle"][41953]["end"]   = { ["U"] = { 62920 } }
+
+  -- 42003 "银白之刃"  [服务端库]  start 的物件 2020329 两边都无坐标，接取端仍无法定位
+  pfDB["quests"]["data-turtle"][42003]["end"] = { ["O"] = { 2020330 } }
+
+  -- 42004 "沉浸于力量中"  [服务端库]  与 42003 的 end 是同一物件
+  pfDB["quests"]["data-turtle"][42004]["end"] = { ["O"] = { 2020330 } }
+
+  -- 42036 "尘封万年的秘密"  [服务端库]  end 物件"远古精灵宝箱"
+  pfDB["quests"]["data-turtle"][42036]["end"] = { ["O"] = { 2020340 } }
+
+  -- 80381 "贝壳币"  [服务端库]  end 艾劳迪亚 (80999)
+  pfDB["quests"]["data-turtle"][80381]["end"] = { ["U"] = { 80999 } }
+
+  -- 80411 "永恒狩猎"  [任务文本 + 实测]  原 obj 是无坐标占位符，
+  -- 实际是到瑟拉丹神庙点场景物"腐化水晶"召唤目标
+  pfDB["quests"]["data-turtle"][80411]["obj"] = { ["O"] = { 3000510 } }
+
+  -- 7481/7482 "精灵的传说"  [任务文本]  目标是厄运之槌的物件"卡里尔·温萨鲁斯的骸骨"。
+  -- 该物件无坐标，补 obj 只让浏览器/追踪列出目标名，地图上暂时不出图钉
+  pfDB["quests"]["data-turtle"][7481]["obj"] = { ["O"] = { 179544 } }
+  pfDB["quests"]["data-turtle"][7482]["obj"] = { ["O"] = { 179544 } }
+
+  -- 80303 "突袭奎尔林斯小屋"  end 原本多了个奥杜 (80605)，那是奥格瑞玛的无关 NPC
+  pfDB["quests"]["data-turtle"][80303]["end"] = { ["U"] = { 80802 } }
+
+  -- 41956 "并不孤单"  [任务文本 + 实测]  三个目标点见上方 areatrigger 段
+  pfDB["quests"]["data-turtle"][41956]["obj"] = { ["A"] = { 900003, 900004, 900005 } }
+
+  -- ==== 补回 41900-42101 段被上游导出漏掉的 obj ====
+  -- 这一段整段没有 obj 键，基础库也没有对应条目，兜底段无源可补。行尾数字是落点数。
+  -- 刷屏的、落点全在副本内的、以及 42065-42067（本地 obj.I 才对）故意不补。
+  pfDB["quests"]["data-turtle"][41905]["obj"] = { ["I"] = { 42072 } }  -- 黑铁的袭击        3
+  pfDB["quests"]["data-turtle"][41916]["obj"] = { ["U"] = { 62992 } }  -- 长者的末路        1
+  pfDB["quests"]["data-turtle"][41923]["obj"] = { ["I"] = { 42165, 61199 } }  -- 梦境之石·灰谷      1
+  pfDB["quests"]["data-turtle"][41924]["obj"] = { ["I"] = { 42165, 61199 } }  -- 梦境之石·菲拉斯    1
+  pfDB["quests"]["data-turtle"][41925]["obj"] = { ["I"] = { 42165, 61199 } }  -- 梦境之石·暮色森林  1
+  pfDB["quests"]["data-turtle"][41926]["obj"] = { ["I"] = { 42165, 61199 } }  -- 梦境之石·辛特兰    1
+  pfDB["quests"]["data-turtle"][41932]["obj"] = { ["I"] = { 42172, 42173, 42174 } }  -- 熊怪的古老药方     3
+  pfDB["quests"]["data-turtle"][41940]["obj"] = { ["I"] = { 42207, 42208, 42209, 42210 } }  -- 元素核心 56
+  pfDB["quests"]["data-turtle"][41947]["obj"] = { ["I"] = { 42218 } }  -- 通缉：无情的塔玛安  1
+  pfDB["quests"]["data-turtle"][41949]["obj"] = { ["I"] = { 42221 } }  -- 腐心的角          25
+  pfDB["quests"]["data-turtle"][41955]["obj"] = { ["I"] = { 42215, 42225, 42226, 42227 } }  -- 多头蛇 119
+  pfDB["quests"]["data-turtle"][41964]["obj"] = { ["I"] = { 42240 } }  -- 古迹寻踪          1
+  pfDB["quests"]["data-turtle"][41967]["obj"] = { ["U"] = { 4124, 4248 } }  -- 生存所需         106
+  pfDB["quests"]["data-turtle"][42004]["obj"] = { ["I"] = { 42297 } }  -- 沉浸于力量中       4
+  pfDB["quests"]["data-turtle"][42030]["obj"] = { ["I"] = { 42308, 42309 } }  -- 偷窃与勒索         2
+  pfDB["quests"]["data-turtle"][42032]["obj"] = { ["I"] = { 42312 } }  -- 锁具蓝图·弗雷德海姆 1
+  pfDB["quests"]["data-turtle"][42037]["obj"] = { ["I"] = { 42320 } }  -- 机场补给          6
+  pfDB["quests"]["data-turtle"][42038]["obj"] = { ["U"] = { 63166, 63167, 63170 } }  -- 霜鬃战争 50
+  pfDB["quests"]["data-turtle"][42056]["obj"] = { ["U"] = { 63199 } }  -- 天空之袍          1
+
+  -- ==== 上游空壳条目，基础库也没有，只能显式写回 ====
+  -- 上游只给了 lvl/min/pre，整条替换后起止点全丢，下方兜底段覆盖不到。依赖的 NPC 已在 units 段补
+  pfDB["quests"]["data-turtle"][41918]["start"] = { ["U"] = { 90041918 } }
+  pfDB["quests"]["data-turtle"][41918]["end"]   = { ["U"] = { 90042139 } }
+  pfDB["quests"]["data-turtle"][41918]["obj"]   = { ["I"] = { 42139 } }
+
+  pfDB["quests"]["data-turtle"][41919]["start"] = { ["U"] = { 90041919 } }
+  pfDB["quests"]["data-turtle"][41919]["end"]   = { ["U"] = { 90042139 } }
+  pfDB["quests"]["data-turtle"][41919]["obj"]   = { ["I"] = { 42139 } }
+
+  -- 42005 只补 start：接取交付是同一个物件，交付端由 42004 那条覆盖
+  pfDB["quests"]["data-turtle"][42005]["start"] = { ["O"] = { 2020330 } }
+  pfDB["quests"]["data-turtle"][42005]["obj"]   = { ["I"] = { 42298 } }
+
+  -- ==== 兜底：补回被上游"空壳"条目抹掉的基础库字段 ====
+  -- patchtable 合并乌龟层是整条替换，只写 lvl/min 的空壳条目会把基础库的起止点一并抹掉。
+  -- 这里补回缺的字段，已有值不动。不补 race：补错会把任务对本该能做的人隐藏，方向更危险。
+  do
+    local function clone(v)
+      if type(v) ~= "table" then return v end
+      local t = {}
+      for k, val in pairs(v) do t[k] = clone(val) end
+      return t
+    end
+    local base, turtle = pfDB["quests"]["data"], pfDB["quests"]["data-turtle"]
+    for qid, t in pairs(turtle) do
+      local b = base[qid]
+      -- 只处理两边都是表的条目：乌龟层用 [id] = "_" 表示删除（上游 quests 层有 188 个），
+      -- 给那种条目补字段等于把已删的任务复活。
+      if type(t) == "table" and type(b) == "table" then
+        for _, field in pairs({ "start", "end", "obj", "pre", "close", "class", "skill" }) do
+          if b[field] ~= nil and t[field] == nil then t[field] = clone(b[field]) end
+        end
+      end
+    end
+  end
 end
