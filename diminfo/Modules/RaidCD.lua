@@ -1,74 +1,35 @@
 -- 引入服务器配置 (baseResetTime均设置为北京时间)
 local SERVER_CONFIGS = {
-    -- 拉风配置
-    ["Ravenstorm"] = {
+        
+    --群星盆地配置
+    ["Basin of Stars"] = {
         -- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1757476800}, -- 2025年9月10日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757476800},
-        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
-        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
-		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
+        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1784174400}, -- 2026年7月16日中午12点
+        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1784174400},
+        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1784174400},
+        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1784174400},
+        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1784174400},
+        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1784692800}, --2026年7月22日中午12点
+		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1784260800}, -- 2026年7月17日中午12点
         
         -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1757476800}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1757476800},		
+        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1784260800}, -- 2026年7月17日中午12点
+        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1784260800},
         
         -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1757476800},
-        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1757476800}
-    },
-    
-    -- 卡拉赞配置
-    ["Karazhan"] = {
-        -- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1760673600}, -- 2025年10月17日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1760673600},
-        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1760673600},
-        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1760673600},
-        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1760673600},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1760673600},
-		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
+        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1784347200}, -- 2026年7月18日中午12点
+        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1784347200}
+    },  
         
-        -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1760673600}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1760673600},
-        
-        -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1760673600},
-        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1760673600}
-    },
-    
-    -- 血环配置
-    ["Blood Ring"] = {
-        -- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1752724800}, -- 2025年7月17日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1752724800},
-        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1752724800},
-        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1752724800},
-        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1752724800},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1752638400}, -- 2025年7月16日中午12点
-		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
-        
-        -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1752724800}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1752724800},
-        
-        -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1752724800},
-        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1752724800}
-    },
-    
     -- 基赫纳斯配置
     ["Gehennas"] = {
         -- 7天冷却副本
         [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1761537600}, --2025年10月27日中午12点
         [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761537600},
-        -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757044800},
-        -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757044800},
+        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1761537600},
+        -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1761537600},
         [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1761537600},
-        -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757044800},
+        -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1761537600},
         
         -- 5天冷却副本
         [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1774065600}, 
@@ -76,67 +37,28 @@ local SERVER_CONFIGS = {
         
         -- -- 3天冷却副本
         [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1769486400}, --2026年1月27日中午12点
-        -- [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1757304000}
+        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1769486400}
     },
 	
-	--欧服Nordanaar
-	["Nordanaar"] = {       
+	--永歌荒野
+	["Eversong Wilds"] = {       
 		-- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1757476800}, -- 2025年9月10日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1757476800},
-        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
-        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
-		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
+        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1782014400}, --2026年6月21日中午12点
+        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1782014400},
+        -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1760673600},
+        -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1760673600},
+        -- [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1760673600},
+        -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1760673600},
+		-- [11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, 
         
         -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1749441600}, -- 2025年6月9日中午12点
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1749355200}, -- 2025年6月8日中午12点
+        -- [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1760673600}, 
+        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1782014400},  --2026年6月21日中午12点
         
-        -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1749268800}, -- 2025年6月7日中午12点
-        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1749268800}
-    },	
-	
-	--欧服Tel'Abim
-	["Tel'Abim"] = {       
-		-- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1761796800}, -- 2025年10月30日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761796800},
-        [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1761796800},
-        [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1761796800},
-        [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1761796800},
-        [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1761796800}, 
-		[11] = {name = "木喉要塞", resetDays = 7, baseResetTime = 1774584000}, -- 2026年3月27日中午12点
-        
-        -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1761796800}, 
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1761796800},
-        
-        -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1761796800}, 
-        [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1761796800}
-    },
-	
-	--欧服Ambershire
-	["Ambershire"] = {       
-		-- 7天冷却副本
-        [1] = {name = "熔火之心", resetDays = 7, baseResetTime = 1761710400},  -- 2025年10月29日中午12点
-        [2] = {name = "黑翼之巢", resetDays = 7, baseResetTime = 1761710400},
-        -- [3] = {name = "安其拉神殿", resetDays = 7, baseResetTime = 1757476800},
-        -- [4] = {name = "纳克萨玛斯", resetDays = 7, baseResetTime = 1757476800},
-        -- [5] = {name = "翡翠圣殿", resetDays = 7, baseResetTime = 1757476800},
-        -- [6] = {name = "卡拉赞之塔", resetDays = 7, baseResetTime = 1757476800},
-        
-        -- 5天冷却副本
-        [7] = {name = "卡拉赞下层大厅", resetDays = 5, baseResetTime = 1763697600}, -- 2025年11月21日中午12点
-        [8] = {name = "奥妮克希亚的巢穴", resetDays = 5, baseResetTime = 1761019200}, -- 2025年10月21日中午12点
-        
-        -- 3天冷却副本
-        [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1767412800}, -- 2026年1月3日中午12点
-        -- [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1749268800}
-    },
+        -- -- 3天冷却副本
+        -- [9] = {name = "祖尔格拉布", resetDays = 3, baseResetTime = 1760673600},
+        -- [10] = {name = "安其拉废墟", resetDays = 3, baseResetTime = 1760673600}
+    },		
 	
 	-- 特殊服务器
     -- ["XXXXXXX"] = {
@@ -182,17 +104,17 @@ local RAID_GROUPS = {
 
 -- 暗月马戏团配置
 local DARKMOON_FAIRE_CONFIG = {
-    baseResetTime = 1763251200, -- 基准时间：2025年11月16日上午8点（北京时间），此时在闪金镇
+    baseResetTime = 1779552000, -- 基准时间：2026年5月24日0点（北京时间），此时在雷霆崖
     resetDays = 7, -- 7天轮换一次
     locations = {
-        [0] = "闪金镇",
-        [1] = "雷霆崖"
+        [0] = "雷霆崖",
+        [1] = "闪金镇"
     }
 }
 
 -- 祖格隐藏boss配置
 local ZG_HIDDEN_BOSS_CONFIG = {
-    baseResetTime = 1773100800, -- 基准时间：2026年3月10日上午8点（北京时间），此时是雷纳塔基
+    baseResetTime = 1777910400, -- 基准时间：2026年5月5日0点（北京时间），此时是雷纳塔基
     resetDays = 14, -- 14天轮换一次（两周）
     bosses = {
         [0] = "雷纳塔基",
@@ -204,11 +126,11 @@ local ZG_HIDDEN_BOSS_CONFIG = {
 
 -- 双倍战场配置
 local BATTLEGROUND_BONUS_CONFIG = {
-    baseResetTime = 1763510400, -- 基准时间：2025年11月19日上午8点（北京时间），此时是阳光林地
+    baseResetTime = 1779465600, -- 基准时间：2026年5月23日0点（北京时间），此时是血环
     resetDays = 1, -- 1天轮换一次
     battlegrounds = {
         [0] = "血环竞技场",
-        [1] = "阳光林地", 
+        [1] = "荆棘峡谷", 
         [2] = "奥特兰克山谷",
         [3] = "战歌峡谷",
         [4] = "阿拉希盆地"
@@ -597,7 +519,7 @@ local function ShowRaidCDTooltip()
     GameTooltip:AddLine(" ")
     
     -- 添加最后更新时间
-    GameTooltip:AddLine("最后更新: " .. date("%H:%M:%S", lastUpdateTime) .. ";  左键:集合石;  右键:手动刷新", .3, 1, .6)
+    GameTooltip:AddLine("最后更新: " .. date("%H:%M:%S", lastUpdateTime) .. ";  左键:集合石 or LFT;  右键:手动刷新", .3, 1, .6)
     
     GameTooltip:Show()
 end
@@ -621,11 +543,11 @@ diminfo_RaidCD:SetScript("OnMouseDown", function()
             DEFAULT_CHAT_FRAME:AddMessage("|cffff0000当前服务器暂不支持团本CD功能|r")
         end
     elseif arg1 == "LeftButton" then
-        -- 左键点击打开集合石主界面
+        -- 左键点击打开集合石或LFT主界面
         if Meeting and Meeting.Toggle then
             Meeting:Toggle()
         else
-            DEFAULT_CHAT_FRAME:AddMessage("|cffff0000未找到集合石插件|r")
+            LFT_Toggle()
         end
     end
 end)

@@ -81,7 +81,7 @@ diminfo_Time:SetScript("OnEnter", function()
         GameTooltip:AddDoubleLine('|cffffffff本地时间|r', date("%H:%M"))
     end
     
-    GameTooltip:AddDoubleLine('|cffffffff服务器时间|r', format("%02d:%02d", h, m))
+    GameTooltip:AddDoubleLine('|cffffffff游戏内时间|r', format("%02d:%02d", h, m))
     GameTooltip:Show()
 end)
 
@@ -328,7 +328,7 @@ diminfo_Time:SetScript("OnMouseDown", function()
     end
 end)
 
-if pfUI then
+if pfUI and pfUI.GetEnvironment then
     local penv = pfUI:GetEnvironment()
     local StripTextures, SkinButton, CreateBackdrop = penv.StripTextures, penv.SkinButton, penv.CreateBackdrop
 

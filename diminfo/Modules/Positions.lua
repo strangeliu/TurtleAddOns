@@ -104,7 +104,7 @@ diminfo_pos:SetScript("OnMouseUp", function()
 		if arg1 == "LeftButton" then
 			ToggleWorldMap()
 		else
-			if IsAddOnLoaded("Atlas") then
+			if IsAddOnLoaded("Atlas-CFM") or IsAddOnLoaded("Atlas")then
 				Atlas_Toggle()
 			end
 		end	
